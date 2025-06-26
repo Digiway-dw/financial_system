@@ -3,11 +3,13 @@
 namespace App\Livewire\Reports;
 
 use App\Application\UseCases\ListFilteredTransactions;
-use App\Domain\Entities\Branch;
+use App\Models\Domain\Entities\Branch;
 use App\Models\Domain\Entities\Customer;
-use App\Models\Domain\Entities\User;
+use App\Domain\Entities\User;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('components.layouts.app')]
 class Index extends Component
 {
     public $startDate;

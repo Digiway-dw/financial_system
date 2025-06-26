@@ -2,7 +2,7 @@
 
 namespace App\Domain\Interfaces;
 
-use App\Domain\Entities\Customer;
+use App\Models\Domain\Entities\Customer;
 
 interface CustomerRepository
 {

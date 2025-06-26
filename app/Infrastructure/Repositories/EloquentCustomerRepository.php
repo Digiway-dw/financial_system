@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Repositories;
 
-use App\Domain\Entities\Customer;
+use App\Models\Domain\Entities\Customer;
 use App\Domain\Interfaces\CustomerRepository;
 
 class EloquentCustomerRepository implements CustomerRepository
