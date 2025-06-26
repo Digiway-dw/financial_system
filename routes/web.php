@@ -10,9 +10,13 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::view('dashboard', 'dashboard')
+        ->name('dashboard');
+
+    Route::get('customers', \App\Livewire\Customers\Index::class)
+        ->name('customers.index');
+});
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])
