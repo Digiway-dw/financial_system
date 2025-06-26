@@ -14,8 +14,41 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')
         ->name('dashboard');
 
+    // Customer Management Routes
     Route::get('customers', \App\Livewire\Customers\Index::class)
         ->name('customers.index');
+    Route::get('customers/create', \App\Livewire\Customers\Create::class)
+        ->name('customers.create');
+    Route::get('customers/{customerId}/edit', \App\Livewire\Customers\Edit::class)
+        ->name('customers.edit');
+
+    // Transaction Management Routes
+    Route::get('transactions', \App\Livewire\Transactions\Index::class)
+        ->name('transactions.index');
+    Route::get('transactions/create', \App\Livewire\Transactions\Create::class)
+        ->name('transactions.create');
+    Route::get('transactions/pending', \App\Livewire\Transactions\Pending::class)
+        ->name('transactions.pending');
+
+    // Line Management Routes
+    Route::get('lines', \App\Livewire\Lines\Index::class)
+        ->name('lines.index');
+    Route::get('lines/create', \App\Livewire\Lines\Create::class)
+        ->name('lines.create');
+    Route::get('lines/{lineId}/edit', \App\Livewire\Lines\Edit::class)
+        ->name('lines.edit');
+
+    // Safe Management Routes
+    Route::get('safes', \App\Livewire\Safes\Index::class)
+        ->name('safes.index');
+    Route::get('safes/create', \App\Livewire\Safes\Create::class)
+        ->name('safes.create');
+    Route::get('safes/{safeId}/edit', \App\Livewire\Safes\Edit::class)
+        ->name('safes.edit');
+
+    // Reports Routes
+    Route::get('reports', \App\Livewire\Reports\Index::class)
+        ->name('reports.index');
 });
 
 Route::view('profile', 'profile')

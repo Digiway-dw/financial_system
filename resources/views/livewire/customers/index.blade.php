@@ -19,7 +19,8 @@
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $customer['mobile_number'] }}</td>
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $customer['customer_code'] ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
-                            <!-- Actions (Edit/Delete) will go here -->
+                            <a href="{{ route('customers.edit', $customer['id']) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600 mr-3">Edit</a>
+                            <button wire:click="deleteCustomer('{{ $customer['id'] }}')" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600">Delete</button>
                         </td>
                     </tr>
                 @empty
