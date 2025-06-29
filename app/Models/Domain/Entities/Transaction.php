@@ -4,9 +4,13 @@ namespace App\Models\Domain\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Transaction extends Model
 {
+    use LogsActivity;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -25,6 +29,7 @@ class Transaction extends Model
         'transaction_date_time',
         'status',
         'safe_id',
+        'is_absolute_withdrawal',
     ];
 
     /**
@@ -49,5 +54,12 @@ class Transaction extends Model
     public function safe(): BelongsTo
     {
         return $this->belongsTo(Safe::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty();
     }
 }

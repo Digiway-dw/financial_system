@@ -20,7 +20,7 @@
                 @forelse ($safes as $safe)
                     <tr>
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900 dark:text-gray-100">{{ $safe['name'] }}</td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ number_format($safe['balance'], 2) }} EGP</td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ number_format($safe['current_balance'], 2) }} EGP</td>
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $safe['branch']['name'] ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $safe['description'] ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">

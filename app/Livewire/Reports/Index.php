@@ -6,8 +6,13 @@ use App\Application\UseCases\ListFilteredTransactions;
 use App\Models\Domain\Entities\Branch;
 use App\Models\Domain\Entities\Customer;
 use App\Domain\Entities\User;
+use App\Domain\Interfaces\SafeRepository;
+use App\Domain\Interfaces\LineRepository;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TransactionsExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 #[Layout('components.layouts.app')]
 class Index extends Component
@@ -33,14 +38,24 @@ class Index extends Component
     public $transactionTypes = ['Transfer', 'Withdrawal', 'Deposit', 'Adjustment'];
 
     private ListFilteredTransactions $listFilteredTransactionsUseCase;
+    private SafeRepository $safeRepository;
+    private LineRepository $lineRepository;
 
-    public function boot(ListFilteredTransactions $listFilteredTransactionsUseCase)
+    public function boot(
+        ListFilteredTransactions $listFilteredTransactionsUseCase,
+        SafeRepository $safeRepository,
+        LineRepository $lineRepository
+    )
     {
         $this->listFilteredTransactionsUseCase = $listFilteredTransactionsUseCase;
+        $this->safeRepository = $safeRepository;
+        $this->lineRepository = $lineRepository;
     }
 
     public function mount()
     {
+        $this->authorize('view-reports');
+
         $this->startDate = now()->startOfMonth()->toDateString();
         $this->endDate = now()->endOfMonth()->toDateString();
         $this->users = User::all();
@@ -54,40 +69,89 @@ class Index extends Component
         $filters = [
             'start_date' => $this->startDate,
             'end_date' => $this->endDate,
-            'user_id' => $this->selectedUser,
+            'agent_id' => $this->selectedUser,
             'branch_id' => $this->selectedBranch,
-            'customer_id' => $this->selectedCustomer,
+            'customer_name' => $this->selectedCustomer,
             'transaction_type' => $this->selectedTransactionType,
         ];
 
-        $this->transactions = $this->listFilteredTransactionsUseCase->execute($filters);
-        $this->calculateReportMetrics();
+        $result = $this->listFilteredTransactionsUseCase->execute($filters);
+        $this->transactions = $result['transactions'];
+        $this->totalTransferred = $result['totals']['total_transferred'];
+        $this->totalCommission = $result['totals']['total_commission'];
+        $this->totalDeductions = $result['totals']['total_deductions'];
+        $this->netProfits = $result['totals']['net_profit'];
+
+        $safes = $this->safeRepository->all();
+        $this->safeBalances = collect($safes)->groupBy('branch.name')
+                                             ->mapWithKeys(function ($group, $branchName) {
+                                                 return [$branchName => $group->sum('current_balance')];
+                                             })->toArray();
+
+        $lines = $this->lineRepository->all();
+        $this->lineBalances = collect($lines)->groupBy('user.name')
+                                             ->mapWithKeys(function ($group, $userName) {
+                                                 return [$userName => $group->sum('current_balance')];
+                                             })->toArray();
     }
 
-    private function calculateReportMetrics()
+    public function exportToExcel()
     {
-        $this->totalTransferred = 0;
-        $this->totalCommission = 0;
-        $this->totalDeductions = 0;
-        $this->netProfits = 0;
+        $this->authorize('view-reports');
 
-        foreach ($this->transactions as $transaction) {
-            $this->totalTransferred += $transaction['amount'];
-            $this->totalCommission += $transaction['commission'];
-            $this->totalDeductions += $transaction['deduction'];
-        }
+        $filters = [
+            'start_date' => $this->startDate,
+            'end_date' => $this->endDate,
+            'agent_id' => $this->selectedUser,
+            'branch_id' => $this->selectedBranch,
+            'customer_name' => $this->selectedCustomer,
+            'transaction_type' => $this->selectedTransactionType,
+        ];
 
-        $this->netProfits = $this->totalCommission - $this->totalDeductions;
+        $result = $this->listFilteredTransactionsUseCase->execute($filters);
+        $transactionsToExport = collect($result['transactions']);
 
-        // Safe and Line balances will require separate logic or relationships
-        // For now, we'll just display them if available in the transaction or fetch separately
-        // This might need more complex aggregation or direct queries to Safe/Line models.
-        $this->safeBalances = []; // Placeholder
-        $this->lineBalances = []; // Placeholder
+        return Excel::download(new TransactionsExport($transactionsToExport), 'transactions_report.xlsx');
+    }
+
+    public function exportToPdf()
+    {
+        $this->authorize('view-reports');
+
+        $filters = [
+            'start_date' => $this->startDate,
+            'end_date' => $this->endDate,
+            'agent_id' => $this->selectedUser,
+            'branch_id' => $this->selectedBranch,
+            'customer_name' => $this->selectedCustomer,
+            'transaction_type' => $this->selectedTransactionType,
+        ];
+
+        $result = $this->listFilteredTransactionsUseCase->execute($filters);
+        $transactionsToExport = collect($result['transactions']);
+
+        $data = [
+            'transactions' => $transactionsToExport,
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+            'totalTransferred' => $this->totalTransferred,
+            'totalCommission' => $this->totalCommission,
+            'totalDeductions' => $this->totalDeductions,
+            'netProfits' => $this->netProfits,
+        ];
+
+        $pdf = Pdf::loadView('reports.transactions_pdf', $data);
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, 'transactions_report.pdf');
     }
 
     public function render()
     {
+        $this->users = User::all();
+        $this->branches = Branch::all();
+        $this->customers = Customer::all();
+
         return view('livewire.reports.index', [
             'transactions' => $this->transactions,
             'totalTransferred' => $this->totalTransferred,
@@ -96,6 +160,10 @@ class Index extends Component
             'netProfits' => $this->netProfits,
             'safeBalances' => $this->safeBalances,
             'lineBalances' => $this->lineBalances,
+            'users' => $this->users,
+            'branches' => $this->branches,
+            'customers' => $this->customers,
+            'transactionTypes' => $this->transactionTypes,
         ]);
     }
 }

@@ -19,7 +19,7 @@ class Move extends Component
     #[Validate('required|numeric|min:0.01')] 
     public $amount = 0.00;
 
-    public $safes;
+    public $safes = [];
 
     private MoveSafeCash $moveSafeCashUseCase;
 
@@ -30,7 +30,8 @@ class Move extends Component
 
     public function mount()
     {
-        $this->safes = Safe::all();
+        $this->authorize('manage-safes'); // Enforce authorization
+        // $this->safes = Safe::all(); // Moved to render()
     }
 
     public function moveCash()
@@ -38,12 +39,12 @@ class Move extends Component
         $this->validate();
 
         try {
-            $agentName = Auth::user()->name; // Get the name of the logged-in agent
+            // $agentName = Auth::user()->name; // Removed, not needed for the use case
             $this->moveSafeCashUseCase->execute(
                 $this->fromSafeId,
                 $this->toSafeId,
                 (float) $this->amount,
-                $agentName
+                Auth::user()->id // Pass the authenticated user's ID
             );
 
             session()->flash('message', 'Cash moved successfully.');
@@ -55,6 +56,7 @@ class Move extends Component
 
     public function render()
     {
+        $this->safes = Safe::all(); // Load safes in render method
         return view('livewire.safes.move');
     }
 }

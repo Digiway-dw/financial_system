@@ -29,6 +29,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('transactions.create');
     Route::get('transactions/pending', \App\Livewire\Transactions\Pending::class)
         ->name('transactions.pending');
+    Route::get('transactions/{transactionId}/edit', \App\Livewire\Transactions\Edit::class)
+        ->name('transactions.edit');
 
     // Line Management Routes
     Route::get('lines', \App\Livewire\Lines\Index::class)
@@ -45,6 +47,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('safes.create');
     Route::get('safes/{safeId}/edit', \App\Livewire\Safes\Edit::class)
         ->name('safes.edit');
+    Route::get('safes/move', \App\Livewire\Safes\Move::class)
+        ->name('safes.move');
+
+    // Branch Management Routes
+    Route::get('branches', \App\Livewire\Branches\Index::class)
+        ->name('branches.index');
+    Route::get('branches/create', \App\Livewire\Branches\Create::class)
+        ->name('branches.create');
+    Route::get('branches/{branchId}/edit', \App\Livewire\Branches\Edit::class)
+        ->name('branches.edit');
 
     // Reports Routes
     Route::get('reports', \App\Livewire\Reports\Index::class)

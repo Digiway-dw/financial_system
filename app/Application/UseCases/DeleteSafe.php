@@ -3,27 +3,24 @@
 namespace App\Application\UseCases;
 
 use App\Domain\Interfaces\SafeRepository;
-use App\Models\Domain\Entities\Safe;
 
 class DeleteSafe
 {
-    private SafeRepository $safeRepository;
+    public function __construct(
+        private SafeRepository $safeRepository
+    ) {}
 
-    public function __construct(SafeRepository $safeRepository)
-    {
-        $this->safeRepository = $safeRepository;
-    }
-
-    public function execute(string $safeId): bool
+    public function execute(string $safeId): void
     {
         $safe = $this->safeRepository->findById($safeId);
 
         if (!$safe) {
-            return false;
+            throw new \Exception('Safe not found.');
         }
 
-        $this->safeRepository->delete($safeId);
+        // Add any business rules or validations here before deleting the safe
+        // For example, preventing deletion if the safe has a non-zero balance
 
-        return true;
+        $this->safeRepository->delete($safeId);
     }
 } 

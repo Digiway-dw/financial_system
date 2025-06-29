@@ -32,6 +32,6 @@ class EloquentSafeRepository implements SafeRepository
 
     public function all(): array
     {
-        return EloquentSafe::all()->toArray();
+        return EloquentSafe::with('branch')->get()->toArray();
     }
 } 

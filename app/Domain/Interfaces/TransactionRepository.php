@@ -11,4 +11,7 @@ interface TransactionRepository
     public function update(string $id, array $attributes): Transaction;
     public function delete(string $id): void;
     public function all(): array;
+    public function findByStatus(string $status): array;
+    public function save(Transaction $transaction): Transaction;
+    public function getTransactionsByLineAndDateRange(string $lineId, \Carbon\Carbon $startDate, \Carbon\Carbon $endDate);
 } 

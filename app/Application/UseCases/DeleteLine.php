@@ -3,27 +3,24 @@
 namespace App\Application\UseCases;
 
 use App\Domain\Interfaces\LineRepository;
-use App\Models\Domain\Entities\Line;
 
 class DeleteLine
 {
-    private LineRepository $lineRepository;
+    public function __construct(
+        private LineRepository $lineRepository
+    ) {}
 
-    public function __construct(LineRepository $lineRepository)
-    {
-        $this->lineRepository = $lineRepository;
-    }
-
-    public function execute(string $lineId): bool
+    public function execute(string $lineId): void
     {
         $line = $this->lineRepository->findById($lineId);
 
         if (!$line) {
-            return false;
+            throw new \Exception('Line not found.');
         }
 
-        $this->lineRepository->delete($lineId);
+        // Add any business rules or validations here before deleting the line
+        // For example, preventing deletion if the line has associated active transactions
 
-        return true;
+        $this->lineRepository->delete($lineId);
     }
 } 

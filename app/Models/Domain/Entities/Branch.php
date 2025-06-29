@@ -4,9 +4,13 @@ namespace App\Models\Domain\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Branch extends Model
 {
+    use LogsActivity;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -14,7 +18,7 @@ class Branch extends Model
      */
     protected $fillable = [
         'name',
-        'location',
+        'description',
     ];
 
     /**
@@ -31,5 +35,12 @@ class Branch extends Model
     public function safes(): HasMany
     {
         return $this->hasMany(Safe::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty();
     }
 }

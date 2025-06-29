@@ -22,4 +22,14 @@ class EloquentUserRepository implements UserRepository
         $user->save();
         return $user;
     }
+
+    public function all(): array
+    {
+        return User::all()->all();
+    }
+
+    public function getUsersByBranch(string $branchId): array
+    {
+        return User::where('branch_id', $branchId)->get()->all();
+    }
 } 

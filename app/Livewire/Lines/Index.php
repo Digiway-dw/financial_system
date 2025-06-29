@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class Index extends Component
 {
-    public array $lines;
+    public array $lines = [];
 
     private ListLines $listLinesUseCase;
     private DeleteLine $deleteLineUseCase;

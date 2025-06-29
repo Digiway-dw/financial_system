@@ -29,7 +29,7 @@ class Create extends Component
 
     private CreateLine $createLineUseCase;
 
-    public $users;
+    public $users = []; // Initialize as an empty array
 
     public function boot(CreateLine $createLineUseCase)
     {
@@ -38,7 +38,7 @@ class Create extends Component
 
     public function mount()
     {
-        $this->users = User::all();
+        // $this->users = User::all(); // Moved to render()
     }
 
     public function createLine()
@@ -46,17 +46,18 @@ class Create extends Component
         $this->validate();
 
         try {
-            $this->createLineUseCase->execute(
-                $this->mobileNumber,
-                (float) $this->currentBalance,
-                (float) $this->dailyLimit,
-                (float) $this->monthlyLimit,
-                $this->network,
-                $this->userId
-            );
+            $this->createLineUseCase->execute([
+                'mobile_number' => $this->mobileNumber,
+                'current_balance' => (float) $this->currentBalance,
+                'daily_limit' => (float) $this->dailyLimit,
+                'monthly_limit' => (float) $this->monthlyLimit,
+                'network' => $this->network,
+                'user_id' => $this->userId,
+            ]);
 
             session()->flash('message', 'Line created successfully.');
             $this->reset(); // Clear form fields after submission
+            $this->redirect(route('lines.index'), navigate: true);
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to create line: ' . $e->getMessage());
         }
@@ -64,6 +65,7 @@ class Create extends Component
 
     public function render()
     {
+        $this->users = User::all(); // Load users in render method
         return view('livewire.lines.create');
     }
 }

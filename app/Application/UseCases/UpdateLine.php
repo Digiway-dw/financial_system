@@ -7,17 +7,11 @@ use App\Models\Domain\Entities\Line;
 
 class UpdateLine
 {
-    private LineRepository $lineRepository;
+    public function __construct(
+        private LineRepository $lineRepository
+    ) {}
 
-    public function __construct(LineRepository $lineRepository)
-    {
-        $this->lineRepository = $lineRepository;
-    }
-
-    public function execute(
-        string $lineId,
-        array $attributes
-    ): Line
+    public function execute(string $lineId, array $lineData): Line
     {
         $line = $this->lineRepository->findById($lineId);
 
@@ -25,6 +19,8 @@ class UpdateLine
             throw new \Exception('Line not found.');
         }
 
-        return $this->lineRepository->update($lineId, $attributes);
+        // Add any business rules or validations here before updating the line
+
+        return $this->lineRepository->update($lineId, $lineData);
     }
 } 

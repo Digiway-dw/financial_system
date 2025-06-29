@@ -7,31 +7,15 @@ use App\Models\Domain\Entities\Line;
 
 class CreateLine
 {
-    private LineRepository $lineRepository;
+    public function __construct(
+        private LineRepository $lineRepository
+    ) {}
 
-    public function __construct(LineRepository $lineRepository)
+    public function execute(array $lineData): Line
     {
-        $this->lineRepository = $lineRepository;
-    }
+        // Add any business rules or validations here before creating the line
+        // For example, ensuring unique mobile number, valid network, etc.
 
-    public function execute(
-        string $mobileNumber,
-        float $currentBalance,
-        float $dailyLimit,
-        float $monthlyLimit,
-        string $network,
-        string $userId
-    ): Line
-    {
-        $attributes = [
-            'mobile_number' => $mobileNumber,
-            'current_balance' => $currentBalance,
-            'daily_limit' => $dailyLimit,
-            'monthly_limit' => $monthlyLimit,
-            'network' => $network,
-            'user_id' => $userId,
-        ];
-
-        return $this->lineRepository->create($attributes);
+        return $this->lineRepository->create($lineData);
     }
 } 

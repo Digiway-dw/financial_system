@@ -33,7 +33,7 @@
         <!-- Amount -->
         <div>
             <x-input-label for="amount" :value="__('Amount (EGP)')" />
-            <x-text-input wire:model.live="amount" id="amount" name="amount" type="number" step="0.01" class="mt-1 block w-full" required />
+            <x-text-input wire:model.live="amount" id="amount" name="amount" type="number" step="5" class="mt-1 block w-full" required />
             <x-input-error class="mt-2" :messages="$errors->get('amount')" />
         </div>
 
@@ -62,6 +62,16 @@
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('transactionType')" />
         </div>
+
+        @if (Auth::user()->isAdmin())
+            <div x-data="{ transactionType: '{{ $transactionType }}' }" x-show="transactionType === 'Withdrawal'">
+                <label for="isAbsoluteWithdrawal" class="inline-flex items-center">
+                    <input wire:model.live="isAbsoluteWithdrawal" id="isAbsoluteWithdrawal" name="isAbsoluteWithdrawal" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" />
+                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Absolute Withdrawal (No re-deposit to another safe)') }}</span>
+                </label>
+                <x-input-error class="mt-2" :messages="$errors->get('isAbsoluteWithdrawal')" />
+            </div>
+        @endif
 
         <!-- Branch -->
         <div>
@@ -93,7 +103,7 @@
             <select wire:model="safeId" id="safeId" name="safeId" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
                 <option value="">Select Safe</option>
                 @foreach ($safes as $safe)
-                    <option value="{{ $safe->id }}">{{ $safe->name }} (Balance: {{ $safe->balance }} EGP)</option>
+                    <option value="{{ $safe->id }}">{{ $safe->name }} (Balance: {{ $safe->current_balance }} EGP)</option>
                 @endforeach
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('safeId')" />

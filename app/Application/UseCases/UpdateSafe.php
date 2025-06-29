@@ -7,17 +7,11 @@ use App\Models\Domain\Entities\Safe;
 
 class UpdateSafe
 {
-    private SafeRepository $safeRepository;
+    public function __construct(
+        private SafeRepository $safeRepository
+    ) {}
 
-    public function __construct(SafeRepository $safeRepository)
-    {
-        $this->safeRepository = $safeRepository;
-    }
-
-    public function execute(
-        string $safeId,
-        array $attributes
-    ): Safe
+    public function execute(string $safeId, array $safeData): Safe
     {
         $safe = $this->safeRepository->findById($safeId);
 
@@ -25,6 +19,8 @@ class UpdateSafe
             throw new \Exception('Safe not found.');
         }
 
-        return $this->safeRepository->update($safeId, $attributes);
+        // Add any business rules or validations here before updating the safe
+
+        return $this->safeRepository->update($safeId, $safeData);
     }
 } 

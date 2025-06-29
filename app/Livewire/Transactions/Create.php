@@ -24,8 +24,7 @@ class Create extends Component
     #[Validate('nullable|string|max:255')] 
     public $customerCode = '';
 
-    #[Validate('required|numeric|min:0.01')] 
-    public $amount = 0.00;
+    public $amount = 0;
 
     #[Validate('required|numeric|min:0')] 
     public $commission = 0.00;
@@ -49,11 +48,30 @@ class Create extends Component
     #[Validate('required|exists:safes,id')] 
     public $safeId = '';
 
+    // New property for absolute withdrawal
+    public $isAbsoluteWithdrawal = false;
+
     private CreateTransaction $createTransactionUseCase;
 
     public $branches;
     public $lines;
     public $safes;
+
+    public function rules()
+    {
+        return [
+            'amount' => [
+                'required',
+                'integer',
+                'min:5',
+                function ($attribute, $value, $fail) {
+                    if ($value % 5 !== 0) {
+                        $fail('The ' . $attribute . ' must be a multiple of 5.');
+                    }
+                },
+            ],
+        ];
+    }
 
     public function boot(CreateTransaction $createTransactionUseCase)
     {
@@ -62,9 +80,6 @@ class Create extends Component
 
     public function mount()
     {
-        $this->branches = Branch::all();
-        $this->lines = Line::all();
-        $this->safes = Safe::all();
         $this->agentName = Auth::user()->name; // Automatically set agent name
         $this->branchId = Auth::user()->branch_id; // Automatically set agent branch
 
@@ -85,9 +100,22 @@ class Create extends Component
         }
     }
 
+    public function updatedTransactionType()
+    {
+        // Reset absolute withdrawal flag if transaction type changes from Withdrawal
+        if ($this->transactionType !== 'Withdrawal') {
+            $this->isAbsoluteWithdrawal = false;
+        }
+    }
+
     public function createTransaction()
     {
         $this->validate();
+
+        // Ensure isAbsoluteWithdrawal is only true for Admin and Withdrawal type
+        if (!Auth::user()->isAdmin() || $this->transactionType !== 'Withdrawal') {
+            $this->isAbsoluteWithdrawal = false;
+        }
 
         try {
             $this->createTransactionUseCase->execute(
@@ -99,15 +127,17 @@ class Create extends Component
                 (float) $this->commission,
                 (float) $this->deduction,
                 $this->transactionType,
-                $this->agentName,
+                Auth::user()->id, // Pass agent_id instead of agentName
                 $this->status,
                 $this->branchId,
                 $this->lineId,
-                $this->safeId
+                $this->safeId,
+                $this->isAbsoluteWithdrawal // Pass the new parameter
             );
 
             session()->flash('message', 'Transaction created successfully.');
-            $this->reset(); // Clear form fields after submission
+            $this->reset(['customerName', 'customerMobileNumber', 'lineMobileNumber', 'customerCode', 'amount', 'commission', 'deduction', 'transactionType', 'branchId', 'lineId', 'safeId', 'isAbsoluteWithdrawal']); // Clear form fields after submission
+            $this->calculateCommission(); // Recalculate commission after reset
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to create transaction: ' . $e->getMessage());
         }
@@ -115,6 +145,14 @@ class Create extends Component
 
     public function render()
     {
-        return view('livewire.transactions.create');
+        $this->branches = Branch::all();
+        $this->lines = Line::all();
+        $this->safes = Safe::all();
+
+        return view('livewire.transactions.create', [
+            'branches' => $this->branches,
+            'lines' => $this->lines,
+            'safes' => $this->safes,
+        ]);
     }
 }

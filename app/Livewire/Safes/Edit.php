@@ -7,6 +7,7 @@ use App\Domain\Interfaces\SafeRepository;
 use App\Models\Domain\Entities\Branch;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Gate;
 
 class Edit extends Component
 {
@@ -17,7 +18,7 @@ class Edit extends Component
     public $name = '';
 
     #[Validate('required|numeric|min:0')] 
-    public $balance = 0.00;
+    public $currentBalance = 0.00;
 
     #[Validate('required|exists:branches,id')] 
     public $branchId = '';
@@ -28,6 +29,8 @@ class Edit extends Component
     private SafeRepository $safeRepository;
     private UpdateSafe $updateSafeUseCase;
 
+    public $branches = [];
+
     public function boot(SafeRepository $safeRepository, UpdateSafe $updateSafeUseCase)
     {
         $this->safeRepository = $safeRepository;
@@ -36,15 +39,16 @@ class Edit extends Component
 
     public function mount($safeId)
     {
+        $this->authorize('manage-safes');
+
         $this->safeId = $safeId;
         $this->safe = $this->safeRepository->findById($safeId);
 
         if ($this->safe) {
             $this->name = $this->safe->name;
-            $this->balance = $this->safe->balance;
+            $this->currentBalance = $this->safe->current_balance;
             $this->branchId = $this->safe->branch_id;
             $this->description = $this->safe->description;
-            $this->branches = Branch::all();
         } else {
             abort(404);
         }
@@ -59,13 +63,14 @@ class Edit extends Component
                 $this->safeId,
                 [
                     'name' => $this->name,
-                    'balance' => (float) $this->balance,
+                    'current_balance' => (float) $this->currentBalance,
                     'branch_id' => $this->branchId,
                     'description' => $this->description,
                 ]
             );
 
             session()->flash('message', 'Safe updated successfully.');
+            $this->redirect(route('safes.index'), navigate: true);
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update safe: ' . $e->getMessage());
         }
@@ -73,6 +78,7 @@ class Edit extends Component
 
     public function render()
     {
+        $this->branches = Branch::all();
         return view('livewire.safes.edit');
     }
 }

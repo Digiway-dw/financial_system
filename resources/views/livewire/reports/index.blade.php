@@ -25,7 +25,7 @@
                     <select wire:model="selectedUser" id="selectedUser" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                         <option value="">All Agents</option>
                         @foreach ($users as $user)
-                            <option value="{{ $user->name }}">{{ $user->name }}</option>
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -58,6 +58,15 @@
 
             <div class="flex items-center gap-4">
                 <x-primary-button>{{ __('Generate Report') }}</x-primary-button>
+
+                @can('view-reports')
+                    <x-secondary-button wire:click="exportToExcel" type="button" class="me-2">
+                        {{ __('Export to Excel') }}
+                    </x-secondary-button>
+                    <x-secondary-button wire:click="exportToPdf" type="button">
+                        {{ __('Export to PDF') }}
+                    </x-secondary-button>
+                @endcan
             </div>
         </form>
     </div>
@@ -81,6 +90,38 @@
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Net Profits</dt>
                 <dd class="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">{{ number_format($netProfits, 2) }} EGP</dd>
             </div>
+        </dl>
+    </div>
+
+    <div class="mt-6 bg-white dark:bg-gray-800 p-6 shadow sm:rounded-lg">
+        <h4 class="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Safe Balances by Branch</h4>
+        <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+            @forelse ($safeBalances as $branchName => $balance)
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $branchName }}</dt>
+                    <dd class="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">{{ number_format($balance, 2) }} EGP</dd>
+                </div>
+            @empty
+                <div class="sm:col-span-2">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">No safe balances to display.</p>
+                </div>
+            @endforelse
+        </dl>
+    </div>
+
+    <div class="mt-6 bg-white dark:bg-gray-800 p-6 shadow sm:rounded-lg">
+        <h4 class="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Line Balances by User</h4>
+        <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+            @forelse ($lineBalances as $userName => $balance)
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $userName }}</dt>
+                    <dd class="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">{{ number_format($balance, 2) }} EGP</dd>
+                </div>
+            @empty
+                <div class="sm:col-span-2">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">No line balances to display.</p>
+                </div>
+            @endforelse
         </dl>
     </div>
 

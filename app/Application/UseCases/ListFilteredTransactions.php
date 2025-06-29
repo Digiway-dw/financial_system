@@ -15,6 +15,16 @@ class ListFilteredTransactions
 
     public function execute(array $filters = []): array
     {
-        return $this->transactionRepository->filter($filters);
+        $result = $this->transactionRepository->filter($filters);
+
+        return [
+            'transactions' => $result['transactions'] ?? [],
+            'totals' => $result['totals'] ?? [
+                'total_transferred' => 0,
+                'total_commission' => 0,
+                'total_deductions' => 0,
+                'net_profit' => 0,
+            ],
+        ];
     }
 } 

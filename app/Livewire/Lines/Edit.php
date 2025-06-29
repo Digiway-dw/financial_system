@@ -13,7 +13,7 @@ class Edit extends Component
     public $line;
     public $lineId;
 
-    #[Validate('required|string|max:20|unique:lines,mobile_number,except,id')] 
+    #[Validate('required|string|max:20|unique:lines,mobile_number,except,$this->lineId')] 
     public $mobileNumber = '';
 
     #[Validate('required|numeric|min:0')] 
@@ -27,6 +27,9 @@ class Edit extends Component
 
     #[Validate('required|string|in:Vodafone,Orange,Etisalat,We')] 
     public $network = 'Vodafone';
+
+    #[Validate('required|string|in:active,inactive')]
+    public $status = 'active';
 
     #[Validate('required|exists:users,id')] 
     public $userId = '';
@@ -44,6 +47,8 @@ class Edit extends Component
 
     public function mount($lineId)
     {
+        $this->authorize('manage-lines');
+
         $this->lineId = $lineId;
         $this->line = $this->lineRepository->findById($lineId);
 
@@ -54,6 +59,7 @@ class Edit extends Component
             $this->monthlyLimit = $this->line->monthly_limit;
             $this->network = $this->line->network;
             $this->userId = $this->line->user_id;
+            $this->status = $this->line->status;
             $this->users = User::all();
         } else {
             abort(404);
@@ -74,6 +80,7 @@ class Edit extends Component
                     'monthly_limit' => (float) $this->monthlyLimit,
                     'network' => $this->network,
                     'user_id' => $this->userId,
+                    'status' => $this->status,
                 ]
             );
 

@@ -32,6 +32,6 @@ class EloquentLineRepository implements LineRepository
 
     public function all(): array
     {
-        return EloquentLine::all()->toArray();
+        return EloquentLine::all()->all();
     }
 } 

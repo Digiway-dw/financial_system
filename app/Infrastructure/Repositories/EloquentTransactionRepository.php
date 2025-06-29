@@ -32,7 +32,20 @@ class EloquentTransactionRepository implements TransactionRepository
 
     public function all(): array
     {
-        return EloquentTransaction::all()->toArray();
+        return EloquentTransaction::with('agent')->get()->map(function ($transaction) {
+            $transactionArray = $transaction->toArray();
+            $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
+            return $transactionArray;
+        })->toArray();
+    }
+
+    public function findByStatus(string $status): array
+    {
+        return EloquentTransaction::where('status', $status)->with('agent')->get()->map(function ($transaction) {
+            $transactionArray = $transaction->toArray();
+            $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
+            return $transactionArray;
+        })->toArray();
     }
 
     public function filter(array $filters = []): array
@@ -40,34 +53,62 @@ class EloquentTransactionRepository implements TransactionRepository
         $query = EloquentTransaction::query();
 
         if (isset($filters['start_date'])) {
-            $query->where('created_at', '>=', $filters['start_date']);
+            $query->whereDate('created_at', '>=', $filters['start_date']);
         }
 
         if (isset($filters['end_date'])) {
-            $query->where('created_at', '<=', $filters['end_date']);
+            $query->whereDate('created_at', '<=', $filters['end_date']);
         }
 
-        if (isset($filters['user_id'])) {
-            // Assuming a relationship or agent_name field
-            // For now, let's filter by agent_name if user_id implies agent
-            // Or we need to load the user relationship and filter by user ID
-            // Let's use agent_name for simplicity first, then refine if needed
-            $query->where('agent_name', $filters['user_id']); // This needs to be refined based on how user_id maps to agent_name
+        if (isset($filters['agent_id'])) {
+            $query->where('agent_id', $filters['agent_id']);
         }
 
         if (isset($filters['branch_id'])) {
             $query->where('branch_id', $filters['branch_id']);
         }
 
-        if (isset($filters['customer_id'])) {
-            // Assuming we will store customer ID or code in transaction
-            $query->where('customer_name', 'like', '%' . $filters['customer_id'] . '%'); // This needs to be refined, maybe using customer_code
+        if (isset($filters['customer_name'])) {
+            $query->where('customer_name', 'like', '%' . $filters['customer_name'] . '%');
         }
 
         if (isset($filters['transaction_type'])) {
             $query->where('transaction_type', $filters['transaction_type']);
         }
 
-        return $query->get()->toArray();
+        $transactions = $query->with(['agent', 'branch'])->get()->map(function ($transaction) {
+            $transactionArray = $transaction->toArray();
+            $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
+            $transactionArray['branch_name'] = $transaction->branch ? $transaction->branch->name : 'N/A';
+            return $transactionArray;
+        });
+
+        $totalTransferred = $transactions->sum('amount');
+        $totalCommission = $transactions->sum('commission');
+        $totalDeductions = $transactions->sum('deduction');
+        $netProfit = $totalCommission - $totalDeductions;
+
+        return [
+            'transactions' => $transactions->toArray(),
+            'totals' => [
+                'total_transferred' => $totalTransferred,
+                'total_commission' => $totalCommission,
+                'total_deductions' => $totalDeductions,
+                'net_profit' => $netProfit,
+            ],
+        ];
     }
-} 
+
+    public function save(Transaction $transaction): Transaction
+    {
+        $transaction->save();
+        return $transaction;
+    }
+
+    public function getTransactionsByLineAndDateRange(string $lineId, \Carbon\Carbon $startDate, \Carbon\Carbon $endDate)
+    {
+        return EloquentTransaction::where('line_id', $lineId)
+            ->whereBetween('transaction_date_time', [$startDate, $endDate])
+            ->get();
+    }
+}

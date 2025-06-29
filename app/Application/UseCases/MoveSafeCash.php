@@ -6,20 +6,30 @@ use App\Domain\Interfaces\SafeRepository;
 use App\Domain\Interfaces\TransactionRepository;
 use App\Models\Domain\Entities\Safe;
 use App\Models\Domain\Entities\Transaction;
+use App\Models\Domain\Entities\Branch;
+use App\Domain\Entities\User;
+use App\Notifications\AdminNotification;
+use Illuminate\Support\Facades\Notification;
 
 class MoveSafeCash
 {
     private SafeRepository $safeRepository;
     private TransactionRepository $transactionRepository;
 
-    public function __construct(SafeRepository $safeRepository, TransactionRepository $transactionRepository)
-    {
+    public function __construct(
+        SafeRepository $safeRepository,
+        TransactionRepository $transactionRepository
+    ) {
         $this->safeRepository = $safeRepository;
         $this->transactionRepository = $transactionRepository;
     }
 
-    public function execute(string $fromSafeId, string $toSafeId, float $amount, string $agentName): Transaction
+    public function execute(string $fromSafeId, string $toSafeId, float $amount, int $agentId): Transaction
     {
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException('Amount must be positive.');
+        }
+
         $fromSafe = $this->safeRepository->findById($fromSafeId);
         $toSafe = $this->safeRepository->findById($toSafeId);
 
@@ -31,16 +41,14 @@ class MoveSafeCash
             throw new \Exception('Destination safe not found.');
         }
 
-        if ($fromSafe->balance < $amount) {
+        if ($fromSafe->current_balance < $amount) {
             throw new \Exception('Insufficient balance in source safe.');
         }
 
         // Deduct from source safe
-        $this->safeRepository->update($fromSafeId, ['balance' => $fromSafe->balance - $amount]);
+        $this->safeRepository->update($fromSafeId, ['current_balance' => $fromSafe->current_balance - $amount]);
 
-        // Add to destination safe
-        $this->safeRepository->update($toSafeId, ['balance' => $toSafe->balance + $amount]);
-
+        // The amount is NOT added to destination safe here; it will be added upon approval.
         // Record the transaction
         $transactionAttributes = [
             'customer_name' => 'Safe Transfer', // Generic name for internal transfer
@@ -51,14 +59,32 @@ class MoveSafeCash
             'commission' => 0.00,
             'deduction' => 0.00,
             'transaction_type' => 'Safe Transfer',
-            'agent_name' => $agentName, // Agent performing the transfer
-            'status' => 'Completed', // Internal transfers are usually completed immediately
-            'branch_id' => $fromSafe->branch_id, // Or the branch of the agent
-            'line_id' => null, // No line involved
-            'safe_id' => $fromSafeId, // Primary safe involved (source)
-            // Potentially add a 'destination_safe_id' column to transactions table for clarity
+            'agent_id' => $agentId, 
+            'status' => 'Pending', // Set status to Pending for inter-safe transfers
+            'transaction_date_time' => now(), // Set the current timestamp
+            'branch_id' => $fromSafe->branch_id, 
+            'line_id' => null, 
+            'safe_id' => $fromSafeId, 
+            'destination_safe_id' => $toSafeId, // Store the destination safe ID
         ];
 
-        return $this->transactionRepository->create($transactionAttributes);
+        $createdTransaction = $this->transactionRepository->create($transactionAttributes);
+
+        // Notify Admin about cashbox transfer (it's now pending)
+        $admins = User::where('role', 'admin')->get();
+        $adminMessage = "A new pending cashbox transfer of " . $amount . " EGP from safe " . $fromSafe->name . " to safe " . $toSafe->name . " has been initiated by " . User::find($agentId)->name . ". Review required.";
+        Notification::send($admins, new AdminNotification($adminMessage, route('transactions.edit', $createdTransaction->id)));
+
+        // Notify receiving branch managers and general supervisors that a transfer is pending
+        $receivingBranchUsers = User::where('branch_id', $toSafe->branch_id)
+                                   ->whereIn('role', ['branch_manager', 'general_supervisor'])
+                                   ->get();
+        
+        if ($receivingBranchUsers->count() > 0) {
+            $receivingBranchMessage = "A pending cash transfer of " . $amount . " EGP from " . $fromSafe->name . " is awaiting your approval.";
+            Notification::send($receivingBranchUsers, new AdminNotification($receivingBranchMessage, route('transactions.edit', $createdTransaction->id)));
+        }
+
+        return $createdTransaction;
     }
 } 

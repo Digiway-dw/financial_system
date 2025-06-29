@@ -34,25 +34,51 @@ new class extends Component
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
-                        {{ __('Customers') }}
-                    </x-nav-link>
+                    @if (in_array(auth()->user()->role, ['admin', 'general_supervisor', 'branch_manager', 'agent', 'trainee']))
+                        <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
+                            {{ __('Customers') }}
+                        </x-nav-link>
+                    @endif
 
-                    <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')" wire:navigate>
+                    <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') || request()->routeIs('transactions.create') || request()->routeIs('transactions.pending')" wire:navigate>
                         {{ __('Transactions') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
-                        {{ __('Lines') }}
-                    </x-nav-link>
+                    @if (in_array(auth()->user()->role, ['agent', 'trainee']))
+                        <x-nav-link :href="route('transactions.create')" :active="request()->routeIs('transactions.create')" wire:navigate>
+                            {{ __('New Transaction') }}
+                        </x-nav-link>
+                    @endif
 
-                    <x-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.*')" wire:navigate>
-                        {{ __('Safes') }}
-                    </x-nav-link>
+                    @if (in_array(auth()->user()->role, ['admin', 'general_supervisor', 'agent', 'trainee']))
+                        <x-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
+                            {{ __('Lines') }}
+                        </x-nav-link>
+                    @endif
 
-                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" wire:navigate>
-                        {{ __('Reports') }}
-                    </x-nav-link>
+                    @can('manage-safes')
+                        <x-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') || request()->routeIs('safes.create') || request()->routeIs('safes.edit') || request()->routeIs('safes.move')" wire:navigate>
+                            {{ __('Safes') }}
+                        </x-nav-link>
+                    @endcan
+
+                    @can('manage-safes')
+                        <x-nav-link :href="route('safes.move')" :active="request()->routeIs('safes.move')" wire:navigate>
+                            {{ __('Move Cash') }}
+                        </x-nav-link>
+                    @endcan
+
+                    @if (in_array(auth()->user()->role, ['admin', 'general_supervisor']))
+                        <x-nav-link :href="route('branches.index')" :active="request()->routeIs('branches.*')" wire:navigate>
+                            {{ __('Branches') }}
+                        </x-nav-link>
+                    @endif
+
+                    @can('view-reports')
+                        <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" wire:navigate>
+                            {{ __('Reports') }}
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -105,25 +131,51 @@ new class extends Component
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
-                {{ __('Customers') }}
-            </x-responsive-nav-link>
+            @if (in_array(auth()->user()->role, ['admin', 'general_supervisor', 'branch_manager', 'agent', 'trainee']))
+                <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
+                    {{ __('Customers') }}
+                </x-responsive-nav-link>
+            @endif
 
-            <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')" wire:navigate>
+            <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') || request()->routeIs('transactions.create') || request()->routeIs('transactions.pending')" wire:navigate>
                 {{ __('Transactions') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
-                {{ __('Lines') }}
-            </x-responsive-nav-link>
+            @if (in_array(auth()->user()->role, ['agent', 'trainee']))
+                <x-responsive-nav-link :href="route('transactions.create')" :active="request()->routeIs('transactions.create')" wire:navigate>
+                    {{ __('New Transaction') }}
+                </x-responsive-nav-link>
+            @endif
 
-            <x-responsive-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.*')" wire:navigate>
-                {{ __('Safes') }}
-            </x-responsive-nav-link>
+            @if (in_array(auth()->user()->role, ['admin', 'general_supervisor', 'agent', 'trainee']))
+                <x-responsive-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
+                    {{ __('Lines') }}
+                </x-responsive-nav-link>
+            @endif
 
-            <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" wire:navigate>
-                {{ __('Reports') }}
-            </x-responsive-nav-link>
+            @can('manage-safes')
+                <x-responsive-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') || request()->routeIs('safes.create') || request()->routeIs('safes.edit') || request()->routeIs('safes.move')" wire:navigate>
+                    {{ __('Safes') }}
+                </x-responsive-nav-link>
+            @endcan
+
+            @can('manage-safes')
+                <x-responsive-nav-link :href="route('safes.move')" :active="request()->routeIs('safes.move')" wire:navigate>
+                    {{ __('Move Cash') }}
+                </x-responsive-nav-link>
+            @endcan
+
+            @if (in_array(auth()->user()->role, ['admin', 'general_supervisor']))
+                <x-responsive-nav-link :href="route('branches.index')" :active="request()->routeIs('branches.*')" wire:navigate>
+                    {{ __('Branches') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @can('view-reports')
+                <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" wire:navigate>
+                    {{ __('Reports') }}
+                </x-responsive-nav-link>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->

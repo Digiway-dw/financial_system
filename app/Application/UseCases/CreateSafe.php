@@ -7,27 +7,14 @@ use App\Models\Domain\Entities\Safe;
 
 class CreateSafe
 {
-    private SafeRepository $safeRepository;
+    public function __construct(
+        private SafeRepository $safeRepository
+    ) {}
 
-    public function __construct(SafeRepository $safeRepository)
+    public function execute(array $safeData): Safe
     {
-        $this->safeRepository = $safeRepository;
-    }
+        // Add any business rules or validations here before creating the safe
 
-    public function execute(
-        string $name,
-        float $balance,
-        string $branchId,
-        ?string $description
-    ): Safe
-    {
-        $attributes = [
-            'name' => $name,
-            'balance' => $balance,
-            'branch_id' => $branchId,
-            'description' => $description,
-        ];
-
-        return $this->safeRepository->create($attributes);
+        return $this->safeRepository->create($safeData);
     }
 } 
