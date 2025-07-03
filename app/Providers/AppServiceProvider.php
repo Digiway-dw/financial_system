@@ -49,10 +49,17 @@ class AppServiceProvider extends ServiceProvider
             return new ListPendingTransactions($app->make(TransactionRepository::class));
         });
         $this->app->singleton(ApproveTransaction::class, function ($app) {
-            return new ApproveTransaction($app->make(TransactionRepository::class));
+            return new ApproveTransaction(
+                $app->make(TransactionRepository::class),
+                $app->make(SafeRepository::class),
+                $app->make(LineRepository::class)
+            );
         });
         $this->app->singleton(RejectTransaction::class, function ($app) {
-            return new RejectTransaction($app->make(TransactionRepository::class));
+            return new RejectTransaction(
+                $app->make(TransactionRepository::class),
+                $app->make(SafeRepository::class)
+            );
         });
 
         $this->app->singleton(CreateLine::class, function ($app) {
@@ -97,15 +104,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('manage-lines', function (User $user) {
-            return $user->isAdmin();
+            return $user->hasRole('admin') || $user->hasRole('general_supervisor');
         });
 
         Gate::define('manage-safes', function (User $user) {
-            return $user->isAdmin() || $user->isBranchManager();
+            return $user->hasRole('admin') || $user->hasRole('branch_manager') || $user->hasRole('general_supervisor');
         });
 
         Gate::define('view-reports', function (User $user) {
-            return $user->isAdmin() || $user->isGeneralSupervisor();
+            return $user->hasRole('admin') || $user->hasRole('general_supervisor') || $user->hasRole('auditor');
         });
     }
 }

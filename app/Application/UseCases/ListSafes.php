@@ -12,6 +12,6 @@ class ListSafes
 
     public function execute(): array
     {
-        return $this->safeRepository->all();
+        return $this->safeRepository->allWithBranch();
     }
 } 

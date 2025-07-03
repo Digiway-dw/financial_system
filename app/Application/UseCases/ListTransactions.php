@@ -3,6 +3,7 @@
 namespace App\Application\UseCases;
 
 use App\Domain\Interfaces\TransactionRepository;
+use Illuminate\Support\Facades\Auth;
 
 class ListTransactions
 {
@@ -15,6 +16,17 @@ class ListTransactions
 
     public function execute(): array
     {
-        return $this->transactionRepository->all();
+        $user = Auth::user();
+
+        if ($user->can('view-all-branches-data')) {
+            $result = $this->transactionRepository->filter([]);
+            return $result['transactions'] ?? [];
+        } elseif ($user->can('view-own-branch-data')) {
+            $result = $this->transactionRepository->filter(['branch_id' => $user->branch_id]);
+            return $result['transactions'] ?? [];
+        }
+
+        // Default for users with no specific view permissions, or if logic needs refinement
+        return [];
     }
 } 

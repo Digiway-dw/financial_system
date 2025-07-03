@@ -5,6 +5,7 @@ namespace App\Application\UseCases;
 use App\Domain\Interfaces\LineRepository;
 use App\Domain\Interfaces\SafeRepository;
 use App\Domain\Interfaces\TransactionRepository;
+use App\Domain\Interfaces\CustomerRepository;
 use App\Models\Domain\Entities\Transaction;
 use App\Notifications\AdminNotification;
 use Illuminate\Support\Facades\Notification;
@@ -14,12 +15,14 @@ class CreateTransaction
     private TransactionRepository $transactionRepository;
     private LineRepository $lineRepository;
     private SafeRepository $safeRepository;
+    private CustomerRepository $customerRepository;
 
-    public function __construct(TransactionRepository $transactionRepository, LineRepository $lineRepository, SafeRepository $safeRepository)
+    public function __construct(TransactionRepository $transactionRepository, LineRepository $lineRepository, SafeRepository $safeRepository, CustomerRepository $customerRepository)
     {
         $this->transactionRepository = $transactionRepository;
         $this->lineRepository = $lineRepository;
         $this->safeRepository = $safeRepository;
+        $this->customerRepository = $customerRepository;
     }
 
     public function execute(
@@ -32,10 +35,13 @@ class CreateTransaction
         float $deduction,
         string $transactionType,
         int $agentId,
-        string $branchId,
-        string $lineId,
-        string $safeId,
-        bool $isAbsoluteWithdrawal = false
+        int $branchId,
+        int $lineId,
+        int $safeId,
+        bool $isAbsoluteWithdrawal = false,
+        string $paymentMethod = 'branch safe',
+        string $gender = 'Male',
+        bool $isClient = false
     ): Transaction
     {
         // Validate amount: integer only, multiples of 5
@@ -44,6 +50,38 @@ class CreateTransaction
         }
         if ($amount % 5 !== 0) {
             throw new \InvalidArgumentException('Amount must be a multiple of 5.');
+        }
+
+        // Check if customer exists, otherwise create a new one
+        $customer = null;
+        if (!empty($customerCode)) {
+            $customer = $this->customerRepository->findByCustomerCode($customerCode);
+        }
+
+        if (!$customer && !empty($customerMobileNumber)) {
+            $customer = $this->customerRepository->findByMobileNumber($customerMobileNumber);
+        }
+
+        if (!$customer) {
+            $this->customerRepository->save(new \App\Models\Domain\Entities\Customer([
+                'name' => $customerName,
+                'mobile_number' => $customerMobileNumber,
+                'customer_code' => $customerCode, // Will be null if not provided
+                'gender' => $gender,
+                'is_client' => $isClient,
+                'agent_id' => $agentId,
+                'branch_id' => $branchId,
+            ]));
+        } else {
+            // Update existing customer data if necessary (e.g., if name or code changed during transaction)
+            $customer->name = $customerName;
+            $customer->mobile_number = $customerMobileNumber; // Ensure consistency
+            if (!empty($customerCode)) {
+                $customer->customer_code = $customerCode;
+            }
+            $customer->gender = $gender;
+            $customer->is_client = $isClient;
+            $this->customerRepository->save($customer);
         }
 
         // Fetch the agent to check role for status setting
@@ -63,28 +101,29 @@ class CreateTransaction
 
         // Determine transaction status based on agent role and if it's an absolute withdrawal
         // Absolute withdrawals by Admin do not require approval and are 'Completed'
-        if ($agent->isAdmin() && $isAbsoluteWithdrawal) {
+        if ($agent->hasRole('admin') && $isAbsoluteWithdrawal) {
             $status = 'Completed';
         } else {
             // If agent has a deduction, mark as pending, otherwise, mark as completed unless Trainee
-            if ($agent->isAgent() && $deduction > 0) {
+            if ($agent->hasRole('agent') && $deduction > 0) {
                 $status = 'Pending';
             } else {
-                $status = $agent->isTrainee() ? 'Pending' : 'Completed';
+                $status = $agent->hasRole('trainee') ? 'Pending' : 'Completed';
             }
         }
 
         // Additional check for withdrawals from Client Safes by non-admin/supervisor
-        $safe = $this->safeRepository->findById($safeId); // Fetch safe here to check type
+        $safe = $this->safeRepository->findById($safeId);
         if (!$safe) {
             throw new \Exception('Safe not found.');
         }
 
-        if ($transactionType === 'Withdrawal' && $safe->isClientSafe()) {
-            if (!($agent->isAdmin() || $agent->isGeneralSupervisor())) {
+        if ($transactionType === 'Withdrawal' && $safe->type === 'client') {
+            if (!($agent->hasRole('admin') || $agent->hasRole('general_supervisor'))) {
                 $status = 'Pending'; // Override status to Pending for client safe withdrawals needing approval
                 $notificationMessage = "A withdrawal of " . $amount . " EGP from Client Safe '" . $safe->name . "' by " . $agent->name . " requires your approval.";
-                $this->notifyRelevantUsers($notificationMessage, route('transactions.edit', $createdTransaction->id ?? null), null); // Branch ID null for admin/supervisor notification
+                // Pass transaction ID if available after creation
+                $this->notifyRelevantUsers($notificationMessage, route('transactions.edit', $createdTransaction->id ?? null), null);
             }
         }
 
@@ -106,7 +145,7 @@ class CreateTransaction
         // Similar to daily limit, this would require aggregation.
         if ($amount > $line->monthly_limit) { // This is a simplistic check
             // Notify admin if monthly threshold is crossed
-            $admins = \App\Domain\Entities\User::where('role', 'admin')->get();
+            $admins = \App\Domain\Entities\User::role('admin')->get();
             $message = "Monthly limit of line " . $line->mobile_number . " (assigned to " . $line->user->name . ") has been crossed.";
             Notification::send($admins, new AdminNotification($message, route('lines.edit', $line->id)));
             throw new \Exception('Transaction amount exceeds monthly limit for this line.');
@@ -127,8 +166,8 @@ class CreateTransaction
                 $this->notifyRelevantUsers($notificationMessage, route('lines.edit', $line->id), $line->user->branch_id);
             }
 
-            // Only deduct from safe if it's not an absolute withdrawal
-            if (!$isAbsoluteWithdrawal) {
+            // Only deduct from safe if it's not an absolute withdrawal and payment method is 'branch safe'
+            if (!$isAbsoluteWithdrawal && $paymentMethod === 'branch safe') {
                 $safe = $this->safeRepository->findById($safeId);
                 if (!$safe) {
                     throw new \Exception('Safe not found.');
@@ -158,19 +197,36 @@ class CreateTransaction
                 $this->notifyRelevantUsers($notificationMessage, route('lines.edit', $line->id), $line->user->branch_id);
             }
 
-            // Add amount to safe balance for deposits
-            $safe = $this->safeRepository->findById($safeId);
-            if (!$safe) {
-                throw new \Exception('Safe not found.');
-            }
-            $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance + $amount]);
-            $safe->refresh(); // Refresh to get the updated balance
+            // Add amount to safe balance for deposits if payment method is 'branch safe'
+            if ($paymentMethod === 'branch safe') {
+                $safe = $this->safeRepository->findById($safeId);
+                if (!$safe) {
+                    throw new \Exception('Safe not found.');
+                }
+                $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance + $amount]);
+                $safe->refresh(); // Refresh to get the updated balance
 
-            // Check for low safe balance after deposit
-            if ($safe->current_balance < 500) {
-                $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
-                $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
+                // Check for low safe balance after deposit
+                if ($safe->current_balance < 500) {
+                    $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
+                    $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
+                }
             }
+        }
+
+        // Handle client wallet deductions/deposits
+        if ($paymentMethod === 'client wallet') {
+            if ($transactionType === 'Withdrawal' || $transactionType === 'Transfer') {
+                if (($customer->balance - $amount) < 0) {
+                    throw new \Exception('Insufficient balance in client wallet for this transaction.');
+                }
+                $customer->balance -= $amount;
+                $this->customerRepository->save($customer);
+            } elseif ($transactionType === 'Deposit') {
+                $customer->balance += $amount;
+                $this->customerRepository->save($customer);
+            }
+            $customer->refresh(); // Refresh to get the updated balance
         }
 
         $attributes = [
@@ -189,42 +245,54 @@ class CreateTransaction
             'line_id' => $lineId,
             'safe_id' => $safeId,
             'is_absolute_withdrawal' => $isAbsoluteWithdrawal,
+            'payment_method' => $paymentMethod,
         ];
 
         $createdTransaction = $this->transactionRepository->create($attributes);
 
         // Send notifications to Admin for deductions or pending transactions
-        $admins = \App\Domain\Entities\User::where('role', 'admin')->get();
+        $admins = \App\Domain\Entities\User::role('admin')->get();
 
         if ($deduction > 0) {
             $message = "A new transaction with a deduction of " . $deduction . " EGP has been created by " . $agent->name . ".";
             Notification::send($admins, new AdminNotification($message, route('transactions.edit', $createdTransaction->id)));
         }
 
-        if ($status === 'Pending') {
-            $message = "A new pending transaction has been created by " . $agent->name . ". Review required.";
-            // Avoid sending duplicate notifications if already sent for deduction or client safe withdrawal
-            if (!($deduction > 0 && $agent->isAgent()) && !($transactionType === 'Withdrawal' && $safe->isClientSafe() && !($agent->isAdmin() || $agent->isGeneralSupervisor()))) { 
-                Notification::send($admins, new AdminNotification($message, route('transactions.edit', $createdTransaction->id)));
+        // Notify if transaction is pending (unless it's a client safe withdrawal, which has its own notification)
+        if ($status === 'Pending' && !($transactionType === 'Withdrawal' && $safe->type === 'client')) {
+            $message = "A new " . $transactionType . " transaction of " . $amount . " EGP by " . $agent->name . " is pending and requires your approval.";
+            $recipients = \App\Domain\Entities\User::role('admin')
+                                           ->orWhereHasRole('general_supervisor');
+            // Include branch manager if the transaction is tied to a specific branch and they are a branch manager
+            if ($branchId) {
+                $recipients->orWhere(function ($query) use ($branchId) {
+                    $query->where('branch_id', $branchId)
+                          ->whereHasRole('branch_manager');
+                });
             }
+            Notification::send($recipients->get(), new AdminNotification($message, route('transactions.edit', $createdTransaction->id)));
         }
 
         return $createdTransaction;
     }
 
-    // Helper function to notify relevant users
     private function notifyRelevantUsers(string $message, string $url, ?int $branchId = null): void
     {
-        $recipients = \App\Domain\Entities\User::where('role', 'admin')
-                                               ->orWhere('role', 'general_supervisor');
+        // Get relevant users (admins for now, can be expanded to branch managers/supervisors)
+        $recipients = \App\Domain\Entities\User::role('admin')
+            ->when($branchId, function ($query) use ($branchId) {
+                return $query->orWhere('branch_id', $branchId);
+            })
+            ->get();
 
-        if ($branchId) {
-            $recipients->orWhere(function ($query) use ($branchId) {
-                $query->where('branch_id', $branchId)
-                      ->whereIn('role', ['branch_manager']);
-            });
+        // Get general supervisors
+        $generalSupervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+
+        // Merge collections
+        $recipients = $recipients->merge($generalSupervisors)->unique();
+
+        if ($recipients->isNotEmpty()) {
+            Notification::send($recipients, new AdminNotification($message, $url));
         }
-
-        Notification::send($recipients->get(), new AdminNotification($message, $url));
     }
-} 
+}

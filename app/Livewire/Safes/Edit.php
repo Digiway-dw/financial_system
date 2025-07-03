@@ -23,6 +23,9 @@ class Edit extends Component
     #[Validate('required|exists:branches,id')] 
     public $branchId = '';
 
+    #[Validate('required|string')]
+    public $type = '';
+
     #[Validate('nullable|string|max:1000')] 
     public $description = '';
 
@@ -49,6 +52,7 @@ class Edit extends Component
             $this->currentBalance = $this->safe->current_balance;
             $this->branchId = $this->safe->branch_id;
             $this->description = $this->safe->description;
+            $this->type = $this->safe->type;
         } else {
             abort(404);
         }
@@ -66,6 +70,7 @@ class Edit extends Component
                     'current_balance' => (float) $this->currentBalance,
                     'branch_id' => $this->branchId,
                     'description' => $this->description,
+                    'type' => $this->type,
                 ]
             );
 

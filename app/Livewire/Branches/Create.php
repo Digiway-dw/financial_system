@@ -5,6 +5,7 @@ namespace App\Livewire\Branches;
 use App\Application\UseCases\CreateBranch;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Gate;
 
 class Create extends Component
 {
@@ -25,6 +26,11 @@ class Create extends Component
     public function boot(CreateBranch $createBranchUseCase)
     {
         $this->createBranchUseCase = $createBranchUseCase;
+    }
+
+    public function mount()
+    {
+        Gate::authorize('manage-branches');
     }
 
     public function createBranch()

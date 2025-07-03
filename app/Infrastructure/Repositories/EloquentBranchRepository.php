@@ -5,6 +5,7 @@ namespace App\Infrastructure\Repositories;
 use App\Domain\Interfaces\BranchRepository;
 use App\Models\Domain\Entities\Branch as EloquentBranch;
 use App\Models\Domain\Entities\Branch;
+use Illuminate\Database\Eloquent\Collection;
 
 class EloquentBranchRepository implements BranchRepository
 {
@@ -30,8 +31,8 @@ class EloquentBranchRepository implements BranchRepository
         EloquentBranch::destroy($id);
     }
 
-    public function all(): array
+    public function all(): Collection
     {
-        return EloquentBranch::all()->toArray();
+        return EloquentBranch::all();
     }
 } 

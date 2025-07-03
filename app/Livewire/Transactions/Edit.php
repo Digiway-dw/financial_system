@@ -9,6 +9,8 @@ use App\Models\Domain\Entities\Line;
 use App\Models\Domain\Entities\Safe;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class Edit extends Component
 {
@@ -72,27 +74,37 @@ class Edit extends Component
         $this->transactionId = $transactionId;
         $this->transaction = $this->transactionRepository->findById($transactionId);
 
-        if ($this->transaction) {
-            $this->customerName = $this->transaction->customer_name;
-            $this->customerMobileNumber = $this->transaction->customer_mobile_number;
-            $this->lineMobileNumber = $this->transaction->line_mobile_number;
-            $this->customerCode = $this->transaction->customer_code;
-            $this->amount = $this->transaction->amount;
-            $this->commission = $this->transaction->commission;
-            $this->deduction = $this->transaction->deduction;
-            $this->transactionType = $this->transaction->transaction_type;
-            $this->agentName = $this->transaction->agent_name;
-            $this->status = $this->transaction->status;
-            $this->branchId = $this->transaction->branch_id;
-            $this->lineId = $this->transaction->line_id;
-            $this->safeId = $this->transaction->safe_id;
-
-            $this->branches = Branch::all();
-            $this->lines = Line::all();
-            $this->safes = Safe::all();
-        } else {
+        if (!$this->transaction) {
             abort(404);
         }
+
+        // Authorization check for editing transactions
+        $user = Auth::user();
+        if ($user->can('edit-all-daily-transactions')) {
+            // Admin/Auditor can edit any transaction
+        } elseif ($user->can('edit-own-branch-transactions') && $user->branch_id === $this->transaction->branch_id) {
+            // Branch Manager can edit transactions in their own branch
+        } else {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $this->customerName = $this->transaction->customer_name;
+        $this->customerMobileNumber = $this->transaction->customer_mobile_number;
+        $this->lineMobileNumber = $this->transaction->line_mobile_number;
+        $this->customerCode = $this->transaction->customer_code;
+        $this->amount = $this->transaction->amount;
+        $this->commission = $this->transaction->commission;
+        $this->deduction = $this->transaction->deduction;
+        $this->transactionType = $this->transaction->transaction_type;
+        $this->agentName = $this->transaction->agent_name;
+        $this->status = $this->transaction->status;
+        $this->branchId = $this->transaction->branch_id;
+        $this->lineId = $this->transaction->line_id;
+        $this->safeId = $this->transaction->safe_id;
+
+        $this->branches = Branch::all();
+        $this->lines = Line::all();
+        $this->safes = Safe::all();
     }
 
     public function updateTransaction()

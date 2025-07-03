@@ -39,6 +39,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('lines.create');
     Route::get('lines/{lineId}/edit', \App\Livewire\Lines\Edit::class)
         ->name('lines.edit');
+    Route::get('lines/{lineId}/transfer', \App\Livewire\Lines\Transfer::class)
+        ->name('lines.transfer');
+    Route::get('lines/{lineId}/change-provider', \App\Livewire\Lines\ChangeProvider::class)
+        ->name('lines.change-provider');
 
     // Safe Management Routes
     Route::get('safes', \App\Livewire\Safes\Index::class)
@@ -58,9 +62,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('branches/{branchId}/edit', \App\Livewire\Branches\Edit::class)
         ->name('branches.edit');
 
+    // User Management Routes
+    Route::get('users', \App\Livewire\Users\Index::class)
+        ->name('users.index');
+    Route::get('users/create', \App\Livewire\Users\Create::class)
+        ->name('users.create');
+
     // Reports Routes
     Route::get('reports', \App\Livewire\Reports\Index::class)
         ->name('reports.index');
+
+    // Audit Log Routes
+    Route::get('audit-log', \App\Livewire\AuditLog\Index::class)
+        ->name('audit-log.index');
 });
 
 Route::view('profile', 'profile')

@@ -6,6 +6,7 @@ use App\Application\UseCases\CreateLine;
 use App\Domain\Entities\User;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Gate;
 
 class Create extends Component
 {
@@ -38,6 +39,7 @@ class Create extends Component
 
     public function mount()
     {
+        Gate::authorize('manage-sim-lines');
         // $this->users = User::all(); // Moved to render()
     }
 

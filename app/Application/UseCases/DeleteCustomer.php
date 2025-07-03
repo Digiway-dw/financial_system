@@ -2,7 +2,7 @@
 
 namespace App\Application\UseCases;
 
-use App\Domain\Entities\Customer;
+use App\Models\Domain\Entities\Customer;
 use App\Domain\Interfaces\CustomerRepository;
 
 class DeleteCustomer
@@ -14,16 +14,12 @@ class DeleteCustomer
         $this->customerRepository = $customerRepository;
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
         $customer = $this->customerRepository->findById($id);
 
-        if (!$customer) {
-            return false;
+        if ($customer) {
+            $this->customerRepository->delete($customer);
         }
-
-        $this->customerRepository->delete($customer);
-
-        return true;
     }
 } 

@@ -5,6 +5,7 @@ namespace App\Livewire\Transactions;
 use App\Application\UseCases\ListTransactions;
 use App\Application\UseCases\DeleteTransaction;
 use Livewire\Component;
+use Illuminate\Support\Facades\Gate;
 
 class Index extends Component
 {
@@ -21,6 +22,7 @@ class Index extends Component
 
     public function mount()
     {
+        // Authorization check for viewing transactions is now handled inside ListTransactions use case
         $this->loadTransactions();
     }
 
@@ -31,6 +33,7 @@ class Index extends Component
 
     public function deleteTransaction(string $transactionId)
     {
+        Gate::authorize('edit-all-data'); // Only admin can delete transactions
         try {
             $this->deleteTransactionUseCase->execute($transactionId);
             session()->flash('message', 'Transaction deleted successfully.');

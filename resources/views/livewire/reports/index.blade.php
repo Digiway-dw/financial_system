@@ -126,6 +126,34 @@
     </div>
 
     <div class="mt-6 bg-white dark:bg-gray-800 p-6 shadow sm:rounded-lg">
+        <h4 class="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Customer Balances</h4>
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Customer Name</th>
+                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Mobile Number</th>
+                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Balance</th>
+                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Linked Agent</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                @forelse ($customers as $customer)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900 dark:text-gray-100">{{ $customer->name }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $customer->mobile_number }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ number_format($customer->balance, 2) }} EGP</td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $customer->agent->name ?? 'N/A' }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400 text-center">No customers found.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-6 bg-white dark:bg-gray-800 p-6 shadow sm:rounded-lg">
         <h4 class="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Filtered Transactions</h4>
         <div class="mt-4">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">

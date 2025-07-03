@@ -5,6 +5,7 @@ namespace App\Livewire\Customers;
 use App\Application\UseCases\ListCustomers;
 use App\Application\UseCases\DeleteCustomer;
 use Livewire\Component;
+use Illuminate\Support\Facades\Gate;
 
 class Index extends Component
 {
@@ -21,6 +22,7 @@ class Index extends Component
 
     public function mount()
     {
+        Gate::authorize('view-customers');
         $this->loadCustomers();
     }
 
@@ -31,6 +33,7 @@ class Index extends Component
 
     public function deleteCustomer(string $customerId)
     {
+        Gate::authorize('edit-all-data'); // Only admin can delete customers (assuming for now)
         try {
             $this->deleteCustomerUseCase->execute($customerId);
             session()->flash('message', 'Customer deleted successfully.');

@@ -4,6 +4,7 @@ namespace App\Models\Domain\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
@@ -20,6 +21,11 @@ class Customer extends Model
         'name',
         'mobile_number',
         'customer_code',
+        'gender',
+        'balance',
+        'is_client',
+        'agent_id',
+        'branch_id',
     ];
 
     /**
@@ -28,6 +34,14 @@ class Customer extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(\App\Domain\Entities\Transaction::class, 'customer_mobile_number', 'customer_mobile_number');
+    }
+
+    /**
+     * Get the agent (user) that is linked to the customer.
+     */
+    public function agent(): BelongsTo
+    {
+        return $this->belongsTo(\App\Domain\Entities\User::class, 'agent_id');
     }
 
     public function getActivitylogOptions(): LogOptions

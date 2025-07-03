@@ -28,6 +28,20 @@
             <x-input-error class="mt-2" :messages="$errors->get('branchId')" />
         </div>
 
+        <!-- Type -->
+        <div>
+            <x-input-label for="type" :value="__('Safe Type')" />
+            <select wire:model="type" id="type" name="type" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
+                <option value="">Select Safe Type</option>
+                <option value="Main Safe">Main Safe</option>
+                <option value="Sub Safe">Sub Safe</option>
+                <option value="ATM">ATM</option>
+                <option value="Petty Cash">Petty Cash</option>
+                <option value="Vault">Vault</option>
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('type')" />
+        </div>
+
         <!-- Description -->
         <div>
             <x-input-label for="description" :value="__('Description (Optional)')" />

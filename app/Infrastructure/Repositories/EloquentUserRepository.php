@@ -7,6 +7,13 @@ use App\Domain\Interfaces\UserRepository;
 
 class EloquentUserRepository implements UserRepository
 {
+    public function create(array $userData): User
+    {
+        $user = new User($userData);
+        $user->save();
+        return $user;
+    }
+
     public function findById(string $id): ?User
     {
         return User::find($id);

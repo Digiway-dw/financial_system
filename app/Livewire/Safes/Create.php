@@ -18,6 +18,9 @@ class Create extends Component
     #[Validate('required|exists:branches,id')] 
     public $branchId = '';
 
+    #[Validate('required|string')]
+    public $type = '';
+
     #[Validate('nullable|string|max:1000')] 
     public $description = '';
 
@@ -32,8 +35,7 @@ class Create extends Component
 
     public function mount()
     {
-        $this->authorize('manage-safes'); // Enforce authorization
-        // $this->branches = Branch::all(); // Moved to render()
+        $this->authorize('manage-safes');
     }
 
     public function createSafe()
@@ -46,11 +48,11 @@ class Create extends Component
                 'current_balance' => (float) $this->currentBalance,
                 'branch_id' => $this->branchId,
                 'description' => $this->description,
+                'type' => $this->type,
             ]);
 
             session()->flash('message', 'Safe created successfully.');
-            $this->reset(); // Clear form fields after submission
-            $this->redirect(route('safes.index'), navigate: true); // Redirect after successful creation
+            $this->redirect(route('safes.index'), navigate: true);
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to create safe: ' . $e->getMessage());
         }
@@ -58,7 +60,7 @@ class Create extends Component
 
     public function render()
     {
-        $this->branches = Branch::all(); // Load branches in render method
+        $this->branches = Branch::all();
         return view('livewire.safes.create');
     }
 }

@@ -60,7 +60,7 @@ class Index extends Component
         $this->endDate = now()->endOfMonth()->toDateString();
         $this->users = User::all();
         $this->branches = Branch::all();
-        $this->customers = Customer::all();
+        $this->customers = Customer::with('agent')->get();
         $this->generateReport();
     }
 
@@ -150,7 +150,7 @@ class Index extends Component
     {
         $this->users = User::all();
         $this->branches = Branch::all();
-        $this->customers = Customer::all();
+        $this->customers = Customer::with('agent')->get();
 
         return view('livewire.reports.index', [
             'transactions' => $this->transactions,

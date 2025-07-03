@@ -11,6 +11,7 @@
                 <tr>
                     <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Name</th>
                     <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Description</th>
+                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Creation Date</th>
                     <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700">Actions</th>
                 </tr>
             </thead>
@@ -19,6 +20,7 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900 dark:text-gray-100">{{ $branch['name'] }}</td>
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $branch['description'] ?? 'N/A' }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ \Carbon\Carbon::parse($branch['created_at'])->format('Y-m-d H:i') }}</td>
                         <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
                             <a href="{{ route('branches.edit', $branch['id']) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600 mr-3">Edit</a>
                             <button wire:click="deleteBranch('{{ $branch['id'] }}')" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600">Delete</button>

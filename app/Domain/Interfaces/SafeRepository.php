@@ -11,4 +11,5 @@ interface SafeRepository
     public function update(string $id, array $attributes): Safe;
     public function delete(string $id): void;
     public function all(): array;
+    public function allWithBranch(): array;
 } 

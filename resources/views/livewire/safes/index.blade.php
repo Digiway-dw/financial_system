@@ -36,4 +36,36 @@
             </tbody>
         </table>
     </div>
+
+    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mt-8">Client Wallets</h3>
+
+    <div class="mt-4">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Customer Name</th>
+                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Mobile Number</th>
+                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Balance</th>
+                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                @forelse ($clients as $client)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900 dark:text-gray-100">{{ $client['name'] }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $client['mobile_number'] }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ number_format($client['balance'], 2) }} EGP</td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
+                            <!-- Add actions for client wallets here if needed -->
+                            <a href="#" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600 mr-3">View Transactions</a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400 text-center">No client wallets found.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>

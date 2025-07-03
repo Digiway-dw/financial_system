@@ -39,9 +39,15 @@ class EloquentTransactionRepository implements TransactionRepository
         })->toArray();
     }
 
-    public function findByStatus(string $status): array
+    public function findByStatus(string $status, ?int $branchId = null): array
     {
-        return EloquentTransaction::where('status', $status)->with('agent')->get()->map(function ($transaction) {
+        $query = EloquentTransaction::where('status', $status)->with('agent');
+
+        if ($branchId) {
+            $query->where('branch_id', $branchId);
+        }
+
+        return $query->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
             return $transactionArray;

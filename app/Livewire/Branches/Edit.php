@@ -6,6 +6,7 @@ use App\Application\UseCases\UpdateBranch;
 use App\Domain\Interfaces\BranchRepository;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Gate;
 
 class Edit extends Component
 {
@@ -29,6 +30,7 @@ class Edit extends Component
 
     public function mount(string $branchId)
     {
+        Gate::authorize('manage-branches');
         $this->branchId = $branchId;
         $this->branch = $this->branchRepository->findById($branchId);
 

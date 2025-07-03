@@ -11,10 +11,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use App\Models\Domain\Entities\Branch;
 use App\Models\Domain\Entities\Transaction;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, LogsActivity;
+    use HasFactory, Notifiable, LogsActivity, HasRoles;
+
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -25,7 +28,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
         'branch_id',
     ];
 
@@ -50,31 +52,6 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
-
-    public function isGeneralSupervisor(): bool
-    {
-        return $this->role === 'general_supervisor';
-    }
-
-    public function isBranchManager(): bool
-    {
-        return $this->role === 'branch_manager';
-    }
-
-    public function isAgent(): bool
-    {
-        return $this->role === 'agent';
-    }
-
-    public function isTrainee(): bool
-    {
-        return $this->role === 'trainee';
     }
 
     /**

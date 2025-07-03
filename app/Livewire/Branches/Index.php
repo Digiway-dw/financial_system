@@ -5,6 +5,7 @@ namespace App\Livewire\Branches;
 use App\Application\UseCases\ListBranches;
 use App\Application\UseCases\DeleteBranch;
 use Livewire\Component;
+use Illuminate\Support\Facades\Gate;
 
 class Index extends Component
 {
@@ -21,6 +22,7 @@ class Index extends Component
 
     public function mount()
     {
+        Gate::authorize('view-branches');
         $this->loadBranches();
     }
 

@@ -35,6 +35,9 @@
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $line['user']['name'] ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-right">
                             <a href="{{ route('lines.edit', $line['id']) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">Edit</a>
+                            <a href="{{ route('lines.transfer', $line['id']) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-600 ms-3">Transfer</a>
+                            <a href="{{ route('lines.change-provider', $line['id']) }}" class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-600 ms-3">Change Provider</a>
+                            <button wire:click="toggleStatus('{{ $line['id'] }}')" class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-600 ms-3">{{ $line['status'] === 'active' ? 'Deactivate' : 'Activate' }}</button>
                             <button wire:click="deleteLine('{{ $line['id'] }}')" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600 ms-3">Delete</button>
                         </td>
                     </tr>

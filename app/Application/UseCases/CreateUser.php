@@ -20,8 +20,9 @@ class CreateUser
         $user->name = $name;
         $user->email = $email;
         $user->password = bcrypt($password);
-        $user->role = $role;
         $user->branch_id = $branch_id;
-        return $this->userRepository->save($user);
+        $this->userRepository->save($user);
+        $user->assignRole($role);
+        return $user;
     }
 } 

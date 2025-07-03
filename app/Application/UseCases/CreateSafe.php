@@ -14,7 +14,6 @@ class CreateSafe
     public function execute(array $safeData): Safe
     {
         // Add any business rules or validations here before creating the safe
-
         return $this->safeRepository->create($safeData);
     }
 } 

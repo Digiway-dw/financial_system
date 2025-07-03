@@ -30,6 +30,7 @@ class Transaction extends Model
         'status',
         'safe_id',
         'is_absolute_withdrawal',
+        'payment_method',
     ];
 
     /**
@@ -54,6 +55,14 @@ class Transaction extends Model
     public function safe(): BelongsTo
     {
         return $this->belongsTo(Safe::class);
+    }
+
+    /**
+     * Get the branch associated with the transaction.
+     */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function getActivitylogOptions(): LogOptions

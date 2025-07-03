@@ -47,7 +47,7 @@ class Edit extends Component
 
     public function mount($lineId)
     {
-        $this->authorize('manage-lines');
+        $this->authorize('manage-sim-lines');
 
         $this->lineId = $lineId;
         $this->line = $this->lineRepository->findById($lineId);

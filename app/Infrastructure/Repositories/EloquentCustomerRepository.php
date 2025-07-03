@@ -17,6 +17,11 @@ class EloquentCustomerRepository implements CustomerRepository
         return Customer::where('mobile_number', $mobileNumber)->first();
     }
 
+    public function findByCustomerCode(string $customerCode): ?Customer
+    {
+        return Customer::where('customer_code', $customerCode)->first();
+    }
+
     public function save(Customer $customer): Customer
     {
         $customer->save();
@@ -31,5 +36,10 @@ class EloquentCustomerRepository implements CustomerRepository
     public function getAll(): array
     {
         return Customer::all()->toArray();
+    }
+
+    public function getAllClients(): array
+    {
+        return Customer::where('is_client', true)->get()->toArray();
     }
 } 
