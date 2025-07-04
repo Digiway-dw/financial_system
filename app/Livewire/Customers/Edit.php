@@ -18,7 +18,7 @@ class Edit extends Component
     public $customerId;
 
     public $name = '';
-    public $mobileNumber = '';
+    public $mobileNumbers = [];
     public $customerCode = '';
     public $gender = '';
     public $balance = 0.00;
@@ -51,7 +51,8 @@ class Edit extends Component
     {
         return [
             'name' => 'required|string|max:255',
-            'mobileNumber' => 'required|string|max:20|unique:customers,mobile_number,' . $this->customerId,
+            'mobileNumbers' => 'required|array|min:1',
+            'mobileNumbers.*' => 'required|string|max:20|distinct',
             'customerCode' => 'nullable|string|max:255',
             'gender' => 'required|in:male,female',
             'balance' => 'required|numeric|min:0',
@@ -83,7 +84,10 @@ class Edit extends Component
 
         if ($this->customer) {
             $this->name = $this->customer->name;
-            $this->mobileNumber = $this->customer->mobile_number;
+            $this->mobileNumbers = $this->customer->mobileNumbers->pluck('mobile_number')->toArray();
+            if (empty($this->mobileNumbers)) {
+                $this->mobileNumbers = [$this->customer->mobile_number];
+            }
             $this->customerCode = $this->customer->customer_code;
             $this->gender = $this->customer->gender;
             $this->balance = $this->customer->balance;
@@ -98,15 +102,28 @@ class Edit extends Component
         }
     }
 
+    public function addMobileNumber()
+    {
+        $this->mobileNumbers[] = '';
+    }
+
+    public function removeMobileNumber($index)
+    {
+        unset($this->mobileNumbers[$index]);
+        $this->mobileNumbers = array_values($this->mobileNumbers);
+    }
+
     public function updateCustomer()
     {
         $this->validate();
 
         try {
+            // Use the first mobile number as the primary
+            $primaryMobile = $this->mobileNumbers[0];
             $this->updateCustomerUseCase->execute(
                 $this->customerId,
                 $this->name,
-                $this->mobileNumber,
+                $primaryMobile,
                 $this->customerCode,
                 $this->gender,
                 $this->balance,
@@ -114,7 +131,11 @@ class Edit extends Component
                 $this->agent_id,
                 $this->branch_id
             );
-
+            // Sync mobile numbers
+            $this->customer->mobileNumbers()->delete();
+            foreach ($this->mobileNumbers as $number) {
+                $this->customer->mobileNumbers()->create(['mobile_number' => $number]);
+            }
             session()->flash('message', 'Customer updated successfully.');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update customer: ' . $e->getMessage());

@@ -23,16 +23,16 @@ class Line extends Model
         'daily_limit',
         'monthly_limit',
         'network',
-        'user_id',
         'status',
+        'branch_id',
     ];
 
     /**
-     * Get the user that owns the line.
+     * Get the branch that owns the line.
      */
-    public function user(): BelongsTo
+    public function branch(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Entities\User::class);
+        return $this->belongsTo(\App\Models\Domain\Entities\Branch::class);
     }
 
     /**

@@ -82,6 +82,28 @@ class EloquentTransactionRepository implements TransactionRepository
             $query->where('transaction_type', $filters['transaction_type']);
         }
 
+        if (isset($filters['customer_code']) && $filters['customer_code']) {
+            $query->where('customer_code', 'like', '%' . $filters['customer_code'] . '%');
+        }
+        if (isset($filters['receiver_mobile']) && $filters['receiver_mobile']) {
+            $query->where('receiver_mobile', 'like', '%' . $filters['receiver_mobile'] . '%');
+        }
+        if (isset($filters['transfer_line']) && $filters['transfer_line']) {
+            $query->where('line_number', 'like', '%' . $filters['transfer_line'] . '%');
+        }
+        if (isset($filters['amount']) && $filters['amount']) {
+            $query->where('amount', $filters['amount']);
+        }
+        if (isset($filters['commission']) && $filters['commission']) {
+            $query->where('commission', $filters['commission']);
+        }
+        if (isset($filters['employee_ids']) && is_array($filters['employee_ids']) && count($filters['employee_ids']) > 0) {
+            $query->whereIn('agent_id', $filters['employee_ids']);
+        }
+        if (isset($filters['branch_ids']) && is_array($filters['branch_ids']) && count($filters['branch_ids']) > 0) {
+            $query->whereIn('branch_id', $filters['branch_ids']);
+        }
+
         $transactions = $query->with(['agent', 'branch'])->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';

@@ -25,6 +25,19 @@ class CreateCustomer
         int $branchId
     ): Customer
     {
+        // Auto-generate customer code if not provided
+        if (!$customerCode) {
+            $prefix = 'F' . $branchId;
+            $lastCustomer = \App\Models\Domain\Entities\Customer::where('branch_id', $branchId)
+                ->where('customer_code', 'like', $prefix . '-%')
+                ->orderByDesc('id')->first();
+            if ($lastCustomer && preg_match('/' . $prefix . '-(\d+)/', $lastCustomer->customer_code, $matches)) {
+                $nextNumber = str_pad(((int)$matches[1]) + 1, 5, '0', STR_PAD_LEFT);
+            } else {
+                $nextNumber = '00001';
+            }
+            $customerCode = $prefix . '-' . $nextNumber;
+        }
         $customer = new Customer();
         $customer->name = $name;
         $customer->mobile_number = $mobileNumber;

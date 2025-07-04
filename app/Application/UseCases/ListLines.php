@@ -16,15 +16,11 @@ class ListLines
         $this->viewLineBalanceAndUsageUseCase = $viewLineBalanceAndUsageUseCase;
     }
 
-    public function execute(): array
+    public function execute(array $params = []): array
     {
-        $lines = $this->lineRepository->all();
-        
-        $detailedLines = [];
-        foreach ($lines as $line) {
-            $detailedLines[] = $this->viewLineBalanceAndUsageUseCase->execute($line->id);
-        }
-
-        return $detailedLines;
+        $sortField = $params['sortField'] ?? 'mobile_number';
+        $sortDirection = $params['sortDirection'] ?? 'asc';
+        $lines = $this->lineRepository->all($sortField, $sortDirection);
+        return $lines;
     }
 } 

@@ -11,9 +11,9 @@
 
         <!-- Balance -->
         <div>
-            <x-input-label for="balance" :value="__('Current Balance (EGP)')" />
-            <x-text-input wire:model="balance" id="balance" name="balance" type="number" step="0.01" class="mt-1 block w-full" required />
-            <x-input-error class="mt-2" :messages="$errors->get('balance')" />
+            <x-input-label for="currentBalance" :value="__('Current Balance (EGP)')" />
+            <x-text-input wire:model="currentBalance" id="currentBalance" name="currentBalance" type="number" step="0.01" class="mt-1 block w-full" required />
+            <x-input-error class="mt-2" :messages="$errors->get('currentBalance')" />
         </div>
 
         <!-- Branch -->

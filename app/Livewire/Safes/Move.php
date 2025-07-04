@@ -7,6 +7,7 @@ use App\Models\Domain\Entities\Safe;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Collection;
 
 class Move extends Component
 {
@@ -19,7 +20,7 @@ class Move extends Component
     #[Validate('required|numeric|min:0.01')] 
     public $amount = 0.00;
 
-    public $safes = [];
+    public Collection $safes;
 
     private MoveSafeCash $moveSafeCashUseCase;
 

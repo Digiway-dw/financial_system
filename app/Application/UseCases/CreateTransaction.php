@@ -255,7 +255,7 @@ class CreateTransaction
 
         if ($deduction > 0) {
             $message = "A new transaction with a deduction of " . $deduction . " EGP has been created by " . $agent->name . ".";
-            Notification::send($admins, new AdminNotification($message, route('transactions.edit', $createdTransaction->id)));
+            Notification::send($admins, new AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
         }
 
         // Notify if transaction is pending (unless it's a client safe withdrawal, which has its own notification)
@@ -270,7 +270,7 @@ class CreateTransaction
                           ->whereHasRole('branch_manager');
                 });
             }
-            Notification::send($recipients->get(), new AdminNotification($message, route('transactions.edit', $createdTransaction->id)));
+            Notification::send($recipients->get(), new AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
         }
 
         return $createdTransaction;

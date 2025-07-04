@@ -1,52 +1,20 @@
 <div class="p-4">
     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Audit Log</h3>
 
-    <div class="mt-4 mb-4 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-        <!-- Search Input -->
-        <div class="flex-1">
-            <x-text-input wire:model.live="search" placeholder="Search..." class="w-full" />
+    <div class="mb-6 p-4 bg-gray-100 dark:bg-gray-900 rounded shadow flex flex-col md:flex-row flex-wrap gap-4 items-end">
+        <!-- Each filter input: add w-full md:w-40 or md:w-36 as appropriate -->
+        <div class="w-full md:w-40">
+            <x-input-label for="subject" :value="__('Subject')" />
+            <x-text-input id="subject" type="text" wire:model.defer="subject" class="w-full" />
         </div>
-
-        <!-- Filters -->
-        <div class="flex-1">
-            <select wire:model.live="logName" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                <option value="">All Log Names</option>
-                @foreach ($logNames as $name)
-                    <option value="{{ $name }}">{{ $name }}</option>
-                @endforeach
-            </select>
+        <!-- Repeat for other filters, adjusting widths as needed -->
+        <div class="w-full md:w-auto">
+            <x-primary-button wire:click="filter" class="w-full md:w-auto">{{ __('Filter') }}</x-primary-button>
         </div>
-        <div class="flex-1">
-            <select wire:model.live="eventType" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                <option value="">All Event Types</option>
-                @foreach ($eventTypes as $type)
-                    <option value="{{ $type }}">{{ $type }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="flex-1">
-            <select wire:model.live="causerType" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                <option value="">All Causer Types</option>
-                @foreach ($causerTypes as $type)
-                    <option value="{{ $type }}">{{ class_basename($type) }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="flex-1">
-            <select wire:model.live="subjectType" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                <option value="">All Subject Types</option>
-                @foreach ($subjectTypes as $type)
-                    <option value="{{ $type }}">{{ class_basename($type) }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <!-- Reset Filters Button -->
-        <x-secondary-button wire:click="resetFilters" class="mt-1">Reset Filters</x-secondary-button>
     </div>
 
-    <div class="mt-4">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs md:text-sm">
             <thead>
                 <tr>
                     <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider cursor-pointer" wire:click="sortBy('created_at')">Timestamp

@@ -29,6 +29,13 @@ class User extends Authenticatable
         'email',
         'password',
         'branch_id',
+        'phone_number',
+        'national_number',
+        'salary',
+        'address',
+        'land_number',
+        'relative_phone_number',
+        'notes',
     ];
 
     /**
@@ -68,6 +75,14 @@ class User extends Authenticatable
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'agent_id');
+    }
+
+    /**
+     * Get the login histories for the user.
+     */
+    public function loginHistories(): HasMany
+    {
+        return $this->hasMany(\App\Models\Domain\Entities\LoginHistory::class);
     }
 
     public function getActivitylogOptions(): LogOptions

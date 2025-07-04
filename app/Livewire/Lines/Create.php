@@ -58,7 +58,6 @@ class Create extends Component
             ]);
 
             session()->flash('message', 'Line created successfully.');
-            $this->reset(); // Clear form fields after submission
             $this->redirect(route('lines.index'), navigate: true);
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to create line: ' . $e->getMessage());

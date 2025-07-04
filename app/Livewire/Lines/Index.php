@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Gate;
 
 class Index extends Component
 {
+    public $sortField = 'mobile_number';
+    public $sortDirection = 'asc';
     public array $lines = [];
 
     private ListLines $listLinesUseCase;
@@ -31,7 +33,21 @@ class Index extends Component
 
     public function loadLines()
     {
-        $this->lines = $this->listLinesUseCase->execute();
+        $this->lines = $this->listLinesUseCase->execute([
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
+        ]);
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+        $this->loadLines();
     }
 
     public function deleteLine(string $lineId)

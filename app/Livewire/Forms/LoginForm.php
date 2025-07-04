@@ -39,6 +39,16 @@ class LoginForm extends Form
         }
 
         RateLimiter::clear($this->throttleKey());
+
+        // Record login history (except admin)
+        $user = Auth::user();
+        if (! $user->hasRole('admin')) {
+            $loginHistory = \App\Models\Domain\Entities\LoginHistory::create([
+                'user_id' => $user->id,
+                'login_at' => now(),
+            ]);
+            session(['login_history_id' => $loginHistory->id]);
+        }
     }
 
     /**

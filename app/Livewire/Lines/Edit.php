@@ -4,45 +4,54 @@ namespace App\Livewire\Lines;
 
 use App\Application\UseCases\UpdateLine;
 use App\Domain\Interfaces\LineRepository;
-use App\Domain\Entities\User;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
+use App\Domain\Interfaces\BranchRepository;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Validation\Rule;
 
 class Edit extends Component
 {
     public $line;
     public $lineId;
 
-    #[Validate('required|string|max:20|unique:lines,mobile_number,except,$this->lineId')] 
     public $mobileNumber = '';
-
-    #[Validate('required|numeric|min:0')] 
     public $currentBalance = 0.00;
-
-    #[Validate('required|numeric|min:0')] 
     public $dailyLimit = 0.00;
-
-    #[Validate('required|numeric|min:0')] 
     public $monthlyLimit = 0.00;
-
-    #[Validate('required|string|in:Vodafone,Orange,Etisalat,We')] 
     public $network = 'Vodafone';
-
-    #[Validate('required|string|in:active,inactive')]
     public $status = 'active';
-
-    #[Validate('required|exists:users,id')] 
-    public $userId = '';
+    public $branchId = '';
 
     private LineRepository $lineRepository;
     private UpdateLine $updateLineUseCase;
+    private BranchRepository $branchRepository;
 
-    public $users;
+    public Collection $branches;
 
-    public function boot(LineRepository $lineRepository, UpdateLine $updateLineUseCase)
+    protected function rules(): array
+    {
+        return [
+            'mobileNumber' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('lines', 'mobile_number')->ignore($this->lineId),
+            ],
+            'currentBalance' => 'required|numeric|min:0',
+            'dailyLimit' => 'required|numeric|min:0',
+            'monthlyLimit' => 'required|numeric|min:0',
+            'network' => 'required|string|in:Vodafone,Orange,Etisalat,We',
+            'status' => 'required|string|in:active,inactive',
+            'branchId' => 'required|exists:branches,id',
+        ];
+    }
+
+    public function boot(LineRepository $lineRepository, UpdateLine $updateLineUseCase, BranchRepository $branchRepository)
     {
         $this->lineRepository = $lineRepository;
         $this->updateLineUseCase = $updateLineUseCase;
+        $this->branchRepository = $branchRepository;
     }
 
     public function mount($lineId)
@@ -58,9 +67,9 @@ class Edit extends Component
             $this->dailyLimit = $this->line->daily_limit;
             $this->monthlyLimit = $this->line->monthly_limit;
             $this->network = $this->line->network;
-            $this->userId = $this->line->user_id;
             $this->status = $this->line->status;
-            $this->users = User::all();
+            $this->branchId = $this->line->branch_id;
+            $this->branches = $this->branchRepository->all();
         } else {
             abort(404);
         }
@@ -79,8 +88,8 @@ class Edit extends Component
                     'daily_limit' => (float) $this->dailyLimit,
                     'monthly_limit' => (float) $this->monthlyLimit,
                     'network' => $this->network,
-                    'user_id' => $this->userId,
                     'status' => $this->status,
+                    'branch_id' => $this->branchId,
                 ]
             );
 

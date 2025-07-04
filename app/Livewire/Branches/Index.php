@@ -6,10 +6,11 @@ use App\Application\UseCases\ListBranches;
 use App\Application\UseCases\DeleteBranch;
 use Livewire\Component;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\Collection;
 
 class Index extends Component
 {
-    public array $branches;
+    public Collection $branches;
 
     private ListBranches $listBranchesUseCase;
     private DeleteBranch $deleteBranchUseCase;

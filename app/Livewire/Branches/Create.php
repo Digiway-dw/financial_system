@@ -46,7 +46,6 @@ class Create extends Component
             ]);
 
             session()->flash('message', 'Branch created successfully.');
-            $this->reset(); // Clear form fields after submission
             $this->redirect(route('branches.index'), navigate: true); // Redirect after successful creation
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to create branch: ' . $e->getMessage());

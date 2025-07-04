@@ -1,14 +1,16 @@
 <div>
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">User Management</h3>
-        @can('create-users')
+    </div>
+    @if (auth()->user() && auth()->user()->hasRole('admin'))
+        <div class="mb-4">
             <a href="{{ route('users.create') }}">
                 <x-primary-button>
                     {{ __('Add User') }}
                 </x-primary-button>
             </a>
-        @endcan
-    </div>
+        </div>
+    @endif
 
     @if (session('message'))
         <div class="mt-4 p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800" role="alert">
@@ -16,9 +18,20 @@
         </div>
     @endif
 
-    <div class="mt-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-        <div class="p-6 text-gray-900 dark:text-gray-100">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    <div class="mb-6 p-4 bg-gray-100 dark:bg-gray-900 rounded shadow flex flex-col md:flex-row flex-wrap gap-4 items-end">
+        <!-- Each filter input: add w-full md:w-40 or md:w-36 as appropriate -->
+        <div class="w-full md:w-40">
+            <x-input-label for="name" :value="__('Name')" />
+            <x-text-input id="name" type="text" wire:model.defer="name" class="w-full" />
+        </div>
+        <!-- Repeat for other filters, adjusting widths as needed -->
+        <div class="w-full md:w-auto">
+            <x-primary-button wire:click="filter" class="w-full md:w-auto">{{ __('Filter') }}</x-primary-button>
+        </div>
+    </div>
+
+    <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs md:text-sm">
                 <thead>
                     <tr>
                         <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
@@ -49,6 +62,16 @@
                                     <x-secondary-button wire:click="cancelEdit">{{ __('Cancel') }}</x-secondary-button>
                                 @else
                                     <x-secondary-button wire:click="editRole({{ $user->id }})">{{ __('Edit Role') }}</x-secondary-button>
+                                    @if (auth()->user() && auth()->user()->hasRole('admin'))
+                                        @if (!$user->hasRole('admin'))
+                                            <a href="{{ route('users.edit', $user->id) }}" class="inline-block ml-2">
+                                                <x-primary-button>{{ __('Edit') }}</x-primary-button>
+                                            </a>
+                                            <a href="{{ route('users.view', $user->id) }}" class="inline-block ml-2">
+                                                <x-secondary-button>{{ __('View') }}</x-secondary-button>
+                                            </a>
+                                        @endif
+                                    @endif
                                 @endif
                             </td>
                         </tr>

@@ -71,18 +71,18 @@ class MoveSafeCash
         $createdTransaction = $this->transactionRepository->create($transactionAttributes);
 
         // Notify Admin about cashbox transfer (it's now pending)
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::role('admin')->get();
         $adminMessage = "A new pending cashbox transfer of " . $amount . " EGP from safe " . $fromSafe->name . " to safe " . $toSafe->name . " has been initiated by " . User::find($agentId)->name . ". Review required.";
-        Notification::send($admins, new AdminNotification($adminMessage, route('transactions.edit', $createdTransaction->id)));
+        Notification::send($admins, new AdminNotification($adminMessage, route('transactions.edit', $createdTransaction->id, false)));
 
         // Notify receiving branch managers and general supervisors that a transfer is pending
         $receivingBranchUsers = User::where('branch_id', $toSafe->branch_id)
-                                   ->whereIn('role', ['branch_manager', 'general_supervisor'])
-                                   ->get();
+            ->role(['branch_manager', 'general_supervisor'])
+            ->get();
         
         if ($receivingBranchUsers->count() > 0) {
             $receivingBranchMessage = "A pending cash transfer of " . $amount . " EGP from " . $fromSafe->name . " is awaiting your approval.";
-            Notification::send($receivingBranchUsers, new AdminNotification($receivingBranchMessage, route('transactions.edit', $createdTransaction->id)));
+            Notification::send($receivingBranchUsers, new AdminNotification($receivingBranchMessage, route('transactions.edit', $createdTransaction->id, false)));
         }
 
         return $createdTransaction;

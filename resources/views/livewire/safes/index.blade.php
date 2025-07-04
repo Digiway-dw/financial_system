@@ -5,8 +5,20 @@
         <a href="{{ route('safes.create') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">Add New Safe</a>
     </div>
 
-    <div class="mt-4">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    <div class="mb-6 p-4 bg-gray-100 dark:bg-gray-900 rounded shadow flex flex-col md:flex-row flex-wrap gap-4 items-end">
+        <!-- Each filter input: add w-full md:w-40 or md:w-36 as appropriate -->
+        <div class="w-full md:w-40">
+            <x-input-label for="name" :value="__('Safe Name')" />
+            <x-text-input id="name" type="text" wire:model.defer="name" class="w-full" />
+        </div>
+        <!-- Repeat for other filters, adjusting widths as needed -->
+        <div class="w-full md:w-auto">
+            <x-primary-button wire:click="filter" class="w-full md:w-auto">{{ __('Filter') }}</x-primary-button>
+        </div>
+    </div>
+
+    <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs md:text-sm">
             <thead>
                 <tr>
                     <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Name</th>

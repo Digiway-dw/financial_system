@@ -13,4 +13,10 @@ interface CustomerRepository
     public function delete(Customer $customer): void;
     public function getAll(): array;
     public function getAllClients(): array;
+    /**
+     * Search customers by name or mobile number (partial match).
+     * @param string $query
+     * @return array
+     */
+    public function searchByNameOrMobile(string $query): array;
 } 

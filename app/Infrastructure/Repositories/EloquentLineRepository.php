@@ -30,8 +30,8 @@ class EloquentLineRepository implements LineRepository
         EloquentLine::destroy($id);
     }
 
-    public function all(): array
+    public function all($sortField = 'mobile_number', $sortDirection = 'asc'): array
     {
-        return EloquentLine::all()->all();
+        return EloquentLine::with('branch')->orderBy($sortField, $sortDirection)->get()->all();
     }
 } 

@@ -10,6 +10,15 @@ use Illuminate\Support\Facades\Gate;
 class Index extends Component
 {
     public array $customers;
+    public $name;
+    public $phone;
+    public $code;
+    public $region;
+    public $date_added_start;
+    public $date_added_end;
+    public $topByTransactionCount = [];
+    public $topByTransferred = [];
+    public $topByCommissions = [];
 
     private ListCustomers $listCustomersUseCase;
     private DeleteCustomer $deleteCustomerUseCase;
@@ -28,7 +37,29 @@ class Index extends Component
 
     public function loadCustomers()
     {
-        $this->customers = $this->listCustomersUseCase->execute();
+        $filters = [
+            'name' => $this->name,
+            'phone' => $this->phone,
+            'code' => $this->code,
+            'region' => $this->region,
+            'date_added_start' => $this->date_added_start,
+            'date_added_end' => $this->date_added_end,
+        ];
+        $result = $this->listCustomersUseCase->execute($filters);
+        $this->customers = $result['customers'] ?? $result;
+        $this->topByTransactionCount = $result['topByTransactionCount'] ?? [];
+        $this->topByTransferred = $result['topByTransferred'] ?? [];
+        $this->topByCommissions = $result['topByCommissions'] ?? [];
+    }
+
+    public function filter()
+    {
+        $this->loadCustomers();
+    }
+
+    public function updatedName()
+    {
+        $this->loadCustomers();
     }
 
     public function deleteCustomer(string $customerId)

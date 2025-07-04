@@ -16,15 +16,25 @@
             <x-input-error class="mt-2" :messages="$errors->get('customerMobileNumber')" />
         </div>
 
-        <!-- Destination Number (Previously Used) -->
-        <div>
-            <x-input-label for="selectedDestinationNumber" :value="__('Select Previously Used Destination Number')" />
-            <select wire:model.live="selectedDestinationNumber" id="selectedDestinationNumber" name="selectedDestinationNumber" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                <option value="">Select from previous customers</option>
-                @foreach ($destinationNumbers as $customer)
-                    <option value="{{ $customer['mobile_number'] }}">{{ $customer['mobile_number'] }} - {{ $customer['name'] }}</option>
-                @endforeach
-            </select>
+        <!-- Select Customer (Live Database Search Dropdown) -->
+        <div x-data="{ open: false }" class="relative">
+            <x-input-label for="searchCustomer" :value="__('Select Customer (type name or number)')" />
+            <input wire:model.debounce.400ms="searchCustomer" id="searchCustomer" name="searchCustomer" type="text" placeholder="Type to search customers..." class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" @focus="open = true" @blur="setTimeout(() => open = false, 200)" autocomplete="off" />
+            <input type="hidden" wire:model="selectedDestinationNumber" id="selectedDestinationNumber" name="selectedDestinationNumber" />
+            @if(!empty($customerSearchResults))
+                <ul x-show="open" class="absolute z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 w-full mt-1 rounded shadow max-h-48 overflow-y-auto">
+                    @foreach ($customerSearchResults as $customer)
+                        @if(isset($customer['mobile_number']) && isset($customer['name']))
+                            <li class="px-4 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 cursor-pointer" @mousedown.prevent="open = false" wire:click="selectCustomer('{{ $customer['id'] }}')">
+                                {{ $customer['name'] }} - {{ $customer['mobile_number'] ?? '' }}
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+            @endif
+            <div class="bg-yellow-100 text-yellow-800 p-2 text-xs rounded mb-2">
+                <strong>Debug:</strong> {{ json_encode($customerSearchResults) }}
+            </div>
             <x-input-error class="mt-2" :messages="$errors->get('selectedDestinationNumber')" />
         </div>
 
@@ -81,6 +91,13 @@
             <x-text-input wire:model="deduction" id="deduction" name="deduction" type="number" step="0.01" class="mt-1 block w-full" />
             <x-input-error class="mt-2" :messages="$errors->get('deduction')" />
         </div>
+        @if($deduction > 0)
+            <div>
+                <x-input-label for="notes" :value="__('Deduction Notes (Required)')" />
+                <x-text-input wire:model="notes" id="notes" name="notes" type="text" class="mt-1 block w-full" required />
+                <x-input-error class="mt-2" :messages="$errors->get('notes')" />
+            </div>
+        @endif
 
         <!-- Transaction Type -->
         <div>

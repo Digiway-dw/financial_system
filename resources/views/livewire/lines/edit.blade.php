@@ -52,16 +52,16 @@
             <x-input-error class="mt-2" :messages="$errors->get('status')" />
         </div>
 
-        <!-- Assigned User -->
+        <!-- Assigned Branch -->
         <div>
-            <x-input-label for="userId" :value="__('Assigned User')" />
-            <select wire:model="userId" id="userId" name="userId" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                <option value="">Select User</option>
-                @foreach ($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+            <x-input-label for="branchId" :value="__('Assigned Branch')" />
+            <select wire:model="branchId" id="branchId" name="branchId" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
+                <option value="">Select Branch</option>
+                @foreach ($branches as $branch)
+                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                 @endforeach
             </select>
-            <x-input-error class="mt-2" :messages="$errors->get('userId')" />
+            <x-input-error class="mt-2" :messages="$errors->get('branchId')" />
         </div>
 
         <div class="flex items-center gap-4">

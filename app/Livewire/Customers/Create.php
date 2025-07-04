@@ -15,11 +15,8 @@ class Create extends Component
     #[Validate('required|string|max:255')] 
     public $name = '';
 
-    #[Validate('required|string|max:20|unique:customers,mobile_number')] 
-    public $mobileNumber = '';
-
-    #[Validate('nullable|string|max:255')] 
-    public $customerCode = '';
+    #[Validate('required|array|min:1')] 
+    public $mobileNumbers = [''];
 
     #[Validate('required|in:male,female')] 
     public $gender = '';
@@ -61,24 +58,54 @@ class Create extends Component
         $this->branches = $this->branchRepository->all();
     }
 
+    public function addMobileNumber()
+    {
+        $this->mobileNumbers[] = '';
+    }
+
+    public function removeMobileNumber($index)
+    {
+        unset($this->mobileNumbers[$index]);
+        $this->mobileNumbers = array_values($this->mobileNumbers);
+    }
+
+    protected function rules()
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'mobileNumbers' => 'required|array|min:1',
+            'mobileNumbers.*' => 'required|string|max:20|distinct',
+            'gender' => 'required|in:male,female',
+            'balance' => 'required|numeric|min:0',
+            'is_client' => 'boolean',
+            'agent_id' => 'nullable|exists:users,id',
+            'branch_id' => 'required|exists:branches,id',
+        ];
+    }
+
     public function createCustomer()
     {
         $this->validate();
 
         try {
-            $this->createCustomerUseCase->execute(
+            // Use the first mobile number as the primary
+            $primaryMobile = $this->mobileNumbers[0];
+            $customer = $this->createCustomerUseCase->execute(
                 $this->name,
-                $this->mobileNumber,
-                $this->customerCode,
+                $primaryMobile,
+                null, // customerCode is auto-generated
                 $this->gender,
                 $this->balance,
                 $this->is_client,
                 $this->agent_id,
                 $this->branch_id
             );
-
+            // Save all mobile numbers
+            foreach ($this->mobileNumbers as $number) {
+                $customer->mobileNumbers()->create(['mobile_number' => $number]);
+            }
             session()->flash('message', 'Customer created successfully.');
-            $this->reset(); // Clear form fields after submission
+            $this->redirect(route('customers.index'), navigate: true);
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to create customer: ' . $e->getMessage());
         }

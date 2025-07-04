@@ -9,19 +9,25 @@
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
-        <!-- Mobile Number -->
+        <!-- Mobile Numbers -->
         <div>
-            <x-input-label for="mobileNumber" :value="__('Mobile Number')" />
-            <x-text-input wire:model="mobileNumber" id="mobileNumber" name="mobileNumber" type="text" class="mt-1 block w-full" required />
-            <x-input-error class="mt-2" :messages="$errors->get('mobileNumber')" />
+            <x-input-label :value="__('Mobile Numbers')" />
+            <div class="space-y-2">
+                @foreach($mobileNumbers as $i => $number)
+                    <div class="flex gap-2 items-center">
+                        <x-text-input wire:model="mobileNumbers.{{ $i }}" type="text" class="mt-1 block w-full" required />
+                        @if(count($mobileNumbers) > 1)
+                            <button type="button" wire:click="removeMobileNumber({{ $i }})" class="text-red-500 hover:text-red-700">&times;</button>
+                        @endif
+                    </div>
+                    <x-input-error class="mt-2" :messages="$errors->get('mobileNumbers.' . $i)" />
+                @endforeach
+                <button type="button" wire:click="addMobileNumber" class="mt-2 px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">+ {{ __('Add Number') }}</button>
+            </div>
         </div>
 
         <!-- Customer Code -->
-        <div>
-            <x-input-label for="customerCode" :value="__('Customer Code (Optional)')" />
-            <x-text-input wire:model="customerCode" id="customerCode" name="customerCode" type="text" class="mt-1 block w-full" />
-            <x-input-error class="mt-2" :messages="$errors->get('customerCode')" />
-        </div>
+        <!-- Removed: Customer code is now auto-generated -->
 
         <!-- Gender -->
         <div>

@@ -73,6 +73,12 @@ class Create extends Component
     public $showReceiptModal = false;
     public $completedTransaction = null;
 
+    public $customerSearch = '';
+    public $customerSearchResults = [];
+    public $notes = '';
+
+    public $searchCustomer = '';
+
     private CreateTransaction $createTransactionUseCase;
 
     public $branches;
@@ -81,63 +87,73 @@ class Create extends Component
 
     private CustomerRepository $customerRepository;
 
-    public function rules()
+    public function updatedCustomerName($value)
     {
-        return [
-            'customerMobileNumber' => 'required|string|max:20|unique:customers,mobile_number',
-            'amount' => [
-                'required',
-                'integer',
-                'min:5',
-                function ($attribute, $value, $fail) {
-                    if ($value % 5 !== 0) {
-                        $fail('The ' . $attribute . ' must be a multiple of 5.');
-                    }
-                },
-            ],
-        ];
-    }
-
-    public function boot(CreateTransaction $createTransactionUseCase, CustomerRepository $customerRepository)
-    {
-        $this->createTransactionUseCase = $createTransactionUseCase;
-        $this->customerRepository = $customerRepository;
-    }
-
-    public function mount()
-    {
-        Gate::authorize('send-transfer'); // Allow agents and trainees to access this page
-        $this->agentName = Auth::user()->name; // Automatically set agent name
-        $this->branchId = Auth::user()->branch_id; // Automatically set agent branch
-
-        // Populate destination numbers
-        $this->destinationNumbers = $this->customerRepository->getAll();
-
-        // Auto-calculate commission based on amount
-        $this->calculateCommission();
-    }
-
-    public function updatedAmount()
-    {
-        $this->calculateCommission();
-    }
-
-    private function calculateCommission()
-    {
-        // Example: 5 EGP per 500 EGP, with a minimum of 5 EGP
-        if ($this->amount > 0) {
-            $calculatedCommission = (floor($this->amount / 500) * 5);
-            $this->commission = max(5, $calculatedCommission); // Ensure minimum 5 EGP commission
+        if (!empty($value)) {
+            $this->searchCustomers($value);
         } else {
-            $this->commission = 0.00;
+            $this->customerSearchResults = [];
+        }
+    }
+
+    public function updatedCustomerMobileNumber($value)
+    {
+        if (!empty($value)) {
+            $this->searchCustomers($value);
+        } else {
+            $this->customerSearchResults = [];
+        }
+    }
+
+    public function updatedSearchCustomer($value)
+    {
+        if (strlen($value) > 1) {
+            $this->searchCustomers($value);
+        } else {
+            $this->customerSearchResults = [];
+        }
+    }
+
+    public function searchCustomers($query)
+    {
+        $this->customerSearchResults = $this->customerRepository->searchByNameOrMobile($query);
+        logger(['search_query' => $query, 'results' => $this->customerSearchResults]);
+    }
+
+    public function selectCustomer($customerId)
+    {
+        $customer = $this->customerRepository->findById($customerId);
+        if ($customer) {
+            $this->customerName = $customer->name;
+            $this->customerMobileNumber = $customer->mobile_number;
+            $this->customerCode = $customer->customer_code;
+            $this->selectedDestinationNumber = $customer->mobile_number;
+            $this->customerSearchResults = [];
+            $this->searchCustomer = '';
+        }
+    }
+
+    public function fillCustomerFields($customerId)
+    {
+        $customer = $this->customerRepository->findById($customerId);
+        if ($customer) {
+            $this->customerName = $customer->name;
+            $this->customerMobileNumber = $customer->mobile_number;
+            $this->customerCode = $customer->customer_code;
+            $this->gender = $customer->gender ?? 'Male';
+            // Add more fields as needed
+            $this->customerSearchResults = [];
         }
     }
 
     public function updatedDeduction($value)
     {
+        if ($value > 0) {
+            $this->notes = '';
+        }
         // Ensure deduction does not exceed commission
         if ($value > $this->commission) {
-            $this->deduction = $this->commission; // Cap deduction at commission amount
+            $this->deduction = $this->commission;
             session()->flash('error', 'Deduction cannot exceed commission.');
         }
     }
@@ -151,21 +167,6 @@ class Create extends Component
                 $this->customerMobileNumber = $customer->mobile_number;
                 // customerCode is already set by the input field
             }
-        }
-    }
-
-    public function updatedCustomerMobileNumber($value)
-    {
-        if (!empty($value)) {
-            $customer = $this->customerRepository->findByMobileNumber($value);
-            if ($customer) {
-                $this->customerName = $customer->name;
-                $this->customerCode = $customer->customer_code;
-            }
-        } else {
-            // Clear fields if mobile number is empty
-            $this->customerName = '';
-            $this->customerCode = '';
         }
     }
 
@@ -225,7 +226,7 @@ class Create extends Component
 
             // Notify admin if a deduction was applied
             if ($this->deduction > 0) {
-                $adminNotificationMessage = "A transaction was created with a deduction of " . $this->deduction . " EGP. Transaction ID: " . $createdTransaction->id;
+                $adminNotificationMessage = "A transaction was created with a deduction of " . $this->deduction . " EGP. Note: " . $this->notes . ". Transaction ID: " . $createdTransaction->id;
                 $admins = \App\Domain\Entities\User::role('admin')->get();
                 Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $createdTransaction->id)));
             }
@@ -259,5 +260,62 @@ class Create extends Component
             'lines' => $this->lines,
             'safes' => $this->safes,
         ]);
+    }
+
+    public function rules()
+    {
+        $rules = [
+            'customerMobileNumber' => 'required|string|max:20',
+            'amount' => [
+                'required',
+                'integer',
+                'min:5',
+                function ($attribute, $value, $fail) {
+                    if ($value % 5 !== 0) {
+                        $fail('The ' . $attribute . ' must be a multiple of 5.');
+                    }
+                },
+            ],
+            'deduction' => 'nullable|numeric|min:0',
+        ];
+        if ($this->deduction > 0) {
+            $rules['notes'] = 'required|string|min:2';
+        }
+        return $rules;
+    }
+
+    public function boot(CreateTransaction $createTransactionUseCase, CustomerRepository $customerRepository)
+    {
+        $this->createTransactionUseCase = $createTransactionUseCase;
+        $this->customerRepository = $customerRepository;
+    }
+
+    public function mount()
+    {
+        Gate::authorize('send-transfer'); // Allow agents and trainees to access this page
+        $this->agentName = Auth::user()->name; // Automatically set agent name
+        $this->branchId = Auth::user()->branch_id; // Automatically set agent branch
+
+        // Populate destination numbers
+        $this->destinationNumbers = $this->customerRepository->getAll();
+
+        // Auto-calculate commission based on amount
+        $this->calculateCommission();
+    }
+
+    public function updatedAmount()
+    {
+        $this->calculateCommission();
+    }
+
+    private function calculateCommission()
+    {
+        // Example: 5 EGP per 500 EGP, with a minimum of 5 EGP
+        if ($this->amount > 0) {
+            $calculatedCommission = (floor($this->amount / 500) * 5);
+            $this->commission = max(5, $calculatedCommission); // Ensure minimum 5 EGP commission
+        } else {
+            $this->commission = 0.00;
+        }
     }
 }

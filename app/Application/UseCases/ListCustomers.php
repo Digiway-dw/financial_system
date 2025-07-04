@@ -13,8 +13,8 @@ class ListCustomers
         $this->customerRepository = $customerRepository;
     }
 
-    public function execute(): array
+    public function execute(array $filters = []): array
     {
-        return $this->customerRepository->getAll();
+        return $this->customerRepository->getAll($filters);
     }
 } 

@@ -3,6 +3,7 @@
 namespace App\Application\UseCases;
 
 use App\Domain\Interfaces\BranchRepository;
+use Illuminate\Database\Eloquent\Collection;
 
 class ListBranches
 {
@@ -10,7 +11,7 @@ class ListBranches
         private BranchRepository $branchRepository
     ) {}
 
-    public function execute(): array
+    public function execute(): Collection
     {
         return $this->branchRepository->all();
     }

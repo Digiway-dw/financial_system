@@ -9,6 +9,7 @@ use App\Domain\Interfaces\LineRepository;
 use App\Domain\Entities\User;
 use App\Notifications\AdminNotification;
 use Illuminate\Support\Facades\Notification;
+use App\Models\Domain\Entities\Safe;
 
 class ApproveTransaction
 {
@@ -46,7 +47,7 @@ class ApproveTransaction
                 ['current_balance' => $destinationSafe->current_balance + $transaction->amount]
             );
 
-            $admins = User::where('role', 'admin')->get();
+            $admins = User::role('admin')->get();
             $sourceBranchUsers = User::where('branch_id', $transaction->safe->branch_id)
                                        ->whereIn('role', ['branch_manager', 'general_supervisor'])
                                        ->get();
@@ -55,9 +56,9 @@ class ApproveTransaction
 
             $message = "Cash transfer of " . $transaction->amount . " EGP from safe " . $sourceSafeName . " to safe " . $destinationSafeName . " has been approved and completed.";
             
-            Notification::send($admins, new AdminNotification($message, route('transactions.edit', $transaction->id)));
+            Notification::send($admins, new AdminNotification($message, route('transactions.edit', $transaction->id, false)));
             if ($sourceBranchUsers->count() > 0) {
-                Notification::send($sourceBranchUsers, new AdminNotification($message, route('transactions.edit', $transaction->id)));
+                Notification::send($sourceBranchUsers, new AdminNotification($message, route('transactions.edit', $transaction->id, false)));
             }
         } elseif ($transaction->transaction_type === 'Withdrawal' && $transaction->line_id) {
             $line = $this->lineRepository->findById($transaction->line_id);
@@ -72,14 +73,24 @@ class ApproveTransaction
             );
 
             // Optionally, send notification for SIM withdrawal approval
-            $admins = User::where('role', 'admin')->get();
             $agentUsers = User::where('id', $transaction->agent_id)->get();
 
             $message = "SIM withdrawal of " . $transaction->amount . " EGP from line " . $line->mobile_number . " has been approved.";
             
-            Notification::send($admins, new AdminNotification($message, route('transactions.edit', $transaction->id)));
-            if ($agentUsers->count() > 0) {
-                Notification::send($agentUsers, new AdminNotification($message, route('transactions.edit', $transaction->id)));
+            Notification::send($agentUsers, new AdminNotification($message, route('transactions.edit', $transaction->id, false)));
+        }
+
+        $admins = User::role('admin')->get();
+        $adminMessage = "Transaction " . $transaction->customer_name . " with amount " . $transaction->amount . " EGP has been approved by " . User::find($reviewerId)->name . ".";
+        Notification::send($admins, new AdminNotification($adminMessage, route('transactions.edit', $transaction->id, false)));
+
+        // Additional notification for admins on transactions from safe type 'cashbox'
+        if ($transaction->safe_id) {
+            $safe = Safe::find($transaction->safe_id);
+            if ($safe && $safe->type === 'cashbox') {
+                $admins = User::role('admin')->get();
+                $adminNotificationMessage = "A transaction of " . $transaction->amount . " EGP from cashbox safe: " . $safe->name . " has been approved by " . User::find($reviewerId)->name . ".";
+                Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id, false)));
             }
         }
 

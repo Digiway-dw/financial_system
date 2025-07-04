@@ -18,6 +18,8 @@ class Index extends Component
     public $eventType = '';
     public $causerType = '';
     public $subjectType = '';
+    public $startDate = '';
+    public $endDate = '';
 
     protected $queryString = ['search', 'logName', 'eventType', 'causerType', 'subjectType', 'sortField', 'sortDirection'];
 
@@ -67,6 +69,13 @@ class Index extends Component
 
         if ($this->subjectType) {
             $query->where('subject_type', $this->subjectType);
+        }
+
+        if ($this->startDate) {
+            $query->whereDate('created_at', '>=', $this->startDate);
+        }
+        if ($this->endDate) {
+            $query->whereDate('created_at', '<=', $this->endDate);
         }
 
         $query->orderBy($this->sortField, $this->sortDirection);

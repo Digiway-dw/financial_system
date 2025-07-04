@@ -14,15 +14,16 @@ class ListTransactions
         $this->transactionRepository = $transactionRepository;
     }
 
-    public function execute(): array
+    public function execute(array $filters = []): array
     {
         $user = Auth::user();
 
         if ($user->can('view-all-branches-data')) {
-            $result = $this->transactionRepository->filter([]);
+            $result = $this->transactionRepository->filter($filters);
             return $result['transactions'] ?? [];
         } elseif ($user->can('view-own-branch-data')) {
-            $result = $this->transactionRepository->filter(['branch_id' => $user->branch_id]);
+            $filters['branch_id'] = $user->branch_id;
+            $result = $this->transactionRepository->filter($filters);
             return $result['transactions'] ?? [];
         }
 

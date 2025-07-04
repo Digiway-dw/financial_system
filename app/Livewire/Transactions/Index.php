@@ -11,6 +11,17 @@ class Index extends Component
 {
     public array $transactions;
 
+    public $customer_code;
+    public $receiver_mobile;
+    public $transfer_line;
+    public $amount;
+    public $commission;
+    public $transaction_type;
+    public $start_date;
+    public $end_date;
+    public $employee_ids = [];
+    public $branch_ids = [];
+
     private ListTransactions $listTransactionsUseCase;
     private DeleteTransaction $deleteTransactionUseCase;
 
@@ -28,7 +39,24 @@ class Index extends Component
 
     public function loadTransactions()
     {
-        $this->transactions = $this->listTransactionsUseCase->execute();
+        $filters = [
+            'customer_code' => $this->customer_code,
+            'receiver_mobile' => $this->receiver_mobile,
+            'transfer_line' => $this->transfer_line,
+            'amount' => $this->amount,
+            'commission' => $this->commission,
+            'transaction_type' => $this->transaction_type,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
+            'employee_ids' => $this->employee_ids,
+            'branch_ids' => $this->branch_ids,
+        ];
+        $this->transactions = $this->listTransactionsUseCase->execute($filters);
+    }
+
+    public function filter()
+    {
+        $this->loadTransactions();
     }
 
     public function deleteTransaction(string $transactionId)

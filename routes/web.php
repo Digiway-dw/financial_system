@@ -21,6 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('customers.create');
     Route::get('customers/{customerId}/edit', \App\Livewire\Customers\Edit::class)
         ->name('customers.edit');
+    Route::get('customers/{customerId}/view', \App\Livewire\Customers\View::class)->name('customers.view');
 
     // Transaction Management Routes
     Route::get('transactions', \App\Livewire\Transactions\Index::class)
@@ -67,6 +68,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('users.index');
     Route::get('users/create', \App\Livewire\Users\Create::class)
         ->name('users.create');
+    Route::get('users/{userId}/edit', \App\Livewire\Users\Edit::class)
+        ->name('users.edit');
+    Route::get('users/{userId}/view', \App\Livewire\Users\View::class)
+        ->name('users.view');
 
     // Reports Routes
     Route::get('reports', \App\Livewire\Reports\Index::class)
@@ -75,6 +80,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Audit Log Routes
     Route::get('audit-log', \App\Livewire\AuditLog\Index::class)
         ->name('audit-log.index');
+
+    // Notifications Routes
+    Route::get('notifications', \App\Livewire\AdminNotificationsBox::class)->name('notifications.index');
 });
 
 Route::view('profile', 'profile')

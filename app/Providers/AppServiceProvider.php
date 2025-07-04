@@ -28,7 +28,9 @@ use App\Infrastructure\Repositories\EloquentTransactionRepository;
 use App\Infrastructure\Repositories\EloquentUserRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-use App\Domain\Entities\User;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Http\Request;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -103,6 +105,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // ✅ يجبر Laravel يولد روابط https بدل http
+        if (app()->environment('local')) {
+            URL::forceScheme('https');
+            URL::forceRootUrl(request()->getSchemeAndHttpHost());
+        }
+
+        // 🔧 إجبار Laravel يولد روابط بناءً على عنوان الزيارة (ngrok أو غيره)
+        if (app()->environment('local') && request()->getSchemeAndHttpHost()) {
+            URL::forceRootUrl(request()->getSchemeAndHttpHost());
+        }
+    
+        // صلاحيات المستخدمين
         Gate::define('manage-lines', function (User $user) {
             return $user->hasRole('admin') || $user->hasRole('general_supervisor');
         });

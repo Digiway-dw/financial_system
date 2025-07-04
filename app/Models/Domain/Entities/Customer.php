@@ -33,7 +33,7 @@ class Customer extends Model
      */
     public function transactions(): HasMany
     {
-        return $this->hasMany(\App\Domain\Entities\Transaction::class, 'customer_mobile_number', 'customer_mobile_number');
+        return $this->hasMany(\App\Models\Domain\Entities\Transaction::class, 'customer_mobile_number', 'customer_mobile_number');
     }
 
     /**
@@ -42,6 +42,11 @@ class Customer extends Model
     public function agent(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Entities\User::class, 'agent_id');
+    }
+
+    public function mobileNumbers(): HasMany
+    {
+        return $this->hasMany(\App\Models\Domain\Entities\CustomerMobileNumber::class);
     }
 
     public function getActivitylogOptions(): LogOptions
