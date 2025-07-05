@@ -87,7 +87,10 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(CreateBranch::class, function ($app) {
-            return new CreateBranch($app->make(BranchRepository::class));
+            return new CreateBranch(
+                $app->make(BranchRepository::class),
+                $app->make(SafeRepository::class)
+            );
         });
         $this->app->singleton(UpdateBranch::class, function ($app) {
             return new UpdateBranch($app->make(BranchRepository::class));

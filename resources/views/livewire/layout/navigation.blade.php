@@ -57,7 +57,7 @@ new class extends Component
                     @endcan
 
                     @can('manage-safes')
-                        <x-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') || request()->routeIs('safes.create') || request()->routeIs('safes.edit') || request()->routeIs('safes.move')" wire:navigate>
+                        <x-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') || request()->routeIs('safes.edit') || request()->routeIs('safes.move')" wire:navigate>
                             {{ __('Safes') }}
                         </x-nav-link>
                     @endcan
@@ -167,7 +167,7 @@ new class extends Component
             @endcan
 
             @can('manage-safes')
-                <x-responsive-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') || request()->routeIs('safes.create') || request()->routeIs('safes.edit') || request()->routeIs('safes.move')" wire:navigate>
+                <x-responsive-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') || request()->routeIs('safes.edit') || request()->routeIs('safes.move')" wire:navigate>
                     {{ __('Safes') }}
                 </x-responsive-nav-link>
             @endcan

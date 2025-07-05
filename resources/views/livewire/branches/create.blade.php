@@ -30,6 +30,20 @@
             <x-input-error class="mt-2" :messages="$errors->get('branch_code')" />
         </div>
 
+        <!-- Safe Initial Balance -->
+        <div>
+            <x-input-label for="safe_initial_balance" :value="__('Safe Initial Balance (EGP)')" />
+            <x-text-input wire:model="safe_initial_balance" id="safe_initial_balance" name="safe_initial_balance" type="number" step="0.01" class="mt-1 block w-full" />
+            <x-input-error class="mt-2" :messages="$errors->get('safe_initial_balance')" />
+        </div>
+
+        <!-- Safe Description -->
+        <div>
+            <x-input-label for="safe_description" :value="__('Safe Description (Optional)')" />
+            <textarea wire:model="safe_description" id="safe_description" name="safe_description" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"></textarea>
+            <x-input-error class="mt-2" :messages="$errors->get('safe_description')" />
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Create Branch') }}</x-primary-button>
 

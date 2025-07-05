@@ -4,7 +4,7 @@ namespace App\Livewire\Safes;
 
 use App\Application\UseCases\UpdateSafe;
 use App\Domain\Interfaces\SafeRepository;
-use App\Models\Domain\Entities\Branch;
+
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Gate;
@@ -20,11 +20,7 @@ class Edit extends Component
     #[Validate('required|numeric|min:0')] 
     public $currentBalance = 0.00;
 
-    #[Validate('required|exists:branches,id')] 
-    public $branchId = '';
-
-    #[Validate('required|string')]
-    public $type = '';
+    public $branchName = '';
 
     #[Validate('nullable|string|max:1000')] 
     public $description = '';
@@ -32,7 +28,7 @@ class Edit extends Component
     private SafeRepository $safeRepository;
     private UpdateSafe $updateSafeUseCase;
 
-    public $branches = [];
+
 
     public function boot(SafeRepository $safeRepository, UpdateSafe $updateSafeUseCase)
     {
@@ -50,9 +46,8 @@ class Edit extends Component
         if ($this->safe) {
             $this->name = $this->safe->name;
             $this->currentBalance = $this->safe->current_balance;
-            $this->branchId = $this->safe->branch_id;
+            $this->branchName = $this->safe->branch->name ?? 'N/A';
             $this->description = $this->safe->description;
-            $this->type = $this->safe->type;
         } else {
             abort(404);
         }
@@ -68,9 +63,7 @@ class Edit extends Component
                 [
                     'name' => $this->name,
                     'current_balance' => (float) $this->currentBalance,
-                    'branch_id' => $this->branchId,
                     'description' => $this->description,
-                    'type' => $this->type,
                 ]
             );
 
@@ -83,7 +76,6 @@ class Edit extends Component
 
     public function render()
     {
-        $this->branches = Branch::all();
         return view('livewire.safes.edit');
     }
 }

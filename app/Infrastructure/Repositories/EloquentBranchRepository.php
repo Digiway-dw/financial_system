@@ -33,6 +33,6 @@ class EloquentBranchRepository implements BranchRepository
 
     public function all(): Collection
     {
-        return EloquentBranch::all();
+        return EloquentBranch::with('safe')->get();
     }
 } 

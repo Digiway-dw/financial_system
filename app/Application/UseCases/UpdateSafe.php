@@ -19,6 +19,9 @@ class UpdateSafe
             throw new \Exception('Safe not found.');
         }
 
+        // Remove branch_id from safeData to prevent changing the branch
+        unset($safeData['branch_id']);
+
         // Add any business rules or validations here before updating the safe
 
         return $this->safeRepository->update($safeId, $safeData);

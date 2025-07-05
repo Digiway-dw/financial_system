@@ -4,6 +4,7 @@ namespace App\Models\Domain\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
@@ -32,11 +33,11 @@ class Branch extends Model
     }
 
     /**
-     * Get the safes for the branch.
+     * Get the safe for the branch.
      */
-    public function safes(): HasMany
+    public function safe(): HasOne
     {
-        return $this->hasMany(Safe::class);
+        return $this->hasOne(Safe::class);
     }
 
     public function getActivitylogOptions(): LogOptions

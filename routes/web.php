@@ -48,8 +48,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Safe Management Routes
     Route::get('safes', \App\Livewire\Safes\Index::class)
         ->name('safes.index');
-    Route::get('safes/create', \App\Livewire\Safes\Create::class)
-        ->name('safes.create');
     Route::get('safes/{safeId}/edit', \App\Livewire\Safes\Edit::class)
         ->name('safes.edit');
     Route::get('safes/move', \App\Livewire\Safes\Move::class)

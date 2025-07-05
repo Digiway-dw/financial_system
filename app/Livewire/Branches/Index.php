@@ -46,7 +46,7 @@ class Index extends Component
     public function render()
     {
         return view('livewire.branches.index', [
-            'branches' => $this->branches,
+            'branches' => $this->branches->toArray(),
         ]);
     }
 } 

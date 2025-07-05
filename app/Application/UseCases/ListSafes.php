@@ -10,8 +10,8 @@ class ListSafes
         private SafeRepository $safeRepository
     ) {}
 
-    public function execute(): array
+    public function execute($name = null): array
     {
-        return $this->safeRepository->allWithBranch();
+        return $this->safeRepository->allWithBranch($name);
     }
 } 

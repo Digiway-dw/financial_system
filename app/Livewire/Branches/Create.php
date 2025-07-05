@@ -21,6 +21,12 @@ class Create extends Component
     #[Validate('required|string|max:255|unique:branches,branch_code')] 
     public $branch_code = '';
 
+    #[Validate('required|numeric|min:0')]
+    public $safe_initial_balance;
+
+    #[Validate('nullable|string|max:1000')]
+    public $safe_description = '';
+
     private CreateBranch $createBranchUseCase;
 
     public function boot(CreateBranch $createBranchUseCase)
@@ -43,6 +49,9 @@ class Create extends Component
                 'description' => $this->description,
                 'location' => $this->location,
                 'branch_code' => $this->branch_code,
+                // Safe fields
+                'safe_initial_balance' => $this->safe_initial_balance,
+                'safe_description' => $this->safe_description,
             ]);
 
             session()->flash('message', 'Branch created successfully.');

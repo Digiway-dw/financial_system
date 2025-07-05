@@ -12,6 +12,7 @@ class Index extends Component
 {
     public array $safes;
     public array $clients;
+    public $name = '';
 
     private ListSafes $listSafesUseCase;
     private DeleteSafe $deleteSafeUseCase;
@@ -39,6 +40,11 @@ class Index extends Component
     public function loadClients()
     {
         $this->clients = $this->customerRepository->getAllClients(); // Assuming a method to get only clients
+    }
+
+    public function filter()
+    {
+        $this->safes = $this->listSafesUseCase->execute($this->name);
     }
 
     public function deleteSafe(string $safeId)

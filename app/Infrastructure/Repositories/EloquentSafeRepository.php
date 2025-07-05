@@ -15,7 +15,7 @@ class EloquentSafeRepository implements SafeRepository
 
     public function findById(string $id): ?Safe
     {
-        return EloquentSafe::find($id);
+        return EloquentSafe::with('branch')->find($id);
     }
 
     public function update(string $id, array $attributes): Safe
@@ -35,8 +35,12 @@ class EloquentSafeRepository implements SafeRepository
         return $this->allWithBranch();
     }
 
-    public function allWithBranch(): array
+    public function allWithBranch($name = null): array
     {
-        return EloquentSafe::with('branch')->get()->toArray();
+        $query = EloquentSafe::with('branch');
+        if ($name) {
+            $query->where('name', 'like', '%' . $name . '%');
+        }
+        return $query->get()->toArray();
     }
 } 

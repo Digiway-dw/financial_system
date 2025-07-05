@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_mobile_numbers', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('safes', function (Blueprint $table) {
+            $table->unique('branch_id', 'safes_branch_id_unique');
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_mobile_numbers');
+        Schema::table('safes', function (Blueprint $table) {
+            $table->dropUnique('safes_branch_id_unique');
+        });
     }
 };

@@ -48,7 +48,9 @@ class MoveSafeCash
         // Deduct from source safe
         $this->safeRepository->update($fromSafeId, ['current_balance' => $fromSafe->current_balance - $amount]);
 
-        // The amount is NOT added to destination safe here; it will be added upon approval.
+        // Add to destination safe
+        $this->safeRepository->update($toSafeId, ['current_balance' => $toSafe->current_balance + $amount]);
+
         // Record the transaction
         $transactionAttributes = [
             'customer_name' => 'Safe Transfer', // Generic name for internal transfer

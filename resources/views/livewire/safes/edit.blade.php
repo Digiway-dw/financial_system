@@ -16,31 +16,15 @@
             <x-input-error class="mt-2" :messages="$errors->get('currentBalance')" />
         </div>
 
-        <!-- Branch -->
+        <!-- Branch (Read-only) -->
         <div>
-            <x-input-label for="branchId" :value="__('Branch')" />
-            <select wire:model="branchId" id="branchId" name="branchId" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                <option value="">Select Branch</option>
-                @foreach ($branches as $branch)
-                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                @endforeach
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('branchId')" />
+            <x-input-label for="branchName" :value="__('Branch')" />
+            <x-text-input wire:model="branchName" id="branchName" name="branchName" type="text" class="mt-1 block w-full bg-gray-100 dark:bg-gray-800" readonly />
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Branch cannot be changed. Each branch has exactly one safe.</p>
         </div>
 
         <!-- Type -->
-        <div>
-            <x-input-label for="type" :value="__('Safe Type')" />
-            <select wire:model="type" id="type" name="type" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                <option value="">Select Safe Type</option>
-                <option value="Main Safe">Main Safe</option>
-                <option value="Sub Safe">Sub Safe</option>
-                <option value="ATM">ATM</option>
-                <option value="Petty Cash">Petty Cash</option>
-                <option value="Vault">Vault</option>
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('type')" />
-        </div>
+        <!-- Removed Safe Type field as only branch safes are allowed -->
 
         <!-- Description -->
         <div>
