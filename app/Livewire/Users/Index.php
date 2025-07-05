@@ -6,27 +6,57 @@ use Livewire\Component;
 use App\Domain\Entities\User;
 use Spatie\Permission\Models\Role;
 use Livewire\Attributes\On;
+use Livewire\WithPagination;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Domain\Entities\Branch;
 
 class Index extends Component
 {
-    public $users;
+    use WithPagination;
+    
     public $roles;
+    public $branches;
     public $editingUserId = null;
     public $selectedRole = null;
+    public $name = '';
+    public $role = '';
+    public $branchId = '';
+    public $showTrashed = false;
+    public $confirmingUserDeletion = false;
+    public $confirmingUserRestore = false;
+    public $userBeingDeleted = null;
+    public $userBeingRestored = null;
+    
+    protected $queryString = [
+        'name' => ['except' => ''],
+        'role' => ['except' => ''],
+        'branchId' => ['except' => ''],
+        'showTrashed' => ['except' => false],
+    ];
 
     public function mount()
     {
         Gate::authorize('manage-users');
-        $this->loadUsers();
         $this->roles = Role::all();
+        $this->branches = Branch::orderBy('name')->get();
+    }
+
+    public function filter()
+    {
+        $this->resetPage();
+    }
+    
+    public function resetFilters()
+    {
+        $this->reset(['name', 'role', 'branchId', 'showTrashed']);
+        $this->resetPage();
     }
 
     #[On('user-role-updated')]
-    public function loadUsers()
+    public function refreshUsers()
     {
-        $this->users = User::all();
+        // Just refresh the component
     }
 
     public function editRole(int $userId)
@@ -36,15 +66,14 @@ class Index extends Component
         $this->selectedRole = $user->getRoleNames()->first();
     }
 
-    public function saveRole(int $userId)
+    public function saveRole()
     {
         Gate::authorize('manage-users');
-        $user = User::find($userId);
+        $user = User::find($this->editingUserId);
         if ($user && $this->selectedRole) {
             $user->syncRoles([$this->selectedRole]);
             Cache::forget('spatie.permission.cache'); // Clear permission cache
             session()->flash('message', 'User role updated successfully.');
-            $this->loadUsers();
             $this->cancelEdit();
         }
     }
@@ -54,9 +83,68 @@ class Index extends Component
         $this->editingUserId = null;
         $this->selectedRole = null;
     }
+    
+    public function confirmUserDeletion($userId)
+    {
+        $this->userBeingDeleted = User::find($userId);
+        $this->confirmingUserDeletion = true;
+    }
+    
+    public function deleteUser()
+    {
+        if ($this->userBeingDeleted) {
+            Gate::authorize('delete', $this->userBeingDeleted);
+            $this->userBeingDeleted->delete();
+            session()->flash('message', 'User deleted successfully.');
+            $this->confirmingUserDeletion = false;
+            $this->userBeingDeleted = null;
+        }
+    }
+    
+    public function confirmRestore($userId)
+    {
+        $this->userBeingRestored = User::withTrashed()->find($userId);
+        $this->confirmingUserRestore = true;
+    }
+    
+    public function restoreUser()
+    {
+        if ($this->userBeingRestored) {
+            Gate::authorize('restore', $this->userBeingRestored);
+            $this->userBeingRestored->restore();
+            session()->flash('message', 'User restored successfully.');
+            $this->confirmingUserRestore = false;
+            $this->userBeingRestored = null;
+        }
+    }
 
     public function render()
     {
-        return view('livewire.users.index');
+        $query = User::with('branch');
+        
+        if ($this->showTrashed) {
+            $query->withTrashed();
+        }
+        
+        if ($this->name) {
+            $query->where('name', 'like', '%' . $this->name . '%');
+        }
+        
+        if ($this->role) {
+            $query->whereHas('roles', function($q) {
+                $q->where('name', $this->role);
+            });
+        }
+        
+        if ($this->branchId) {
+            $query->where('branch_id', $this->branchId);
+        }
+        
+        $users = $query->paginate(10);
+        
+        return view('livewire.users.index', [
+            'users' => $users,
+            'branches' => $this->branches
+        ]);
     }
 }

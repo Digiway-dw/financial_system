@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Constants\Roles;
 use App\Domain\Entities\User as DomainUser;
+use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,6 +15,9 @@ class AuthorizationServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register User policy for Domain\Entities\User
+        Gate::policy(DomainUser::class, UserPolicy::class);
+        
         Gate::define('manage-lines', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) || $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });

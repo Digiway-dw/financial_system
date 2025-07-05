@@ -1,10 +1,16 @@
 @props([
-    'name',
-    'show' => false,
-    'maxWidth' => '2xl'
+    'name' => null,
+    'show' => null,
+    'maxWidth' => '2xl',
+    'id' => null
 ])
 
 @php
+$id = $id ?? $name;
+
+// Check if wire:model is present and use it for show
+$show = $show ?? (isset($attributes['wire:model']) ? true : false);
+
 $maxWidth = [
     'sm' => 'sm:max-w-sm',
     'md' => 'sm:max-w-md',
@@ -16,7 +22,7 @@ $maxWidth = [
 
 <div
     x-data="{
-        show: @js($show),
+        show: @if ($show) true @elseif (isset($attributes['wire:model'])) @entangle($attributes->wire('model')).defer @else false @endif,
         focusables() {
             // All focusable element types...
             let selector = 'a, button, input:not([type=\'hidden\']), textarea, select, details, [tabindex]:not([tabindex=\'-1\'])'
@@ -39,15 +45,17 @@ $maxWidth = [
             document.body.classList.remove('overflow-y-hidden');
         }
     })"
-    x-on:open-modal.window="$event.detail == '{{ $name }}' ? show = true : null"
-    x-on:close-modal.window="$event.detail == '{{ $name }}' ? show = false : null"
+    @if ($id)
+        x-on:open-modal.window="$event.detail == '{{ $id }}' ? show = true : null"
+        x-on:close-modal.window="$event.detail == '{{ $id }}' ? show = false : null"
+    @endif
     x-on:close.stop="show = false"
     x-on:keydown.escape.window="show = false"
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
     class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
-    style="display: {{ $show ? 'block' : 'none' }};"
+    style="display: none;"
 >
     <div
         x-show="show"

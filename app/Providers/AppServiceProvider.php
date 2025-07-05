@@ -47,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
         $this->configureModel();
         $this->configureValidation();
         $this->configureIcons();
+        $this->configureBladeComponents();
         $this->shareGlobalViewData();
     }
 
@@ -220,6 +221,9 @@ class AppServiceProvider extends ServiceProvider
         if (!$this->app->environment('production')) {
             Model::shouldBeStrict();
         }
+        
+        // Enable lazy loading for all models
+        Model::preventLazyLoading(false);
     }
 
     /**
@@ -382,6 +386,19 @@ class AppServiceProvider extends ServiceProvider
                 return app('App\Helpers\IconHelper')->render($name, $attributes);
             }
         }
+    }
+
+    /**
+     * Configure Blade components.
+     */
+    private function configureBladeComponents(): void
+    {
+        // Register core components with explicit class names
+        Blade::component('App\View\Components\ConfirmationModal', 'confirmation-modal');
+        Blade::component('App\View\Components\Modal', 'modal');
+        Blade::component('App\View\Components\Button', 'button');
+        Blade::component('App\View\Components\SecondaryButton', 'secondary-button');
+        Blade::component('App\View\Components\DangerButton', 'danger-button');
     }
 
     /**
