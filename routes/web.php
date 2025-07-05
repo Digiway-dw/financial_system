@@ -26,8 +26,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Transaction Management Routes
     Route::get('transactions', \App\Livewire\Transactions\Index::class)
         ->name('transactions.index');
-    Route::get('transactions/create', \App\Livewire\Transactions\Create::class)
-        ->name('transactions.create');
+    Route::get('transactions/send', \App\Livewire\Transactions\Send::class)
+        ->name('transactions.send');
+    Route::get('transactions/receive', \App\Livewire\Transactions\Receive::class)
+        ->name('transactions.receive');
+    Route::get('transactions/cash', \App\Livewire\Transactions\Cash::class)
+        ->name('transactions.cash');
     Route::get('transactions/pending', \App\Livewire\Transactions\Pending::class)
         ->name('transactions.pending');
     Route::get('transactions/{transactionId}/edit', \App\Livewire\Transactions\Edit::class)

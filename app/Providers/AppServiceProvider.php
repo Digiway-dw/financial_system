@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Domain\Entities\User as DomainUser;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -120,15 +121,15 @@ class AppServiceProvider extends ServiceProvider
         }
     
         // صلاحيات المستخدمين
-        Gate::define('manage-lines', function (User $user) {
+        Gate::define('manage-lines', function (DomainUser $user) {
             return $user->hasRole('admin') || $user->hasRole('general_supervisor');
         });
 
-        Gate::define('manage-safes', function (User $user) {
+        Gate::define('manage-safes', function (DomainUser $user) {
             return $user->hasRole('admin') || $user->hasRole('branch_manager') || $user->hasRole('general_supervisor');
         });
 
-        Gate::define('view-reports', function (User $user) {
+        Gate::define('view-reports', function (DomainUser $user) {
             return $user->hasRole('admin') || $user->hasRole('general_supervisor') || $user->hasRole('auditor');
         });
     }

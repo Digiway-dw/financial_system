@@ -45,9 +45,7 @@ new class extends Component
                     </x-nav-link>
 
                     @canany(['send-transfer', 'send-transfer-pending'])
-                        <x-nav-link :href="route('transactions.create')" :active="request()->routeIs('transactions.create')" wire:navigate>
-                            {{ __('New Transaction') }}
-                        </x-nav-link>
+                        {{-- Removed New Transaction link --}}
                     @endcanany
 
                     @can('view-lines')
@@ -155,9 +153,7 @@ new class extends Component
             </x-responsive-nav-link>
 
             @canany(['send-transfer', 'send-transfer-pending'])
-                <x-responsive-nav-link :href="route('transactions.create')" :active="request()->routeIs('transactions.create')" wire:navigate>
-                    {{ __('New Transaction') }}
-                </x-responsive-nav-link>
+                {{-- Removed New Transaction link --}}
             @endcanany
 
             @can('view-lines')
