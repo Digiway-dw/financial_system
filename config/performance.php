@@ -11,13 +11,13 @@ return [
     */
 
     'enable_query_logging' => env('ENABLE_QUERY_LOGGING', false),
-    
+
     'slow_request_threshold' => env('SLOW_REQUEST_THRESHOLD', 1000), // milliseconds
-    
+
     'cache_views' => env('CACHE_VIEWS', true),
-    
+
     'optimize_images' => env('OPTIMIZE_IMAGES', true),
-    
+
     'database_optimizations' => [
         'enable_query_cache' => env('DB_QUERY_CACHE', true),
         'connection_timeout' => env('DB_CONNECTION_TIMEOUT', 30),

@@ -107,7 +107,7 @@ class OptimizeSystem extends Command
             // Build production assets
             $this->line('   Building production assets...');
             exec('npm run build 2>&1', $output, $return);
-            
+
             if ($return === 0) {
                 $this->line('   Assets built successfully');
             } else {

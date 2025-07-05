@@ -37,7 +37,7 @@ class BladeComponentServiceProvider extends ServiceProvider
         // Financial system specific icons
         $financialIcons = [
             'currency-dollar' => 'money',
-            'building-library' => 'bank', 
+            'building-library' => 'bank',
             'lock-closed' => 'safe',
             'arrow-right-left' => 'transaction',
             'users' => 'customers',

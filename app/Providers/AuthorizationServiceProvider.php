@@ -19,27 +19,27 @@ class AuthorizationServiceProvider extends ServiceProvider
         });
 
         Gate::define('manage-safes', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN) || 
-                   $user->hasRole(Roles::BRANCH_MANAGER) || 
-                   $user->hasRole(Roles::GENERAL_SUPERVISOR);
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::BRANCH_MANAGER) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });
 
         Gate::define('view-reports', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN) || 
-                   $user->hasRole(Roles::GENERAL_SUPERVISOR) || 
-                   $user->hasRole(Roles::AUDITOR);
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::AUDITOR);
         });
 
         Gate::define('manage-transactions', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN) || 
-                   $user->hasRole(Roles::GENERAL_SUPERVISOR) || 
-                   $user->hasRole(Roles::BRANCH_MANAGER);
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::BRANCH_MANAGER);
         });
 
         Gate::define('manage-customers', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN) || 
-                   $user->hasRole(Roles::BRANCH_MANAGER) || 
-                   $user->hasRole(Roles::AGENT);
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::BRANCH_MANAGER) ||
+                $user->hasRole(Roles::AGENT);
         });
 
         Gate::define('manage-users', function (DomainUser $user) {

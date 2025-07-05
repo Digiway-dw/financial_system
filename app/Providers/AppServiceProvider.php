@@ -92,7 +92,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Disable query logging in testing for performance
         config(['logging.channels.single.level' => 'error']);
-        
+
         // Use in-memory database for faster tests
         config(['database.default' => 'sqlite']);
         config(['database.connections.sqlite.database' => ':memory:']);
@@ -104,10 +104,10 @@ class AppServiceProvider extends ServiceProvider
     private function registerProductionServices(): void
     {
         // Production-specific optimizations
-        
+
         // Enable query result caching
         config(['cache.default' => 'redis']);
-        
+
         // Set strict database settings
         config([
             'database.connections.mysql.strict' => true,
@@ -144,7 +144,6 @@ class AppServiceProvider extends ServiceProvider
                 \PDO::ATTR_TIMEOUT => 30,
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             ]]);
-
         } catch (\Exception $e) {
             Log::warning('Database configuration failed: ' . $e->getMessage());
         }
@@ -163,7 +162,6 @@ class AppServiceProvider extends ServiceProvider
                 'staging' => $this->configureStagingUrl(),
                 default => null,
             };
-
         } catch (\Exception $e) {
             Log::warning('URL configuration failed: ' . $e->getMessage());
         }
@@ -175,7 +173,7 @@ class AppServiceProvider extends ServiceProvider
     private function configureProductionUrl(): void
     {
         URL::forceScheme('https');
-        
+
         // Force root URL if specified
         if ($rootUrl = config('app.force_url')) {
             URL::forceRootUrl($rootUrl);
@@ -262,7 +260,10 @@ class AppServiceProvider extends ServiceProvider
         Request::macro('isFinancialRequest', function () {
             /** @var Request $this */
             return in_array($this->path(), [
-                'transactions', 'safes', 'lines', 'customers'
+                'transactions',
+                'safes',
+                'lines',
+                'customers'
             ]);
         });
 
@@ -306,7 +307,6 @@ class AppServiceProvider extends ServiceProvider
                     $view->with($viewData);
                 }
             });
-
         } catch (\Exception $e) {
             Log::warning('View composer registration failed: ' . $e->getMessage());
         }
@@ -361,7 +361,6 @@ class AppServiceProvider extends ServiceProvider
                 // Create blade directive for each alias
                 Blade::component($iconName, $alias . '-icon');
             }
-
         } catch (\Exception $e) {
             Log::warning('Icon configuration failed: ' . $e->getMessage());
         }
@@ -378,7 +377,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Register global helper functions
         if (!function_exists('icon')) {
-            function icon(string $name, array $attributes = []): string {
+            function icon(string $name, array $attributes = []): string
+            {
                 return app('App\Helpers\IconHelper')->render($name, $attributes);
             }
         }

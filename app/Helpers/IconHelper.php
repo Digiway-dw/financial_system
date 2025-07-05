@@ -53,12 +53,12 @@ class IconHelper
     public static function render(string $name, array $attributes = []): string
     {
         $iconName = self::$iconMap[$name] ?? $name;
-        
+
         // Check if the heroicon component exists
         if (self::componentExists($iconName)) {
             return self::renderHeroicon($iconName, $attributes);
         }
-        
+
         // Fallback to SVG icon
         return self::renderFallbackIcon($name, $attributes);
     }
@@ -91,10 +91,10 @@ class IconHelper
     {
         $class = $attributes['class'] ?? 'w-5 h-5';
         $title = $attributes['title'] ?? ucfirst($name);
-        
+
         // Simple SVG fallback based on icon type
         $svg = self::getFallbackSvg($name);
-        
+
         return "<span class=\"inline-block {$class}\" title=\"{$title}\">{$svg}</span>";
     }
 

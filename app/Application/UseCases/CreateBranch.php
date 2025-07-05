@@ -18,10 +18,10 @@ class CreateBranch
         // Extract safe-related data from branch data
         $safeInitialBalance = $branchData['safe_initial_balance'] ?? 0.00;
         $safeDescription = $branchData['safe_description'] ?? '';
-        
+
         // Remove safe-related keys from branch data before creating branch
         $branchOnlyData = array_diff_key($branchData, array_flip(['safe_initial_balance', 'safe_description']));
-        
+
         // Create the branch first
         $branch = $this->branchRepository->create($branchOnlyData);
 
@@ -36,4 +36,4 @@ class CreateBranch
 
         return $branch;
     }
-} 
+}
