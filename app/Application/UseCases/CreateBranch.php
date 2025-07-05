@@ -15,15 +15,22 @@ class CreateBranch
 
     public function execute(array $branchData): Branch
     {
+        // Extract safe-related data from branch data
+        $safeInitialBalance = $branchData['safe_initial_balance'] ?? 0.00;
+        $safeDescription = $branchData['safe_description'] ?? '';
+        
+        // Remove safe-related keys from branch data before creating branch
+        $branchOnlyData = array_diff_key($branchData, array_flip(['safe_initial_balance', 'safe_description']));
+        
         // Create the branch first
-        $branch = $this->branchRepository->create($branchData);
+        $branch = $this->branchRepository->create($branchOnlyData);
 
         // Create a safe for this branch using the branch name + ' Safe' and type 'branch'
         $this->safeRepository->create([
             'name' => $branch->name . ' Safe',
-            'current_balance' => $branchData['safe_initial_balance'],
+            'current_balance' => $safeInitialBalance,
             'branch_id' => $branch->id,
-            'description' => $branchData['safe_description'],
+            'description' => $safeDescription,
             'type' => 'branch',
         ]);
 

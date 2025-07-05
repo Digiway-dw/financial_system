@@ -41,7 +41,9 @@ class UserSeeder extends Seeder
         $branch = $this->createBranchUseCase->execute([
             'name' => 'Main Branch',
             'location' => 'Downtown',
-            'branch_code' => 'BR001'
+            'branch_code' => 'BR001',
+            'safe_initial_balance' => 0.00,
+            'safe_description' => 'Main branch safe for handling cash transactions'
         ]);
 
         $this->createUserUseCase->execute(
