@@ -91,4 +91,8 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
+Route::get('/test-icons', function () {
+    return view('test-icons');
+})->name('test-icons');
+
 require __DIR__.'/auth.php';

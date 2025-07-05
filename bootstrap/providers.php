@@ -2,5 +2,9 @@
 
 return [
     App\Providers\AppServiceProvider::class,
+    App\Providers\RepositoryServiceProvider::class,
+    App\Providers\UseCaseServiceProvider::class,
+    App\Providers\AuthorizationServiceProvider::class,
+    App\Providers\BladeComponentServiceProvider::class,
     App\Providers\VoltServiceProvider::class,
 ];

@@ -12,7 +12,8 @@ export default defineConfig({
         }),
     ],
     server: {
-        https: true,
-        host: '0.0.0.0', // يخلي Vite يقبل أي اتصال (مهم لـ ngrok)
+        https: false,
+        host: '127.0.0.1', // Use localhost for local development
+        port: 5173,
     },
 });
