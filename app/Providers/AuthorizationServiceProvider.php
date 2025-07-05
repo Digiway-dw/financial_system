@@ -17,7 +17,7 @@ class AuthorizationServiceProvider extends ServiceProvider
     {
         // Register User policy for Domain\Entities\User
         Gate::policy(DomainUser::class, UserPolicy::class);
-        
+
         Gate::define('manage-lines', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) || $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });

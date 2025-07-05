@@ -14,7 +14,7 @@ use App\Models\Domain\Entities\Branch;
 class Index extends Component
 {
     use WithPagination;
-    
+
     public $roles;
     public $branches;
     public $editingUserId = null;
@@ -27,7 +27,7 @@ class Index extends Component
     public $confirmingUserRestore = false;
     public $userBeingDeleted = null;
     public $userBeingRestored = null;
-    
+
     protected $queryString = [
         'name' => ['except' => ''],
         'role' => ['except' => ''],
@@ -46,7 +46,7 @@ class Index extends Component
     {
         $this->resetPage();
     }
-    
+
     public function resetFilters()
     {
         $this->reset(['name', 'role', 'branchId', 'showTrashed']);
@@ -83,13 +83,13 @@ class Index extends Component
         $this->editingUserId = null;
         $this->selectedRole = null;
     }
-    
+
     public function confirmUserDeletion($userId)
     {
         $this->userBeingDeleted = User::find($userId);
         $this->confirmingUserDeletion = true;
     }
-    
+
     public function deleteUser()
     {
         if ($this->userBeingDeleted) {
@@ -100,13 +100,13 @@ class Index extends Component
             $this->userBeingDeleted = null;
         }
     }
-    
+
     public function confirmRestore($userId)
     {
         $this->userBeingRestored = User::withTrashed()->find($userId);
         $this->confirmingUserRestore = true;
     }
-    
+
     public function restoreUser()
     {
         if ($this->userBeingRestored) {
@@ -121,27 +121,27 @@ class Index extends Component
     public function render()
     {
         $query = User::with('branch');
-        
+
         if ($this->showTrashed) {
             $query->withTrashed();
         }
-        
+
         if ($this->name) {
             $query->where('name', 'like', '%' . $this->name . '%');
         }
-        
+
         if ($this->role) {
-            $query->whereHas('roles', function($q) {
+            $query->whereHas('roles', function ($q) {
                 $q->where('name', $this->role);
             });
         }
-        
+
         if ($this->branchId) {
             $query->where('branch_id', $this->branchId);
         }
-        
+
         $users = $query->paginate(10);
-        
+
         return view('livewire.users.index', [
             'users' => $users,
             'branches' => $this->branches

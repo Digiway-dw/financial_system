@@ -15,10 +15,10 @@ class EnsureAdminRoleSeeder extends Seeder
     {
         // Make sure admin role exists
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        
+
         // Get the first user or create one if none exists
         $user = User::first();
-        
+
         if ($user) {
             // Assign admin role to the first user
             $user->syncRoles([$adminRole->name]);

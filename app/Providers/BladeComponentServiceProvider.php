@@ -85,7 +85,7 @@ class BladeComponentServiceProvider extends ServiceProvider
         Blade::component('app.components.form.input', 'input');
         Blade::component('app.components.form.select', 'select');
         Blade::component('app.components.form.textarea', 'textarea');
-        
+
         // Register confirmation modal component
         Blade::component('confirmation-modal', 'confirmation-modal');
         Blade::component('secondary-button', 'secondary-button');

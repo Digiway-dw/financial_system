@@ -221,7 +221,7 @@ class AppServiceProvider extends ServiceProvider
         if (!$this->app->environment('production')) {
             Model::shouldBeStrict();
         }
-        
+
         // Enable lazy loading for all models
         Model::preventLazyLoading(false);
     }

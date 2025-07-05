@@ -92,4 +92,4 @@ class User extends Authenticatable
             ->logFillable()
             ->logOnlyDirty();
     }
-} 
+}
