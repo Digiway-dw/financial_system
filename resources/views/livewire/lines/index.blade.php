@@ -1,75 +1,276 @@
-<div>
-    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Line List</h3>
-
-    <div class="mt-4 mb-4">
-        <a href="{{ route('lines.create') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">Add New Line</a>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <!-- Header Section -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Lines Management</h1>
+                    <p class="mt-2 text-sm text-gray-600">Manage your financial lines, balances, and limits</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <a href="{{ route('lines.create') }}" 
+                       class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Add New Line
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="mb-6 p-4 bg-gray-100 dark:bg-gray-900 rounded shadow flex flex-col md:flex-row flex-wrap gap-4 items-end">
-        <!-- Each filter input: add w-full md:w-40 or md:w-36 as appropriate -->
-        <div class="w-full md:w-40">
-            <x-input-label for="number" :value="__('Line Number')" />
-            <x-text-input id="number" type="text" wire:model.defer="number" class="w-full" />
+    <!-- Content Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Filters Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex items-center mb-4">
+                <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"/>
+                </svg>
+                <h3 class="text-lg font-semibold text-gray-900">Filter Options</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                    <x-input-label for="number" :value="__('Line Number')" class="text-sm font-medium text-gray-700" />
+                    <x-text-input id="number" type="text" wire:model.defer="number" 
+                                  class="mt-1 block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
+                                  placeholder="Search by number..." />
+                </div>
+                <div>
+                    <x-primary-button wire:click="filter" 
+                                      class="w-full bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 rounded-lg py-2.5 font-medium shadow-sm hover:shadow-md transition-all duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        Apply Filter
+                    </x-primary-button>
+                </div>
+            </div>
         </div>
-        <!-- Repeat for other filters, adjusting widths as needed -->
-        <div class="w-full md:w-auto">
-            <x-primary-button wire:click="filter" class="w-full md:w-auto">{{ __('Filter') }}</x-primary-button>
-        </div>
-    </div>
 
-    <div class="mt-4 overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs md:text-sm">
-            <thead>
-                <tr>
-                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider" wire:click="sortBy('mobile_number')" style="cursor:pointer">Mobile Number @if($sortField==='mobile_number')<span>{{ $sortDirection==='asc'?'▲':'▼' }}</span>@endif</th>
-                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider" wire:click="sortBy('current_balance')" style="cursor:pointer">Current Balance @if($sortField==='current_balance')<span>{{ $sortDirection==='asc'?'▲':'▼' }}</span>@endif</th>
-                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider" wire:click="sortBy('daily_limit')" style="cursor:pointer">Daily Limit @if($sortField==='daily_limit')<span>{{ $sortDirection==='asc'?'▲':'▼' }}</span>@endif</th>
-                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider" wire:click="sortBy('monthly_limit')" style="cursor:pointer">Monthly Limit @if($sortField==='monthly_limit')<span>{{ $sortDirection==='asc'?'▲':'▼' }}</span>@endif</th>
-                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider" wire:click="sortBy('daily_usage')" style="cursor:pointer">Daily Usage @if($sortField==='daily_usage')<span>{{ $sortDirection==='asc'?'▲':'▼' }}</span>@endif</th>
-                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider" wire:click="sortBy('monthly_usage')" style="cursor:pointer">Monthly Usage @if($sortField==='monthly_usage')<span>{{ $sortDirection==='asc'?'▲':'▼' }}</span>@endif</th>
-                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider" wire:click="sortBy('network')" style="cursor:pointer">Network @if($sortField==='network')<span>{{ $sortDirection==='asc'?'▲':'▼' }}</span>@endif</th>
-                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider" wire:click="sortBy('status')" style="cursor:pointer">Status @if($sortField==='status')<span>{{ $sortDirection==='asc'?'▲':'▼' }}</span>@endif</th>
-                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider" wire:click="sortBy('branch_id')" style="cursor:pointer">Branch @if($sortField==='branch_id')<span>{{ $sortDirection==='asc'?'▲':'▼' }}</span>@endif</th>
-                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                @forelse ($lines as $line)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-1">
-                            @if($line['status'] === 'active')
-                                <span class="inline-flex items-center justify-center w-3 h-3 rounded-full bg-green-500 text-white">
-                                    <svg class="w-2 h-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                </span>
-                            @else
-                                <span class="inline-flex items-center justify-center w-3 h-3 rounded-full bg-red-500 text-white">
-                                    <svg class="w-2 h-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                                </span>
-                            @endif
-                            {{ $line['mobile_number'] }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ number_format($line['current_balance'], 2) }} EGP</td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ number_format($line['daily_limit'], 2) }} EGP</td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ number_format($line['monthly_limit'], 2) }} EGP</td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ number_format($line['daily_usage'], 2) }} EGP</td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ number_format($line['monthly_usage'], 2) }} EGP</td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $line['network'] }}</td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $line['status'] }}</td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400">{{ $line['branch']['name'] ?? 'N/A' }}</td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-right">
-                            <a href="{{ route('lines.edit', $line['id']) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">Edit</a>
-                            <a href="{{ route('lines.transfer', $line['id']) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-600 ms-3">Transfer</a>
-                            <a href="{{ route('lines.change-provider', $line['id']) }}" class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-600 ms-3">Change Provider</a>
-                            <button wire:click="toggleStatus('{{ $line['id'] }}')" class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-600 ms-3">{{ $line['status'] === 'active' ? 'Deactivate' : 'Activate' }}</button>
-                            <button wire:click="deleteLine('{{ $line['id'] }}')" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600 ms-3">Delete</button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="10" class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 dark:text-gray-400 text-center">No lines found.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+        <!-- Table Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <!-- Table Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-900">Lines Overview</h3>
+                <p class="text-sm text-gray-600 mt-1">Track and manage all your financial lines</p>
+            </div>
+
+            <!-- Table Content -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150" 
+                                wire:click="sortBy('mobile_number')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Mobile Number</span>
+                                    @if($sortField==='mobile_number')
+                                        <span class="text-blue-600">{{ $sortDirection==='asc'?'↑':'↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150" 
+                                wire:click="sortBy('current_balance')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Current Balance</span>
+                                    @if($sortField==='current_balance')
+                                        <span class="text-blue-600">{{ $sortDirection==='asc'?'↑':'↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150" 
+                                wire:click="sortBy('daily_limit')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Daily Limit</span>
+                                    @if($sortField==='daily_limit')
+                                        <span class="text-blue-600">{{ $sortDirection==='asc'?'↑':'↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150" 
+                                wire:click="sortBy('monthly_limit')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Monthly Limit</span>
+                                    @if($sortField==='monthly_limit')
+                                        <span class="text-blue-600">{{ $sortDirection==='asc'?'↑':'↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150" 
+                                wire:click="sortBy('daily_usage')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Daily Usage</span>
+                                    @if($sortField==='daily_usage')
+                                        <span class="text-blue-600">{{ $sortDirection==='asc'?'↑':'↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150" 
+                                wire:click="sortBy('monthly_usage')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Monthly Usage</span>
+                                    @if($sortField==='monthly_usage')
+                                        <span class="text-blue-600">{{ $sortDirection==='asc'?'↑':'↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150" 
+                                wire:click="sortBy('network')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Network</span>
+                                    @if($sortField==='network')
+                                        <span class="text-blue-600">{{ $sortDirection==='asc'?'↑':'↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150" 
+                                wire:click="sortBy('status')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Status</span>
+                                    @if($sortField==='status')
+                                        <span class="text-blue-600">{{ $sortDirection==='asc'?'↑':'↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150" 
+                                wire:click="sortBy('branch_id')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Branch</span>
+                                    @if($sortField==='branch_id')
+                                        <span class="text-blue-600">{{ $sortDirection==='asc'?'↑':'↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse ($lines as $line)
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        @if($line['status'] === 'active')
+                                            <div class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                                <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                                            </div>
+                                        @else
+                                            <div class="flex-shrink-0 w-3 h-3 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                                                <div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                                            </div>
+                                        @endif
+                                        <div class="text-sm font-medium text-gray-900">{{ $line['mobile_number'] }}</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ number_format($line['current_balance'], 2) }}</div>
+                                    <div class="text-xs text-gray-500">EGP</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ number_format($line['daily_limit'], 2) }}</div>
+                                    <div class="text-xs text-gray-500">EGP</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ number_format($line['monthly_limit'], 2) }}</div>
+                                    <div class="text-xs text-gray-500">EGP</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ number_format($line['daily_usage'], 2) }}</div>
+                                    <div class="text-xs text-gray-500">EGP</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ number_format($line['monthly_usage'], 2) }}</div>
+                                    <div class="text-xs text-gray-500">EGP</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ $line['network'] }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($line['status'] === 'active')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Active
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Inactive
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ $line['branch']['name'] ?? 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex items-center justify-end space-x-2">
+                                        <a href="{{ route('lines.edit', $line['id']) }}" 
+                                           class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-md transition-colors duration-150">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                            Edit
+                                        </a>
+                                        <a href="{{ route('lines.transfer', $line['id']) }}" 
+                                           class="inline-flex items-center px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 text-xs font-medium rounded-md transition-colors duration-150">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"/>
+                                            </svg>
+                                            Transfer
+                                        </a>
+                                        <a href="{{ route('lines.change-provider', $line['id']) }}" 
+                                           class="inline-flex items-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs font-medium rounded-md transition-colors duration-150">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                            </svg>
+                                            Provider
+                                        </a>
+                                        <button wire:click="toggleStatus('{{ $line['id'] }}')" 
+                                                class="inline-flex items-center px-3 py-1.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 text-xs font-medium rounded-md transition-colors duration-150">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
+                                            </svg>
+                                            {{ $line['status'] === 'active' ? 'Deactivate' : 'Activate' }}
+                                        </button>
+                                        <button wire:click="deleteLine('{{ $line['id'] }}')" 
+                                                class="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium rounded-md transition-colors duration-150">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="10" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        <h3 class="text-lg font-medium text-gray-900 mb-1">No lines found</h3>
+                                        <p class="text-sm text-gray-500">Get started by creating your first line.</p>
+                                        <a href="{{ route('lines.create') }}" 
+                                           class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-150">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                            </svg>
+                                            Create Line
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
