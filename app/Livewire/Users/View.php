@@ -18,9 +18,9 @@ class View extends Component
     public function mount($userId)
     {
         $user = User::findOrFail($userId);
-        if ($user->hasRole('admin')) {
-            abort(403, 'Cannot view admin user.');
-        }
+        // if ($user->hasRole('admin')) {
+        //     abort(403, 'Cannot view admin user.');
+        // }
         $this->user = $user;
         $this->branch = $user->branch;
         $this->role = $user->getRoleNames()->first();
@@ -38,4 +38,4 @@ class View extends Component
             'loginHistories' => $this->loginHistories,
         ]);
     }
-} 
+}

@@ -20,6 +20,56 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @if (Auth::user()->hasRole('admin'))
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-4">Admin Quick Access</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <a href="{{ route('users.index') }}"
+                                class="bg-indigo-100 hover:bg-indigo-200 p-4 rounded-lg text-center transition">
+                                <x-heroicon-o-users class="w-8 h-8 mx-auto text-indigo-600" />
+                                <span class="block mt-2 font-medium">Users</span>
+                            </a>
+                            <a href="{{ route('lines.index') }}"
+                                class="bg-yellow-100 hover:bg-yellow-200 p-4 rounded-lg text-center transition">
+                                <x-heroicon-o-phone class="w-8 h-8 mx-auto text-yellow-600" />
+                                <span class="block mt-2 font-medium">Lines</span>
+                            </a>
+                            <a href="{{ route('customers.index') }}"
+                                class="bg-blue-100 hover:bg-blue-200 p-4 rounded-lg text-center transition">
+                                <x-heroicon-o-identification class="w-8 h-8 mx-auto text-blue-600" />
+                                <span class="block mt-2 font-medium">Customers</span>
+                            </a>
+                            <a href="{{ route('branches.index') }}"
+                                class="bg-green-100 hover:bg-green-200 p-4 rounded-lg text-center transition">
+                                <x-heroicon-o-building-office-2 class="w-8 h-8 mx-auto text-green-600" />
+                                <span class="block mt-2 font-medium">Branches</span>
+                            </a>
+                            <a href="{{ route('safes.index') }}"
+                                class="bg-red-100 hover:bg-red-200 p-4 rounded-lg text-center transition">
+                                <x-heroicon-o-banknotes class="w-8 h-8 mx-auto text-red-600" />
+                                <span class="block mt-2 font-medium">Safes</span>
+                            </a>
+                            <a href="{{ route('transactions.index') }}"
+                                class="bg-purple-100 hover:bg-purple-200 p-4 rounded-lg text-center transition">
+                                <x-heroicon-o-receipt-percent class="w-8 h-8 mx-auto text-purple-600" />
+                                <span class="block mt-2 font-medium">Transactions</span>
+                            </a>
+                            <a href="{{ route('reports.index') }}"
+                                class="bg-emerald-100 hover:bg-emerald-200 p-4 rounded-lg text-center transition">
+                                <x-heroicon-o-chart-bar class="w-8 h-8 mx-auto text-emerald-600" />
+                                <span class="block mt-2 font-medium">Reports</span>
+                            </a>
+                            <a href="{{ route('audit-log.index') }}"
+                                class="bg-amber-100 hover:bg-amber-200 p-4 rounded-lg text-center transition">
+                                <x-heroicon-o-document-magnifying-glass class="w-8 h-8 mx-auto text-amber-600" />
+                                <span class="block mt-2 font-medium">Audit Log</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <div class="flex gap-4 mb-8">

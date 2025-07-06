@@ -15,6 +15,31 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Gate;
+use App\Application\UseCases\ApproveTransaction;
+use App\Application\UseCases\ListPendingTransactions;
+use App\Application\UseCases\RejectTransaction;
+use App\Application\UseCases\CreateLine;
+use App\Application\UseCases\UpdateLine;
+use App\Application\UseCases\DeleteLine;
+use App\Application\UseCases\ListLines;
+use App\Application\UseCases\ViewLineBalanceAndUsage;
+use App\Application\UseCases\CreateBranch;
+use App\Application\UseCases\UpdateBranch;
+use App\Application\UseCases\DeleteBranch;
+use App\Application\UseCases\ListBranches;
+use App\Domain\Interfaces\BranchRepository;
+use App\Domain\Interfaces\CustomerRepository;
+use App\Domain\Interfaces\LineRepository;
+use App\Domain\Interfaces\SafeRepository;
+use App\Domain\Interfaces\TransactionRepository;
+use App\Domain\Interfaces\UserRepository;
+use App\Infrastructure\Repositories\EloquentBranchRepository;
+use App\Infrastructure\Repositories\EloquentCustomerRepository;
+use App\Infrastructure\Repositories\EloquentLineRepository;
+use App\Infrastructure\Repositories\EloquentSafeRepository;
+use App\Infrastructure\Repositories\EloquentTransactionRepository;
+use App\Infrastructure\Repositories\EloquentUserRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,6 +60,68 @@ class AppServiceProvider extends ServiceProvider
         $this->registerEnvironmentSpecificServices();
         $this->registerMacros();
         $this->registerHelpers();
+        $this->app->bind(UserRepository::class, EloquentUserRepository::class);
+        $this->app->bind(CustomerRepository::class, EloquentCustomerRepository::class);
+        $this->app->bind(TransactionRepository::class, EloquentTransactionRepository::class);
+        $this->app->bind(LineRepository::class, EloquentLineRepository::class);
+        $this->app->bind(SafeRepository::class, EloquentSafeRepository::class);
+        $this->app->bind(BranchRepository::class, EloquentBranchRepository::class);
+
+        // Use Case Bindings
+        $this->app->singleton(ListPendingTransactions::class, function ($app) {
+            return new ListPendingTransactions($app->make(TransactionRepository::class));
+        });
+        $this->app->singleton(ApproveTransaction::class, function ($app) {
+            return new ApproveTransaction(
+                $app->make(TransactionRepository::class),
+                $app->make(SafeRepository::class),
+                $app->make(LineRepository::class)
+            );
+        });
+        $this->app->singleton(RejectTransaction::class, function ($app) {
+            return new RejectTransaction(
+                $app->make(TransactionRepository::class),
+                $app->make(SafeRepository::class)
+            );
+        });
+
+        $this->app->singleton(CreateLine::class, function ($app) {
+            return new CreateLine($app->make(LineRepository::class));
+        });
+        $this->app->singleton(UpdateLine::class, function ($app) {
+            return new UpdateLine($app->make(LineRepository::class));
+        });
+        $this->app->singleton(DeleteLine::class, function ($app) {
+            return new DeleteLine($app->make(LineRepository::class));
+        });
+        $this->app->singleton(ListLines::class, function ($app) {
+            return new ListLines(
+                $app->make(LineRepository::class),
+                $app->make(ViewLineBalanceAndUsage::class)
+            );
+        });
+        $this->app->singleton(ViewLineBalanceAndUsage::class, function ($app) {
+            return new ViewLineBalanceAndUsage(
+                $app->make(LineRepository::class),
+                $app->make(TransactionRepository::class)
+            );
+        });
+
+        $this->app->singleton(CreateBranch::class, function ($app) {
+            return new CreateBranch(
+                $app->make(BranchRepository::class),
+                $app->make(SafeRepository::class)
+            );
+        });
+        $this->app->singleton(UpdateBranch::class, function ($app) {
+            return new UpdateBranch($app->make(BranchRepository::class));
+        });
+        $this->app->singleton(DeleteBranch::class, function ($app) {
+            return new DeleteBranch($app->make(BranchRepository::class));
+        });
+        $this->app->singleton(ListBranches::class, function ($app) {
+            return new ListBranches($app->make(BranchRepository::class));
+        });
     }
 
     /**
@@ -49,6 +136,44 @@ class AppServiceProvider extends ServiceProvider
         $this->configureIcons();
         $this->configureBladeComponents();
         $this->shareGlobalViewData();
+
+        // Register Blade Components
+        Blade::component('danger-button', \Illuminate\View\Component::class);
+        Blade::component('secondary-button', \Illuminate\View\Component::class);
+        Blade::component('modal', \Illuminate\View\Component::class);
+
+        // Use HTTP for local development
+        if (app()->environment('local')) {
+            URL::forceScheme('http');
+            URL::forceRootUrl(request()->getSchemeAndHttpHost());
+        }
+
+        // 🔧 إجبار Laravel يولد روابط بناءً على عنوان الزيارة (ngrok أو غيره)
+        if (app()->environment('local') && request()->getSchemeAndHttpHost()) {
+            URL::forceRootUrl(request()->getSchemeAndHttpHost());
+        }
+
+        // Add current_password validation rule
+        \Illuminate\Support\Facades\Validator::extend('current_password', function ($attribute, $value, $parameters, $validator) {
+            return \Illuminate\Support\Facades\Hash::check($value, \Illuminate\Support\Facades\Auth::user()->password);
+        }, 'The :attribute does not match your current password.');
+
+        // صلاحيات المستخدمين
+        Gate::define('manage-users', function (\App\Domain\Entities\User $user) {
+            return $user->hasRole('admin');
+        });
+
+        Gate::define('manage-lines', function (\App\Domain\Entities\User $user) {
+            return $user->hasRole('admin') || $user->hasRole('general_supervisor');
+        });
+
+        Gate::define('manage-safes', function (\App\Domain\Entities\User $user) {
+            return $user->hasRole('admin') || $user->hasRole('branch_manager') || $user->hasRole('general_supervisor');
+        });
+
+        Gate::define('view-reports', function (\App\Domain\Entities\User $user) {
+            return $user->hasRole('admin') || $user->hasRole('general_supervisor') || $user->hasRole('auditor');
+        });
     }
 
     /**

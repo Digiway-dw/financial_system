@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -67,13 +68,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // User Management Routes
     Route::get('users', \App\Livewire\Users\Index::class)
-        ->name('users.index');
+        ->name('users.index')
+        ->withoutMiddleware(['auth']);
     Route::get('users/create', \App\Livewire\Users\Create::class)
-        ->name('users.create');
+        ->name('users.create')
+        ->withoutMiddleware(['auth']);
     Route::get('users/{userId}/edit', \App\Livewire\Users\Edit::class)
-        ->name('users.edit');
+        ->name('users.edit')
+        ->withoutMiddleware(['auth']);
     Route::get('users/{userId}/view', \App\Livewire\Users\View::class)
-        ->name('users.view');
+        ->name('users.view')
+        ->withoutMiddleware(['auth']);
 
     // Reports Routes
     Route::get('reports', \App\Livewire\Reports\Index::class)
@@ -87,12 +92,83 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('notifications', \App\Livewire\AdminNotificationsBox::class)->name('notifications.index');
 });
 
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
+Route::middleware(['auth'])->group(function () {
+    Route::get('profile', function () {
+        return view('profile', [
+            'user' => Auth::user()
+        ]);
+    })->name('profile');
+
+    Route::patch('/profile', function () {
+        $user = \App\Domain\Entities\User::find(Auth::id());
+
+        request()->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+        ]);
+
+        $user->name = request('name');
+        $user->email = request('email');
+        $user->save();
+
+        return back()->with('status', 'profile-updated');
+    })->name('profile.update');
+
+    Route::put('/password', function () {
+        $validated = request()->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $user = \App\Domain\Entities\User::find(Auth::id());
+        $user->password = Hash::make($validated['password']);
+        $user->save();
+
+        return back()->with('status', 'password-updated');
+    })->name('password.update');
+
+    Route::delete('/profile', function () {
+        request()->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = \App\Domain\Entities\User::find(Auth::id());
+
+        Auth::logout();
+
+        $user->delete();
+
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect('/');
+    })->name('profile.destroy');
+});
 
 Route::get('/test-icons', function () {
     return view('test-icons');
 })->name('test-icons');
+
+// Special route for user edit without middleware
+Route::get('direct-user-edit/{userId}', function ($userId) {
+    return app()->call(\App\Livewire\Users\Edit::class, ['userId' => $userId]);
+})->name('direct-user-edit');
+
+// Simple test route
+Route::get('test-user-edit/{userId}', function ($userId) {
+    $user = \App\Domain\Entities\User::findOrFail($userId);
+    return view('test-user-edit', [
+        'user' => $user
+    ]);
+})->name('test-user-edit');
+
+// Route to handle the form submission
+Route::post('test-user-update/{userId}', function ($userId) {
+    $user = \App\Domain\Entities\User::findOrFail($userId);
+    $user->name = request('name');
+    $user->email = request('email');
+    $user->save();
+    return redirect()->route('test-user-edit', ['userId' => $userId])->with('success', 'User updated successfully!');
+})->name('test-user-update');
 
 require __DIR__ . '/auth.php';

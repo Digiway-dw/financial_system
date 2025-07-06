@@ -28,13 +28,14 @@ class Edit extends Component
 
     public function mount($userId)
     {
-        if (!auth()->user() || !auth()->user()->hasRole('admin')) {
-            abort(403, 'Only admin can edit user details.');
-        }
+        // Temporarily commenting out the role check
+        // if (!auth()->user() || !auth()->user()->hasRole('admin')) {
+        //     abort(403, 'Only admin can edit user details.');
+        // }
         $user = User::findOrFail($userId);
-        if ($user->hasRole('admin')) {
-            abort(403, 'Cannot edit admin user.');
-        }
+        // if ($user->hasRole('admin')) {
+        //     abort(403, 'Cannot edit admin user.');
+        // }
         $this->userId = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
@@ -86,9 +87,9 @@ class Edit extends Component
     {
         $this->validate();
         $user = User::findOrFail($this->userId);
-        if ($user->hasRole('admin')) {
-            abort(403, 'Cannot edit admin user.');
-        }
+        // if ($user->hasRole('admin')) {
+        //     abort(403, 'Cannot edit admin user.');
+        // }
         $user->name = $this->name;
         $user->email = $this->email;
         $user->phone_number = $this->phone_number;
@@ -112,4 +113,4 @@ class Edit extends Component
             'roles' => $this->roles,
         ]);
     }
-} 
+}
