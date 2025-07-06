@@ -59,7 +59,7 @@ class EloquentCustomerRepository implements CustomerRepository
         $customers = $query->withCount('transactions')->get();
 
         // Statistics with simpler approach to avoid N+1 queries
-        $topByTransactionCount = $customers->sortByDesc('transactions_count')->take(5)->map(function($c) {
+        $topByTransactionCount = $customers->sortByDesc('transactions_count')->take(5)->map(function ($c) {
             return [
                 'name' => $c->name,
                 'count' => $c->transactions_count,
@@ -91,4 +91,4 @@ class EloquentCustomerRepository implements CustomerRepository
             ->get()
             ->toArray();
     }
-} 
+}
