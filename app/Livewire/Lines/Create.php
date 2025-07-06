@@ -10,27 +10,27 @@ use Illuminate\Support\Facades\Gate;
 
 class Create extends Component
 {
-    #[Validate('required|string|max:20|unique:lines,mobile_number')] 
+    #[Validate('required|string|max:20|unique:lines,mobile_number')]
     public $mobileNumber = '';
 
-    #[Validate('required|numeric|min:0')] 
+    #[Validate('required|numeric|min:0')]
     public $currentBalance = 0.00;
 
-    #[Validate('required|numeric|min:0')] 
+    #[Validate('required|numeric|min:0')]
     public $dailyLimit = 0.00;
 
-    #[Validate('required|numeric|min:0')] 
+    #[Validate('required|numeric|min:0')]
     public $monthlyLimit = 0.00;
 
-    #[Validate('required|string|in:Vodafone,Orange,Etisalat,We')] 
+    #[Validate('required|string|in:Vodafone,Orange,Etisalat,We')]
     public $network = 'Vodafone';
 
-    #[Validate('required|exists:users,id')] 
-    public $userId = '';
+    #[Validate('required|exists:branches,id')]
+    public $branchId = '';
 
     private CreateLine $createLineUseCase;
 
-    public $users = []; // Initialize as an empty array
+    public $branches = []; // Initialize as an empty array
 
     public function boot(CreateLine $createLineUseCase)
     {
@@ -40,7 +40,7 @@ class Create extends Component
     public function mount()
     {
         Gate::authorize('manage-sim-lines');
-        // $this->users = User::all(); // Moved to render()
+        // $this->branches = Branch::all(); // Moved to render()
     }
 
     public function createLine()
@@ -54,7 +54,7 @@ class Create extends Component
                 'daily_limit' => (float) $this->dailyLimit,
                 'monthly_limit' => (float) $this->monthlyLimit,
                 'network' => $this->network,
-                'user_id' => $this->userId,
+                'branch_id' => $this->branchId,
             ]);
 
             session()->flash('message', 'Line created successfully.');
@@ -66,7 +66,7 @@ class Create extends Component
 
     public function render()
     {
-        $this->users = User::all(); // Load users in render method
+        $this->branches = \App\Models\Domain\Entities\Branch::all(); // Load branches in render method
         return view('livewire.lines.create');
     }
 }

@@ -22,6 +22,8 @@ class Line extends Model
         'current_balance',
         'daily_limit',
         'monthly_limit',
+        'daily_usage',
+        'monthly_usage',
         'network',
         'status',
         'branch_id',

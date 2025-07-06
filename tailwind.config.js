@@ -9,7 +9,7 @@ export default {
         './resources/views/**/*.blade.php',
     ],
 
-    darkMode: false, // Disable dark mode to ensure light theme
+    darkMode: 'media', // Use media queries for dark mode
 
     theme: {
         extend: {
