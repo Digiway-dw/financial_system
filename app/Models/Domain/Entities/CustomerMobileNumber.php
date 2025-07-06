@@ -16,4 +16,6 @@ class CustomerMobileNumber extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    // Removed boot method for duplicate check; now handled in Livewire validation
 } 

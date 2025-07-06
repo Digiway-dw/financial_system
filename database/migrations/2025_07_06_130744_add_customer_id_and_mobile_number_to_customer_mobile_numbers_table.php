@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_mobile_numbers', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('customer_id');
-            $table->string('mobile_number');
-            $table->timestamps();
+        Schema::table('customer_mobile_numbers', function (Blueprint $table) {
+            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->string('mobile_number')->nullable();
         });
     }
 
@@ -24,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_mobile_numbers');
+        Schema::table('customer_mobile_numbers', function (Blueprint $table) {
+            $table->dropColumn(['customer_id', 'mobile_number']);
+        });
     }
 };

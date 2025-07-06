@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_mobile_numbers', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('customer_id');
-            $table->string('mobile_number');
-            $table->timestamps();
+        Schema::table('customers', function (Blueprint $table) {
+            //
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_mobile_numbers');
+        Schema::table('customers', function (Blueprint $table) {
+            //
+        });
     }
 };

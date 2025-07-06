@@ -201,17 +201,16 @@
                                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                d="M11 5h2m-1 0v14m-7-7h14" />
                                         </svg>
                                         Edit
                                     </a>
-                                    <button wire:click="deleteCustomer('{{ $customer['id'] }}')"
-                                        onclick="return confirm('Are you sure you want to delete this customer?')"
+                                    <button type="button" wire:click="$set('customerToDelete', {{ $customer['id'] }})"
                                         class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-xs font-medium rounded-lg hover:bg-red-200 transition-colors duration-150">
                                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                         Delete
                                     </button>
@@ -238,4 +237,20 @@
             </table>
         </div>
     </div>
+
+    {{-- Confirmation Modal --}}
+    @if($customerToDelete)
+        <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full">
+                <h2 class="text-lg font-bold mb-4">Confirm Delete</h2>
+                <p class="mb-6">Are you sure you want to delete this customer? This action cannot be undone.</p>
+                <div class="flex justify-end gap-4">
+                    <button type="button" wire:click="$set('customerToDelete', null)"
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="button" wire:click="deleteCustomer('{{ $customerToDelete }}')"
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Delete</button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

@@ -44,6 +44,9 @@
                     <!-- Mobile Numbers -->
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-3">Mobile Numbers</label>
+                        @error('mobileNumbers')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                         <div class="space-y-3">
                             @foreach ($mobileNumbers as $i => $number)
                                 <div class="flex gap-3 items-center">

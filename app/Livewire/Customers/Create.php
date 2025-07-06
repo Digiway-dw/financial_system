@@ -87,6 +87,14 @@ class Create extends Component
     {
         $this->validate();
 
+        // Custom validation for unique mobile numbers
+        foreach ($this->mobileNumbers as $number) {
+            if (\App\Models\Domain\Entities\CustomerMobileNumber::where('mobile_number', $number)->exists()) {
+                $this->addError('mobileNumbers', 'The mobile number ' . $number . ' is already used. Please enter another number.');
+                return;
+            }
+        }
+
         try {
             // Use the first mobile number as the primary
             $primaryMobile = $this->mobileNumbers[0];

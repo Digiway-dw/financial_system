@@ -19,6 +19,7 @@ class Index extends Component
     public $topByTransactionCount = [];
     public $topByTransferred = [];
     public $topByCommissions = [];
+    public $customerToDelete = null;
 
     private ListCustomers $listCustomersUseCase;
     private DeleteCustomer $deleteCustomerUseCase;
@@ -69,8 +70,10 @@ class Index extends Component
             $this->deleteCustomerUseCase->execute($customerId);
             session()->flash('message', 'Customer deleted successfully.');
             $this->loadCustomers();
+            $this->customerToDelete = null;
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to delete customer: ' . $e->getMessage());
+            $this->customerToDelete = null;
         }
     }
 

@@ -30,6 +30,8 @@ class EloquentCustomerRepository implements CustomerRepository
 
     public function delete(Customer $customer): void
     {
+        // Delete related mobile numbers
+        $customer->mobileNumbers()->delete();
         $customer->delete();
     }
 
