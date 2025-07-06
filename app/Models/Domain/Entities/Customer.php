@@ -33,7 +33,7 @@ class Customer extends Model
      */
     public function transactions(): HasMany
     {
-        return $this->hasMany(\App\Models\Domain\Entities\Transaction::class, 'customer_mobile_number', 'customer_mobile_number');
+        return $this->hasMany(\App\Models\Domain\Entities\Transaction::class, 'customer_mobile_number', 'mobile_number');
     }
 
     /**
