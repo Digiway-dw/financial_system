@@ -1,1 +1,44 @@
+# Laravel
+/vendor/
+/node_modules/
+.env
+.env.*
+.phpunit.result.cache
+/storage/*.key
+/storage/*.log
+/storage/framework/
+/storage/logs/
+/storage/app/public/
+/public/storage
+/public/vendor
+/public/hot
+/public/mix-manifest.json
+/public/build/
 
+# System/IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# OS generated
+*.log
+
+# Composer
+composer.lock
+
+# NPM
+package-lock.json
+yarn.lock
+
+# Misc
+*.bak
+*.tmp
+*.swp
+
+# Reports and summaries
+UI_ENHANCEMENT_SUMMARY.md
+HEROICON_INTEGRATION_REPORT.md
+OPTIMIZATION_REPORT.md
