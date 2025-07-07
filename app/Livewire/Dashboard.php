@@ -60,7 +60,7 @@ class Dashboard extends Component
             $data['totalBranches'] = count($this->branchRepository->all());
             $data['totalLines'] = count($this->lineRepository->all());
             $data['totalSafes'] = count($this->safeRepository->all());
-            $data['totalCustomers'] = count($this->customerRepository->getAll());
+            $data['totalCustomers'] = \App\Models\Domain\Entities\Customer::count();
             $data['totalTransactions'] = count($this->transactionRepository->all());
 
             $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);

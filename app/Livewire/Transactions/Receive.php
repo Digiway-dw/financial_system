@@ -92,13 +92,28 @@ class Receive extends Component
             $this->warning = 'Amount exceeds line balance!';
             return;
         }
+        // If client not found, register new client
+        if (!$this->client_id) {
+            $newClient = new \App\Models\Domain\Entities\Customer();
+            $newClient->name = $this->client_name;
+            $newClient->mobile_number = $this->phone_number;
+            $newClient->customer_code = $this->client_code;
+            $newClient->gender = $this->gender;
+            $newClient->balance = 0;
+            $newClient->is_client = true;
+            $newClient->branch_id = Auth::user()->branch_id;
+            $newClient->save();
+            $this->client_id = $newClient->id;
+        }
+        $this->commission = max(5, ceil($this->amount / 500) * 5);
+        $pending = false; // For future discount logic
         $transaction = app(RegisterTransaction::class)->execute([
             'client_id' => $this->client_id,
             'to_client' => $this->to_client,
             'amount' => $this->amount,
             'commission' => $this->commission,
             'discount' => 0,
-            'pending' => false,
+            'pending' => $pending,
             'line_type' => $this->line_type,
             'type' => 'receive',
         ]);
@@ -109,7 +124,7 @@ class Receive extends Component
             'gender' => $this->gender,
         ]);
         $this->reset(['amount', 'commission', 'warning']);
-        session()->flash('message', 'Transaction added successfully.');
+        session()->flash('message', $pending ? 'Transaction pending approval.' : 'Transaction added successfully.');
     }
 
     public function render()

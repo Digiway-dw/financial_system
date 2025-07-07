@@ -20,7 +20,7 @@ class Send extends Component
     public $client_name;
     public $gender;
     public $to_client;
-    public $amount;
+    public $amount = 0;
     public $commission = 0;
     public $discount = 0;
     public $collect_from_wallet = false;
@@ -34,6 +34,13 @@ class Send extends Component
     public $allCustomers = [];
     public $customerSuggestions = [];
     public $searchTerm = '';
+    public $toClientSearch = '';
+    public $toClientSuggestions = [];
+    public $toClientId = null;
+    public $toClientName = '';
+    public $toClientPhone = '';
+    public $toClientCode = '';
+    public $toClientGender = '';
 
     protected $rules = [
         'client_code' => 'nullable|string',
@@ -87,17 +94,69 @@ class Send extends Component
         }
     }
 
-    public function updatedAmount()
+    public function updatedAmount($value)
     {
-        $this->commission = ceil($this->amount / 500) * 5;
+        $val = floatval($value);
+        if ($val < 1) {
+            $this->commission = 0;
+        } else {
+            $this->commission = max(5, ceil($val / 500) * 5);
+        }
+    }
+
+    public function updatedToClientSearch($value)
+    {
+        $this->toClientSuggestions = collect($this->allCustomers)
+            ->filter(function($c) use ($value) {
+                return stripos($c['name'], $value) !== false ||
+                       stripos($c['mobile_number'], $value) !== false ||
+                       stripos($c['customer_code'], $value) !== false;
+            })
+            ->take(5)
+            ->values()
+            ->toArray();
+    }
+
+    public function selectToClient($customerId)
+    {
+        $customer = collect($this->allCustomers)->firstWhere('id', $customerId);
+        if ($customer) {
+            $this->toClientId = $customer['id'];
+            $this->toClientName = $customer['name'];
+            $this->toClientPhone = $customer['mobile_number'];
+            $this->toClientCode = $customer['customer_code'];
+            $this->toClientGender = $customer['gender'];
+            $this->to_client = $customer['name'];
+            $this->toClientSuggestions = [];
+        }
+    }
+
+    public function createToClient()
+    {
+        $newClient = new \App\Models\Domain\Entities\Customer();
+        $newClient->name = $this->toClientName ?: $this->to_client;
+        $newClient->mobile_number = $this->toClientPhone;
+        $newClient->customer_code = $this->toClientCode;
+        $newClient->gender = $this->toClientGender ?: 'male';
+        $newClient->balance = 0;
+        $newClient->is_client = true;
+        $newClient->branch_id = Auth::user()->branch_id;
+        $newClient->save();
+        $this->toClientId = $newClient->id;
+        $this->to_client = $newClient->name;
     }
 
     public function addTransaction()
     {
         $this->validate();
         $walletBalance = app(GetWalletBalance::class)->forClient($this->client_id);
+        $lineBalance = 1000000; // TODO: Replace with actual line balance fetch if needed
         if ($this->amount > $walletBalance) {
             $this->warning = 'Amount exceeds wallet balance!';
+            return;
+        }
+        if ($this->amount > $lineBalance) {
+            $this->warning = 'Amount exceeds line balance!';
             return;
         }
         $pending = false;
@@ -109,9 +168,27 @@ class Send extends Component
             Notification::route('mail', 'admin@example.com')->notify(new AdminWalletApprovalNotification($this->client_id, $this->amount));
             $pending = true;
         }
+        // If client not found, register new client
+        if (!$this->client_id) {
+            $newClient = new \App\Models\Domain\Entities\Customer();
+            $newClient->name = $this->client_name;
+            $newClient->mobile_number = $this->phone_number;
+            $newClient->customer_code = $this->client_code;
+            $newClient->gender = $this->gender;
+            $newClient->balance = 0;
+            $newClient->is_client = true;
+            $newClient->branch_id = Auth::user()->branch_id;
+            $newClient->save();
+            $this->client_id = $newClient->id;
+        }
+        // Ensure recipient exists
+        if (!$this->toClientId) {
+            $this->createToClient();
+        }
+        $this->commission = max(5, ceil($this->amount / 500) * 5);
         $transaction = app(RegisterTransaction::class)->execute([
             'client_id' => $this->client_id,
-            'to_client' => $this->to_client,
+            'to_client' => $this->toClientId,
             'amount' => $this->amount,
             'commission' => $this->commission,
             'discount' => $this->discount,
@@ -131,6 +208,13 @@ class Send extends Component
 
     public function render()
     {
+        // Always recalculate commission for robustness
+        $val = floatval($this->amount);
+        if ($val < 1) {
+            $this->commission = 0;
+        } else {
+            $this->commission = max(5, ceil($val / 500) * 5);
+        }
         return view('livewire.transactions.send', [
             'previous_recipients' => $this->previous_recipients,
             'employee_name' => $this->employee_name,

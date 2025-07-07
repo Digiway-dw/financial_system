@@ -21,21 +21,28 @@
                     <label><input type="radio" name="gender" value="female"> Female</label>
                 </div>
             </div>
-            <div>
-                <x-input-label for="to_client" :value="__('To Client (from history)')" />
-                <select id="to_client" class="mt-1 block w-full rounded-lg border-gray-300">
-                    <option value="">Select recipient</option>
-                    <!-- Populate with previous recipients -->
-                </select>
+            <div class="relative">
+                <x-input-label for="to_client" :value="__('To Client')" />
+                <x-text-input id="to_client" type="text" wire:model.debounce.300ms="toClientSearch" class="mt-1 block w-full" autocomplete="off" placeholder="Type name, code, or phone..." />
+                @if(!empty($toClientSuggestions) && $toClientSearch)
+                    <ul class="absolute z-10 bg-white border border-gray-300 w-full mt-1 rounded shadow">
+                        @foreach($toClientSuggestions as $suggestion)
+                            <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer" wire:click="selectToClient({{ $suggestion['id'] }})">
+                                {{ $suggestion['name'] }} ({{ $suggestion['mobile_number'] }})
+                            </li>
+                        @endforeach
+                        <li class="px-3 py-2 text-blue-600 hover:bg-blue-50 cursor-pointer" wire:click="createToClient">+ Create new recipient: {{ $toClientSearch }}</li>
+                    </ul>
+                @endif
             </div>
             <div>
                 <x-input-label for="amount" :value="__('Amount')" />
-                <x-text-input id="amount" type="number" class="mt-1 block w-full border-green-500" step="0.01" min="1" />
+                <x-text-input id="amount" type="number" wire:model="amount" class="mt-1 block w-full border-green-500" step="0.01" min="1" />
                 <div class="text-xs text-gray-500 mt-1">Commission: 5 EGP for every 500 EGP</div>
             </div>
             <div>
                 <x-input-label for="commission" :value="__('Commission (auto-calculated)')" />
-                <x-text-input id="commission" type="number" class="mt-1 block w-full bg-gray-100" readonly />
+                <x-text-input id="commission" type="number" wire:model="commission" class="mt-1 block w-full bg-gray-100" readonly />
             </div>
             <div>
                 <x-input-label for="discount" :value="__('Discount (if any)')" />
