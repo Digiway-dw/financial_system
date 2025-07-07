@@ -92,6 +92,38 @@ new class extends Component {
                             {{ __('Audit Log') }}
                         </x-nav-link>
                     @endcan
+
+                    @role('admin')
+                        <x-dropdown align="right" width="48" class="hidden sm:inline-flex">
+                            <x-slot name="trigger">
+                                <button
+                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-600 bg-white hover:text-gray-800 focus:outline-none transition ease-in-out duration-150">
+                                    <span>{{ __('Permissions') }}</span>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('permissions.index')" wire:navigate>
+                                    {{ __('Permissions List') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('permissions.roles')" wire:navigate>
+                                    {{ __('Role Permissions') }}
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+
+                        <x-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')" wire:navigate class="sm:hidden">
+                            {{ __('Permissions') }}
+                        </x-nav-link>
+                    @endrole
                 </div>
             </div>
 
@@ -213,6 +245,15 @@ new class extends Component {
                     {{ __('Audit Log') }}
                 </x-responsive-nav-link>
             @endcan
+
+            @role('admin')
+                <x-responsive-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.index')" wire:navigate>
+                    {{ __('Permissions List') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('permissions.roles')" :active="request()->routeIs('permissions.roles')" wire:navigate>
+                    {{ __('Role Permissions') }}
+                </x-responsive-nav-link>
+            @endrole
         </div>
 
         <!-- Responsive Settings Options -->

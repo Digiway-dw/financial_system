@@ -88,6 +88,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('audit-log', \App\Livewire\AuditLog\Index::class)
         ->name('audit-log.index');
 
+    // Permissions Routes
+    Route::get('permissions', \App\Livewire\Permissions\Index::class)
+        ->name('permissions.index')
+        ->middleware('role:admin');
+    Route::get('permissions/roles', \App\Livewire\Permissions\RolePermissions::class)
+        ->name('permissions.roles')
+        ->middleware('role:admin');
+
     // Notifications Routes
     Route::get('notifications', \App\Livewire\AdminNotificationsBox::class)->name('notifications.index');
 });
