@@ -1,18 +1,35 @@
 <?php
 
-// This file is being deleted as it's a duplicate of 2025_07_06_181851_create_personal_access_tokens_table.php
-// The duplicate was causing migration conflicts.
-// Use the original file at 2025_07_06_181851_create_personal_access_tokens_table.php instead.
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends \Illuminate\Database\Migrations\Migration
+return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        // Skip this migration as it's a duplicate
+        if (!Schema::hasTable('personal_access_tokens')) {
+            Schema::create('personal_access_tokens', function (Blueprint $table) {
+                $table->id();
+                $table->morphs('tokenable');
+                $table->string('name');
+                $table->string('token', 64)->unique();
+                $table->text('abilities')->nullable();
+                $table->timestamp('last_used_at')->nullable();
+                $table->timestamp('expires_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        // Skip this migration as it's a duplicate
+        Schema::dropIfExists('personal_access_tokens');
     }
 };
