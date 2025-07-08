@@ -1,33 +1,18 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+// This file is being deleted as it's a duplicate of 2025_07_06_181851_create_personal_access_tokens_table.php
+// The duplicate was causing migration conflicts.
+// Use the original file at 2025_07_06_181851_create_personal_access_tokens_table.php instead.
 
-return new class extends Migration
+return new class extends \Illuminate\Database\Migrations\Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('personal_access_tokens', function (Blueprint $table) {
-            $table->id();
-            $table->morphs('tokenable');
-            $table->string('name');
-            $table->string('token', 64)->unique();
-            $table->text('abilities')->nullable();
-            $table->timestamp('last_used_at')->nullable();
-            $table->timestamp('expires_at')->nullable();
-            $table->timestamps();
-        });
+        // Skip this migration as it's a duplicate
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('personal_access_tokens');
+        // Skip this migration as it's a duplicate
     }
 };
