@@ -16,43 +16,43 @@ use Illuminate\Support\Facades\Notification;
 
 class Create extends Component
 {
-    #[Validate('required|string|max:255')] 
+    #[Validate('required|string|max:255')]
     public $customerName = '';
 
-    #[Validate('required|string|max:20')] 
+    #[Validate('required|string|max:20')]
     public $customerMobileNumber = '';
 
-    #[Validate('required|string|max:20')] 
+    #[Validate('required|string|max:20')]
     public $lineMobileNumber = '';
 
-    #[Validate('nullable|string|max:255')] 
+    #[Validate('nullable|string|max:255')]
     public $customerCode = '';
 
-    #[Validate('required|string|in:Male,Female')] 
+    #[Validate('required|string|in:Male,Female')]
     public $gender = 'Male';
 
     public $amount = 0;
 
-    #[Validate('required|numeric|min:0')] 
+    #[Validate('required|numeric|min:0')]
     public $commission = 0.00;
 
-    #[Validate('required|numeric|min:0')] 
+    #[Validate('required|numeric|min:0')]
     public $deduction = 0.00;
 
-    #[Validate('required|string|in:Transfer,Withdrawal,Deposit,Adjustment')] 
+    #[Validate('required|string|in:Transfer,Withdrawal,Deposit,Adjustment')]
     public $transactionType = 'Transfer';
 
     public $agentName = '';
 
     public $status = 'Pending';
 
-    #[Validate('required|exists:branches,id')] 
+    #[Validate('required|exists:branches,id')]
     public $branchId = '';
 
-    #[Validate('required|exists:lines,id')] 
+    #[Validate('required|exists:lines,id')]
     public $lineId = '';
 
-    #[Validate('required|exists:safes,id')] 
+    #[Validate('required|exists:safes,id')]
     public $safeId = '';
 
     // New property for payment method
@@ -199,12 +199,16 @@ class Create extends Component
         }
     }
 
+    /**
+     * Create a new transaction with proper validation and authorization
+     */
     public function createTransaction()
     {
         $this->validate();
 
         // Ensure isAbsoluteWithdrawal is only true for Admin with permission and Withdrawal type
-        if (!Auth::user()->can('perform-unrestricted-withdrawal') || $this->transactionType !== 'Withdrawal') {
+        // Using Gate::allows() for better IDE support and explicit authorization checking
+        if (!Gate::allows('perform-unrestricted-withdrawal') || $this->transactionType !== 'Withdrawal') {
             $this->isAbsoluteWithdrawal = false;
         }
 
@@ -212,14 +216,12 @@ class Create extends Component
             $createdTransaction = $this->createTransactionUseCase->execute(
                 $this->customerName,
                 $this->customerMobileNumber,
-                $this->lineMobileNumber,
                 $this->customerCode,
                 (float) $this->amount,
                 (float) $this->commission,
                 (float) $this->deduction,
                 $this->transactionType,
                 Auth::user()->id, // agentId
-                $this->branchId,
                 $this->lineId,
                 $this->safeId,
                 $this->isAbsoluteWithdrawal,

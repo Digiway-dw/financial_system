@@ -32,8 +32,8 @@ class Deposit extends Create
         parent::mount();
         $this->transactionType = 'Deposit';
         $this->depositType = 'direct';
-        $this->branchUsers = User::where('branch_id', auth()->user()->branch_id ?? null)->get();
-        $this->branchSafes = \App\Models\Domain\Entities\Safe::where('branch_id', auth()->user()->branch_id ?? null)->get();
+        $this->branchUsers = User::where('branch_id', Auth::user()->branch_id ?? null)->get();
+        $this->branchSafes = \App\Models\Domain\Entities\Safe::where('branch_id', Auth::user()->branch_id ?? null)->get();
         if (count($this->branchSafes) > 0) {
             $this->safeId = $this->branchSafes[0]->id;
         }
@@ -95,14 +95,12 @@ class Deposit extends Create
             $this->createTransactionUseCase->execute(
                 $customerName,
                 $customerMobileNumber,
-                $this->lineMobileNumber ?? '',
                 $customerCode,
                 $this->amount,
                 $commission,
                 $deduction,
                 $transactionType,
                 $agent->id,
-                $branchId,
                 0, // lineId as int
                 $safeId,
                 false,
@@ -120,4 +118,4 @@ class Deposit extends Create
     {
         return view('livewire.transactions.deposit');
     }
-} 
+}

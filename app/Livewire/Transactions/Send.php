@@ -3,223 +3,369 @@
 namespace App\Livewire\Transactions;
 
 use Livewire\Component;
+use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Notification;
-use App\Application\UseCases\RegisterTransaction;
-use App\Application\UseCases\FindClient;
-use App\Application\UseCases\UpdateClient;
-use App\Application\UseCases\GetTransferHistory;
-use App\Application\UseCases\GetWalletBalance;
-use App\Notifications\SupervisorDiscountNotification;
-use App\Notifications\AdminWalletApprovalNotification;
+use Illuminate\Support\Facades\DB;
+use App\Models\Domain\Entities\Customer;
+use App\Models\Domain\Entities\Line;
+use App\Models\Domain\Entities\Safe;
+use App\Application\UseCases\CreateTransaction;
 
 class Send extends Component
 {
-    public $client_code;
-    public $phone_number;
-    public $client_name;
-    public $gender;
-    public $to_client;
-    public $amount = 0;
-    public $commission = 0;
-    public $discount = 0;
-    public $collect_from_wallet = false;
-    public $line_type = 'internal';
-    public $warning = '';
-    public $employee_name;
-    public $branch_name;
-    public $client_found = false;
-    public $client_id;
-    public $previous_recipients = [];
-    public $allCustomers = [];
-    public $customerSuggestions = [];
-    public $searchTerm = '';
-    public $toClientSearch = '';
-    public $toClientSuggestions = [];
-    public $toClientId = null;
-    public $toClientName = '';
-    public $toClientPhone = '';
-    public $toClientCode = '';
-    public $toClientGender = '';
+    // Client Information
+    #[Validate('required|string|max:20')]
+    public $clientMobile = '';
 
-    protected $rules = [
-        'client_code' => 'nullable|string',
-        'phone_number' => 'required|string',
-        'client_name' => 'required|string',
-        'gender' => 'required|in:male,female',
-        'to_client' => 'required|string',
-        'amount' => 'required|numeric|min:1',
-        'discount' => 'nullable|numeric|min:0',
-        'line_type' => 'required|in:internal,external',
+    #[Validate('required|string|max:255')]
+    public $clientName = '';
+
+    #[Validate('nullable|in:male,female')]
+    public $clientGender = '';
+
+    public $clientCode = '';
+    public $clientId = null;
+    public $clientBalance = 0;
+
+    // Receiver Information
+    #[Validate('required|string|max:20')]
+    public $receiverMobile = '';
+
+    // Transaction Details
+    #[Validate('required|numeric|min:5|multiple_of:5')]
+    public $amount = 0;
+
+    public $commission = 0;
+
+    #[Validate('nullable|numeric|min:0')]
+    public $discount = 0;
+
+    #[Validate('required_if:discount,>0')]
+    public $discountNotes = '';
+
+    // Line Selection
+    #[Validate('required|exists:lines,id')]
+    public $selectedLineId = '';
+
+    public $availableLines = [];
+
+    // Payment Options
+    public $collectFromClientSafe = false;
+    public $collectFromCustomerWallet = false;
+    public $deductFromLineOnly = true;
+
+    // UI State
+    public $clientSuggestions = [];
+    public $lowBalanceWarning = '';
+    public $successMessage = '';
+    public $errorMessage = '';
+
+    // Form validation messages
+    protected $messages = [
+        'amount.multiple_of' => 'Amount must be a multiple of 5 EGP.',
+        'amount.min' => 'Minimum amount is 5 EGP.',
+        'clientMobile.required' => 'Client mobile number is required.',
+        'clientName.required' => 'Client name is required.',
+        'receiverMobile.required' => 'Receiver mobile number is required.',
+        'selectedLineId.required' => 'Please select an available line.',
+        'selectedLineId.exists' => 'Selected line is not valid.',
+        'discountNotes.required_if' => 'Discount notes are required when discount is provided.',
     ];
 
     public function mount()
     {
-        $user = Auth::user();
-        $this->employee_name = $user->name;
-        $this->branch_name = $user->branch->name ?? '';
-        $this->previous_recipients = app(GetTransferHistory::class)->getRecipientsForUser($user->id);
-        $this->allCustomers = \App\Models\Domain\Entities\Customer::select('id', 'name', 'mobile_number', 'customer_code', 'gender')->get()->toArray();
+        $this->loadAvailableLines();
     }
 
-    public function updatedClientName($value)
+    public function updatedClientMobile()
     {
-        $this->customerSuggestions = collect($this->allCustomers)
-            ->filter(fn($c) => stripos($c['name'], $value) !== false)
-            ->take(5)
-            ->values()
-            ->toArray();
+        $this->searchClient();
     }
 
-    public function updatedPhoneNumber($value)
+    public function updatedAmount()
     {
-        $this->customerSuggestions = collect($this->allCustomers)
-            ->filter(fn($c) => stripos($c['mobile_number'], $value) !== false)
-            ->take(5)
-            ->values()
-            ->toArray();
+        $this->calculateCommission();
+        $this->checkLineBalance();
     }
 
-    public function selectCustomer($customerId)
+    public function updatedDiscount()
     {
-        $customer = collect($this->allCustomers)->firstWhere('id', $customerId);
-        if ($customer) {
-            $this->client_found = true;
-            $this->client_id = $customer['id'];
-            $this->client_code = $customer['customer_code'];
-            $this->client_name = $customer['name'];
-            $this->phone_number = $customer['mobile_number'];
-            $this->gender = $customer['gender'];
-            $this->customerSuggestions = [];
-        }
+        $this->calculateCommission();
     }
 
-    public function updatedAmount($value)
+    public function updatedSelectedLineId()
     {
-        $val = floatval($value);
-        if ($val < 1) {
-            $this->commission = 0;
+        $this->checkLineBalance();
+    }
+
+    public function updatedCollectFromClientSafe()
+    {
+        if ($this->collectFromClientSafe) {
+            $this->collectFromCustomerWallet = false;
+            $this->deductFromLineOnly = false;
         } else {
-            $this->commission = max(5, ceil($val / 500) * 5);
+            $this->deductFromLineOnly = !$this->collectFromCustomerWallet;
+        }
+        $this->checkLineBalance();
+    }
+
+    public function updatedCollectFromCustomerWallet()
+    {
+        if ($this->collectFromCustomerWallet) {
+            $this->collectFromClientSafe = false;
+            $this->deductFromLineOnly = false;
+        } else {
+            $this->deductFromLineOnly = !$this->collectFromClientSafe;
+        }
+        $this->checkLineBalance();
+    }
+
+    private function searchClient()
+    {
+        if (strlen($this->clientMobile) >= 3) {
+            $clients = Customer::where('mobile_number', 'like', '%' . $this->clientMobile . '%')
+                ->limit(5)
+                ->get(['id', 'name', 'mobile_number', 'customer_code', 'gender', 'balance']);
+
+            $this->clientSuggestions = $clients->toArray();
+
+            // Auto-fill if exact match
+            $exactMatch = $clients->where('mobile_number', $this->clientMobile)->first();
+            if ($exactMatch) {
+                $this->selectClient($exactMatch->id);
+            }
+        } else {
+            $this->clientSuggestions = [];
         }
     }
 
-    public function updatedToClientSearch($value)
+    public function selectClient($clientId)
     {
-        $this->toClientSuggestions = collect($this->allCustomers)
-            ->filter(function($c) use ($value) {
-                return stripos($c['name'], $value) !== false ||
-                       stripos($c['mobile_number'], $value) !== false ||
-                       stripos($c['customer_code'], $value) !== false;
+        $client = Customer::find($clientId);
+        if ($client) {
+            $this->clientId = $client->id;
+            $this->clientName = $client->name;
+            $this->clientMobile = $client->mobile_number;
+            $this->clientCode = $client->customer_code ?: $this->generateClientCode();
+            $this->clientGender = $client->gender;
+            $this->clientBalance = $client->balance;
+            $this->clientSuggestions = [];
+        }
+    }
+
+    private function generateClientCode()
+    {
+        // Generate unique client code based on current timestamp and random number
+        do {
+            $code = 'C' . date('ym') . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+        } while (Customer::where('customer_code', $code)->exists());
+
+        return $code;
+    }
+
+    private function calculateCommission()
+    {
+        $amount = (float) $this->amount;
+        $discount = (float) $this->discount;
+        
+        if ($amount <= 0) {
+            $this->commission = 0;
+            return;
+        }
+
+        // Commission: 5 EGP per 500 EGP (no fractions)
+        $baseCommission = floor($amount / 500) * 5;
+        $this->commission = max(0, $baseCommission - $discount);
+    }
+
+    private function loadAvailableLines()
+    {
+        $userBranchId = Auth::user()->branch_id;
+
+        $this->availableLines = Line::where('branch_id', $userBranchId)
+            ->where('status', 'active')
+            ->get(['id', 'mobile_number', 'current_balance', 'network'])
+            ->map(function ($line) {
+                return [
+                    'id' => $line->id,
+                    'mobile_number' => $line->mobile_number,
+                    'current_balance' => $line->current_balance,
+                    'network' => $line->network,
+                    'display' => $line->mobile_number . ' (' . number_format($line->current_balance, 2) . ' EGP) - ' . ucfirst($line->network),
+                ];
             })
-            ->take(5)
-            ->values()
             ->toArray();
     }
 
-    public function selectToClient($customerId)
+    private function checkLineBalance()
     {
-        $customer = collect($this->allCustomers)->firstWhere('id', $customerId);
-        if ($customer) {
-            $this->toClientId = $customer['id'];
-            $this->toClientName = $customer['name'];
-            $this->toClientPhone = $customer['mobile_number'];
-            $this->toClientCode = $customer['customer_code'];
-            $this->toClientGender = $customer['gender'];
-            $this->to_client = $customer['name'];
-            $this->toClientSuggestions = [];
+        $this->lowBalanceWarning = '';
+
+        if (!$this->selectedLineId || !$this->amount) {
+            return;
+        }
+
+        $line = collect($this->availableLines)->firstWhere('id', $this->selectedLineId);
+        if (!$line) {
+            return;
+        }
+
+        $amount = (float) $this->amount;
+        $clientBalance = (float) $this->clientBalance;
+        $requiredAmount = $amount;
+
+        if ($this->collectFromClientSafe && $clientBalance > 0) {
+            // If collecting from client safe, reduce required amount from line
+            $requiredAmount = max(0, $amount - $clientBalance);
+        } elseif ($this->collectFromCustomerWallet && $clientBalance > 0) {
+            // If collecting from customer wallet, reduce required amount from line
+            $requiredAmount = max(0, $amount - $clientBalance);
+        }
+
+        if ($line['current_balance'] < $requiredAmount) {
+            $this->lowBalanceWarning = "Insufficient balance in selected line. Available: " .
+                number_format($line['current_balance'], 2) . " EGP, Required: " .
+                number_format($requiredAmount, 2) . " EGP. Please choose another line.";
         }
     }
 
-    public function createToClient()
-    {
-        $newClient = new \App\Models\Domain\Entities\Customer();
-        $newClient->name = $this->toClientName ?: $this->to_client;
-        $newClient->mobile_number = $this->toClientPhone;
-        $newClient->customer_code = $this->toClientCode;
-        $newClient->gender = $this->toClientGender ?: 'male';
-        $newClient->balance = 0;
-        $newClient->is_client = true;
-        $newClient->branch_id = Auth::user()->branch_id;
-        $newClient->save();
-        $this->toClientId = $newClient->id;
-        $this->to_client = $newClient->name;
-    }
-
-    public function addTransaction()
+    public function submitTransaction()
     {
         $this->validate();
-        $walletBalance = app(GetWalletBalance::class)->forClient($this->client_id);
-        $lineBalance = 1000000; // TODO: Replace with actual line balance fetch if needed
-        if ($this->amount > $walletBalance) {
-            $this->warning = 'Amount exceeds wallet balance!';
+
+        // Cast to proper types for arithmetic operations
+        $amount = (float) $this->amount;
+        $commission = (float) $this->commission;
+        $discount = (float) $this->discount;
+        $clientBalance = (float) $this->clientBalance;
+
+        // Additional validation
+        if ($amount + $commission - $discount <= 0) {
+            $this->errorMessage = 'Invalid transaction amount after commission and discount.';
             return;
         }
-        if ($this->amount > $lineBalance) {
-            $this->warning = 'Amount exceeds line balance!';
+
+        if (($this->collectFromClientSafe || $this->collectFromCustomerWallet) && $clientBalance < $amount) {
+            $this->errorMessage = 'Client balance is insufficient for this transaction.';
             return;
         }
-        $pending = false;
-        if ($this->discount > 0) {
-            Notification::route('mail', 'supervisor@example.com')->notify(new SupervisorDiscountNotification($this->client_id, $this->amount, $this->discount));
-            $pending = true;
+
+        if ($this->lowBalanceWarning) {
+            $this->errorMessage = 'Please resolve balance issues before submitting.';
+            return;
         }
-        if ($this->collect_from_wallet) {
-            Notification::route('mail', 'admin@example.com')->notify(new AdminWalletApprovalNotification($this->client_id, $this->amount));
-            $pending = true;
+
+        try {
+            DB::transaction(function () use ($amount, $commission, $discount) {
+                // Create or update client
+                if (!$this->clientId) {
+                    $client = Customer::create([
+                        'name' => $this->clientName,
+                        'mobile_number' => $this->clientMobile,
+                        'customer_code' => $this->clientCode ?: $this->generateClientCode(),
+                        'gender' => $this->clientGender ?: 'male',
+                        'balance' => 0,
+                        'is_client' => true,
+                        'agent_id' => Auth::id(),
+                        'branch_id' => Auth::user()->branch_id,
+                    ]);
+                    $this->clientId = $client->id;
+                } else {
+                    // Update existing client
+                    Customer::where('id', $this->clientId)->update([
+                        'name' => $this->clientName,
+                        'gender' => $this->clientGender,
+                        'customer_code' => $this->clientCode,
+                    ]);
+                }
+
+                // Get selected line for transaction
+                $line = Line::find($this->selectedLineId);
+                if (!$line) {
+                    throw new \Exception('Selected line not found.');
+                }
+
+                $safe = $line->branch->safe;
+                if (!$safe) {
+                    // Try to find any safe for this branch as fallback
+                    $safe = Safe::where('branch_id', $line->branch_id)->first();
+                    if (!$safe) {
+                        throw new \Exception('No safe found for this branch.');
+                    }
+                }
+
+                // Create transaction using the CreateTransaction use case
+                app(CreateTransaction::class)->execute(
+                    customerName: $this->clientName,
+                    customerMobileNumber: $this->clientMobile,
+                    customerCode: $this->clientCode,
+                    amount: $amount,
+                    commission: $commission,
+                    deduction: $discount,
+                    transactionType: 'Transfer',
+                    agentId: Auth::id(),
+                    lineId: $this->selectedLineId,
+                    safeId: $safe->id,
+                    isAbsoluteWithdrawal: false,
+                    paymentMethod: $this->getPaymentMethod(),
+                    gender: $this->clientGender ?: 'male',
+                    isClient: true,
+                    receiverMobileNumber: $this->receiverMobile,
+                    discountNotes: $this->discountNotes,
+                    notes: null
+                );
+            });
+
+            // Success
+            $this->successMessage = 'Transaction created successfully!';
+            $this->resetForm();
+
+            // Redirect after a short delay
+            $this->js('setTimeout(() => window.location.href = "' . route('transactions.index') . '", 2000)');
+        } catch (\Exception $e) {
+            $this->errorMessage = 'Failed to create transaction: ' . $e->getMessage();
         }
-        // If client not found, register new client
-        if (!$this->client_id) {
-            $newClient = new \App\Models\Domain\Entities\Customer();
-            $newClient->name = $this->client_name;
-            $newClient->mobile_number = $this->phone_number;
-            $newClient->customer_code = $this->client_code;
-            $newClient->gender = $this->gender;
-            $newClient->balance = 0;
-            $newClient->is_client = true;
-            $newClient->branch_id = Auth::user()->branch_id;
-            $newClient->save();
-            $this->client_id = $newClient->id;
+    }
+
+    private function getPaymentMethod()
+    {
+        if ($this->collectFromClientSafe) {
+            return 'client safe';
+        } elseif ($this->collectFromCustomerWallet) {
+            return 'client wallet';
+        } else {
+            return 'line balance';
         }
-        // Ensure recipient exists
-        if (!$this->toClientId) {
-            $this->createToClient();
-        }
-        $this->commission = max(5, ceil($this->amount / 500) * 5);
-        $transaction = app(RegisterTransaction::class)->execute([
-            'client_id' => $this->client_id,
-            'to_client' => $this->toClientId,
-            'amount' => $this->amount,
-            'commission' => $this->commission,
-            'discount' => $this->discount,
-            'pending' => $pending,
-            'line_type' => $this->line_type,
-            'type' => 'send',
+    }
+
+    private function resetForm()
+    {
+        $this->reset([
+            'clientMobile',
+            'clientName',
+            'clientGender',
+            'clientCode',
+            'clientId',
+            'clientBalance',
+            'receiverMobile',
+            'amount',
+            'commission',
+            'discount',
+            'discountNotes',
+            'selectedLineId',
+            'collectFromClientSafe',
+            'collectFromCustomerWallet',
+            'deductFromLineOnly',
+            'clientSuggestions',
+            'lowBalanceWarning',
+            'errorMessage'
         ]);
-        app(UpdateClient::class)->execute([
-            'id' => $this->client_id,
-            'name' => $this->client_name,
-            'phone' => $this->phone_number,
-            'gender' => $this->gender,
-        ]);
-        $this->reset(['amount', 'commission', 'discount', 'collect_from_wallet', 'warning']);
-        session()->flash('message', $pending ? 'Transaction pending approval.' : 'Transaction added successfully.');
+        $this->deductFromLineOnly = true;
+        $this->loadAvailableLines();
     }
 
     public function render()
     {
-        // Always recalculate commission for robustness
-        $val = floatval($this->amount);
-        if ($val < 1) {
-            $this->commission = 0;
-        } else {
-            $this->commission = max(5, ceil($val / 500) * 5);
-        }
-        return view('livewire.transactions.send', [
-            'previous_recipients' => $this->previous_recipients,
-            'employee_name' => $this->employee_name,
-            'branch_name' => $this->branch_name,
-            'warning' => $this->warning,
-        ]);
+        return view('livewire.transactions.send');
     }
-} 
+}
