@@ -79,13 +79,13 @@ class Create extends Component
 
     public $searchCustomer = '';
 
-    private CreateTransaction $createTransactionUseCase;
+    private ?CreateTransaction $createTransactionUseCase = null;
 
     public $branches;
     public $lines;
     public $safes;
 
-    private CustomerRepository $customerRepository;
+    private ?CustomerRepository $customerRepository = null;
 
     public function updatedCustomerName($value)
     {
@@ -116,6 +116,10 @@ class Create extends Component
 
     public function searchCustomers($query)
     {
+        if (!$this->customerRepository) {
+            $this->customerSearchResults = [];
+            return;
+        }
         $this->customerSearchResults = $this->customerRepository->searchByNameOrMobile($query);
         logger(['search_query' => $query, 'results' => $this->customerSearchResults]);
     }
@@ -288,6 +292,8 @@ class Create extends Component
     {
         $this->createTransactionUseCase = $createTransactionUseCase;
         $this->customerRepository = $customerRepository;
+        // Populate destination numbers after customerRepository is set
+        $this->destinationNumbers = $this->customerRepository->getAll();
     }
 
     public function mount()
@@ -295,10 +301,6 @@ class Create extends Component
         Gate::authorize('send-transfer'); // Allow agents and trainees to access this page
         $this->agentName = Auth::user()->name; // Automatically set agent name
         $this->branchId = Auth::user()->branch_id; // Automatically set agent branch
-
-        // Populate destination numbers
-        $this->destinationNumbers = $this->customerRepository->getAll();
-
         // Auto-calculate commission based on amount
         $this->calculateCommission();
     }

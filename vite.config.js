@@ -12,8 +12,7 @@ export default defineConfig({
         }),
     ],
     server: {
-        https: false,
-        host: '127.0.0.1', // Use localhost for local development
-        port: 5173,
+        https: true,
+        host: '0.0.0.0',
     },
 });

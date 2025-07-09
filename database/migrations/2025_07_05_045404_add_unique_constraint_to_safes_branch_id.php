@@ -22,6 +22,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('safes', function (Blueprint $table) {
+            // Drop the foreign key first if it exists
+            try {
+                $table->dropForeign(['branch_id']);
+            } catch (\Exception $e) {}
             $table->dropUnique('safes_branch_id_unique');
         });
     }

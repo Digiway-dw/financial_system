@@ -64,7 +64,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Create Roles and Assign Permissions
 
         // Admin Role
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
         $adminRole->givePermissionTo(
             'perform-unrestricted-withdrawal',
             'approve-all-requests',
@@ -99,9 +99,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage-customers'
         );
 
-        // General Supervisor Role
-        $generalSupervisorRole = Role::firstOrCreate(['name' => 'general_supervisor']);
-        $generalSupervisorRole->givePermissionTo(
+        // Supervisor Role
+        $supervisorRole = Role::firstOrCreate(['name' => 'Supervisor']);
+        $supervisorRole->givePermissionTo(
             'view-all-branches-data',
             'view-all-reports',
             'manage-safes',
@@ -115,18 +115,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage-customers'
         );
 
-        // Auditor Role
-        $auditorRole = Role::firstOrCreate(['name' => 'auditor']);
-        $auditorRole->givePermissionTo(
-            'approve-pending-transactions',
-            'edit-all-daily-transactions',
-            'view-audit-log',
-            'view-customers',
-            'manage-customers'
-        );
-
         // Branch Manager Role
-        $branchManagerRole = Role::firstOrCreate(['name' => 'branch_manager']);
+        $branchManagerRole = Role::firstOrCreate(['name' => 'Branch Manager']);
         $branchManagerRole->givePermissionTo(
             'view-own-branch-data',
             'approve-own-branch-transactions',
@@ -139,8 +129,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage-customers'
         );
 
-        // Branch Staff (Responsible) Role
-        $agentRole = Role::firstOrCreate(['name' => 'agent']);
+        // Agent Role
+        $agentRole = Role::firstOrCreate(['name' => 'Agent']);
         $agentRole->givePermissionTo(
             'send-transfer',
             'receive-transfer',
@@ -152,7 +142,7 @@ class RolesAndPermissionsSeeder extends Seeder
         );
 
         // Trainee Role
-        $traineeRole = Role::firstOrCreate(['name' => 'trainee']);
+        $traineeRole = Role::firstOrCreate(['name' => 'Trainee']);
         $traineeRole->givePermissionTo(
             'send-transfer-pending',
             'receive-transfer-pending',

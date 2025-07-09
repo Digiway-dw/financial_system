@@ -276,26 +276,9 @@
                             </td>
                             <td class="px-8 py-5 whitespace-nowrap">
                                 @if (isset($user->branch) && $user->branch)
-                                    <div class="flex items-center">
-                                        <div class="bg-blue-100 text-blue-800 p-1.5 rounded-lg">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                            </svg>
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">{{ $user->branch->name }}
-                                            </div>
-                                            <div class="text-xs text-gray-500">Branch ID: {{ $user->branch->id }}
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <div class="text-sm text-gray-900">{{ $user->branch->name }}</div>
                                 @else
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                        No Branch Assigned
-                                    </span>
+                                    <div class="text-sm text-gray-500">N/A</div>
                                 @endif
                             </td>
                             <td class="px-8 py-5 whitespace-nowrap">
