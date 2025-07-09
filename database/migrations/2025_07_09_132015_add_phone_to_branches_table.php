@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('customer_mobile_numbers', function (Blueprint $table) {
-            $table->unsignedBigInteger('customer_id')->nullable();
-            $table->string('mobile_number')->nullable();
+        Schema::table('branches', function (Blueprint $table) {
+            //
         });
     }
 
@@ -22,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('customer_mobile_numbers', function (Blueprint $table) {
-            $table->dropColumn(['customer_id', 'mobile_number']);
+        Schema::table('branches', function (Blueprint $table) {
+            //
         });
     }
 };

@@ -161,12 +161,10 @@
                                 </div>
                             </td>
                             <td class="px-8 py-5 whitespace-nowrap">
-                                <div class="text-sm text-gray-500">{{ $user->email }}</div>
                                 @if (isset($user->branch) && $user->branch)
-                                    <div class="text-xs text-gray-500 flex items-center mt-1">
-                                        <x-heroicon-o-building-office-2 class="w-4 h-4 mr-1" />
-                                        {{ $user->branch->name }}
-                                    </div>
+                                    <div class="text-sm text-gray-900">{{ $user->branch->name }}</div>
+                                @else
+                                    <div class="text-sm text-gray-500">N/A</div>
                                 @endif
                             </td>
                             <td class="px-8 py-5 whitespace-nowrap">

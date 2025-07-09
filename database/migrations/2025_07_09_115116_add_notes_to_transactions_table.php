@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('safes', function (Blueprint $table) {
-            $table->string('type')->default('branch')->after('description');
+        Schema::table('transactions', function (Blueprint $table) {
+            //
         });
     }
 
@@ -21,10 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('safes', function (Blueprint $table) {
-            if (Schema::hasColumn('safes', 'type')) {
-                $table->dropColumn('type');
-            }
+        Schema::table('transactions', function (Blueprint $table) {
+            //
         });
     }
 };

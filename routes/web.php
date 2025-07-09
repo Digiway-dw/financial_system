@@ -33,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('transactions.receive');
     Route::get('transactions/cash', \App\Livewire\Transactions\Cash::class)
         ->name('transactions.cash');
+    Route::get('transactions/cash/withdrawal', \App\Livewire\Transactions\Withdrawal::class)
+        ->name('transactions.cash.withdrawal');
+    Route::get('transactions/cash/deposit', \App\Livewire\Transactions\Deposit::class)
+        ->name('transactions.cash.deposit');
     Route::get('transactions/pending', \App\Livewire\Transactions\Pending::class)
         ->name('transactions.pending');
     Route::get('transactions/{transactionId}/edit', \App\Livewire\Transactions\Edit::class)

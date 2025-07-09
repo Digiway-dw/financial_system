@@ -2,72 +2,27 @@
 
 namespace Database\Seeders;
 
-use App\Application\UseCases\CreateUser;
-use App\Application\UseCases\CreateBranch;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Domain\Entities\User;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    private CreateUser $createUserUseCase;
-    private CreateBranch $createBranchUseCase;
-
-    public function __construct(CreateUser $createUserUseCase, CreateBranch $createBranchUseCase)
+    public function run()
     {
-        $this->createUserUseCase = $createUserUseCase;
-        $this->createBranchUseCase = $createBranchUseCase;
-    }
-
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
-    {
-        $this->createUserUseCase->execute(
-            name: 'Admin User',
-            email: 'admin@example.com',
-            password: 'password',
-            role: 'admin'
-        );
-
-        $this->createUserUseCase->execute(
-            name: 'General Supervisor User',
-            email: 'supervisor@example.com',
-            password: 'password',
-            role: 'general_supervisor'
-        );
-
-        // Create a branch first
-        $branch = $this->createBranchUseCase->execute([
-            'name' => 'Main Branch',
-            'location' => 'Downtown',
-            'branch_code' => 'BR001',
-            'safe_initial_balance' => 0.00,
-            'safe_description' => 'Main branch safe for handling cash transactions'
-        ]);
-
-        $this->createUserUseCase->execute(
-            name: 'Branch Manager User',
-            email: 'manager@example.com',
-            password: 'password',
-            role: 'branch_manager',
-            branch_id: $branch->id
-        );
-
-        $this->createUserUseCase->execute(
-            name: 'Agent User',
-            email: 'agent@example.com',
-            password: 'password',
-            role: 'agent',
-            branch_id: $branch->id
-        );
-
-        $this->createUserUseCase->execute(
-            name: 'Trainee User',
-            email: 'trainee@example.com',
-            password: 'password',
-            role: 'trainee',
-            branch_id: $branch->id
-        );
+        $branch = \App\Models\Domain\Entities\Branch::first();
+        $roles = ['Admin', 'Agent', 'Supervisor', 'Branch Manager', 'Trainee'];
+        foreach ($roles as $role) {
+            $user = User::firstOrCreate(
+                ['email' => strtolower($role) . '@example.com'],
+                [
+                    'name' => $role . ' User',
+                    'password' => Hash::make('password'),
+                    'branch_id' => $branch ? $branch->id : null,
+                ]
+            );
+            $user->assignRole($role);
+        }
     }
 }
