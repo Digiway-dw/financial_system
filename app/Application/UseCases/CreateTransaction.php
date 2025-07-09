@@ -217,6 +217,34 @@ class CreateTransaction
                     $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
                 }
             }
+        } elseif ($transactionType === 'Receive') {
+            // For receive transactions:
+            // - Line balance increases by full amount
+            // - Safe balance decreases by (amount - commission)
+            $requiredFromSafe = $amount - $finalCommission;
+
+            // Add amount to line balance
+            $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance + $amount]);
+            $line->refresh();
+
+            // Deduct net amount from safe balance
+            $safe = $this->safeRepository->findById($safeId);
+            if (!$safe) {
+                throw new \Exception('Safe not found.');
+            }
+
+            if (($safe->current_balance - $requiredFromSafe) < 0) {
+                throw new \Exception('Insufficient balance in safe for this receive transaction.');
+            }
+
+            $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $requiredFromSafe]);
+            $safe->refresh();
+
+            // Check for low safe balance after deduction
+            if ($safe->current_balance < 500) {
+                $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
+                $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
+            }
         }
 
         // Handle client wallet deductions/deposits
@@ -227,7 +255,7 @@ class CreateTransaction
                 }
                 $customer->balance -= $amount;
                 $this->customerRepository->save($customer);
-            } elseif ($transactionType === 'Deposit') {
+            } elseif ($transactionType === 'Deposit' || $transactionType === 'Receive') {
                 $customer->balance += $amount;
                 $this->customerRepository->save($customer);
             }

@@ -217,7 +217,8 @@
                             <label for="commission" class="block text-sm font-medium text-gray-700 mb-2">
                                 Commission (Auto-calculated)
                             </label>
-                            <input value="{{ number_format((float) $commission, 2) }}" id="commission" type="text"
+                            <input value="{{ number_format((float) $commission, 2) }}" id="commission"
+                                type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-700"
                                 readonly>
                             <p class="mt-1 text-xs text-gray-500">5 EGP per 500 EGP (no fractions)</p>
@@ -332,21 +333,25 @@
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-blue-600">{{ number_format((float) $amount, 2) }}</div>
+                                <div class="text-2xl font-bold text-blue-600">{{ number_format((float) $amount, 2) }}
+                                </div>
                                 <div class="text-sm text-gray-600">Amount</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-green-600">{{ number_format((float) $commission, 2) }}
+                                <div class="text-2xl font-bold text-green-600">
+                                    {{ number_format((float) $commission, 2) }}
                                 </div>
                                 <div class="text-sm text-gray-600">Commission</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-red-600">{{ number_format((float) $discount, 2) }}</div>
+                                <div class="text-2xl font-bold text-red-600">{{ number_format((float) $discount, 2) }}
+                                </div>
                                 <div class="text-sm text-gray-600">Discount</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-purple-600">
-                                    {{ number_format((float) $amount + (float) $commission - (float) $discount, 2) }}</div>
+                                    {{ number_format((float) $amount + (float) $commission - (float) $discount, 2) }}
+                                </div>
                                 <div class="text-sm text-gray-600">Total</div>
                             </div>
                         </div>

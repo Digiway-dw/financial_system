@@ -167,7 +167,7 @@ class Send extends Component
     {
         $amount = (float) $this->amount;
         $discount = (float) $this->discount;
-        
+
         if ($amount <= 0) {
             $this->commission = 0;
             return;
