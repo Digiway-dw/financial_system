@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // Create stored procedures for common operations
-        
+
         // Stored procedure for safe balance reconciliation
         DB::statement("DROP PROCEDURE IF EXISTS ReconcileSafeBalance");
         DB::statement("

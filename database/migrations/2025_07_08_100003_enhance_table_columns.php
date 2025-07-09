@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Add missing columns and enhance existing tables
-        
+
         // Enhance transactions table with additional tracking fields
         Schema::table('transactions', function (Blueprint $table) {
             $table->string('reference_number')->unique()->nullable()->after('id');

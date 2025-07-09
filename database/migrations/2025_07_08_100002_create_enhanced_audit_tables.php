@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Create enhanced audit and logging tables for better tracking
-        
+
         // Create transaction audit table
         Schema::create('transaction_audits', function (Blueprint $table) {
             $table->id();
@@ -73,7 +73,7 @@ return new class extends Migration
 
             // Unique constraint to prevent duplicate summaries
             $table->unique(['summary_date', 'branch_id', 'agent_id', 'summary_type'], 'unq_daily_summaries');
-            
+
             // Indexes for summary queries
             $table->index(['summary_date', 'summary_type'], 'idx_daily_summaries_date_type');
             $table->index(['branch_id', 'summary_date'], 'idx_daily_summaries_branch_date');
@@ -116,7 +116,7 @@ return new class extends Migration
 
             // Unique constraint for user preferences
             $table->unique(['user_id', 'notification_type', 'event_category', 'event_type'], 'unq_notification_preferences');
-            
+
             // Index for preference queries
             $table->index(['user_id', 'enabled'], 'idx_notification_preferences_user_enabled');
         });

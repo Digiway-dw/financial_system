@@ -15,13 +15,13 @@ return new class extends Migration
     {
         // Fix any inconsistencies in existing tables
         $this->fixDataInconsistencies();
-        
+
         // Add missing foreign key constraints
         $this->addMissingForeignKeys();
-        
+
         // Optimize table storage engines and collations
         $this->optimizeTableStorage();
-        
+
         // Create additional indexes for better performance
         $this->addPerformanceIndexes();
     }
@@ -74,32 +74,38 @@ return new class extends Migration
     private function addMissingForeignKeys(): void
     {
         // Add foreign key for transaction approvals (only if column exists)
-        if (Schema::hasColumn('transactions', 'approved_by') && 
-            !$this->foreignKeyExists('transactions', 'fk_transactions_approved_by')) {
+        if (
+            Schema::hasColumn('transactions', 'approved_by') &&
+            !$this->foreignKeyExists('transactions', 'fk_transactions_approved_by')
+        ) {
             Schema::table('transactions', function (Blueprint $table) {
                 $table->foreign('approved_by', 'fk_transactions_approved_by')
-                      ->references('id')->on('users')
-                      ->onDelete('set null');
+                    ->references('id')->on('users')
+                    ->onDelete('set null');
             });
         }
 
         // Add foreign key for transaction reviewers (only if column exists)
-        if (Schema::hasColumn('transactions', 'reviewer_id') && 
-            !$this->foreignKeyExists('transactions', 'fk_transactions_reviewer_id')) {
+        if (
+            Schema::hasColumn('transactions', 'reviewer_id') &&
+            !$this->foreignKeyExists('transactions', 'fk_transactions_reviewer_id')
+        ) {
             Schema::table('transactions', function (Blueprint $table) {
                 $table->foreign('reviewer_id', 'fk_transactions_reviewer_id')
-                      ->references('id')->on('users')
-                      ->onDelete('set null');
+                    ->references('id')->on('users')
+                    ->onDelete('set null');
             });
         }
 
         // Add foreign key for customer agent relationship (only if column exists)
-        if (Schema::hasColumn('customers', 'agent_id') && 
-            !$this->foreignKeyExists('customers', 'fk_customers_agent_id')) {
+        if (
+            Schema::hasColumn('customers', 'agent_id') &&
+            !$this->foreignKeyExists('customers', 'fk_customers_agent_id')
+        ) {
             Schema::table('customers', function (Blueprint $table) {
                 $table->foreign('agent_id', 'fk_customers_agent_id')
-                      ->references('id')->on('users')
-                      ->onDelete('set null');
+                    ->references('id')->on('users')
+                    ->onDelete('set null');
             });
         }
 
@@ -107,8 +113,8 @@ return new class extends Migration
         if (!$this->foreignKeyExists('customers', 'fk_customers_branch_id')) {
             Schema::table('customers', function (Blueprint $table) {
                 $table->foreign('branch_id', 'fk_customers_branch_id')
-                      ->references('id')->on('branches')
-                      ->onDelete('set null');
+                    ->references('id')->on('branches')
+                    ->onDelete('set null');
             });
         }
     }
@@ -119,8 +125,16 @@ return new class extends Migration
     private function optimizeTableStorage(): void
     {
         $tables = [
-            'users', 'branches', 'transactions', 'customers', 'safes', 'lines',
-            'activity_log', 'login_histories', 'notifications', 'personal_access_tokens'
+            'users',
+            'branches',
+            'transactions',
+            'customers',
+            'safes',
+            'lines',
+            'activity_log',
+            'login_histories',
+            'notifications',
+            'personal_access_tokens'
         ];
 
         foreach ($tables as $table) {

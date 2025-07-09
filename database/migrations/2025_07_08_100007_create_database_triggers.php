@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // Create database triggers for automatic data management
-        
+
         // Trigger to automatically update customer transaction count and last transaction date
         DB::statement("DROP TRIGGER IF EXISTS tr_update_customer_stats_after_transaction_insert");
         DB::statement("

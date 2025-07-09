@@ -15,16 +15,16 @@ class EnhancedSystemSeeder extends Seeder
     {
         // Seed exchange rates
         $this->seedExchangeRates();
-        
+
         // Seed transaction fees
         $this->seedTransactionFees();
-        
+
         // Seed financial limits
         $this->seedFinancialLimits();
-        
+
         // Seed notification preferences
         $this->seedNotificationPreferences();
-        
+
         // Seed sample security alerts
         $this->seedSecurityAlerts();
     }

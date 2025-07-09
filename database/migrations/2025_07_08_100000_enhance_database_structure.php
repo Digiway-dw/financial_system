@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Enhanced indexing for better performance
-        
+
         // Add composite indexes for frequently queried columns
         Schema::table('transactions', function (Blueprint $table) {
             // Index for status-based queries

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Create financial reporting and analytics tables
-        
+
         // Create exchange rates table for multi-currency support
         Schema::create('exchange_rates', function (Blueprint $table) {
             $table->id();
@@ -152,7 +152,7 @@ return new class extends Migration
 
             // Unique constraint to prevent duplicate metrics
             $table->unique(['metric_type', 'metric_name', 'entity_type', 'entity_id', 'metric_date'], 'unq_performance_metrics');
-            
+
             // Indexes for metric queries
             $table->index(['entity_type', 'entity_id', 'metric_date'], 'idx_performance_metrics_entity_date');
             $table->index(['metric_type', 'metric_date'], 'idx_performance_metrics_type_date');

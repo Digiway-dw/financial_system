@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // Create views for common queries to improve performance
-        
+
         // Create view for active transactions with user and branch information
         DB::statement("
             CREATE VIEW v_active_transactions AS
