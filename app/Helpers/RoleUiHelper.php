@@ -132,19 +132,19 @@ class RoleUiHelper
     public static function hasManagementPermissions(): bool
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return false;
         }
-        
+
         return Gate::forUser($user)->allows('manage-users') ||
-               Gate::forUser($user)->allows('manage-branches') ||
-               Gate::forUser($user)->allows('manage-lines') ||
-               Gate::forUser($user)->allows('manage-safes') ||
-               Gate::forUser($user)->allows('manage-roles') ||
-               Gate::forUser($user)->allows('manage-system-settings');
+            Gate::forUser($user)->allows('manage-branches') ||
+            Gate::forUser($user)->allows('manage-lines') ||
+            Gate::forUser($user)->allows('manage-safes') ||
+            Gate::forUser($user)->allows('manage-roles') ||
+            Gate::forUser($user)->allows('manage-system-settings');
     }
-    
+
     /**
      * Get the roles display information for UI consistency
      * 
@@ -185,7 +185,7 @@ class RoleUiHelper
             ]
         ];
     }
-    
+
     /**
      * Get display info for the current user's role
      * 
@@ -194,14 +194,14 @@ class RoleUiHelper
     public static function getCurrentUserRoleInfo(): ?array
     {
         $user = Auth::user();
-        
+
         if (!$user || !$user->roles->first()) {
             return null;
         }
-        
+
         $roleName = $user->roles->first()->name;
         $rolesInfo = self::getRolesDisplayInfo();
-        
+
         return $rolesInfo[$roleName] ?? null;
     }
 }

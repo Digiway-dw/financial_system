@@ -503,7 +503,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('App\Helpers\IconHelper', function ($app) {
             return new \App\Helpers\IconHelper();
         });
-        
+
         $this->app->singleton('App\Helpers\RoleUiHelper', function ($app) {
             return new \App\Helpers\RoleUiHelper();
         });

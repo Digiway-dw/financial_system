@@ -225,11 +225,11 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('require-transaction-approval', function (DomainUser $user) {
             return $user->hasRole(Roles::TRAINEE);
         });
-        
+
         Gate::define('view-trainee-transactions', function (DomainUser $user) {
             return $user->hasRole(Roles::TRAINEE);
         });
-        
+
         Gate::define('approve-trainee-transactions', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
