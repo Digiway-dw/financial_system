@@ -57,6 +57,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Safe Management Routes
     Route::get('safes', \App\Livewire\Safes\Index::class)
         ->name('safes.index');
+    Route::get('safes/transfer', \App\Livewire\Safes\SafeTransfer::class)
+        ->name('safes.transfer');
     Route::get('safes/{safeId}/edit', \App\Livewire\Safes\Edit::class)
         ->name('safes.edit');
     Route::get('safes/move', \App\Livewire\Safes\Move::class)
@@ -73,16 +75,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // User Management Routes
     Route::get('users', \App\Livewire\Users\Index::class)
         ->name('users.index')
-        ->withoutMiddleware(['auth']);
+        ->middleware('can:view-user-list');
     Route::get('users/create', \App\Livewire\Users\Create::class)
         ->name('users.create')
-        ->withoutMiddleware(['auth']);
+        ->middleware('can:create-users');
     Route::get('users/{userId}/edit', \App\Livewire\Users\Edit::class)
         ->name('users.edit')
-        ->withoutMiddleware(['auth']);
+        ->middleware('can:edit-users');
     Route::get('users/{userId}/view', \App\Livewire\Users\View::class)
-        ->name('users.view')
-        ->withoutMiddleware(['auth']);
+        ->name('users.view');
 
     // Reports Routes
     Route::get('reports', \App\Livewire\Reports\Index::class)

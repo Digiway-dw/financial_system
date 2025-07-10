@@ -17,5 +17,8 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminUserSeeder::class);
         $this->call(EnsureAdminRoleSeeder::class);
         $this->call(LineSeeder::class);
+
+        // Add the comprehensive financial system seeder
+        $this->call(FinancialSystemSeeder::class);
     }
 }

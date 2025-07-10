@@ -19,11 +19,14 @@ class Transaction extends Model
     protected $fillable = [
         'customer_name',
         'customer_mobile_number',
+        'receiver_mobile_number',
         'line_id',
         'customer_code',
         'amount',
         'commission',
         'deduction',
+        'discount_notes',
+        'notes',
         'transaction_type',
         'agent_id',
         'transaction_date_time',
@@ -31,7 +34,11 @@ class Transaction extends Model
         'safe_id',
         'is_absolute_withdrawal',
         'payment_method',
+<<<<<<< HEAD
         'notes', // add notes to fillable
+=======
+        'reference_number',
+>>>>>>> 7ce08969188209b43715d843a538a6fe86ca1d52
     ];
 
     /**
@@ -56,14 +63,6 @@ class Transaction extends Model
     public function safe(): BelongsTo
     {
         return $this->belongsTo(Safe::class);
-    }
-
-    /**
-     * Get the branch associated with the transaction.
-     */
-    public function branch(): BelongsTo
-    {
-        return $this->belongsTo(Branch::class);
     }
 
     public function getActivitylogOptions(): LogOptions

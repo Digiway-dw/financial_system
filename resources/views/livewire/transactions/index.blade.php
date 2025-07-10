@@ -70,21 +70,23 @@
                     </div>
                 </a>
 
-                <a href="{{ route('transactions.cash') }}"
-                    class="group flex items-center p-4 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-xl transition-all duration-200 transform hover:scale-105">
-                    <div
-                        class="w-12 h-12 bg-yellow-100 group-hover:bg-yellow-200 rounded-lg flex items-center justify-center mr-4 transition-colors duration-200">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
-                            </path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-yellow-900">Cash Transaction</h3>
-                        <p class="text-sm text-yellow-700">Handle cash operations</p>
-                    </div>
-                </a>
+                @can('create-cash-transactions')
+                    <a href="{{ route('transactions.cash') }}"
+                        class="group flex items-center p-4 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-xl transition-all duration-200 transform hover:scale-105">
+                        <div
+                            class="w-12 h-12 bg-yellow-100 group-hover:bg-yellow-200 rounded-lg flex items-center justify-center mr-4 transition-colors duration-200">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-yellow-900">Cash Transaction</h3>
+                            <p class="text-sm text-yellow-700">Handle cash operations</p>
+                        </div>
+                    </a>
+                @endcan
             </div>
         </div>
 
@@ -102,6 +104,9 @@
                     <div>
                         <h3 class="text-sm font-medium text-gray-600">Total Transactions</h3>
                         <p class="text-2xl font-bold text-gray-900">{{ count($transactions) }}</p>
+                        @if (auth()->user()->hasRole('agent'))
+                            <p class="text-xs text-gray-500">Your transactions only</p>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -119,6 +124,9 @@
                         <h3 class="text-sm font-medium text-gray-600">Total Volume</h3>
                         <p class="text-2xl font-bold text-gray-900">
                             {{ number_format(array_sum(array_column($transactions, 'amount')), 2) }} EGP</p>
+                        @if (auth()->user()->hasRole('agent'))
+                            <p class="text-xs text-gray-500">Your volume only</p>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -135,26 +143,34 @@
                         <h3 class="text-sm font-medium text-gray-600">Pending</h3>
                         <p class="text-2xl font-bold text-gray-900">
                             {{ count(array_filter($transactions, fn($t) => $t['status'] === 'pending')) }}</p>
+                        @if (auth()->user()->hasRole('agent'))
+                            <p class="text-xs text-gray-500">Your pending transactions</p>
+                        @endif
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-6">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-medium text-gray-600">Commission</h3>
-                        <p class="text-2xl font-bold text-gray-900">
-                            {{ number_format(array_sum(array_column($transactions, 'commission')), 2) }} EGP</p>
+            @can('view-commission-data')
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-600">Commission</h3>
+                            <p class="text-2xl font-bold text-gray-900">
+                                {{ number_format(array_sum(array_column($transactions, 'commission')), 2) }} EGP</p>
+                            @if (auth()->user()->hasRole('agent'))
+                                <p class="text-xs text-gray-500">Your commissions only</p>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endcan
         </div>
 
         <!-- Advanced Filter Section -->
@@ -243,26 +259,34 @@
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
-                <!-- Employee Filter -->
-                <div class="space-y-2">
-                    <label for="employee_ids" class="block text-sm font-medium text-gray-700">Employees</label>
-                    <select wire:model.defer="employee_ids" id="employee_ids" multiple
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                        @foreach (\App\Domain\Entities\User::all() as $employee)
-                            <option value="{{ $employee->id }}">{{ $employee->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
                 <!-- Branch Filter -->
                 <div class="space-y-2">
                     <label for="branch_ids" class="block text-sm font-medium text-gray-700">Branches</label>
                     <select wire:model.defer="branch_ids" id="branch_ids" multiple
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                        @cannot('view-all-branches-data') disabled @endcannot>
                         @foreach (\App\Models\Domain\Entities\Branch::all() as $branch)
                             <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                         @endforeach
                     </select>
+                    @cannot('view-all-branches-data')
+                        <p class="text-xs text-gray-500 mt-1">You can only view data from your assigned branch.</p>
+                    @endcannot
+                </div>
+
+                <!-- Employee Filter -->
+                <div class="space-y-2">
+                    <label for="employee_ids" class="block text-sm font-medium text-gray-700">Employees</label>
+                    <select wire:model.defer="employee_ids" id="employee_ids" multiple
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                        @cannot('view-other-employees-data') disabled @endcannot>
+                        @foreach (\App\Domain\Entities\User::all() as $employee)
+                            <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                        @endforeach
+                    </select>
+                    @cannot('view-other-employees-data')
+                        <p class="text-xs text-gray-500 mt-1">You can only view your own transactions.</p>
+                    @endcannot
                 </div>
 
                 <!-- Filter Actions -->
@@ -350,9 +374,20 @@
                                 {{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d H:i') }}</td>
                             <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
                                 <a href="{{ route('transactions.edit', $transaction['id']) }}"
-                                    class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600 mr-3">Edit</a>
-                                <button wire:click="deleteTransaction('{{ $transaction['id'] }}')"
-                                    class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600">Delete</button>
+                                    class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600 mr-3">
+                                    @can('edit-all-transactions')
+                                        Edit
+                                    @elsecan('edit-own-transactions')
+                                        @if ($transaction['agent_id'] == auth()->id())
+                                            Edit
+                                        @endif
+                                    @endcan
+                                </a>
+
+                                @can('delete-transactions')
+                                    <button wire:click="deleteTransaction('{{ $transaction['id'] }}')"
+                                        class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600">Delete</button>
+                                @endcan
                             </td>
                         </tr>
                     @empty

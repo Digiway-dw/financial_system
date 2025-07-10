@@ -18,10 +18,8 @@ class BypassAuthorization
      */
     public function handle(Request $request, Closure $next)
     {
-        // Override all Gate checks to return true
-        Gate::before(function ($user, $ability) {
-            return true;
-        });
+        // Don't override Gate checks anymore
+        // We want proper authorization to be enforced
 
         return $next($request);
     }

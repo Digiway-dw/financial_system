@@ -44,7 +44,9 @@ class EloquentTransactionRepository implements TransactionRepository
         $query = EloquentTransaction::where('status', $status)->with('agent');
 
         if ($branchId) {
-            $query->where('branch_id', $branchId);
+            $query->whereHas('agent', function ($q) use ($branchId) {
+                $q->where('branch_id', $branchId);
+            });
         }
 
         return $query->get()->map(function ($transaction) {
@@ -71,7 +73,9 @@ class EloquentTransactionRepository implements TransactionRepository
         }
 
         if (isset($filters['branch_id'])) {
-            $query->where('branch_id', $filters['branch_id']);
+            $query->whereHas('agent', function ($q) use ($filters) {
+                $q->where('branch_id', $filters['branch_id']);
+            });
         }
 
         if (isset($filters['customer_name'])) {
@@ -101,13 +105,15 @@ class EloquentTransactionRepository implements TransactionRepository
             $query->whereIn('agent_id', $filters['employee_ids']);
         }
         if (isset($filters['branch_ids']) && is_array($filters['branch_ids']) && count($filters['branch_ids']) > 0) {
-            $query->whereIn('branch_id', $filters['branch_ids']);
+            $query->whereHas('agent', function ($q) use ($filters) {
+                $q->whereIn('branch_id', $filters['branch_ids']);
+            });
         }
 
-        $transactions = $query->with(['agent', 'branch'])->get()->map(function ($transaction) {
+        $transactions = $query->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
-            $transactionArray['branch_name'] = $transaction->branch ? $transaction->branch->name : 'N/A';
+            $transactionArray['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
             return $transactionArray;
         });
 

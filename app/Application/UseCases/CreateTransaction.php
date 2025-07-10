@@ -28,28 +28,34 @@ class CreateTransaction
     public function execute(
         string $customerName,
         string $customerMobileNumber,
-        string $lineMobileNumber,
         ?string $customerCode,
         float $amount,
         float $commission,
         float $deduction,
         string $transactionType,
         int $agentId,
-        int $branchId,
         int $lineId,
         int $safeId,
         bool $isAbsoluteWithdrawal = false,
         string $paymentMethod = 'branch safe',
         string $gender = 'Male',
-        bool $isClient = false
-    ): Transaction
-    {
+        bool $isClient = false,
+        ?string $receiverMobileNumber = null,
+        ?string $discountNotes = null,
+        ?string $notes = null
+    ): Transaction {
         // Validate amount: integer only, multiples of 5
         if (!is_int($amount) && !($amount == (int)$amount)) {
             throw new \InvalidArgumentException('Amount must be an integer.');
         }
         if ($amount % 5 !== 0) {
             throw new \InvalidArgumentException('Amount must be a multiple of 5.');
+        }
+
+        // Fetch the agent to check role for status setting and get branch info
+        $agent = \App\Domain\Entities\User::find($agentId);
+        if (!$agent) {
+            throw new \Exception('Agent not found.');
         }
 
         // Check if customer exists, otherwise create a new one
@@ -70,7 +76,7 @@ class CreateTransaction
                 'gender' => $gender,
                 'is_client' => $isClient,
                 'agent_id' => $agentId,
-                'branch_id' => $branchId,
+                'branch_id' => $agent->branch_id,
             ]));
         } else {
             // Update existing customer data if necessary (e.g., if name or code changed during transaction)
@@ -123,7 +129,7 @@ class CreateTransaction
                 $status = 'Pending'; // Override status to Pending for client safe withdrawals needing approval
                 $notificationMessage = "A withdrawal of " . $amount . " EGP from Client Safe '" . $safe->name . "' by " . $agent->name . " requires your approval.";
                 // Pass transaction ID if available after creation
-                $this->notifyRelevantUsers($notificationMessage, route('transactions.edit', $createdTransaction->id ?? null), null);
+                $this->notifyRelevantUsers($notificationMessage, route('transactions.edit', $createdTransaction->id ?? null), $safe->branch_id);
             }
         }
 
@@ -185,7 +191,6 @@ class CreateTransaction
                     $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
                 }
             }
-
         } elseif ($transactionType === 'Deposit') {
             // Add amount to line balance for deposits
             $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance + $amount]);
@@ -212,6 +217,34 @@ class CreateTransaction
                     $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
                 }
             }
+        } elseif ($transactionType === 'Receive') {
+            // For receive transactions:
+            // - Line balance increases by full amount
+            // - Safe balance decreases by (amount - commission)
+            $requiredFromSafe = $amount - $finalCommission;
+
+            // Add amount to line balance
+            $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance + $amount]);
+            $line->refresh();
+
+            // Deduct net amount from safe balance
+            $safe = $this->safeRepository->findById($safeId);
+            if (!$safe) {
+                throw new \Exception('Safe not found.');
+            }
+
+            if (($safe->current_balance - $requiredFromSafe) < 0) {
+                throw new \Exception('Insufficient balance in safe for this receive transaction.');
+            }
+
+            $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $requiredFromSafe]);
+            $safe->refresh();
+
+            // Check for low safe balance after deduction
+            if ($safe->current_balance < 500) {
+                $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
+                $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
+            }
         }
 
         // Handle client wallet deductions/deposits
@@ -222,30 +255,35 @@ class CreateTransaction
                 }
                 $customer->balance -= $amount;
                 $this->customerRepository->save($customer);
-            } elseif ($transactionType === 'Deposit') {
+            } elseif ($transactionType === 'Deposit' || $transactionType === 'Receive') {
                 $customer->balance += $amount;
                 $this->customerRepository->save($customer);
             }
             $customer->refresh(); // Refresh to get the updated balance
         }
 
+        // Generate unique reference number
+        $referenceNumber = $this->generateUniqueReferenceNumber($agent);
+
         $attributes = [
             'customer_name' => $customerName,
             'customer_mobile_number' => $customerMobileNumber,
-            'line_mobile_number' => $lineMobileNumber,
+            'receiver_mobile_number' => $receiverMobileNumber,
             'customer_code' => $customerCode,
             'amount' => $amount,
             'commission' => $finalCommission,
             'deduction' => $deduction,
+            'discount_notes' => $discountNotes,
+            'notes' => $notes,
             'transaction_type' => $transactionType,
             'agent_id' => $agentId,
             'status' => $status,
             'transaction_date_time' => now(),
-            'branch_id' => $branchId,
             'line_id' => $lineId,
             'safe_id' => $safeId,
             'is_absolute_withdrawal' => $isAbsoluteWithdrawal,
             'payment_method' => $paymentMethod,
+            'reference_number' => $referenceNumber,
         ];
 
         $createdTransaction = $this->transactionRepository->create($attributes);
@@ -262,18 +300,59 @@ class CreateTransaction
         if ($status === 'Pending' && !($transactionType === 'Withdrawal' && $safe->type === 'client')) {
             $message = "A new " . $transactionType . " transaction of " . $amount . " EGP by " . $agent->name . " is pending and requires your approval.";
             $recipients = \App\Domain\Entities\User::role('admin')
-                                           ->orWhereHasRole('general_supervisor');
+                ->orWhere(function ($query) {
+                    $query->role('general_supervisor');
+                });
             // Include branch manager if the transaction is tied to a specific branch and they are a branch manager
-            if ($branchId) {
-                $recipients->orWhere(function ($query) use ($branchId) {
-                    $query->where('branch_id', $branchId)
-                          ->whereHasRole('branch_manager');
+            if ($agent->branch_id) {
+                $recipients->orWhere(function ($query) use ($agent) {
+                    $query->where('branch_id', $agent->branch_id)
+                        ->role('branch_manager');
                 });
             }
             Notification::send($recipients->get(), new AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
         }
 
         return $createdTransaction;
+    }
+
+    private function generateUniqueReferenceNumber($agent): string
+    {
+        // Get the branch code from the agent's branch
+        $branchCode = $agent->branch ? $agent->branch->branch_code : 'DEFAULT';
+
+        // Generate date part (YYYYMMDD)
+        $datePart = date('Ymd');
+
+        // Find the highest existing sequence number for today and this branch
+        $pattern = $branchCode . '-' . $datePart . '-%';
+        $lastTransaction = \App\Models\Domain\Entities\Transaction::where('reference_number', 'like', $pattern)
+            ->orderBy('reference_number', 'desc')
+            ->first();
+
+        $nextSequence = 1;
+        if ($lastTransaction) {
+            // Extract the sequence number from the last reference number
+            $lastSequence = intval(substr($lastTransaction->reference_number, -6));
+            $nextSequence = $lastSequence + 1;
+        }
+
+        // Generate the reference number: BRANCHCODE-YYYYMMDD-XXXXXX
+        $referenceNumber = $branchCode . '-' . $datePart . '-' . str_pad($nextSequence, 6, '0', STR_PAD_LEFT);
+
+        // Double-check uniqueness (in case of race conditions)
+        $attempts = 0;
+        while (\App\Models\Domain\Entities\Transaction::where('reference_number', $referenceNumber)->exists() && $attempts < 10) {
+            $nextSequence++;
+            $referenceNumber = $branchCode . '-' . $datePart . '-' . str_pad($nextSequence, 6, '0', STR_PAD_LEFT);
+            $attempts++;
+        }
+
+        if ($attempts >= 10) {
+            throw new \Exception('Unable to generate unique reference number after 10 attempts');
+        }
+
+        return $referenceNumber;
     }
 
     private function notifyRelevantUsers(string $message, string $url, ?int $branchId = null): void
