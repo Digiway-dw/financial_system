@@ -14,4 +14,5 @@ interface TransactionRepository
     public function findByStatus(string $status, ?int $branchId = null): array;
     public function save(Transaction $transaction): Transaction;
     public function getTransactionsByLineAndDateRange(string $lineId, \Carbon\Carbon $startDate, \Carbon\Carbon $endDate);
-} 
+    public function filter(array $filters): array;
+}

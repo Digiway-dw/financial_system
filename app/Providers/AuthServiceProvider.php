@@ -3,7 +3,10 @@
 namespace App\Providers;
 
 use App\Domain\Entities\User;
+use App\Models\Domain\Entities\Transaction;
+use App\Models\Domain\Entities\Line;
 use App\Policies\UserPolicy;
+use App\Policies\AgentPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -16,6 +19,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         User::class => UserPolicy::class,
+        Transaction::class => AgentPolicy::class,
+        Line::class => AgentPolicy::class,
     ];
 
     /**

@@ -8,4 +8,5 @@ return [
     App\Providers\AuthServiceProvider::class,
     App\Providers\BladeComponentServiceProvider::class,
     App\Providers\VoltServiceProvider::class,
+    App\Providers\AgentAuthorizationProvider::class,
 ];

@@ -43,18 +43,20 @@
             <div class="bg-white overflow-hidden rounded-xl shadow-md border border-gray-100">
                 <div class="p-6 text-gray-900">
                     <div class="flex flex-wrap gap-4 mb-8">
-                        <a href="{{ route('transactions.cash') }}"
-                            class="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-300 transform hover:translate-y-[-2px]">
-                            <x-heroicon-o-currency-dollar class="w-5 h-5" /> كاش
-                        </a>
-                        <a href="{{ route('transactions.receive') }}"
-                            class="px-6 py-3 rounded-lg bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-300 transform hover:translate-y-[-2px]">
-                            <x-heroicon-o-arrow-down-tray class="w-5 h-5" /> استقبال
-                        </a>
-                        <a href="{{ route('transactions.send') }}"
-                            class="px-6 py-3 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-300 transform hover:translate-y-[-2px]">
-                            <x-heroicon-o-paper-airplane class="w-5 h-5" /> إرسال
-                        </a>
+                        @can('create-transactions')
+                            <a href="{{ route('transactions.cash') }}"
+                                class="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-300 transform hover:translate-y-[-2px]">
+                                <x-heroicon-o-currency-dollar class="w-5 h-5" /> كاش
+                            </a>
+                            <a href="{{ route('transactions.receive') }}"
+                                class="px-6 py-3 rounded-lg bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-300 transform hover:translate-y-[-2px]">
+                                <x-heroicon-o-arrow-down-tray class="w-5 h-5" /> استقبال
+                            </a>
+                            <a href="{{ route('transactions.send') }}"
+                                class="px-6 py-3 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-300 transform hover:translate-y-[-2px]">
+                                <x-heroicon-o-paper-airplane class="w-5 h-5" /> إرسال
+                            </a>
+                        @endcan
                     </div>
 
                     <div class="relative">

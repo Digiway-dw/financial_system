@@ -13,8 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Add our BypassAuthorization middleware to the global middleware stack
+        // Add our middlewares to the global middleware stack
         $middleware->append(\App\Http\Middleware\BypassAuthorization::class);
+        $middleware->append(\App\Http\Middleware\AgentDashboardAccess::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
