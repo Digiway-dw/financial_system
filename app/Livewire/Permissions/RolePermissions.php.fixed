@@ -77,17 +77,17 @@ class RolePermissions extends Component
         }
 
         $permissions = $query->orderBy('group')->orderBy('name')->get();
-
+        
         // Convert permissions to an array format with proper data structure
         $permissionsByGroupArray = [];
-
+        
         foreach ($permissions as $permission) {
             $group = $permission->group ?? 'ungrouped';
-
+            
             if (!isset($permissionsByGroupArray[$group])) {
                 $permissionsByGroupArray[$group] = [];
             }
-
+            
             // Convert each permission to a simple array with needed properties
             $permissionArray = [
                 'id' => $permission->id,
@@ -95,10 +95,10 @@ class RolePermissions extends Component
                 'description' => $permission->description ?? '',
                 'group' => $permission->group
             ];
-
+            
             $permissionsByGroupArray[$group][] = $permissionArray;
         }
-
+        
         $this->permissionsByGroup = $permissionsByGroupArray;
     }
 
@@ -209,7 +209,7 @@ class RolePermissions extends Component
                 ];
             }
         }
-
+        
         return view('livewire.permissions.role-permissions', [
             'availableGroups' => $this->availableGroups,
             'currentRole' => $currentRole,

@@ -65,7 +65,7 @@ class Index extends Component
 
     public function deleteCustomer(string $customerId)
     {
-        Gate::authorize('edit-all-data'); // Only admin can delete customers (assuming for now)
+        Gate::authorize('delete-customers'); // Only admin and managers can delete customers
         try {
             $this->deleteCustomerUseCase->execute($customerId);
             session()->flash('message', 'Customer deleted successfully.');

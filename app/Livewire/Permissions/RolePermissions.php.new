@@ -7,6 +7,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
+use Illuminate\Support\Collection;
 
 class RolePermissions extends Component
 {
@@ -20,23 +21,25 @@ class RolePermissions extends Component
     public $successMessage = '';
     public $errorMessage = '';
     public $selectedGroup = 'all';
-    public $availableGroups = [];
+    public $currentRole = null;
 
     protected $queryString = ['selectedRole', 'selectedGroup', 'searchTerm'];
 
     public function mount()
     {
-        $this->roles = Role::orderBy('name')->get()->toArray();
+        // Load all roles and sort them
+        $this->roles = Role::orderBy('name')->get();
 
+        // Set initial role selection
         if ($this->selectedRole) {
             $this->loadRolePermissions();
         } else if (count($this->roles) > 0) {
-            $this->selectedRole = $this->roles[0]['id'];
+            $this->selectedRole = $this->roles->first()->id;
             $this->loadRolePermissions();
         }
 
+        // Load initial permissions
         $this->loadPermissionGroups();
-        $this->loadAvailableGroups();
     }
 
     public function loadRolePermissions()
@@ -45,26 +48,31 @@ class RolePermissions extends Component
             return;
         }
 
+        // Find the role by ID
         $role = Role::findById($this->selectedRole);
-        // Get permissions as a simple array of IDs to avoid model method calls on collections
-        $this->selectedPermissions = $role->permissions->pluck('id')->toArray();
-    }
-
-    public function loadAvailableGroups()
-    {
-        // Get all distinct permission groups as a simple array
-        $this->availableGroups = Permission::select('group')
-            ->whereNotNull('group')
-            ->distinct()
-            ->orderBy('group')
-            ->pluck('group')
+        
+        // Set current role for display
+        $this->currentRole = [
+            'id' => $role->id,
+            'name' => $role->name,
+            'description' => $role->description ?? '',
+        ];
+        
+        // Get the permission IDs assigned to this role
+        $permissionIds = DB::table('role_has_permissions')
+            ->where('role_id', $this->selectedRole)
+            ->pluck('permission_id')
             ->toArray();
+            
+        $this->selectedPermissions = $permissionIds;
     }
 
     public function loadPermissionGroups()
     {
+        // Start with a base query
         $query = Permission::query();
 
+        // Apply search term filter if provided
         if ($this->searchTerm) {
             $query->where(function ($q) {
                 $q->where('name', 'like', '%' . $this->searchTerm . '%')
@@ -72,34 +80,26 @@ class RolePermissions extends Component
             });
         }
 
+        // Apply group filter if selected
         if ($this->selectedGroup && $this->selectedGroup !== 'all') {
             $query->where('group', $this->selectedGroup);
         }
 
-        $permissions = $query->orderBy('group')->orderBy('name')->get();
-
-        // Convert permissions to an array format with proper data structure
-        $permissionsByGroupArray = [];
-
+        // Get permissions and convert to a plain array to avoid model method calls
+        $permissions = $query->orderBy('name')->get();
+        $plainPermissions = [];
+        
         foreach ($permissions as $permission) {
-            $group = $permission->group ?? 'ungrouped';
-
-            if (!isset($permissionsByGroupArray[$group])) {
-                $permissionsByGroupArray[$group] = [];
-            }
-
-            // Convert each permission to a simple array with needed properties
-            $permissionArray = [
+            $plainPermissions[] = [
                 'id' => $permission->id,
                 'name' => $permission->name,
                 'description' => $permission->description ?? '',
-                'group' => $permission->group
+                'group' => $permission->group ?? 'ungrouped',
             ];
-
-            $permissionsByGroupArray[$group][] = $permissionArray;
         }
-
-        $this->permissionsByGroup = $permissionsByGroupArray;
+        
+        // Group permissions by their group
+        $this->permissionsByGroup = collect($plainPermissions)->groupBy('group')->toArray();
     }
 
     public function updatedSearchTerm()
@@ -132,8 +132,10 @@ class RolePermissions extends Component
             return;
         }
 
-        // Extract permission IDs from the group array
-        $groupPermissionIds = array_column($this->permissionsByGroup[$group], 'id');
+        $groupPermissionIds = [];
+        foreach ($this->permissionsByGroup[$group] as $permission) {
+            $groupPermissionIds[] = $permission['id'];
+        }
 
         if ($checked) {
             $this->selectedPermissions = array_unique(array_merge($this->selectedPermissions, $groupPermissionIds));
@@ -171,13 +173,29 @@ class RolePermissions extends Component
         $this->errorMessage = '';
     }
 
+    public function getAvailableGroupsProperty()
+    {
+        $groups = Permission::select('group')
+            ->whereNotNull('group')
+            ->distinct()
+            ->orderBy('group')
+            ->pluck('group')
+            ->toArray();
+            
+        return $groups;
+    }
+
     public function isGroupSelected($group)
     {
         if (!isset($this->permissionsByGroup[$group])) {
             return false;
         }
 
-        $groupPermissionIds = array_column($this->permissionsByGroup[$group], 'id');
+        $groupPermissionIds = [];
+        foreach ($this->permissionsByGroup[$group] as $permission) {
+            $groupPermissionIds[] = $permission['id'];
+        }
+        
         $intersection = array_intersect($groupPermissionIds, $this->selectedPermissions);
 
         return count($intersection) === count($groupPermissionIds);
@@ -189,7 +207,11 @@ class RolePermissions extends Component
             return false;
         }
 
-        $groupPermissionIds = array_column($this->permissionsByGroup[$group], 'id');
+        $groupPermissionIds = [];
+        foreach ($this->permissionsByGroup[$group] as $permission) {
+            $groupPermissionIds[] = $permission['id'];
+        }
+        
         $intersection = array_intersect($groupPermissionIds, $this->selectedPermissions);
 
         return count($intersection) > 0 && count($intersection) < count($groupPermissionIds);
@@ -197,22 +219,8 @@ class RolePermissions extends Component
 
     public function render()
     {
-        // Get current role information for display
-        $currentRole = null;
-        if ($this->selectedRole) {
-            $role = Role::find($this->selectedRole);
-            if ($role) {
-                $currentRole = [
-                    'id' => $role->id,
-                    'name' => $role->name,
-                    'description' => $role->description ?? ''
-                ];
-            }
-        }
-
         return view('livewire.permissions.role-permissions', [
             'availableGroups' => $this->availableGroups,
-            'currentRole' => $currentRole,
         ]);
     }
 }

@@ -9,4 +9,6 @@ return [
     App\Providers\BladeComponentServiceProvider::class,
     App\Providers\VoltServiceProvider::class,
     App\Providers\AgentAuthorizationProvider::class,
+    App\Providers\SpatieLaravelPermissionProvider::class,
+    Spatie\Permission\PermissionServiceProvider::class,
 ];
