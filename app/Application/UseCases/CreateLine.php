@@ -13,9 +13,10 @@ class CreateLine
 
     public function execute(array $lineData): Line
     {
-        // Add any business rules or validations here before creating the line
-        // For example, ensuring unique mobile number, valid network, etc.
-
+        // Set starting_balance to current_balance if not provided
+        if (!isset($lineData['starting_balance'])) {
+            $lineData['starting_balance'] = $lineData['current_balance'] ?? 0;
+        }
         return $this->lineRepository->create($lineData);
     }
 } 

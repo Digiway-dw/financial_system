@@ -9,6 +9,7 @@ use App\Domain\Interfaces\CustomerRepository;
 use App\Models\Domain\Entities\Transaction;
 use App\Notifications\AdminNotification;
 use Illuminate\Support\Facades\Notification;
+use Carbon\Carbon;
 
 class CreateTransaction
 {
@@ -140,6 +141,27 @@ class CreateTransaction
             throw new \Exception('Line not found.');
         }
 
+        // --- Monthly Starting Balance Logic ---
+        $now = now();
+        $currentMonth = $now->format('Y-m');
+        $lastSetMonth = $line->updated_at ? $line->updated_at->format('Y-m') : null;
+        if ($lastSetMonth !== $currentMonth) {
+            // Set starting_balance to the current balance at the start of the month
+            $this->lineRepository->update($lineId, ['starting_balance' => $line->current_balance]);
+            $line->refresh();
+        }
+        // --- End Monthly Starting Balance Logic ---
+
+        // --- Daily Starting Balance Logic ---
+        $today = now()->format('Y-m-d');
+        $lastSetDay = $line->updated_at ? $line->updated_at->format('Y-m-d') : null;
+        if ($lastSetDay !== $today) {
+            // Set daily_starting_balance to the current balance at the start of the day
+            $this->lineRepository->update($lineId, ['daily_starting_balance' => $line->current_balance]);
+            $line->refresh();
+        }
+        // --- End Daily Starting Balance Logic ---
+
         // Check daily limit
         // This would ideally involve checking aggregated daily transactions for this line.
         // For simplicity, let's assume the daily limit is checked against the current transaction amount directly.
@@ -157,8 +179,8 @@ class CreateTransaction
             throw new \Exception('Transaction amount exceeds monthly limit for this line.');
         }
 
-        // Check current balance for withdrawal/transfer types
-        if (in_array($transactionType, ['Transfer', 'Withdrawal'])) {
+        // Check current balance for transfer type only
+        if ($transactionType === 'Transfer') {
             if (($line->current_balance - $amount) < 0) {
                 throw new \Exception('Insufficient balance in line for this transaction.');
             }
@@ -171,77 +193,23 @@ class CreateTransaction
                 $notificationMessage = "Warning: Line " . $line->mobile_number . " balance is low ( " . $line->current_balance . " EGP). Please top up.";
                 $this->notifyRelevantUsers($notificationMessage, route('lines.edit', $line->id), $line->user->branch_id);
             }
+        }
 
-            // Only deduct from safe if it's not an absolute withdrawal and payment method is 'branch safe'
-            if (!$isAbsoluteWithdrawal && $paymentMethod === 'branch safe') {
-                $safe = $this->safeRepository->findById($safeId);
-                if (!$safe) {
-                    throw new \Exception('Safe not found.');
-                }
-
-                if (($safe->current_balance - $amount) < 0) {
-                    throw new \Exception('Insufficient balance in safe for this transaction.');
-                }
-                $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $amount]);
-                $safe->refresh(); // Refresh to get the updated balance
-
-                // Check for low safe balance after deduction
-                if ($safe->current_balance < 500) { // Example threshold: 500 EGP
-                    $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
-                    $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
-                }
-            }
-        } elseif ($transactionType === 'Deposit') {
-            // Add amount to line balance for deposits
-            $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance + $amount]);
-            $line->refresh(); // Refresh to get the updated balance
-
-            // Check for low line balance after deposit (in case it was negative and just got positive, but still low)
-            if ($line->current_balance < 500) {
-                $notificationMessage = "Warning: Line " . $line->mobile_number . " balance is low ( " . $line->current_balance . " EGP). Please top up.";
-                $this->notifyRelevantUsers($notificationMessage, route('lines.edit', $line->id), $line->user->branch_id);
-            }
-
-            // Add amount to safe balance for deposits if payment method is 'branch safe'
-            if ($paymentMethod === 'branch safe') {
-                $safe = $this->safeRepository->findById($safeId);
-                if (!$safe) {
-                    throw new \Exception('Safe not found.');
-                }
-                $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance + $amount]);
-                $safe->refresh(); // Refresh to get the updated balance
-
-                // Check for low safe balance after deposit
-                if ($safe->current_balance < 500) {
-                    $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
-                    $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
-                }
-            }
-        } elseif ($transactionType === 'Receive') {
-            // For receive transactions:
-            // - Line balance increases by full amount
-            // - Safe balance decreases by (amount - commission)
-            $requiredFromSafe = $amount - $finalCommission;
-
-            // Add amount to line balance
-            $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance + $amount]);
-            $line->refresh();
-
-            // Deduct net amount from safe balance
+        // For withdrawals, only deduct from safe if it's not an absolute withdrawal and payment method is 'branch safe'
+        if ($transactionType === 'Withdrawal' && !$isAbsoluteWithdrawal && $paymentMethod === 'branch safe') {
             $safe = $this->safeRepository->findById($safeId);
             if (!$safe) {
                 throw new \Exception('Safe not found.');
             }
 
-            if (($safe->current_balance - $requiredFromSafe) < 0) {
-                throw new \Exception('Insufficient balance in safe for this receive transaction.');
+            if (($safe->current_balance - $amount) < 0) {
+                throw new \Exception('Insufficient balance in safe for this transaction.');
             }
-
-            $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $requiredFromSafe]);
-            $safe->refresh();
+            $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $amount]);
+            $safe->refresh(); // Refresh to get the updated balance
 
             // Check for low safe balance after deduction
-            if ($safe->current_balance < 500) {
+            if ($safe->current_balance < 500) { // Example threshold: 500 EGP
                 $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
                 $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
             }
@@ -261,6 +229,39 @@ class CreateTransaction
             }
             $customer->refresh(); // Refresh to get the updated balance
         }
+
+        // --- New Daily/Monthly Receive Limit Logic ---
+        $monthStart = Carbon::now()->startOfMonth();
+        $monthEnd = Carbon::now()->endOfMonth();
+        $todayStart = Carbon::today();
+        $todayEnd = $todayStart->copy()->endOfDay();
+
+        // Monthly Receive Limit: (monthly_receive_limit - starting_balance)
+        if (in_array($transactionType, ['Deposit', 'Receive'])) {
+            $monthlyReceived = $this->transactionRepository->getTotalReceivedForLine($lineId, $monthStart, $monthEnd);
+            $monthlyLimit = $line->monthly_limit;
+            $startingBalance = $line->starting_balance ?? 0;
+            $maxAllowedMonthly = ($monthlyLimit !== null) ? ($monthlyLimit - $startingBalance) : null;
+            if ($maxAllowedMonthly !== null && ($monthlyReceived + $amount) > $maxAllowedMonthly) {
+                // Freeze the line for the rest of the month
+                $this->lineRepository->update($lineId, ['status' => 'frozen']);
+                throw new \Exception('Transaction exceeds the allowed monthly receive limit for this line. The line has been frozen until the start of next month.');
+            }
+        }
+
+        // Daily Receive Limit: (daily_limit - daily_starting_balance)
+        if (in_array($transactionType, ['Deposit', 'Receive'])) {
+            $dailyReceived = $this->transactionRepository->getTotalReceivedForLine($lineId, $todayStart, $todayEnd);
+            $dailyLimit = $line->daily_limit;
+            $dailyStartingBalance = $line->daily_starting_balance ?? 0;
+            $maxAllowedDaily = ($dailyLimit !== null) ? ($dailyLimit - $dailyStartingBalance) : null;
+            if ($maxAllowedDaily !== null && ($dailyReceived + $amount) > $maxAllowedDaily) {
+                // Freeze the line
+                $this->lineRepository->update($lineId, ['status' => 'frozen']);
+                throw new \Exception('Transaction exceeds the allowed daily receive limit for this line. The line has been frozen until the end of the day.');
+            }
+        }
+        // --- End New Limit Logic ---
 
         // Generate unique reference number
         $referenceNumber = $this->generateUniqueReferenceNumber($agent);

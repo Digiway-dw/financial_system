@@ -153,7 +153,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($lines as $line)
-                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                            <tr class="hover:bg-gray-50 transition-colors duration-150 {{ $line['monthly_limit_row_class'] }}">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         @if ($line['status'] === 'active')
@@ -186,9 +186,8 @@
                                     </div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ number_format($line['daily_usage'], 2) }}
-                                    </div>
+                                <td class="px-6 py-4 whitespace-nowrap {{ $line['daily_usage_class'] }}">
+                                    <div class="text-sm text-gray-900">{{ number_format($line['daily_usage'], 2) }}</div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">

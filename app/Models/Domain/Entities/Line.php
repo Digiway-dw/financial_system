@@ -27,6 +27,8 @@ class Line extends Model
         'network',
         'status',
         'branch_id',
+        'starting_balance',
+        'daily_starting_balance',
     ];
 
     /**

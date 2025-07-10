@@ -113,6 +113,8 @@ return new class extends Migration
             $table->boolean('auto_recharge_enabled')->default(false)->after('last_recharge_amount');
             $table->decimal('auto_recharge_threshold', 8, 2)->nullable()->after('auto_recharge_enabled');
             $table->decimal('auto_recharge_amount', 8, 2)->nullable()->after('auto_recharge_threshold');
+            $table->decimal('monthly_receive_limit', 15, 2)->nullable()->after('auto_recharge_amount');
+            $table->decimal('daily_send_limit', 15, 2)->nullable()->after('monthly_receive_limit');
         });
     }
 
@@ -211,7 +213,9 @@ return new class extends Migration
                 'last_recharge_amount',
                 'auto_recharge_enabled',
                 'auto_recharge_threshold',
-                'auto_recharge_amount'
+                'auto_recharge_amount',
+                'monthly_receive_limit',
+                'daily_send_limit'
             ]);
         });
     }

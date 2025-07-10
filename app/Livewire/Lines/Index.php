@@ -33,10 +33,32 @@ class Index extends Component
 
     public function loadLines()
     {
-        $this->lines = $this->listLinesUseCase->execute([
+        $lines = $this->listLinesUseCase->execute([
             'sortField' => $this->sortField,
             'sortDirection' => $this->sortDirection,
         ]);
+        // Add color classes for each line
+        foreach ($lines as &$line) {
+            $line['daily_usage_class'] = '';
+            if (
+                isset($line['daily_limit'], $line['daily_usage'], $line['status']) &&
+                $line['daily_limit'] > 0 &&
+                $line['daily_usage'] >= $line['daily_limit'] &&
+                $line['status'] === 'frozen'
+            ) {
+                $line['daily_usage_class'] = 'bg-red-100 text-red-700 font-bold';
+            }
+            $line['monthly_limit_row_class'] = '';
+            if (
+                isset($line['monthly_limit'], $line['monthly_usage'], $line['status']) &&
+                $line['monthly_limit'] > 0 &&
+                $line['monthly_usage'] >= $line['monthly_limit'] &&
+                $line['status'] === 'frozen'
+            ) {
+                $line['monthly_limit_row_class'] = 'bg-red-50';
+            }
+        }
+        $this->lines = $lines;
     }
 
     public function sortBy($field)

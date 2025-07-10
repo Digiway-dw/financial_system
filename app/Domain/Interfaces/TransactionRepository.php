@@ -15,4 +15,6 @@ interface TransactionRepository
     public function save(Transaction $transaction): Transaction;
     public function getTransactionsByLineAndDateRange(string $lineId, \Carbon\Carbon $startDate, \Carbon\Carbon $endDate);
     public function filter(array $filters): array;
+    public function getTotalReceivedForLine(string $lineId, \Carbon\Carbon $startDate, \Carbon\Carbon $endDate): float;
+    public function getTotalSentForLine(string $lineId, \Carbon\Carbon $startDate, \Carbon\Carbon $endDate): float;
 }

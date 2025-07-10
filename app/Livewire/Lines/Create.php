@@ -14,13 +14,13 @@ class Create extends Component
     public $mobileNumber = '';
 
     #[Validate('required|numeric|min:0')]
-    public $currentBalance = 0.00;
+    public $currentBalance = '';
 
     #[Validate('required|numeric|min:0')]
-    public $dailyLimit = 0.00;
+    public $dailyLimit = '';
 
     #[Validate('required|numeric|min:0')]
-    public $monthlyLimit = 0.00;
+    public $monthlyLimit = '';
 
     #[Validate('required|string|in:Vodafone,Orange,Etisalat,We')]
     public $network = 'Vodafone';

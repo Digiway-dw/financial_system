@@ -73,8 +73,8 @@
                         <div class="relative">
                             <x-text-input wire:model="currentBalance" id="currentBalance" name="currentBalance"
                                 type="number" step="0.01"
-                                class="block w-full pl-8 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
-                                placeholder="0.00" required />
+                                class="block w-full pl-14 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                                required />
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 text-sm">EGP</span>
                             </div>
@@ -96,8 +96,8 @@
                         <div class="relative">
                             <x-text-input wire:model="dailyLimit" id="dailyLimit" name="dailyLimit" type="number"
                                 step="0.01"
-                                class="block w-full pl-8 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
-                                placeholder="0.00" required />
+                                class="block w-full pl-14 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                                required />
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 text-sm">EGP</span>
                             </div>
@@ -119,8 +119,8 @@
                         <div class="relative">
                             <x-text-input wire:model="monthlyLimit" id="monthlyLimit" name="monthlyLimit"
                                 type="number" step="0.01"
-                                class="block w-full pl-8 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
-                                placeholder="0.00" required />
+                                class="block w-full pl-14 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                                required />
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 text-sm">EGP</span>
                             </div>

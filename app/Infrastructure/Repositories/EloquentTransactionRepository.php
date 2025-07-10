@@ -145,4 +145,20 @@ class EloquentTransactionRepository implements TransactionRepository
             ->whereBetween('transaction_date_time', [$startDate, $endDate])
             ->get();
     }
+
+    public function getTotalReceivedForLine(string $lineId, \Carbon\Carbon $startDate, \Carbon\Carbon $endDate): float
+    {
+        return EloquentTransaction::where('line_id', $lineId)
+            ->whereIn('transaction_type', ['Deposit', 'Receive'])
+            ->whereBetween('transaction_date_time', [$startDate, $endDate])
+            ->sum('amount');
+    }
+
+    public function getTotalSentForLine(string $lineId, \Carbon\Carbon $startDate, \Carbon\Carbon $endDate): float
+    {
+        return EloquentTransaction::where('line_id', $lineId)
+            ->whereIn('transaction_type', ['Transfer', 'Withdrawal'])
+            ->whereBetween('transaction_date_time', [$startDate, $endDate])
+            ->sum('amount');
+    }
 }

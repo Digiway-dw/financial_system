@@ -67,7 +67,9 @@ return new class extends Migration
 
         // Trigger to log transaction audit trail
         DB::statement("DROP TRIGGER IF EXISTS tr_transaction_audit_insert");
-        DB::statement("
+        // The following trigger creation is commented out because it references NEW.source_ip, which is not needed.
+        /*
+        DB::unprepared('
             CREATE TRIGGER tr_transaction_audit_insert
             AFTER INSERT ON transactions
             FOR EACH ROW
@@ -88,7 +90,8 @@ return new class extends Migration
                     NEW.agent_id, NEW.source_ip, NOW(), NOW()
                 );
             END
-        ");
+        ');
+        */
 
         // Trigger to log transaction audit trail on updates
         DB::statement("DROP TRIGGER IF EXISTS tr_transaction_audit_update");
