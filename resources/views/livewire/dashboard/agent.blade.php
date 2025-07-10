@@ -1,5 +1,28 @@
 <div>
-    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Agent Dashboard Overview</h3>
+@if(isset($showAdminAgentToggle) && $showAdminAgentToggle && request()->query('as_agent'))
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <form method="get" action="{{ route('dashboard') }}" class="flex items-center gap-2">
+            <input type="hidden" name="as_agent" value="1">
+            <label for="branches" class="font-semibold text-gray-700">Select Branches:</label>
+            <select name="branches[]" id="branches" multiple class="border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200" onchange="
+                if ([...this.options].find(o => o.value === 'all' && o.selected)) {
+                    [...this.options].forEach(o => o.selected = true);
+                }
+                this.form.submit();">
+                <option value="all" @if(empty($selectedBranches) || (isset($branches) && count($selectedBranches) == $branches->count())) selected @endif>All Branches</option>
+                @foreach($branches as $branch)
+                    <option value="{{ $branch->id }}" @if(in_array($branch->id, $selectedBranches ?? [])) selected @endif>{{ $branch->name }}</option>
+                @endforeach
+            </select>
+            <button type="submit" class="ml-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Apply</button>
+        </form>
+        <a href="{{ route('dashboard') }}"
+           class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 transition">
+            Switch to Main Admin Dashboard
+        </a>
+    </div>
+@endif
+<h3 class="text-2xl font-bold text-black mb-6">Agent Dashboard Overview</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Your Total Line Balance -->
@@ -50,79 +73,41 @@
         </a>
     </div>
 
-    <div class="mt-8 bg-white dark:bg-gray-800 p-6 shadow-xl sm:rounded-lg">
-        <div class="flex justify-between items-center mb-6">
-            <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100">Your Lines Overview</h4>
-            <div class="text-sm text-gray-500 dark:text-gray-400">
-                <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    <svg class="mr-1.5 h-2 w-2 text-blue-400" fill="currentColor" viewBox="0 0 8 8">
-                        <circle cx="4" cy="4" r="3" />
-                    </svg>
-                    Agent-only view
-                </span>
+    @if(isset($agentLines) && $agentLines->count())
+        <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">
+            <h4 class="text-xl font-bold text-gray-900 mb-4">All Lines in Your Branch</h4>
+            <div class="mb-4">
+                <span class="text-lg font-semibold text-gray-700">Total Lines Balance: </span>
+                <span class="text-2xl font-bold text-blue-700">{{ number_format($agentLinesTotalBalance ?? 0, 2) }} EGP</span>
             </div>
-        </div>
-        <div class="mt-4 overflow-x-auto">
-            @if ($agentLines && count($agentLines) > 0)
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg overflow-hidden">
-                    <thead class="bg-gray-100 dark:bg-gray-700">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                    <thead class="bg-gray-100">
                         <tr>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Mobile Number</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Balance</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Daily Limit</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Daily Usage</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Monthly Limit</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Monthly Usage</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mobile Number</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Balance</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Daily Limit</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly Limit</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Network</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                        @foreach ($agentLines as $line)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                                <td
-                                    class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {{ $line['mobile_number'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                    {{ number_format($line['current_balance'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                    {{ number_format($line['daily_limit'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                    {{ number_format($line['daily_usage'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                    {{ number_format($line['monthly_limit'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                    {{ number_format($line['monthly_usage'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold">
-                                    @if ($line['status'] === 'active')
-                                        <span class="text-emerald-500">{{ ucfirst($line['status']) }}</span>
-                                    @else
-                                        <span class="text-rose-500">{{ ucfirst($line['status']) }}</span>
-                                    @endif
-                                </td>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($agentLines as $line)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->mobile_number }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->current_balance, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->daily_limit, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->monthly_limit, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($line->status) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-            @else
-                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No lines assigned to you.</p>
-            @endif
+            </div>
         </div>
-    </div>
+    @endif
 
     <div class="mt-8 bg-white dark:bg-gray-800 p-6 shadow-xl sm:rounded-lg">
         <div class="flex justify-between items-center mb-6">

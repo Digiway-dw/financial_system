@@ -63,11 +63,11 @@ new class extends Component {
                         </x-nav-link>
                     @endcan
 
-                    @can('manage-safes')
+                    @role('admin')
                         <x-nav-link :href="route('safes.move')" :active="request()->routeIs('safes.move')" wire:navigate>
                             {{ __('Move Cash') }}
                         </x-nav-link>
-                    @endcan
+                    @endrole
 
                     @can('view-branches')
                         <x-nav-link :href="route('branches.index')" :active="request()->routeIs('branches.*')" wire:navigate>
@@ -149,11 +149,6 @@ new class extends Component {
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile')" wire:navigate>
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
                         <button wire:click="logout" class="w-full text-start">
                             <x-dropdown-link>
                                 {{ __('Log Out') }}
@@ -216,11 +211,11 @@ new class extends Component {
                 </x-responsive-nav-link>
             @endcan
 
-            @can('manage-safes')
+            @role('admin')
                 <x-responsive-nav-link :href="route('safes.move')" :active="request()->routeIs('safes.move')" wire:navigate>
                     {{ __('Move Cash') }}
                 </x-responsive-nav-link>
-            @endcan
+            @endrole
 
             @can('view-branches')
                 <x-responsive-nav-link :href="route('branches.index')" :active="request()->routeIs('branches.*')" wire:navigate>
@@ -265,11 +260,6 @@ new class extends Component {
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile')" wire:navigate>
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
                 <button wire:click="logout" class="w-full text-start">
                     <x-responsive-nav-link>
                         {{ __('Log Out') }}

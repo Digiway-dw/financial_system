@@ -29,32 +29,17 @@ try {
         echo "Admin role already exists.\n";
     }
 
-    // Create admin user
-    $admin = User::where('email', 'admin@example.com')->first();
-    if (!$admin) {
-        echo "Creating admin user...\n";
-
-        // Create user
-        $admin = new User();
-        $admin->name = 'Admin';
-        $admin->email = 'admin@example.com';
-        $admin->password = Hash::make('password');
-        $admin->email_verified_at = now();
-        $admin->save();
-
-        // Assign admin role
-        $admin->assignRole('admin');
-
-        echo "Admin user created successfully!\n";
-        echo "Email: admin@example.com\n";
-        echo "Password: password\n";
-    } else {
-        echo "Admin user already exists. Making sure it has admin role...\n";
-        $admin->syncRoles(['admin']);
-        echo "Admin role assigned to user.\n";
-        echo "Email: admin@example.com\n";
-        echo "Password: password (unless you changed it)\n";
-    }
+    // Create or update admin user
+    $admin = User::updateOrCreate(
+        ['email' => 'admin@example.com'],
+        [
+            'name' => 'Admin',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+        ]
+    );
+    // Assign admin role
+    $admin->assignRole('admin');
 
     echo "Done!\n";
 } catch (\Exception $e) {

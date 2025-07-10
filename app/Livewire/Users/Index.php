@@ -51,21 +51,17 @@ class Index extends Component
             $adminRole->syncPermissions($permissions);
         }
 
-        // Create admin user if it doesn't exist
-        $admin = User::where('email', 'admin@example.com')->first();
-        if (!$admin) {
-            $admin = User::create([
+        // Create or update admin user
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
                 'name' => 'Admin',
-                'email' => 'admin@example.com',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
-            ]);
-
-            // Assign admin role
-            $admin->assignRole('admin');
-
-            session()->flash('message', 'Admin user created with email: admin@example.com and password: password');
-        }
+            ]
+        );
+        // Assign admin role
+        $admin->assignRole('admin');
 
         $this->roles = Role::all();
         $this->branches = Branch::orderBy('name')->get();

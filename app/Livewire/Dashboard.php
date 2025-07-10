@@ -55,7 +55,25 @@ class Dashboard extends Component
         $data = [];
         $dashboardView = 'livewire.dashboard.trainee'; // Default to trainee dashboard
 
-        if ($user->hasRole('admin')) {
+        if ($user->hasRole('admin') && request()->query('as_agent')) {
+            // Admin as agent dashboard: show lines filtered by selected branches
+            $allBranches = collect($this->branchRepository->all());
+            $selectedBranches = request()->query('branches');
+            if ($selectedBranches) {
+                $selectedBranches = is_array($selectedBranches) ? $selectedBranches : explode(',', $selectedBranches);
+                $lines = collect($this->lineRepository->all())->whereIn('branch_id', $selectedBranches);
+            } else {
+                $lines = collect($this->lineRepository->all());
+            }
+            $data['branches'] = $allBranches;
+            $data['selectedBranches'] = $selectedBranches ?? [];
+            $data['agentLines'] = $lines;
+            $data['agentLinesTotalBalance'] = $lines->sum('current_balance');
+            $data['agentTotalBalance'] = $lines->sum('current_balance');
+            $data['showAdminAgentToggle'] = true;
+            $dashboardView = 'livewire.dashboard.agent';
+        } else if ($user->hasRole('admin')) {
+            $data['showAdminAgentToggle'] = true;
             $data['totalUsers'] = count($this->userRepository->all());
             $data['totalBranches'] = count($this->branchRepository->all());
             $data['totalLines'] = count($this->lineRepository->all());
@@ -84,27 +102,31 @@ class Dashboard extends Component
             $pendingTransactions = $this->listPendingTransactionsUseCase->execute();
             $data['branchPendingTransactionsCount'] = collect($pendingTransactions)->where('branch_id', $userBranch->id ?? null)->count();
             
-            $data['branchUsersCount'] = count($this->userRepository->getUsersByBranch($userBranch->id ?? null));
+            $branchUsers = collect($this->userRepository->getUsersByBranch($userBranch->id ?? null));
+            $branchUsers = $branchUsers->filter(function ($u) {
+                return !$u->hasRole('admin') && !$u->hasRole('general_supervisor');
+            });
+            $data['branchUsersCount'] = $branchUsers->count();
+            // Fetch all lines for the branch
+            $branchLines = \App\Models\Domain\Entities\Line::where('branch_id', $userBranch->id)->get();
+            $data['branchLines'] = $branchLines;
+            $data['branchLinesTotalBalance'] = $branchLines->sum('current_balance');
             $dashboardView = 'livewire.dashboard.branch_manager';
         } elseif ($user->hasRole('agent')) {
-            $agentLines = collect($this->lineRepository->all())->where('user_id', $user->id);
-            $data['agentLines'] = [];
-            foreach ($agentLines as $line) {
-                $data['agentLines'][] = $this->viewLineBalanceAndUsageUseCase->execute($line->id);
-            }
-            $data['agentTotalBalance'] = collect($data['agentLines'])->sum('current_balance');
+            $agentLines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
+            $data['agentLines'] = $agentLines;
+            $data['agentLinesTotalBalance'] = $agentLines->sum('current_balance');
+            $data['agentTotalBalance'] = $agentLines->sum('current_balance');
 
             $agentTransactions = collect($this->transactionRepository->all())->where('agent_id', $user->id);
             $data['agentTotalTransferred'] = $agentTransactions->sum('amount');
             $data['agentPendingTransactionsCount'] = $agentTransactions->where('status', 'Pending')->count();
             $dashboardView = 'livewire.dashboard.agent';
         } elseif ($user->hasRole('trainee')) {
-            $agentLines = collect($this->lineRepository->all())->where('user_id', $user->id);
-            $data['agentLines'] = [];
-            foreach ($agentLines as $line) {
-                $data['agentLines'][] = $this->viewLineBalanceAndUsageUseCase->execute($line->id);
-            }
-            $data['agentTotalBalance'] = collect($data['agentLines'])->sum('current_balance');
+            $agentLines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
+            $data['agentLines'] = $agentLines;
+            $data['agentLinesTotalBalance'] = $agentLines->sum('current_balance');
+            $data['agentTotalBalance'] = $agentLines->sum('current_balance');
 
             $agentTransactions = collect($this->transactionRepository->all())->where('agent_id', $user->id);
             $data['agentTotalTransferred'] = $agentTransactions->sum('amount');

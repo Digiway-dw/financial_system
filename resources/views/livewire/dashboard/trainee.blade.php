@@ -121,63 +121,41 @@
         </a>
     </div>
 
-    <div class="mt-8 bg-white p-6 shadow-xl sm:rounded-lg">
-        <h4 class="text-xl font-bold text-gray-900 mb-4">Your Lines Overview</h4>
-        <div class="mt-4 overflow-x-auto">
-            @if (isset($agentLines) && count($agentLines) > 0)
+    @if(isset($agentLines) && $agentLines->count())
+        <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">
+            <h4 class="text-xl font-bold text-gray-900 mb-4">All Lines in Your Branch</h4>
+            <div class="mb-4">
+                <span class="text-lg font-semibold text-gray-700">Total Lines Balance: </span>
+                <span class="text-2xl font-bold text-blue-700">{{ number_format($agentLinesTotalBalance ?? 0, 2) }} EGP</span>
+            </div>
+            <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Mobile Number</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Balance</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Daily Limit</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Daily Usage</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Monthly Limit</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Monthly Usage</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mobile Number</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Balance</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Daily Limit</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly Limit</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Network</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($agentLines as $line)
-                            <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {{ $line['mobile_number'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ number_format($line['current_balance'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ number_format($line['daily_limit'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ number_format($line['daily_usage'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ number_format($line['monthly_limit'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ number_format($line['monthly_usage'], 2) }} EGP</td>
-                                <td
-                                    class="px-6 py-4 whitespace-nowrap text-sm font-semibold @if ($line['status'] === 'active') text-green-500 @else text-red-500 @endif">
-                                    {{ ucfirst($line['status']) }}</td>
+                        @foreach($agentLines as $line)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->mobile_number }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->current_balance, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->daily_limit, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->monthly_limit, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($line->status) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-            @else
-                <p class="text-sm text-gray-500 text-center py-4">No lines assigned to you.</p>
-            @endif
+            </div>
         </div>
-    </div>
+    @endif
 
     <!-- Quick Actions -->
     <div class="mt-8 bg-white p-6 shadow-xl sm:rounded-lg">

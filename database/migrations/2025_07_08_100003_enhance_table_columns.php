@@ -15,13 +15,27 @@ return new class extends Migration
 
         // Enhance transactions table with additional tracking fields
         Schema::table('transactions', function (Blueprint $table) {
-            $table->string('reference_number')->unique()->nullable()->after('id');
-            $table->decimal('exchange_rate', 10, 6)->default(1.000000)->after('deduction');
-            $table->string('currency', 3)->default('EGP')->after('exchange_rate');
-            $table->timestamp('scheduled_at')->nullable()->after('transaction_date_time');
-            $table->json('metadata')->nullable()->after('payment_method'); // For additional transaction data
-            $table->string('source_ip', 45)->nullable()->after('metadata');
-            $table->text('notes')->nullable()->after('source_ip');
+            if (!Schema::hasColumn('transactions', 'reference_number')) {
+                $table->string('reference_number')->unique()->nullable()->after('id');
+            }
+            if (!Schema::hasColumn('transactions', 'exchange_rate')) {
+                $table->decimal('exchange_rate', 10, 6)->default(1.000000)->after('deduction');
+            }
+            if (!Schema::hasColumn('transactions', 'currency')) {
+                $table->string('currency', 3)->default('EGP')->after('exchange_rate');
+            }
+            if (!Schema::hasColumn('transactions', 'scheduled_at')) {
+                $table->timestamp('scheduled_at')->nullable()->after('transaction_date_time');
+            }
+            if (!Schema::hasColumn('transactions', 'metadata')) {
+                $table->json('metadata')->nullable()->after('payment_method'); // For additional transaction data
+            }
+            if (!Schema::hasColumn('transactions', 'source_ip')) {
+                $table->string('source_ip', 45)->nullable()->after('metadata');
+            }
+            if (!Schema::hasColumn('transactions', 'notes')) {
+                $table->text('notes')->nullable()->after('source_ip');
+            }
         });
 
         // Enhance users table with additional security and profile fields

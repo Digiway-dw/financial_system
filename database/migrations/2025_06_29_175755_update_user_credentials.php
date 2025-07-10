@@ -12,15 +12,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            // Update all users to have the email 'admin@example.com'
-            // and set their password to 'password'.
-            // Note: This is a destructive operation and should be used with caution in production.
-            DB::table('users')->update([
-                'email' => 'admin@example.com',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
-            ]);
-        });
+        // Schema::table('users', function (Blueprint $table) {
+        //     // Update all users to have the email 'admin@example.com'
+        //     // and set their password to 'password'.
+        //     // Note: This is a destructive operation and should be used with caution in production.
+        //     DB::table('users')->update([
+        //         'email' => 'admin@example.com',
+        //         'password' => \Illuminate\Support\Facades\Hash::make('password'),
+        //     ]);
+        // });
     }
 
     /**

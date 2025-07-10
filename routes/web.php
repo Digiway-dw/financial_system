@@ -106,56 +106,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('profile', function () {
-        return view('profile', [
-            'user' => Auth::user()
-        ]);
-    })->name('profile');
-
-    Route::patch('/profile', function () {
-        $user = \App\Domain\Entities\User::find(Auth::id());
-
-        request()->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
-        ]);
-
-        $user->name = request('name');
-        $user->email = request('email');
-        $user->save();
-
-        return back()->with('status', 'profile-updated');
-    })->name('profile.update');
-
-    Route::put('/password', function () {
-        $validated = request()->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
-        ]);
-
-        $user = \App\Domain\Entities\User::find(Auth::id());
-        $user->password = Hash::make($validated['password']);
-        $user->save();
-
-        return back()->with('status', 'password-updated');
-    })->name('password.update');
-
-    Route::delete('/profile', function () {
-        request()->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = \App\Domain\Entities\User::find(Auth::id());
-
-        Auth::logout();
-
-        $user->delete();
-
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
-
-        return redirect('/');
-    })->name('profile.destroy');
+    // Removed profile, profile.update, password.update, and profile.destroy routes
 });
 
 Route::get('/test-icons', function () {
