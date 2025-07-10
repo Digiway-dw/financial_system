@@ -31,6 +31,7 @@ class Transaction extends Model
         'safe_id',
         'is_absolute_withdrawal',
         'payment_method',
+        'notes', // add notes to fillable
     ];
 
     /**

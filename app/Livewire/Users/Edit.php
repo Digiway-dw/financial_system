@@ -103,7 +103,7 @@ class Edit extends Component
         $user->save();
         $user->syncRoles([$this->selectedRole]);
         session()->flash('message', 'User updated successfully.');
-        return redirect()->route('users.view', ['userId' => $user->id]);
+        return redirect()->route('users.index');
     }
 
     public function render()

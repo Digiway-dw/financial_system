@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->string('customer_name');
-            $table->string('customer_mobile_number');
+            $table->string('customer_mobile_number')->nullable();
             $table->foreignId('line_id')->nullable()->constrained('lines')->onDelete('set null');
             $table->string('customer_code')->nullable();
             $table->decimal('amount', 15, 2);
-            $table->decimal('commission', 15, 2);
+            $table->decimal('commission', 15, 2)->nullable();
             $table->decimal('deduction', 15, 2)->default(0.00);
             $table->string('transaction_type'); // Transfer / Withdrawal / Deposit / Adjustment
-            $table->foreignId('agent_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('agent_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->timestamp('transaction_date_time')->useCurrent();
             $table->string('status')->default('pending'); // Completed / Pending / Rejected
             $table->foreignId('safe_id')->nullable()->constrained('safes')->onDelete('set null');
