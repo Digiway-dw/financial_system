@@ -207,8 +207,24 @@ class AuthorizationServiceProvider extends ServiceProvider
                 $user->hasRole(Roles::BRANCH_MANAGER);
         });
 
+        // Cash transaction gates
+        Gate::define('cash-transactions', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::BRANCH_MANAGER) ||
+                $user->hasRole(Roles::AGENT);
+        });
+        
         // Direct cash deposit (no approval needed)
         Gate::define('deposit-cash', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::BRANCH_MANAGER) ||
+                $user->hasRole(Roles::AGENT);
+        });
+        
+        // Cash withdrawal gate
+        Gate::define('withdraw-cash', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
