@@ -68,13 +68,13 @@ class Withdrawal extends Create
                     session()->flash('error', 'No wallet found for this client.');
                     return;
                 }
-                
+
                 // Check if customer has sufficient balance
                 if ($customer->balance < $this->amount) {
                     session()->flash('error', 'Insufficient balance in client wallet.');
                     return;
                 }
-                
+
                 $customerName = $customer->name;
                 $customerMobileNumber = $customer->mobile_number;
                 $customerCode = $customer->customer_code;
@@ -88,11 +88,11 @@ class Withdrawal extends Create
             if ($this->withdrawalType === 'direct') {
                 // Check if safe has sufficient balance
                 $safe = Safe::find($safeId);
-                if (!$safe || $safe->balance < $this->amount) {
+                if (!$safe || $safe->current_balance < $this->amount) {
                     session()->flash('error', 'Insufficient balance in the selected safe.');
                     return;
                 }
-                
+
                 Transaction::create([
                     'customer_name' => $customerName,
                     'amount' => -1 * abs($this->amount), // Negative amount for withdrawal

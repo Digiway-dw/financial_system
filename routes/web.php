@@ -101,6 +101,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('permissions.roles')
         ->middleware('role:admin');
 
+    // Work Sessions Routes
+    Route::get('work-sessions', \App\Livewire\Admin\WorkSessions\Index::class)
+        ->name('work-sessions.index')
+        ->middleware('can:view-work-sessions');
+
     // Notifications Routes
     Route::get('notifications', \App\Livewire\AdminNotificationsBox::class)->name('notifications.index');
 });

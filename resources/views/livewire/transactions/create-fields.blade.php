@@ -58,14 +58,7 @@
             <x-input-error class="mt-2" :messages="$errors->get('selectedDestinationNumber')" />
         </div>
 
-        <!-- Line Mobile Number -->
-        <div>
-            <label for="lineMobileNumber" class="block text-sm font-medium text-gray-700 mb-2">رقم الخط المستخدم</label>
-            <input wire:model="lineMobileNumber" id="lineMobileNumber" name="lineMobileNumber" type="text"
-                class="w-full px-4 py-3 bg-white/70 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
-                required />
-            <x-input-error class="mt-2" :messages="$errors->get('lineMobileNumber')" />
-        </div>
+        <!-- Line Mobile Number removed as it doesn't exist in the transactions table -->
 
         <!-- Customer Code -->
         <div>
@@ -299,10 +292,7 @@
                             <span class="font-medium text-gray-600">هاتف العميل:</span>
                             <span class="text-gray-900">{{ $completedTransaction->customer_mobile_number }}</span>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium text-gray-600">رقم الخط:</span>
-                            <span class="text-gray-900">{{ $completedTransaction->line_mobile_number }}</span>
-                        </div>
+                        <!-- Line mobile number field removed as it doesn't exist in the database -->
                         <div class="flex justify-between">
                             <span class="font-medium text-gray-600">المبلغ:</span>
                             <span

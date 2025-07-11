@@ -55,18 +55,18 @@ class MoveSafeCash
         $transactionAttributes = [
             'customer_name' => 'Safe Transfer', // Generic name for internal transfer
             'customer_mobile_number' => 'N/A',
-            'line_mobile_number' => 'N/A',
+            // line_mobile_number removed as it doesn't exist in the transactions table
             'customer_code' => 'SAFE-TRF-' . uniqid(),
             'amount' => $amount,
             'commission' => 0.00,
             'deduction' => 0.00,
             'transaction_type' => 'Safe Transfer',
-            'agent_id' => $agentId, 
+            'agent_id' => $agentId,
             'status' => 'Pending', // Set status to Pending for inter-safe transfers
             'transaction_date_time' => now(), // Set the current timestamp
-            'branch_id' => $fromSafe->branch_id, 
-            'line_id' => null, 
-            'safe_id' => $fromSafeId, 
+            'branch_id' => $fromSafe->branch_id,
+            'line_id' => null,
+            'safe_id' => $fromSafeId,
             'destination_safe_id' => $toSafeId, // Store the destination safe ID
         ];
 
@@ -81,7 +81,7 @@ class MoveSafeCash
         $receivingBranchUsers = User::where('branch_id', $toSafe->branch_id)
             ->role(['branch_manager', 'general_supervisor'])
             ->get();
-        
+
         if ($receivingBranchUsers->count() > 0) {
             $receivingBranchMessage = "A pending cash transfer of " . $amount . " EGP from " . $fromSafe->name . " is awaiting your approval.";
             Notification::send($receivingBranchUsers, new AdminNotification($receivingBranchMessage, route('transactions.edit', $createdTransaction->id, false)));
@@ -89,4 +89,4 @@ class MoveSafeCash
 
         return $createdTransaction;
     }
-} 
+}

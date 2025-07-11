@@ -17,43 +17,42 @@ class Edit extends Component
     public $transaction;
     public $transactionId;
 
-    #[Validate('required|string|max:255')] 
+    #[Validate('required|string|max:255')]
     public $customerName = '';
 
-    #[Validate('required|string|max:20')] 
+    #[Validate('required|string|max:20')]
     public $customerMobileNumber = '';
 
-    #[Validate('required|string|max:20')] 
-    public $lineMobileNumber = '';
+    // Removed lineMobileNumber property as it doesn't exist in the transactions table
 
-    #[Validate('nullable|string|max:255')] 
+    #[Validate('nullable|string|max:255')]
     public $customerCode = '';
 
-    #[Validate('required|numeric|min:0.01')] 
+    #[Validate('required|numeric|min:0.01')]
     public $amount = 0.00;
 
-    #[Validate('required|numeric|min:0')] 
+    #[Validate('required|numeric|min:0')]
     public $commission = 0.00;
 
-    #[Validate('required|numeric|min:0')] 
+    #[Validate('required|numeric|min:0')]
     public $deduction = 0.00;
 
-    #[Validate('required|string|in:Transfer,Withdrawal,Deposit,Adjustment')] 
+    #[Validate('required|string|in:Transfer,Withdrawal,Deposit,Adjustment')]
     public $transactionType = 'Transfer';
 
-    #[Validate('required|string|max:255')] 
+    #[Validate('required|string|max:255')]
     public $agentName = '';
 
-    #[Validate('required|string|in:Completed,Pending,Rejected')] 
+    #[Validate('required|string|in:Completed,Pending,Rejected')]
     public $status = 'Pending';
 
-    #[Validate('required|exists:branches,id')] 
+    #[Validate('required|exists:branches,id')]
     public $branchId = '';
 
-    #[Validate('required|exists:lines,id')] 
+    #[Validate('required|exists:lines,id')]
     public $lineId = '';
 
-    #[Validate('required|exists:safes,id')] 
+    #[Validate('required|exists:safes,id')]
     public $safeId = '';
 
     public $branches;
@@ -90,13 +89,14 @@ class Edit extends Component
 
         $this->customerName = $this->transaction->customer_name;
         $this->customerMobileNumber = $this->transaction->customer_mobile_number;
-        $this->lineMobileNumber = $this->transaction->line_mobile_number;
+        // Remove line_mobile_number as it doesn't exist in the transactions table
         $this->customerCode = $this->transaction->customer_code;
         $this->amount = $this->transaction->amount;
         $this->commission = $this->transaction->commission;
         $this->deduction = $this->transaction->deduction;
         $this->transactionType = $this->transaction->transaction_type;
-        $this->agentName = $this->transaction->agent_name;
+        // Get agent name from the agent relationship instead of a non-existent column
+        $this->agentName = $this->transaction->agent ? $this->transaction->agent->name : '';
         $this->status = $this->transaction->status;
         $this->branchId = $this->transaction->branch_id;
         $this->lineId = $this->transaction->line_id;
@@ -117,13 +117,14 @@ class Edit extends Component
                 [
                     'customer_name' => $this->customerName,
                     'customer_mobile_number' => $this->customerMobileNumber,
-                    'line_mobile_number' => $this->lineMobileNumber,
+                    // Remove line_mobile_number as it doesn't exist in the transactions table
                     'customer_code' => $this->customerCode,
                     'amount' => (float) $this->amount,
                     'commission' => (float) $this->commission,
                     'deduction' => (float) $this->deduction,
                     'transaction_type' => $this->transactionType,
-                    'agent_name' => $this->agentName,
+                    // Remove agent_name as it doesn't exist in the transactions table
+                    // The agent is linked via agent_id
                     'status' => $this->status,
                     'branch_id' => $this->branchId,
                     'line_id' => $this->lineId,

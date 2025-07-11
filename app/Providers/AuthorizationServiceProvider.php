@@ -214,7 +214,7 @@ class AuthorizationServiceProvider extends ServiceProvider
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
                 $user->hasRole(Roles::AGENT);
         });
-        
+
         // Direct cash deposit (no approval needed)
         Gate::define('deposit-cash', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
@@ -222,7 +222,7 @@ class AuthorizationServiceProvider extends ServiceProvider
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
                 $user->hasRole(Roles::AGENT);
         });
-        
+
         // Cash withdrawal gate
         Gate::define('withdraw-cash', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
@@ -311,6 +311,13 @@ class AuthorizationServiceProvider extends ServiceProvider
         });
 
         Gate::define('view-all-commission-data', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::BRANCH_MANAGER);
+        });
+
+        // ===== WORK SESSIONS =====
+        Gate::define('view-work-sessions', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
                 $user->hasRole(Roles::BRANCH_MANAGER);

@@ -62,16 +62,7 @@
                                     <x-input-error class="mt-2" :messages="$errors->get('customerMobileNumber')" />
                                 </div>
 
-                                <!-- Line Mobile Number -->
-                                <div>
-                                    <label for="lineMobileNumber"
-                                        class="block text-sm font-medium text-gray-700 mb-2">رقم الخط المستخدم</label>
-                                    <input wire:model="lineMobileNumber" id="lineMobileNumber" name="lineMobileNumber"
-                                        type="text"
-                                        class="w-full px-4 py-3 bg-white/70 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
-                                        required />
-                                    <x-input-error class="mt-2" :messages="$errors->get('lineMobileNumber')" />
-                                </div>
+                                <!-- Line Mobile Number field removed as it doesn't exist in the database -->
 
                                 <!-- Customer Code -->
                                 <div>
@@ -227,7 +218,7 @@
                                         <option value="">اختر الخزنة</option>
                                         @foreach ($safes as $safe)
                                             <option value="{{ $safe->id }}">{{ $safe->name }} (الرصيد:
-                                                {{ $safe->balance }} ج.م)</option>
+                                                {{ $safe->current_balance }} ج.م)</option>
                                         @endforeach
                                     </select>
                                     <x-input-error class="mt-2" :messages="$errors->get('safeId')" />
