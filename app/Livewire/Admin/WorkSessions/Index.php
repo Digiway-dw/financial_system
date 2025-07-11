@@ -86,9 +86,9 @@ class Index extends Component
 
     private function getFilteredSessions()
     {
-        $query = WorkSession::with(['user' => function($q) {
-                $q->withTrashed(); // Include deleted users
-            }, 'user.branch'])
+        $query = WorkSession::with(['user' => function ($q) {
+            $q->withTrashed(); // Include deleted users
+        }, 'user.branch'])
             ->orderBy('login_at', 'desc');
 
         // Filter by user if selected
@@ -115,11 +115,42 @@ class Index extends Component
         return $query->get();
     }
 
+    /**
+     * Update the status of active sessions
+     * Checks if any sessions that show as active have actually expired
+     */
+    public function updateSessionStatuses()
+    {
+        // Find active sessions
+        $activeSessions = WorkSession::whereNull('logout_at')->get();
+
+        foreach ($activeSessions as $session) {
+            // If the session is more than 5 minutes old and still active, mark as logged out
+            if ($session->login_at->diffInMinutes(now()) > 5) {
+                $session->logout_at = now();
+                $session->calculateDuration();
+                $session->save();
+            }
+        }
+
+        // Show a notification
+        session()->flash('message', 'Session statuses updated successfully');
+    }
+
+    public function resetFilters()
+    {
+        $this->selectedUser = null;
+        $this->selectedBranch = null;
+        $this->dateFrom = now()->startOfWeek()->format('Y-m-d');
+        $this->dateTo = now()->format('Y-m-d');
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $query = WorkSession::with(['user' => function($q) {
-                $q->withTrashed(); // Include deleted users
-            }, 'user.branch'])
+        $query = WorkSession::with(['user' => function ($q) {
+            $q->withTrashed(); // Include deleted users
+        }, 'user.branch'])
             ->orderBy('login_at', 'desc');
 
         // Filter by user if selected

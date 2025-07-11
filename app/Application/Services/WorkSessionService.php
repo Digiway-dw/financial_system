@@ -23,7 +23,7 @@ class WorkSessionService
     {
         // First, check if there's an active session for this user and end it
         $this->endAnyActiveSessions($user);
-        
+
         return WorkSession::create([
             'user_id' => $user->id,
             'login_at' => now(),
@@ -43,7 +43,7 @@ class WorkSessionService
         $activeSessions = WorkSession::where('user_id', $user->id)
             ->whereNull('logout_at')
             ->get();
-            
+
         foreach ($activeSessions as $session) {
             $session->logout_at = now();
             $session->calculateDuration();

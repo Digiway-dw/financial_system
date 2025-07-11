@@ -16,11 +16,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('unfreeze-lines-and-reset-daily-balance')->dailyAt('00:00');
-        
+
         // Run every 5 minutes to check for inactive sessions
         $schedule->command('sessions:close-inactive')->everyFiveMinutes();
-        
+
         // Run every minute to clean up stale sessions
         $schedule->command('sessions:cleanup')->everyMinute();
     }
-} 
+}

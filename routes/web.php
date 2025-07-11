@@ -114,14 +114,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     // Removed profile, profile.update, password.update, and profile.destroy routes
-    
+
     // Session heartbeat and auto-logout routes (alternative to API routes)
     Route::post('/session-heartbeat', [\App\Http\Controllers\SessionController::class, 'heartbeat'])
         ->name('session.heartbeat');
-    
+
     Route::post('/auto-logout', [\App\Http\Controllers\SessionController::class, 'autoLogout'])
         ->name('session.logout');
-    
+
     Route::get('/session-status', [\App\Http\Controllers\SessionController::class, 'checkStatus'])
         ->name('session.status');
 });
@@ -136,7 +136,7 @@ Route::get('direct-user-edit/{userId}', function ($userId) {
 })->name('direct-user-edit');
 
 // Clean stale sessions on login
-Route::get('/cleanup-sessions', function() {
+Route::get('/cleanup-sessions', function () {
     \Illuminate\Support\Facades\Artisan::call('sessions:cleanup');
     return redirect()->intended(route('dashboard'));
 })->middleware(['auth'])->name('cleanup-sessions');

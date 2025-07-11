@@ -25,10 +25,10 @@ class SessionController extends Controller
     public function heartbeat(Request $request)
     {
         Log::info('Session heartbeat received for user: ' . ($request->user() ? $request->user()->id : 'unknown'));
-        
+
         // Update session last activity time
         session(['last_activity' => now()->timestamp]);
-        
+
         // Set cookie with expiration time of 5 minutes for browser closure detection
         return response()->json(['status' => 'success'])
             ->cookie('session_alive', 'true', 5); // 5 minutes
@@ -44,9 +44,9 @@ class SessionController extends Controller
     {
         $user = $request->user();
         $userId = $user ? $user->id : 'unknown';
-        
+
         Log::info('Auto-logout received for user: ' . $userId);
-        
+
         // End the user's work session if they're logged in
         if ($user) {
             $this->workSessionService->endSession($user);
@@ -54,14 +54,14 @@ class SessionController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerateToken();
         }
-        
+
         // Clear the session_alive cookie
         return response()->json([
-            'status' => 'success', 
+            'status' => 'success',
             'message' => 'User logged out successfully'
         ])->cookie('session_alive', '', -1); // Expire the cookie
     }
-    
+
     /**
      * Check session status
      * 
@@ -76,26 +76,26 @@ class SessionController extends Controller
                 'message' => 'User not authenticated'
             ]);
         }
-        
+
         $lastActivity = session('last_activity', 0);
         $currentTime = now()->timestamp;
         $elapsedTime = $currentTime - $lastActivity;
         $timeout = 300; // 5 minutes = 300 seconds
-        
+
         // If more than 5 minutes have passed, session should be expired
         if ($elapsedTime > $timeout) {
             // Auto-logout the user server-side
             $this->autoLogout($request);
-            
+
             Log::info('Session expired via status check: User ' . Auth::id() . ' inactive for ' . $elapsedTime . ' seconds');
-            
+
             return response()->json([
                 'status' => 'expired',
                 'message' => 'Session expired',
                 'elapsed_seconds' => $elapsedTime,
             ]);
         }
-        
+
         return response()->json([
             'status' => 'active',
             'elapsed_seconds' => $elapsedTime,

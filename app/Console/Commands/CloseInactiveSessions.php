@@ -24,28 +24,30 @@ class CloseInactiveSessions extends Command
     {
         // Find all active sessions where last activity was more than 5 minutes ago
         $cutoffTime = Carbon::now()->subMinutes(5);
-        
+
         $activeSessions = WorkSession::whereNull('logout_at')
             ->get();
-            
+
         $closedCount = 0;
-        
+
         foreach ($activeSessions as $session) {
             // If the session was created/updated more than 5 minutes ago
-            if ($session->created_at < $cutoffTime && 
-                ($session->updated_at < $cutoffTime || !$session->updated_at)) {
-                
+            if (
+                $session->created_at < $cutoffTime &&
+                ($session->updated_at < $cutoffTime || !$session->updated_at)
+            ) {
+
                 // End the session
                 $session->logout_at = now();
                 $session->calculateDuration();
                 $session->save();
-                
+
                 $closedCount++;
             }
         }
-        
+
         $this->info("Closed {$closedCount} inactive sessions.");
-        
+
         return 0;
     }
 }

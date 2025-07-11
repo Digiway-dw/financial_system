@@ -79,7 +79,7 @@ class Edit extends Component
 
         // Authorization check for editing transactions
         $user = Auth::user();
-        
+
         // Check using Gate facade
         if (Gate::allows('edit-all-daily-transactions')) {
             // Admin/Auditor can edit any transaction

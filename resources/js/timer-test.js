@@ -1,7 +1,7 @@
 // Simple test script to debug timer display
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('Timer test script loaded');
-    
+
     // Create a simple timer element
     const timer = document.createElement('div');
     timer.id = 'test-timer';
@@ -17,14 +17,14 @@ document.addEventListener('DOMContentLoaded', function() {
         font-weight: bold;
     `;
     timer.textContent = 'TEST TIMER';
-    
+
     // Wait for body to be ready
     if (document.body) {
         console.log('Body available, adding test timer');
         document.body.appendChild(timer);
     } else {
         console.error('Body not available during DOMContentLoaded');
-        
+
         // Try again after a delay
         setTimeout(() => {
             if (document.body) {
@@ -38,9 +38,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Also try with window.onload
-window.onload = function() {
+window.onload = function () {
     console.log('Window loaded event fired');
-    
+
     const existingTimer = document.getElementById('test-timer');
     if (!existingTimer) {
         console.log('Creating backup timer in window.onload');

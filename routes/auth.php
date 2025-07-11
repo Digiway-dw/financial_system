@@ -16,9 +16,9 @@ Route::middleware('guest')->group(function () {
 
     Volt::route('reset-password/{token}', 'pages.auth.reset-password')
         ->name('password.reset');
-    
+
     // Force cleanup of any stale sessions
-    Route::get('/force-session-cleanup', function() {
+    Route::get('/force-session-cleanup', function () {
         \Illuminate\Support\Facades\Artisan::call('sessions:cleanup');
         return redirect()->route('login')
             ->with('status', 'All inactive sessions have been cleared');

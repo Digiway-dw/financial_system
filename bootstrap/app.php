@@ -17,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Add our middlewares to the global middleware stack
         $middleware->append(\App\Http\Middleware\BypassAuthorization::class);
         $middleware->append(\App\Http\Middleware\AgentDashboardAccess::class);
-        
+
         // Set up API middleware group
         $middleware->api([
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
