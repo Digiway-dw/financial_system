@@ -86,7 +86,9 @@ class Index extends Component
 
     private function getFilteredSessions()
     {
-        $query = WorkSession::with('user.branch')
+        $query = WorkSession::with(['user' => function($q) {
+                $q->withTrashed(); // Include deleted users
+            }, 'user.branch'])
             ->orderBy('login_at', 'desc');
 
         // Filter by user if selected
@@ -115,7 +117,9 @@ class Index extends Component
 
     public function render()
     {
-        $query = WorkSession::with('user.branch')
+        $query = WorkSession::with(['user' => function($q) {
+                $q->withTrashed(); // Include deleted users
+            }, 'user.branch'])
             ->orderBy('login_at', 'desc');
 
         // Filter by user if selected

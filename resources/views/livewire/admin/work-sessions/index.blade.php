@@ -124,9 +124,9 @@
                                 @forelse($sessions as $session)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900">{{ $session->user->name }}
+                                            <div class="text-sm font-medium text-gray-900">{{ $session->user->name ?? 'Unknown User' }}
                                             </div>
-                                            <div class="text-sm text-gray-500">{{ $session->user->email }}</div>
+                                            <div class="text-sm text-gray-500">{{ $session->user->email ?? 'No Email' }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">

@@ -21,12 +21,34 @@ class WorkSessionService
      */
     public function startSession(User $user, Request $request): WorkSession
     {
+        // First, check if there's an active session for this user and end it
+        $this->endAnyActiveSessions($user);
+        
         return WorkSession::create([
             'user_id' => $user->id,
             'login_at' => now(),
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
+    }
+
+    /**
+     * End all active sessions for a user.
+     *
+     * @param User $user
+     * @return void
+     */
+    private function endAnyActiveSessions(User $user): void
+    {
+        $activeSessions = WorkSession::where('user_id', $user->id)
+            ->whereNull('logout_at')
+            ->get();
+            
+        foreach ($activeSessions as $session) {
+            $session->logout_at = now();
+            $session->calculateDuration();
+            $session->save();
+        }
     }
 
     /**

@@ -50,7 +50,7 @@ class WorkSessionsExport implements FromCollection, WithHeadings, WithMapping, W
     {
         return [
             $row->id,
-            $row->user->name,
+            $row->user->name ?? 'Unknown User',
             $row->login_at ? $row->login_at->format('Y-m-d H:i:s') : '',
             $row->logout_at ? $row->logout_at->format('Y-m-d H:i:s') : 'Still Active',
             $row->duration_minutes ?? 'N/A',

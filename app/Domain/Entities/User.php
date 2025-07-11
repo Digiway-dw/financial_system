@@ -86,6 +86,14 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\Domain\Entities\LoginHistory::class);
     }
 
+    /**
+     * Get the work sessions for the user.
+     */
+    public function workSessions(): HasMany
+    {
+        return $this->hasMany(\App\Models\Domain\Entities\WorkSession::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

@@ -7,10 +7,10 @@ use App\Domain\Interfaces\TransactionRepository;
 use App\Models\Domain\Entities\Branch;
 use App\Models\Domain\Entities\Line;
 use App\Models\Domain\Entities\Safe;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Auth;
 
 class Edit extends Component
 {
@@ -79,9 +79,11 @@ class Edit extends Component
 
         // Authorization check for editing transactions
         $user = Auth::user();
-        if ($user->can('edit-all-daily-transactions')) {
+        
+        // Check using Gate facade
+        if (Gate::allows('edit-all-daily-transactions')) {
             // Admin/Auditor can edit any transaction
-        } elseif ($user->can('edit-own-branch-transactions') && $user->branch_id === $this->transaction->branch_id) {
+        } elseif (Gate::allows('edit-own-branch-transactions') && $user->branch_id === $this->transaction->branch_id) {
             // Branch Manager can edit transactions in their own branch
         } else {
             abort(403, 'Unauthorized action.');

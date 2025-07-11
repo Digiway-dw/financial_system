@@ -2,11 +2,11 @@
 
 namespace App\Models\Domain\Entities;
 
-use App\Domain\Entities\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Database\Factories\WorkSessionFactory;
+use App\Domain\Entities\User;
 
 class WorkSession extends Model
 {
@@ -60,7 +60,14 @@ class WorkSession extends Model
     public function calculateDuration(): void
     {
         if ($this->login_at && $this->logout_at) {
-            $this->duration_minutes = $this->logout_at->diffInMinutes($this->login_at);
+            // Calculate the absolute difference in minutes between login and logout
+            if ($this->logout_at->lt($this->login_at)) {
+                // If logout time is before login time (which shouldn't happen normally),
+                // set a minimum duration (1 minute) or default to zero
+                $this->duration_minutes = 0;
+            } else {
+                $this->duration_minutes = $this->login_at->diffInMinutes($this->logout_at);
+            }
             $this->save();
         }
     }
