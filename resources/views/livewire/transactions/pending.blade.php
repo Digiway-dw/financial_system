@@ -46,7 +46,8 @@
                         <div>
                             <p class="text-sm font-medium text-gray-600">المبلغ المعلق</p>
                             <p class="text-2xl font-bold text-orange-700">
-                                {{ number_format($pendingTransactions->sum('amount'), 2) }} ج.م</p>
+                                {{ number_format(array_sum(array_column($pendingTransactions, 'amount')), 2) }} ج.م
+                            </p>
                         </div>
                         <div class="p-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

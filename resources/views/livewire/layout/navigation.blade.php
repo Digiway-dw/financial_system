@@ -23,7 +23,7 @@ new class extends Component {
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" wire:navigate>
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        <span class="text-2xl font-bold text-blue-700 tracking-wide font-fidodido">Fido Dido</span>
                     </a>
                 </div>
 
