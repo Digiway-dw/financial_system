@@ -5,6 +5,7 @@ namespace App\Livewire\Transactions;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Models\Domain\Entities\CashTransaction;
 
 class Cash extends Component
 {
@@ -25,6 +26,7 @@ class Cash extends Component
         return view('livewire.transactions.cash', [
             'canDeposit' => Gate::allows('deposit-cash'),
             'canWithdraw' => Gate::allows('withdraw-cash'),
+            'recentCashTransactions' => CashTransaction::orderByDesc('transaction_date_time')->limit(5)->get(),
         ]);
     }
 }

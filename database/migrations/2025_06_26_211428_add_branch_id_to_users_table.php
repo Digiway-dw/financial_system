@@ -22,7 +22,14 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('branch_id');
+            try {
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE `users` DROP FOREIGN KEY `users_branch_id_foreign`');
+            } catch (\Throwable $e) {
+                // Ignore if already dropped or doesn't exist
+            }
+            if (Schema::hasColumn('users', 'branch_id')) {
+                $table->dropColumn('branch_id');
+            }
         });
     }
 };
