@@ -7,6 +7,7 @@ use App\Domain\Entities\User;
 use App\Application\UseCases\CreateTransaction;
 use App\Domain\Interfaces\CustomerRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\Domain\Entities\Transaction;
 use App\Models\Domain\Entities\Safe;
 
@@ -52,7 +53,7 @@ class Withdrawal extends Create
         $this->transactionType = 'Withdrawal';
         $this->withdrawalType = 'direct';
         $this->branchUsers = User::where('branch_id', Auth::user()->branch_id ?? null)->get();
-        $this->branches = \App\Models\Domain\Entities\Branch::all()->map(function($branch) {
+        $this->branches = \App\Models\Domain\Entities\Branch::all()->map(function ($branch) {
             return [
                 'id' => $branch->id,
                 'name' => $branch->name,
@@ -74,7 +75,7 @@ class Withdrawal extends Create
 
         $user = Auth::user();
         if ($user->hasRole('admin') || $user->hasRole('supervisor')) {
-            $this->safes = \App\Models\Domain\Entities\Safe::all()->map(function($safe) {
+            $this->safes = \App\Models\Domain\Entities\Safe::all()->map(function ($safe) {
                 return [
                     'id' => $safe->id,
                     'name' => $safe->name,
@@ -82,7 +83,7 @@ class Withdrawal extends Create
                 ];
             })->toArray();
         } else {
-            $this->safes = \App\Models\Domain\Entities\Safe::where('branch_id', $user->branch_id ?? null)->get()->map(function($safe) {
+            $this->safes = \App\Models\Domain\Entities\Safe::where('branch_id', $user->branch_id ?? null)->get()->map(function ($safe) {
                 return [
                     'id' => $safe->id,
                     'name' => $safe->name,
@@ -277,14 +278,14 @@ class Withdrawal extends Create
                 }
 
                 // Check if customer has sufficient balance
-                if ($customer->balance < $this->amount) {
+                if ($client->balance < $this->amount) {
                     session()->flash('error', 'Insufficient balance in client wallet.');
                     return;
                 }
 
-                $customerName = $customer->name;
-                $customerMobileNumber = $customer->mobile_number;
-                $customerCode = $customer->customer_code;
+                $customerName = $client->name;
+                $customerMobileNumber = $client->mobile_number;
+                $customerCode = $client->customer_code;
                 $isClient = true;
                 $notes = $this->notes . ' | Withdrawal to: ' . $this->withdrawalToName;
                 $user = $agent;
@@ -337,10 +338,12 @@ class Withdrawal extends Create
                 // Check if safe has sufficient balance
                 $safe = Safe::find($safeId);
                 if (!$safe || $safe->current_balance < $this->amount) {
-                if (!$safe || $safe->current_balance < $this->amount) {
                     session()->flash('error', 'Insufficient balance in the selected safe.');
                     return;
                 }
+
+                $user = Auth::user();
+                $status = $user->hasRole('admin') ? 'completed' : 'pending';
 
                 Transaction::create([
                     'customer_name' => $customerName,
@@ -420,7 +423,7 @@ class Withdrawal extends Create
                 $user = Auth::user();
                 $branch = collect($this->branches)->firstWhere('id', $this->selectedBranchId);
                 $branchName = $branch['name'] ?? 'Unknown Branch';
-                
+
                 // Get expense item name
                 $expenseItemName = '';
                 if ($this->selectedExpenseItem === 'other') {
@@ -446,7 +449,7 @@ class Withdrawal extends Create
                 // Send notification to admins
                 $admins = \App\Domain\Entities\User::role(['admin', 'general_supervisor'])->get();
                 $notificationMessage = "Expense withdrawal request: " . number_format($this->amount, 2) . " EGP for " . $expenseItemName . " in " . $branchName . " branch by " . $user->name . " requires approval.";
-                
+
                 foreach ($admins as $admin) {
                     $admin->notify(new \App\Notifications\AdminNotification(
                         $notificationMessage,
@@ -507,7 +510,7 @@ class Withdrawal extends Create
 
     public function render()
     {
-        \Log::info('WITHDRAWAL COMPONENT RENDERED');
+        Log::info('WITHDRAWAL COMPONENT RENDERED');
         return view('livewire.transactions.withdrawal', [
             'users' => $this->branchUsers,
         ]);
