@@ -3,7 +3,11 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
+<<<<<<< HEAD
         'reference' => 'e41f8b99cec905e81483d0bb3091b4d9bde49121',
+=======
+        'reference' => '7c726cc9c138b6cbad09ac3703b20c96cc7fb94e',
+>>>>>>> 9e46c86b0820944371050449ec9d3464190e0898
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -18,6 +22,24 @@
             'install_path' => __DIR__ . '/../barryvdh/laravel-dompdf',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'barryvdh/laravel-ide-helper' => array(
+            'pretty_version' => 'v3.5.5',
+            'version' => '3.5.5.0',
+            'reference' => '8d441ec99f8612b942b55f5183151d91591b618a',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../barryvdh/laravel-ide-helper',
+            'aliases' => array(),
+            'dev_requirement' => true,
+        ),
+        'barryvdh/reflection-docblock' => array(
+            'pretty_version' => 'v2.3.1',
+            'version' => '2.3.1.0',
+            'reference' => 'b6ff9f93603561f50e53b64310495d20b8dff5d8',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../barryvdh/reflection-docblock',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'blade-ui-kit/blade-heroicons' => array(
             'pretty_version' => '2.6.0',
@@ -63,6 +85,15 @@
             'install_path' => __DIR__ . '/../carbonphp/carbon-doctrine-types',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'composer/class-map-generator' => array(
+            'pretty_version' => '1.6.1',
+            'version' => '1.6.1.0',
+            'reference' => '134b705ddb0025d397d8318a75825fe3c9d1da34',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/./class-map-generator',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'composer/pcre' => array(
             'pretty_version' => '3.3.2',
@@ -514,7 +545,11 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
+<<<<<<< HEAD
             'reference' => 'e41f8b99cec905e81483d0bb3091b4d9bde49121',
+=======
+            'reference' => '7c726cc9c138b6cbad09ac3703b20c96cc7fb94e',
+>>>>>>> 9e46c86b0820944371050449ec9d3464190e0898
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

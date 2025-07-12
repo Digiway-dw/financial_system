@@ -13,7 +13,30 @@ use Spatie\Activitylog\LogOptions;
 use App\Models\Domain\Entities\Branch;
 use App\Models\Domain\Entities\Transaction;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Database\Eloquent\Collection;
 
+/**
+ * @method bool hasRole(string|array|\Spatie\Permission\Contracts\Role $roles, string $guard = null)
+ * @method bool hasAnyRole(string|array|\Spatie\Permission\Contracts\Role $roles, string $guard = null)
+ * @method bool hasAllRoles(string|array|\Spatie\Permission\Contracts\Role $roles, string $guard = null)
+ * @method bool hasPermissionTo(string|Permission $permission, string $guard = null)
+ * @method bool hasAnyPermission(string|array|Permission|Collection $permissions, string $guard = null)
+ * @method bool hasAllPermissions(string|array|Permission|Collection $permissions, string $guard = null)
+ * @method bool hasDirectPermission(string|Permission $permission, string $guard = null)
+ * @method $this assignRole(string|array|Role|Collection $roles)
+ * @method $this removeRole(string|array|Role|Collection $roles)
+ * @method $this syncRoles(string|array|Role|Collection $roles)
+ * @method $this givePermissionTo(string|array|Permission|Collection $permissions)
+ * @method $this revokePermissionTo(string|array|Permission|Collection $permissions)
+ * @method $this syncPermissions(string|array|Permission|Collection $permissions)
+ * @method Collection getAllPermissions()
+ * @method Collection getPermissionsViaRoles()
+ * @method Collection getDirectPermissions()
+ * @method Collection getRoleNames()
+ * @method Collection getPermissionNames()
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, LogsActivity, HasRoles, SoftDeletes;
