@@ -85,41 +85,106 @@ return new class extends Migration
     {
         // Drop composite indexes
         Schema::table('transactions', function (Blueprint $table) {
-            $table->dropIndex('idx_transactions_status_created');
-            $table->dropIndex('idx_transactions_agent_date');
-            $table->dropIndex('idx_transactions_customer_date');
-            $table->dropIndex('idx_transactions_safe_status_created');
-            $table->dropIndex('idx_transactions_type_created');
+            try {
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE `transactions` DROP FOREIGN KEY `transactions_agent_id_foreign`');
+            } catch (\Throwable $e) {
+                // Ignore if already dropped or doesn't exist
+            }
+            $indexes = [
+                'idx_transactions_status_created',
+                'idx_transactions_agent_date',
+                'idx_transactions_customer_date',
+                'idx_transactions_safe_status_created',
+                'idx_transactions_type_created'
+            ];
+            foreach ($indexes as $index) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE `transactions` DROP INDEX `$index`");
+                } catch (\Throwable $e) {
+                    // Ignore if already dropped or doesn't exist
+                }
+            }
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->dropIndex('idx_users_branch_created');
-            $table->dropIndex('idx_users_verified_deleted');
-            $table->dropIndex('idx_users_national_number');
+            // Drop the foreign key if it exists before dropping the index
+            try {
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE `users` DROP FOREIGN KEY `users_branch_id_foreign`');
+            } catch (\Throwable $e) {
+                // Ignore if already dropped or doesn't exist
+            }
+            $indexes = [
+                'idx_users_branch_created',
+                'idx_users_verified_deleted',
+                'idx_users_national_number'
+            ];
+            foreach ($indexes as $index) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE `users` DROP INDEX `$index`");
+                } catch (\Throwable $e) {
+                    // Ignore if already dropped or doesn't exist
+                }
+            }
         });
 
         Schema::table('customers', function (Blueprint $table) {
-            $table->dropIndex('idx_customers_code');
-            $table->dropIndex('idx_customers_gender_created');
-            $table->dropIndex('idx_customers_agent_branch');
-            $table->dropIndex('idx_customers_client_created');
+            $indexes = [
+                'idx_customers_code',
+                'idx_customers_gender_created',
+                'idx_customers_agent_branch',
+                'idx_customers_client_created'
+            ];
+            foreach ($indexes as $index) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE `customers` DROP INDEX `$index`");
+                } catch (\Throwable $e) {
+                    // Ignore if already dropped or doesn't exist
+                }
+            }
         });
 
         Schema::table('branches', function (Blueprint $table) {
-            $table->dropIndex('idx_branches_code');
-            $table->dropIndex('idx_branches_location');
+            $indexes = [
+                'idx_branches_code',
+                'idx_branches_location'
+            ];
+            foreach ($indexes as $index) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE `branches` DROP INDEX `$index`");
+                } catch (\Throwable $e) {
+                    // Ignore if already dropped or doesn't exist
+                }
+            }
         });
 
         Schema::table('safes', function (Blueprint $table) {
-            $table->dropIndex('idx_safes_balance_branch');
-            $table->dropIndex('idx_safes_type_branch');
+            $indexes = [
+                'idx_safes_balance_branch',
+                'idx_safes_type_branch'
+            ];
+            foreach ($indexes as $index) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE `safes` DROP INDEX `$index`");
+                } catch (\Throwable $e) {
+                    // Ignore if already dropped or doesn't exist
+                }
+            }
         });
 
         Schema::table('lines', function (Blueprint $table) {
-            $table->dropIndex('idx_lines_mobile');
-            $table->dropIndex('idx_lines_network_status');
-            $table->dropIndex('idx_lines_branch_status');
-            $table->dropIndex('idx_lines_usage');
+            $indexes = [
+                'idx_lines_mobile',
+                'idx_lines_network_status',
+                'idx_lines_branch_status',
+                'idx_lines_usage'
+            ];
+            foreach ($indexes as $index) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE `lines` DROP INDEX `$index`");
+                } catch (\Throwable $e) {
+                    // Ignore if already dropped or doesn't exist
+                }
+            }
         });
     }
 };

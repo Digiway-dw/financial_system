@@ -84,7 +84,7 @@ class Dashboard extends Component
             $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);
             $data['totalTransferred'] = $allTransactions['totals']['total_transferred'];
             $data['netProfits'] = $allTransactions['totals']['net_profit'];
-            $data['pendingTransactionsCount'] = count($this->listPendingTransactionsUseCase->execute());
+            $data['pendingTransactionsCount'] = $this->transactionRepository->countAllPending();
             $dashboardView = 'livewire.dashboard.admin';
         } elseif ($user->hasRole('general_supervisor')) {
             $data['pendingTransactionsCount'] = count($this->listPendingTransactionsUseCase->execute());

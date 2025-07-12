@@ -123,8 +123,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Transactions table
         Schema::table('transactions', function (Blueprint $table) {
-            $table->dropColumn([
+            // Example: drop foreign keys and indexes if any (none in this migration, but pattern shown)
+            $columns = [
                 'reference_number',
                 'exchange_rate',
                 'currency',
@@ -132,11 +134,16 @@ return new class extends Migration
                 'metadata',
                 'source_ip',
                 'notes'
-            ]);
+            ];
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('transactions', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
         });
-
+        // Users table
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn([
+            $columns = [
                 'last_password_change',
                 'two_factor_enabled',
                 'two_factor_secret',
@@ -147,11 +154,16 @@ return new class extends Migration
                 'is_active',
                 'employment_start_date',
                 'employment_end_date'
-            ]);
+            ];
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('users', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
         });
-
+        // Customers table
         Schema::table('customers', function (Blueprint $table) {
-            $table->dropColumn([
+            $columns = [
                 'date_of_birth',
                 'nationality',
                 'id_type',
@@ -168,11 +180,16 @@ return new class extends Migration
                 'last_transaction_at',
                 'transaction_count',
                 'preferences'
-            ]);
+            ];
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('customers', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
         });
-
+        // Branches table
         Schema::table('branches', function (Blueprint $table) {
-            $table->dropColumn([
+            $columns = [
                 'phone_number',
                 'manager_name',
                 'manager_phone',
@@ -185,23 +202,41 @@ return new class extends Migration
                 'is_active',
                 'monthly_target',
                 'commission_rate'
-            ]);
+            ];
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('branches', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
         });
-
+        // Safes table
         Schema::table('safes', function (Blueprint $table) {
-            $table->dropColumn([
+            // Drop the foreign key if it exists before dropping the column
+            if (Schema::hasColumn('safes', 'reconciled_by')) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement('ALTER TABLE `safes` DROP FOREIGN KEY `safes_reconciled_by_foreign`');
+                } catch (\Throwable $e) {
+                    // Ignore if already dropped or doesn't exist
+                }
+                $table->dropColumn('reconciled_by');
+            }
+            $columns = [
                 'opening_balance',
                 'daily_limit',
                 'minimum_balance',
                 'maximum_balance',
                 'last_reconciliation_at',
-                'reconciled_by',
                 'requires_dual_approval'
-            ]);
+            ];
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('safes', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
         });
-
+        // Lines table
         Schema::table('lines', function (Blueprint $table) {
-            $table->dropColumn([
+            $columns = [
                 'line_type',
                 'setup_cost',
                 'monthly_fee',
@@ -216,7 +251,12 @@ return new class extends Migration
                 'auto_recharge_amount',
                 'monthly_receive_limit',
                 'daily_send_limit'
-            ]);
+            ];
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('lines', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
         });
     }
 };

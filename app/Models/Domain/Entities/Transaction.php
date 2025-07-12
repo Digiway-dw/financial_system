@@ -37,6 +37,18 @@ class Transaction extends Model
         'notes', // add notes to fillable
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $fillable = $model->getFillable();
+            foreach (array_keys($model->attributes) as $key) {
+                if (!in_array($key, $fillable)) {
+                    unset($model->{$key});
+                }
+            }
+        });
+    }
+
     /**
      * Get the agent who performed the transaction.
      */

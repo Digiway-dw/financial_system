@@ -51,6 +51,30 @@
                         <h3 class="text-lg font-medium text-gray-700 mb-4">Recent Cash Transactions</h3>
 
                         <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
+                            @if ($recentCashTransactions->count())
+                                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">Customer Name</th>
+                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">Amount</th>
+                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">Type</th>
+                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">Status</th>
+                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @foreach ($recentCashTransactions as $tx)
+                                            <tr>
+                                                <td class="px-4 py-2 font-medium text-gray-900">{{ $tx->customer_name }}</td>
+                                                <td class="px-4 py-2 text-gray-700">{{ number_format($tx->amount, 2) }} EGP</td>
+                                                <td class="px-4 py-2 text-gray-700">{{ $tx->transaction_type }}</td>
+                                                <td class="px-4 py-2 text-gray-700">{{ $tx->status }}</td>
+                                                <td class="px-4 py-2 text-gray-700">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('Y-m-d H:i') }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @else
                             <p class="text-gray-500 text-center py-6">
                                 Cash transaction history will be displayed here.
                                 <br>
@@ -59,6 +83,7 @@
                                     View all transactions
                                 </a>
                             </p>
+                            @endif
                         </div>
                     </div>
 

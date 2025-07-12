@@ -59,6 +59,21 @@ class Index extends Component
         $this->loadTransactions();
     }
 
+    public function resetFilters()
+    {
+        $this->customer_code = null;
+        $this->receiver_mobile = null;
+        $this->transfer_line = null;
+        $this->amount = null;
+        $this->commission = null;
+        $this->transaction_type = null;
+        $this->start_date = null;
+        $this->end_date = null;
+        $this->employee_ids = [];
+        $this->branch_ids = [];
+        $this->loadTransactions();
+    }
+
     public function deleteTransaction(string $transactionId)
     {
         Gate::authorize('edit-all-data'); // Only admin can delete transactions

@@ -46,7 +46,8 @@
                         <div>
                             <p class="text-sm font-medium text-gray-600">المبلغ المعلق</p>
                             <p class="text-2xl font-bold text-orange-700">
-                                {{ number_format($pendingTransactions->sum('amount'), 2) }} ج.م</p>
+                                {{ number_format(array_sum(array_column($pendingTransactions, 'amount')), 2) }} ج.م
+                            </p>
                         </div>
                         <div class="p-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,6 +110,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200/30">
                             @forelse ($pendingTransactions as $transaction)
+                                @if($transaction['status'] === 'pending' || $transaction['status'] === 'Pending')
                                 <tr class="hover:bg-white/40 transition-colors duration-200">
                                     <td class="px-6 py-4 text-sm font-medium text-gray-900">
                                         {{ $transaction['customer_name'] }}</td>
@@ -128,18 +130,19 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-600">
-                                        @if ($transaction->transaction_type === 'Withdrawal' && isset($transaction->line->mobile_number))
-                                            {{ $transaction->line->mobile_number }}
+                                        @if ($transaction['transaction_type'] === 'Withdrawal' && isset($transaction['line']))
+                                            {{ $transaction['line']['mobile_number'] ?? '' }}
                                         @else
                                             <span class="text-gray-400">غير متاح</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $transaction['agent_name'] }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $transaction['agent_name'] ?? '' }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">
                                         {{ \Carbon\Carbon::parse($transaction['created_at'])->format('d/m/Y H:i') }}
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <div class="flex items-center justify-center gap-2">
+                                            @if ($transaction['status'] === 'pending' || $transaction['status'] === 'Pending')
                                             <button wire:click="approve('{{ $transaction['id'] }}')"
                                                 class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-semibold rounded-lg shadow-md hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200">
                                                 موافقة
@@ -148,9 +151,13 @@
                                                 class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-semibold rounded-lg shadow-md hover:from-red-600 hover:to-red-700 transform hover:scale-105 transition-all duration-200">
                                                 رفض
                                             </button>
+                                            @else
+                                                <span class="text-gray-400">تمت المعالجة</span>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
+                                @endif
                             @empty
                                 <tr>
                                     <td colspan="7" class="px-6 py-12 text-center">

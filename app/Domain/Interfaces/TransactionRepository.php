@@ -17,4 +17,8 @@ interface TransactionRepository
     public function filter(array $filters): array;
     public function getTotalReceivedForLine(string $lineId, \Carbon\Carbon $startDate, \Carbon\Carbon $endDate): float;
     public function getTotalSentForLine(string $lineId, \Carbon\Carbon $startDate, \Carbon\Carbon $endDate): float;
+    /**
+     * Fetch all transactions (ordinary + cash) as a unified list for UI and logic.
+     */
+    public function allUnified(array $filters = []): array;
 }
