@@ -42,14 +42,14 @@ class Deposit extends Create
         $this->transactionType = 'Deposit';
         $this->depositType = 'direct';
         $this->branchUsers = User::where('branch_id', Auth::user()->branch_id ?? null)->get();
-        
+
         $user = Auth::user();
         if ($user->hasRole('admin') || $user->hasRole('supervisor')) {
             $this->branchSafes = \App\Models\Domain\Entities\Safe::all();
         } else {
             $this->branchSafes = \App\Models\Domain\Entities\Safe::where('branch_id', $user->branch_id ?? null)->get();
         }
-        
+
         if (count($this->branchSafes) > 0) {
             $this->safeId = $this->branchSafes[0]->id;
         }

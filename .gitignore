@@ -15,6 +15,12 @@
 /public/mix-manifest.json
 /public/build/
 
+# IDE Helper files (auto-generated) - exclude from git but keep our custom helper
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+# Keep custom helper: !_spatie_permission_helper.php
+
 # System/IDE
 .DS_Store
 Thumbs.db
