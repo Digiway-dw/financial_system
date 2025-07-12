@@ -143,14 +143,14 @@
                                     <td class="px-6 py-4 text-center">
                                         <div class="flex items-center justify-center gap-2">
                                             @if ($transaction['status'] === 'pending' || $transaction['status'] === 'Pending')
-                                                <button wire:click="approve('{{ $transaction['id'] }}')"
-                                                    class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-semibold rounded-lg shadow-md hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200">
-                                                    موافقة
-                                                </button>
-                                                <button wire:click="reject('{{ $transaction['id'] }}')"
-                                                    class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-semibold rounded-lg shadow-md hover:from-red-600 hover:to-red-700 transform hover:scale-105 transition-all duration-200">
-                                                    رفض
-                                                </button>
+                                            <button wire:click="approve('{{ $transaction['id'] }}')"
+                                                class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-semibold rounded-lg shadow-md hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200">
+                                                موافقة
+                                            </button>
+                                            <button wire:click="reject('{{ $transaction['id'] }}')"
+                                                class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-semibold rounded-lg shadow-md hover:from-red-600 hover:to-red-700 transform hover:scale-105 transition-all duration-200">
+                                                رفض
+                                            </button>
                                             @else
                                                 <span class="text-gray-400">تمت المعالجة</span>
                                             @endif

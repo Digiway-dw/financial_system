@@ -29,6 +29,9 @@ class Withdrawal extends Create
     public $withdrawalNationalId;
     public $branches = [];
     public $selectedBranchId = null;
+    public $expenseItems = [];
+    public $selectedExpenseItem = null;
+    public $customExpenseItem = '';
 
     protected $casts = [
         'safeId' => 'integer',
@@ -56,6 +59,18 @@ class Withdrawal extends Create
                 'branch_code' => $branch->branch_code,
             ];
         })->toArray();
+
+        // Load expense items
+        $this->expenseItems = [
+            ['id' => 'electricity', 'name' => 'كهرباء'],
+            ['id' => 'water', 'name' => 'مياه'],
+            ['id' => 'internet', 'name' => 'إنترنت'],
+            ['id' => 'phone', 'name' => 'هاتف'],
+            ['id' => 'maintenance', 'name' => 'صيانة'],
+            ['id' => 'cleaning', 'name' => 'تنظيف'],
+            ['id' => 'security', 'name' => 'أمن'],
+            ['id' => 'other', 'name' => 'أخرى'],
+        ];
 
         $user = Auth::user();
         if ($user->hasRole('admin') || $user->hasRole('supervisor')) {
@@ -170,6 +185,31 @@ class Withdrawal extends Create
         if ($this->withdrawalType === 'user') {
             if (!$this->userId) {
                 session()->flash('error', 'Please select a user.');
+                return;
+            }
+        }
+
+        // Additional validation for expense withdrawals
+        if ($this->withdrawalType === 'expense') {
+            if (!$this->selectedBranchId) {
+                session()->flash('error', 'Please select a branch.');
+                return;
+            }
+
+            if (!$this->selectedExpenseItem) {
+                session()->flash('error', 'Please select an expense type.');
+                return;
+            }
+
+            if ($this->selectedExpenseItem === 'other' && empty($this->customExpenseItem)) {
+                session()->flash('error', 'Please specify the custom expense type.');
+                return;
+            }
+
+            // Check if user has permission to access this branch
+            $user = Auth::user();
+            if (!$user->hasRole(['admin', 'general_supervisor']) && $user->branch_id != $this->selectedBranchId) {
+                session()->flash('error', 'You can only create expense withdrawals for your own branch.');
                 return;
             }
         }
@@ -370,6 +410,49 @@ class Withdrawal extends Create
                 \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, url()->current()));
                 session()->flash('message', 'Branch withdrawal submitted for admin approval!');
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
+                return redirect()->route('transactions.cash.withdrawal');
+            }
+
+            if ($this->withdrawalType === 'expense') {
+                $user = Auth::user();
+                $branch = collect($this->branches)->firstWhere('id', $this->selectedBranchId);
+                $branchName = $branch['name'] ?? 'Unknown Branch';
+                
+                // Get expense item name
+                $expenseItemName = '';
+                if ($this->selectedExpenseItem === 'other') {
+                    $expenseItemName = $this->customExpenseItem;
+                } else {
+                    $expenseItem = collect($this->expenseItems)->firstWhere('id', $this->selectedExpenseItem);
+                    $expenseItemName = $expenseItem['name'] ?? 'Unknown Expense';
+                }
+
+                $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
+                    'customer_name' => 'Expense: ' . $expenseItemName . ' - ' . $branchName,
+                    'amount' => abs($this->amount),
+                    'notes' => $this->notes,
+                    'safe_id' => $this->safeId,
+                    'transaction_type' => 'Withdrawal',
+                    'status' => 'pending',
+                    'transaction_date_time' => now(),
+                    'agent_id' => $user->id,
+                    'destination_branch_id' => $this->selectedBranchId,
+                    'destination_safe_id' => $this->safeId, // Same safe for expense
+                ]);
+
+                // Send notification to admins
+                $admins = \App\Domain\Entities\User::role(['admin', 'general_supervisor'])->get();
+                $notificationMessage = "Expense withdrawal request: " . number_format($this->amount, 2) . " EGP for " . $expenseItemName . " in " . $branchName . " branch by " . $user->name . " requires approval.";
+                
+                foreach ($admins as $admin) {
+                    $admin->notify(new \App\Notifications\AdminNotification(
+                        $notificationMessage,
+                        route('transactions.pending')
+                    ));
+                }
+
+                session()->flash('message', 'Expense withdrawal request submitted for admin approval!');
+                $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId', 'selectedExpenseItem', 'customExpenseItem']);
                 return redirect()->route('transactions.cash.withdrawal');
             }
 

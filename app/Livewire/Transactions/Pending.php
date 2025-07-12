@@ -146,6 +146,29 @@ class Pending extends Component
                 }
             }
             
+            // Check if this is an expense withdrawal (has destination_branch_id but no customer_code)
+            if ($cashTransaction->destination_branch_id && !$cashTransaction->customer_code && str_contains($cashTransaction->customer_name, 'Expense:')) {
+                // Expense withdrawal logic - deduct from safe
+                $safe = \App\Models\Domain\Entities\Safe::find($cashTransaction->safe_id);
+                if ($safe) {
+                    if (($safe->current_balance - abs($cashTransaction->amount)) < 0) {
+                        session()->flash('error', 'Insufficient safe balance for expense withdrawal. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format(abs($cashTransaction->amount), 2) . ' EGP');
+                        return;
+                    }
+                    $safe->current_balance -= abs($cashTransaction->amount);
+                    $safe->save();
+                }
+                
+                // Update status to completed
+                $cashTransaction->status = 'completed';
+                $cashTransaction->save();
+                
+                session()->flash('message', 'Expense withdrawal approved and safe balance updated!');
+                $this->loadPendingTransactions();
+                $this->dispatch('$refresh');
+                return;
+            }
+            
             // Deduct from safe
             $safe = \App\Models\Domain\Entities\Safe::find($cashTransaction->safe_id);
             if ($safe) {

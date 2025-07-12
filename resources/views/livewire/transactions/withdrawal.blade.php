@@ -71,13 +71,17 @@
                                 class="px-4 py-2 rounded-md {{ $withdrawalType === 'branch' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700' }}">
                                 Branch Withdrawal
                             </button>
+                            <button wire:click="$set('withdrawalType', 'expense')"
+                                class="px-4 py-2 rounded-md {{ $withdrawalType === 'expense' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700' }}">
+                                Expense Withdrawal
+                            </button>
                         </div>
                     </div>
                     
                     <form wire:submit.prevent="submitWithdrawal">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Safe Selection -->
-                            @if($withdrawalType !== 'client_wallet')
+                            <!-- Safe Selection and Amount for other types -->
+                            @if($withdrawalType !== 'client_wallet' && $withdrawalType !== 'branch' && $withdrawalType !== 'expense')
                                 <div>
                                     <label for="safeId" class="block text-sm font-medium text-gray-700 mb-1">Select Safe</label>
                                     <select id="safeId" wire:model="safeId" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
@@ -87,7 +91,6 @@
                                     </select>
                                     @error('safeId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                 </div>
-                                <!-- Amount -->
                                 <div>
                                     <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">Withdrawal Amount</label>
                                     <div class="mt-1 relative rounded-md shadow-sm">
@@ -188,27 +191,86 @@
                                     <div>
                                         <label for="selectedBranchId" class="block text-sm font-medium text-gray-700 mb-1">Select Branch</label>
                                         <select id="selectedBranchId" wire:model="selectedBranchId" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                            <option value="">Select a branch</option>
-                                            @foreach (($this->branches ?? []) as $branch)
-                                                <option value="{{ $branch['id'] }}">{{ $branch['name'] }} ({{ $branch['branch_code'] }})</option>
+                                            <option value="">اختر الفرع</option>
+                                            @foreach($branches as $branch)
+                                                @if(Auth::user()->hasRole(['admin', 'general_supervisor']) || Auth::user()->branch_id == $branch['id'])
+                                                    <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
+                                                @endif
                                             @endforeach
                                         </select>
-                                        @error('selectedBranchId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                        @error('selectedBranchId') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
                                     <div>
-                                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">Withdrawal Amount</label>
-                                        <input type="number" step="0.01" min="0" wire:model="amount" id="amount" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00">
-                                        @error('amount') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+                                        <input type="number" id="amount" wire:model="amount" step="0.01" min="0.01" 
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            placeholder="أدخل المبلغ">
+                                        @error('amount') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="md:col-span-2">
-                                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                                        <textarea id="notes" wire:model="notes" rows="3" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Add any relevant notes about this withdrawal"></textarea>
-                                        @error('notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+                                        <textarea id="notes" wire:model="notes" rows="3" 
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            placeholder="أدخل ملاحظات إضافية"></textarea>
+                                        @error('notes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                            @endif
+                            @if($withdrawalType === 'expense')
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="selectedBranchId" class="block text-sm font-medium text-gray-700 mb-1">Select Branch</label>
+                                        <select id="selectedBranchId" wire:model="selectedBranchId" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                            <option value="">اختر الفرع</option>
+                                            @foreach($branches as $branch)
+                                                @if(Auth::user()->hasRole(['admin', 'general_supervisor']) || Auth::user()->branch_id == $branch['id'])
+                                                    <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        @error('selectedBranchId') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+                                        <input type="number" id="amount" wire:model="amount" step="0.01" min="0.01" 
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            placeholder="أدخل المبلغ">
+                                        @error('amount') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="selectedExpenseItem" class="block text-sm font-medium text-gray-700 mb-1">نوع المصروف</label>
+                                        <select id="selectedExpenseItem" wire:model="selectedExpenseItem" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                            <option value="">اختر نوع المصروف</option>
+                                            @foreach($expenseItems as $item)
+                                                <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('selectedExpenseItem') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                    </div>
+
+                                            @if($selectedExpenseItem === 'other')
+                                            <div>
+                                                <label for="customExpenseItem" class="block text-sm font-medium text-gray-700 mb-1">نوع المصروف المخصص</label>
+                                                <input type="text" id="customExpenseItem" wire:model="customExpenseItem" 
+                                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                    placeholder="أدخل نوع المصروف">
+                                                @error('customExpenseItem') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                            </div>
+                                            @endif
+
+                                    <div class="md:col-span-2">
+                                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+                                        <textarea id="notes" wire:model="notes" rows="3" 
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            placeholder="أدخل ملاحظات إضافية"></textarea>
+                                        @error('notes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
                             @endif
                             <!-- Notes -->
-                            @if($withdrawalType !== 'client_wallet' && $withdrawalType !== 'branch')
+                            @if($withdrawalType !== 'client_wallet' && $withdrawalType !== 'branch' && $withdrawalType !== 'expense')
                                 <div class="md:col-span-2">
                                     <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                                     <textarea id="notes" wire:model="notes" rows="3" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Add any relevant notes about this withdrawal"></textarea>
