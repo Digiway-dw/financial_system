@@ -5,7 +5,7 @@ if (!function_exists('icon')) {
     {
         return app('App\\Helpers\\IconHelper')->render($name, $attributes);
     }
-}
+} 
 
 if (!function_exists('generate_reference_number')) {
     function generate_reference_number($branchName)

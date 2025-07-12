@@ -350,7 +350,7 @@
                             </div>
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-purple-600">
-                                    {{ number_format((float) $amount + (float) $commission - (float) $discount, 2) }}
+                                    {{ number_format((float) $amount + (float) $commission, 2) }}
                                 </div>
                                 <div class="text-sm text-gray-600">Total</div>
                             </div>

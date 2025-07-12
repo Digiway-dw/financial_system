@@ -5,7 +5,7 @@
             <div class="mb-8">
                 <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-6">
                     <div class="flex items-center justify-between">
-                        <div>
+            <div>
                             <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                                 إيداع الأموال
                             </h1>
@@ -33,9 +33,9 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-red-800 font-semibold">{{ session('error') }}</p>
-                        </div>
-                    </div>
-                </div>
+            </div>
+        </div>
+    </div>
             @endif
 
             @if (session('message'))
@@ -50,7 +50,7 @@
                             <p class="text-emerald-800 font-semibold">{{ session('message') }}</p>
                         </div>
                     </div>
-                </div>
+        </div>
             @endif
 
             @if ($errors->any())
@@ -68,8 +68,8 @@
                             @endforeach
                         </ul>
                     </div>
-                </div>
-            @endif
+            </div>
+        @endif
 
             <!-- Main Content -->
             <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 overflow-hidden">
@@ -126,87 +126,87 @@
 
                 <!-- Deposit Forms -->
                 <div class="p-6">
-                    @if ($depositType === 'direct')
-                        <form wire:submit.prevent="submitDeposit" class="space-y-6">
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Name</label>
-                                <input type="text" wire:model.defer="customerName" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
-                                @error('customerName') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Amount</label>
-                                <input type="number" wire:model.defer="amount" min="1" step="0.01" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
-                                @error('amount') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Notes</label>
-                                <textarea wire:model.defer="notes" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" rows="2" required></textarea>
-                                @error('notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Safe</label>
-                                <select wire:model="safeId" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200">
-                                    @foreach ($branchSafes as $safe)
-                                        <option value="{{ $safe->id }}">{{ $safe->name ?? 'Safe #' . $safe->id }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Submit Direct Deposit</button>
-                        </form>
-                    @elseif ($depositType === 'client_wallet')
-                        <form wire:submit.prevent="submitDeposit" class="space-y-6">
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Customer Code or Mobile</label>
-                                <input type="text" wire:model.debounce.300ms="clientSearch" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" placeholder="Enter customer code or mobile number" autocomplete="off" />
-                                @if (!empty($clientSuggestions))
-                                    <ul class="bg-white border border-gray-200 rounded shadow mt-1 max-h-32 overflow-y-auto">
-                                        @foreach ($clientSuggestions as $suggestion)
-                                            <li class="px-3 py-2 hover:bg-blue-100 cursor-pointer" wire:click="selectClient({{ $suggestion['id'] }})">
-                                                {{ $suggestion['name'] }} ({{ $suggestion['mobile_number'] }})
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                                @error('clientSearch') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            @if ($clientName)
-                                <div class="p-3 bg-blue-50 rounded border border-blue-100 mb-2">
-                                    <div><span class="font-semibold">Name:</span> {{ $clientName }}</div>
-                                    <div><span class="font-semibold">Mobile:</span> {{ $clientMobile }}</div>
-                                    <div><span class="font-semibold">Code:</span> {{ $clientCode }}</div>
-                                    <div><span class="font-semibold">Balance:</span> {{ number_format($clientBalance, 2) }} EGP</div>
-                                </div>
-                            @endif
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Depositor National ID</label>
-                                <input type="text" wire:model.defer="depositorNationalId" minlength="14" maxlength="14" pattern="[0-9]{14}" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
-                                @error('depositorNationalId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Depositor Mobile Number</label>
-                                <input type="text" wire:model.defer="depositorMobileNumber" minlength="11" maxlength="15" pattern="[0-9]+" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
-                                @error('depositorMobileNumber') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Amount</label>
-                                <input type="number" wire:model.defer="amount" min="1" step="0.01" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
-                                @error('amount') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Notes</label>
-                                <textarea wire:model.defer="notes" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" rows="2" required></textarea>
-                                @error('notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Safe</label>
-                                <select wire:model="safeId" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200">
-                                    @foreach ($branchSafes as $safe)
-                                        <option value="{{ $safe->id }}">{{ $safe->name ?? 'Safe #' . $safe->id }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Submit Client Wallet Deposit</button>
-                        </form>
+        @if ($depositType === 'direct')
+            <form wire:submit.prevent="submitDeposit" class="space-y-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Name</label>
+                    <input type="text" wire:model.defer="customerName" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
+                    @error('customerName') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Amount</label>
+                    <input type="number" wire:model.defer="amount" min="1" step="0.01" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
+                    @error('amount') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Notes</label>
+                    <textarea wire:model.defer="notes" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" rows="2" required></textarea>
+                    @error('notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Safe</label>
+                    <select wire:model="safeId" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200">
+                        @foreach ($branchSafes as $safe)
+                            <option value="{{ $safe->id }}">{{ $safe->name ?? 'Safe #' . $safe->id }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Submit Direct Deposit</button>
+            </form>
+        @elseif ($depositType === 'client_wallet')
+            <form wire:submit.prevent="submitDeposit" class="space-y-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Customer Code or Mobile</label>
+                    <input type="text" wire:model.debounce.300ms="clientSearch" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" placeholder="Enter customer code or mobile number" autocomplete="off" />
+                    @if (!empty($clientSuggestions))
+                        <ul class="bg-white border border-gray-200 rounded shadow mt-1 max-h-32 overflow-y-auto">
+                            @foreach ($clientSuggestions as $suggestion)
+                                <li class="px-3 py-2 hover:bg-blue-100 cursor-pointer" wire:click="selectClient({{ $suggestion['id'] }})">
+                                    {{ $suggestion['name'] }} ({{ $suggestion['mobile_number'] }})
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    @error('clientSearch') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                @if ($clientName)
+                    <div class="p-3 bg-blue-50 rounded border border-blue-100 mb-2">
+                        <div><span class="font-semibold">Name:</span> {{ $clientName }}</div>
+                        <div><span class="font-semibold">Mobile:</span> {{ $clientMobile }}</div>
+                        <div><span class="font-semibold">Code:</span> {{ $clientCode }}</div>
+                        <div><span class="font-semibold">Balance:</span> {{ number_format($clientBalance, 2) }} EGP</div>
+                    </div>
+                @endif
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Depositor National ID</label>
+                    <input type="text" wire:model.defer="depositorNationalId" minlength="14" maxlength="14" pattern="[0-9]{14}" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
+                    @error('depositorNationalId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Depositor Mobile Number</label>
+                    <input type="text" wire:model.defer="depositorMobileNumber" minlength="11" maxlength="15" pattern="[0-9]+" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
+                    @error('depositorMobileNumber') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Amount</label>
+                    <input type="number" wire:model.defer="amount" min="1" step="0.01" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
+                    @error('amount') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Notes</label>
+                    <textarea wire:model.defer="notes" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" rows="2" required></textarea>
+                    @error('notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Safe</label>
+                    <select wire:model="safeId" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200">
+                        @foreach ($branchSafes as $safe)
+                            <option value="{{ $safe->id }}">{{ $safe->name ?? 'Safe #' . $safe->id }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Submit Client Wallet Deposit</button>
+            </form>
                     @elseif ($depositType === 'user')
                         <form wire:submit.prevent="submitDeposit" class="space-y-6">
                             <div>
@@ -239,18 +239,18 @@
                             </div>
                             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Submit User Deposit</button>
                         </form>
-                    @elseif ($depositType === 'admin')
-                        <form wire:submit.prevent="submitDeposit" class="space-y-6">
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Amount</label>
-                                <input type="number" wire:model.defer="amount" min="1" step="0.01" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
-                                @error('amount') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">Notes</label>
-                                <textarea wire:model.defer="notes" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" rows="2" required></textarea>
-                                @error('notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
+        @elseif ($depositType === 'admin')
+            <form wire:submit.prevent="submitDeposit" class="space-y-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Amount</label>
+                    <input type="number" wire:model.defer="amount" min="1" step="0.01" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required />
+                    @error('amount') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Notes</label>
+                    <textarea wire:model.defer="notes" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" rows="2" required></textarea>
+                    @error('notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
                             <div>
                                 <label class="block text-gray-700 font-medium mb-1">Safe</label>
                                 <select wire:model="safeId" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200">
@@ -264,9 +264,9 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Submit Admin Deposit</button>
-                        </form>
-                    @endif
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Submit Admin Deposit</button>
+            </form>
+        @endif
                 </div>
             </div>
         </div>

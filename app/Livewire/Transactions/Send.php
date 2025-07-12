@@ -243,8 +243,8 @@ class Send extends Component
         $clientBalance = (float) $this->clientBalance;
 
         // Additional validation
-        if ($amount + $commission - $discount <= 0) {
-            $this->errorMessage = 'Invalid transaction amount after commission and discount.';
+        if ($amount <= 0) {
+            $this->errorMessage = 'Invalid transaction amount.';
             return;
         }
 
