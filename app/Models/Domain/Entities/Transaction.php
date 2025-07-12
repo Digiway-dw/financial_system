@@ -35,6 +35,8 @@ class Transaction extends Model
         'is_absolute_withdrawal',
         'payment_method',
         'notes', // add notes to fillable
+        'branch_id',
+        'reference_number',
     ];
 
     protected static function booted()
@@ -71,6 +73,14 @@ class Transaction extends Model
     public function safe(): BelongsTo
     {
         return $this->belongsTo(Safe::class);
+    }
+
+    /**
+     * Get the branch for the transaction.
+     */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Domain\Entities\Branch::class, 'branch_id');
     }
 
     public function getActivitylogOptions(): LogOptions

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('depositor_mobile_number', 15)->nullable();
             $table->unsignedBigInteger('agent_id')->nullable();
             $table->string('customer_code')->nullable();
+            $table->string('reference_number')->unique()->nullable();
             $table->timestamps();
             // Future fields can be added here as needed
         });

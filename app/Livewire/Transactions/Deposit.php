@@ -9,6 +9,7 @@ use App\Domain\Interfaces\CustomerRepository;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Domain\Entities\Transaction;
 use App\Models\Domain\Entities\CashTransaction;
+use App\Helpers\helpers;
 
 class Deposit extends Create
 {
@@ -26,6 +27,7 @@ class Deposit extends Create
     public $clientId = null;
     public $depositorNationalId = '';
     public $depositorMobileNumber = '';
+    public $branches = [];
 
     private CreateTransaction $createTransactionUseCase;
     private CustomerRepository $customerRepository;
@@ -45,9 +47,11 @@ class Deposit extends Create
 
         $user = Auth::user();
         if ($user->hasRole('admin') || $user->hasRole('supervisor')) {
-            $this->branchSafes = \App\Models\Domain\Entities\Safe::all();
+            $this->branchSafes = \App\Models\Domain\Entities\Safe::with('branch')->get();
+            $this->branches = \App\Models\Domain\Entities\Branch::all();
         } else {
             $this->branchSafes = \App\Models\Domain\Entities\Safe::where('branch_id', $user->branch_id ?? null)->get();
+            $this->branches = \App\Models\Domain\Entities\Branch::where('id', $user->branch_id ?? null)->get();
         }
 
         if (count($this->branchSafes) > 0) {
@@ -97,7 +101,10 @@ class Deposit extends Create
                     session()->flash('message', 'User not found.');
                     return;
                 }
-                CashTransaction::create([
+                $safe = \App\Models\Domain\Entities\Safe::find($safeId);
+                $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
+                $referenceNumber = generate_reference_number($branchName);
+                $cashTx = CashTransaction::create([
                     'customer_name' => $user->name,
                     'amount' => $this->amount,
                     'notes' => $this->notes,
@@ -106,13 +113,14 @@ class Deposit extends Create
                     'status' => 'Completed',
                     'transaction_date_time' => now(),
                     'agent_id' => $agent->id,
+                    'reference_number' => $referenceNumber,
                 ]);
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
                 }
-                session()->flash('message', 'تم حفظ إيداع المستخدم بنجاح!');
                 $this->reset(['userId', 'amount', 'notes', 'customerName', 'clientCode', 'clientNumber', 'clientNationalNumber']);
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 return;
             }
             if ($this->depositType === 'client_wallet') {
@@ -125,7 +133,10 @@ class Deposit extends Create
                     $client->balance += $this->amount;
                     $client->save();
                 }
-                CashTransaction::create([
+                $safe = \App\Models\Domain\Entities\Safe::find($safeId);
+                $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
+                $referenceNumber = generate_reference_number($branchName);
+                $cashTx = CashTransaction::create([
                     'customer_name' => $this->clientName,
                     'customer_code' => $this->clientCode,
                     'amount' => $this->amount,
@@ -137,17 +148,21 @@ class Deposit extends Create
                     'depositor_national_id' => $this->depositorNationalId,
                     'depositor_mobile_number' => $this->depositorMobileNumber,
                     'agent_id' => $agent->id,
+                    'reference_number' => $referenceNumber,
                 ]);
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
                 }
-                session()->flash('message', 'تم حفظ إيداع محفظة العميل بنجاح!');
                 $this->reset(['clientId', 'clientName', 'clientMobile', 'clientCode', 'clientBalance', 'clientSearch', 'amount', 'notes', 'userId', 'customerName', 'clientNumber', 'clientNationalNumber', 'depositorNationalId', 'depositorMobileNumber']);
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 return;
             }
             if ($this->depositType === 'admin') {
-                CashTransaction::create([
+                $safe = \App\Models\Domain\Entities\Safe::find($safeId);
+                $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
+                $referenceNumber = generate_reference_number($branchName);
+                $cashTx = CashTransaction::create([
                     'customer_name' => 'اداري',
                     'amount' => $this->amount,
                     'notes' => $this->notes,
@@ -156,17 +171,21 @@ class Deposit extends Create
                     'status' => 'Completed',
                     'transaction_date_time' => now(),
                     'agent_id' => $agent->id,
+                    'reference_number' => $referenceNumber,
                 ]);
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
                 }
-                session()->flash('message', 'تم حفظ إيداع اداري بنجاح!');
                 $this->reset(['amount', 'notes']);
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 return;
             }
             if ($this->depositType === 'direct') {
-                CashTransaction::create([
+                $safe = \App\Models\Domain\Entities\Safe::find($safeId);
+                $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
+                $referenceNumber = generate_reference_number($branchName);
+                $cashTx = CashTransaction::create([
                     'customer_name' => $this->customerName,
                     'amount' => $this->amount,
                     'notes' => $this->notes,
@@ -175,13 +194,14 @@ class Deposit extends Create
                     'status' => 'Completed',
                     'transaction_date_time' => now(),
                     'agent_id' => $agent->id,
+                    'reference_number' => $referenceNumber,
                 ]);
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
                 }
-                session()->flash('message', 'تم حفظ الإيداع المباشر بنجاح!');
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber']);
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 return;
             }
         } catch (\Exception $e) {

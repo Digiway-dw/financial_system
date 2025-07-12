@@ -50,11 +50,10 @@ class AgentPolicy
      */
     public function viewLineBalance(User $user, Line $line): bool
     {
-        // Agents can only view balances of lines assigned to them
+        // Agents can no longer view lines by user_id, as lines are not assigned to users
         if ($user->hasRole(Roles::AGENT)) {
-            return $line->user_id === $user->id;
+            return false;
         }
-
         // Other roles can view all lines
         return $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::GENERAL_SUPERVISOR) ||

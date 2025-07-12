@@ -34,5 +34,10 @@ class CashTransaction extends Model
         return $this->belongsTo(\App\Domain\Entities\User::class, 'agent_id');
     }
 
+    public function safe()
+    {
+        return $this->belongsTo(\App\Models\Domain\Entities\Safe::class, 'safe_id');
+    }
+
     // Future relationships and methods can be added here
 } 

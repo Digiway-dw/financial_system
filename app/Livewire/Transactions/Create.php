@@ -241,6 +241,9 @@ class Create extends Component
             $this->completedTransaction = $createdTransaction;
             $this->showReceiptModal = true;
 
+            // Print receipt (HTML by default)
+            app(\App\Services\ReceiptPrinterService::class)->printReceipt($createdTransaction, 'html');
+
             session()->flash('message', 'Transaction created successfully.');
             $this->reset(['customerName', 'customerMobileNumber', 'lineMobileNumber', 'customerCode', 'amount', 'commission', 'deduction', 'transactionType', 'branchId', 'lineId', 'safeId', 'isAbsoluteWithdrawal', 'paymentMethod', 'gender', 'isClient']); // Clear form fields after submission
             $this->calculateCommission(); // Recalculate commission after reset

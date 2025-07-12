@@ -174,7 +174,7 @@ class CreateTransaction
         if ($amount > $line->monthly_limit) { // This is a simplistic check
             // Notify admin if monthly threshold is crossed
             $admins = \App\Domain\Entities\User::role('admin')->get();
-            $message = "Monthly limit of line " . $line->mobile_number . " (assigned to " . $line->user->name . ") has been crossed.";
+            $message = "Monthly limit of line " . $line->mobile_number . " has been crossed.";
             Notification::send($admins, new AdminNotification($message, route('lines.edit', $line->id)));
             throw new \Exception('Transaction amount exceeds monthly limit for this line.');
         }
@@ -191,7 +191,7 @@ class CreateTransaction
             // Check for low line balance after deduction
             if ($line->current_balance < 500) { // Example threshold: 500 EGP
                 $notificationMessage = "Warning: Line " . $line->mobile_number . " balance is low ( " . $line->current_balance . " EGP). Please top up.";
-                $this->notifyRelevantUsers($notificationMessage, route('lines.edit', $line->id), $line->user->branch_id);
+                $this->notifyRelevantUsers($notificationMessage, route('lines.edit', $line->id), $line->branch_id);
             }
         }
 
@@ -263,8 +263,9 @@ class CreateTransaction
         }
         // --- End New Limit Logic ---
 
-        // Generate unique reference number
-        $referenceNumber = $this->generateUniqueReferenceNumber($agent);
+        // Generate reference number using branch name and unique number
+        $branchName = $line->branch->name ?? 'Unknown';
+        $referenceNumber = generate_reference_number($branchName);
 
         $attributes = [
             'customer_name' => $customerName,
@@ -285,6 +286,7 @@ class CreateTransaction
             'is_absolute_withdrawal' => $isAbsoluteWithdrawal,
             'payment_method' => $paymentMethod,
             'reference_number' => $referenceNumber,
+            'branch_id' => $line->branch_id,
         ];
 
         $createdTransaction = $this->transactionRepository->create($attributes);

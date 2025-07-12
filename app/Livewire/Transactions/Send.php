@@ -180,10 +180,13 @@ class Send extends Component
 
     private function loadAvailableLines()
     {
-        $userBranchId = Auth::user()->branch_id;
-
-        $this->availableLines = Line::where('branch_id', $userBranchId)
-            ->where('status', 'active')
+        $user = Auth::user();
+        if ($user->hasRole('admin') || $user->hasRole('supervisor')) {
+            $linesQuery = Line::where('status', 'active');
+        } else {
+            $linesQuery = Line::where('branch_id', $user->branch_id)->where('status', 'active');
+        }
+        $this->availableLines = $linesQuery
             ->get(['id', 'mobile_number', 'current_balance', 'network'])
             ->map(function ($line) {
                 return [
@@ -295,7 +298,7 @@ class Send extends Component
                 }
 
                 // Create transaction using the CreateTransaction use case
-                app(CreateTransaction::class)->execute(
+                $transaction = app(CreateTransaction::class)->execute(
                     customerName: $this->clientName,
                     customerMobileNumber: $this->clientMobile,
                     customerCode: $this->clientCode,
@@ -314,14 +317,9 @@ class Send extends Component
                     discountNotes: $this->discountNotes,
                     notes: null
                 );
+                // Redirect to receipt page for printing
+                $this->js('window.location.href = "' . route('transactions.receipt', ['transaction' => $transaction->id]) . '"');
             });
-
-            // Success
-            $this->successMessage = 'Transaction created successfully!';
-            $this->resetForm();
-
-            // Redirect after a short delay
-            $this->js('setTimeout(() => window.location.href = "' . route('transactions.index') . '", 2000)');
         } catch (\Exception $e) {
             $this->errorMessage = 'Failed to create transaction: ' . $e->getMessage();
         }

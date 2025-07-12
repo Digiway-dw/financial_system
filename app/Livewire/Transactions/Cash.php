@@ -29,4 +29,10 @@ class Cash extends Component
             'recentCashTransactions' => CashTransaction::orderByDesc('transaction_date_time')->limit(5)->get(),
         ]);
     }
+
+    public function deleteCashTransaction($id)
+    {
+        \App\Models\Domain\Entities\CashTransaction::find($id)?->delete();
+        // No need to manually refresh, as render() will re-query
+    }
 }

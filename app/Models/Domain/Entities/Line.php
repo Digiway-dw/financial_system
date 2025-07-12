@@ -27,7 +27,6 @@ class Line extends Model
         'daily_starting_balance',
         'status',
         'branch_id',
-        'user_id',
     ];
 
     protected $casts = [

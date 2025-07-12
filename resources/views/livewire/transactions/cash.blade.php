@@ -60,6 +60,7 @@
                                             <th class="px-4 py-2 text-left font-semibold text-gray-600">Type</th>
                                             <th class="px-4 py-2 text-left font-semibold text-gray-600">Status</th>
                                             <th class="px-4 py-2 text-left font-semibold text-gray-600">Date</th>
+                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
@@ -70,6 +71,15 @@
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->transaction_type }}</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->status }}</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('Y-m-d H:i') }}</td>
+                                                <td class="px-4 py-2 text-right">
+                                                    <a href="{{ route('cash-transactions.receipt', $tx->id) }}" target="_blank" class="inline-block text-green-600 hover:text-green-800 mr-2" title="Print Receipt">
+                                                        <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-6 0v4m0 0h4m-4 0H8" />
+                                                        </svg>
+                                                        Print
+                                                    </a>
+                                                    <button wire:click="deleteCashTransaction({{ $tx->id }})" class="text-red-600 hover:text-red-800">Delete</button>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>

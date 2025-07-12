@@ -154,10 +154,13 @@ class Receive extends Component
 
     private function loadAvailableLines()
     {
-        $userBranchId = Auth::user()->branch_id;
-
-        $this->availableLines = Line::where('branch_id', $userBranchId)
-            ->where('status', 'active')
+        $user = Auth::user();
+        if ($user->hasRole('admin') || $user->hasRole('supervisor')) {
+            $linesQuery = Line::where('status', 'active');
+        } else {
+            $linesQuery = Line::where('branch_id', $user->branch_id)->where('status', 'active');
+        }
+        $this->availableLines = $linesQuery
             ->get(['id', 'mobile_number', 'current_balance', 'network'])
             ->map(function ($line) {
                 return [
@@ -281,7 +284,7 @@ class Receive extends Component
 
                 // Create transaction record using CreateTransaction use case
                 // The use case will handle all balance updates automatically
-                app(CreateTransaction::class)->execute(
+                $transaction = app(CreateTransaction::class)->execute(
                     customerName: $this->clientName,
                     customerMobileNumber: $this->clientMobile,
                     customerCode: $this->clientCode,
@@ -293,13 +296,15 @@ class Receive extends Component
                     lineId: $this->selectedLineId,
                     safeId: $safe->id,
                     isAbsoluteWithdrawal: false,
-                    paymentMethod: 'line balance',
+                    paymentMethod: 'branch safe',
                     gender: $this->clientGender ?: 'male',
                     isClient: true,
                     receiverMobileNumber: $this->senderMobile, // For receive, sender becomes receiver in record
                     discountNotes: $this->discountNotes,
-                    notes: "Receive transaction - Line balance increased by {$amount} EGP, Safe balance decreased by {$requiredFromSafe} EGP"
+                    notes: null
                 );
+                // Redirect to receipt page for printing
+                $this->js('window.location.href = "' . route('transactions.receipt', ['transaction' => $transaction->id]) . '"');
             });
 
             // Success
@@ -307,7 +312,7 @@ class Receive extends Component
             $this->resetForm();
 
             // Redirect after a short delay
-            $this->js('setTimeout(() => window.location.href = "' . route('transactions.index') . '", 2000)');
+            // $this->js('setTimeout(() => window.location.href = "' . route('transactions.index') . '", 2000)');
         } catch (\Exception $e) {
             $this->errorMessage = 'Failed to create receive transaction: ' . $e->getMessage();
         }

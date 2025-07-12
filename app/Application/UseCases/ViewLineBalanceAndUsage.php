@@ -43,7 +43,6 @@ class ViewLineBalanceAndUsage
             'daily_limit' => $line->daily_limit,
             'monthly_limit' => $line->monthly_limit,
             'network' => $line->network,
-            'user_id' => $line->user_id,
             'status' => $line->status,
             'daily_usage' => $dailyUsage,
             'monthly_usage' => $monthlyUsage,

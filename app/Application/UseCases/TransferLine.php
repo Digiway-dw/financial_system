@@ -19,20 +19,6 @@ class TransferLine
 
     public function execute(string $lineId, string $newUserId): Line
     {
-        $line = $this->lineRepository->findById($lineId);
-        if (!$line) {
-            throw new \Exception('Line not found.');
-        }
-
-        $newUser = $this->userRepository->findById($newUserId);
-        if (!$newUser) {
-            throw new \Exception('New user not found.');
-        }
-
-        // Update the user_id of the line
-        $line->user_id = $newUserId;
-        $this->lineRepository->update($line->id, ['user_id' => $newUserId]);
-
-        return $line;
+        throw new \Exception('Transferring lines by user is not supported: lines table has no user_id column.');
     }
 } 

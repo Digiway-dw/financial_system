@@ -273,6 +273,12 @@
                             </div>
                         @endif
                     </form>
+                    <!-- Print Receipt Button -->
+                    <div class="mt-6 text-right">
+                        <a href="{{ route('transactions.receipt', $transaction->id) }}" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">
+                            {{ __('Print Receipt') }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

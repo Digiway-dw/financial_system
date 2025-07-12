@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Domain\Entities\Transaction;
 use App\Models\Domain\Entities\Safe;
+use App\Helpers\helpers;
 
 class Withdrawal extends Create
 {
@@ -251,7 +252,10 @@ class Withdrawal extends Create
                 $customerName = $user?->name ?? '';
                 $agent = Auth::user();
                 $status = $agent->hasRole('admin') ? 'completed' : 'pending';
-                \App\Models\Domain\Entities\CashTransaction::create([
+                $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
+                $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
+                $referenceNumber = generate_reference_number($branchName);
+                $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
                     'customer_name' => $customerName,
                     'amount' => abs($this->amount),
                     'notes' => $this->notes,
@@ -260,10 +264,11 @@ class Withdrawal extends Create
                     'status' => $status,
                     'transaction_date_time' => now(),
                     'agent_id' => $agent->id,
+                    'reference_number' => $referenceNumber,
                 ]);
-                session()->flash('message', $status === 'completed' ? 'User withdrawal performed successfully!' : 'User withdrawal submitted for admin approval!');
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                return redirect()->route('transactions.cash.withdrawal');
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                return;
             }
             if ($this->withdrawalType === 'client_wallet') {
                 $paymentMethod = 'client wallet';
@@ -291,7 +296,10 @@ class Withdrawal extends Create
                 $user = $agent;
                 if ($user->hasRole('admin')) {
                     // Admin: complete immediately and update balances
-                    \App\Models\Domain\Entities\CashTransaction::create([
+                    $safe = \App\Models\Domain\Entities\Safe::find($safeId);
+                    $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
+                    $referenceNumber = generate_reference_number($branchName);
+                    $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
                         'customer_name' => $customerName,
                         'customer_code' => $customerCode,
                         'amount' => abs($this->amount),
@@ -301,7 +309,9 @@ class Withdrawal extends Create
                         'status' => 'completed',
                         'transaction_date_time' => now(),
                         'depositor_national_id' => $this->withdrawalNationalId,
+                        'depositor_mobile_number' => $this->clientMobile,
                         'agent_id' => $user->id,
+                        'reference_number' => $referenceNumber,
                     ]);
                     // Deduct from client wallet
                     $client->balance -= abs($this->amount);
@@ -314,10 +324,11 @@ class Withdrawal extends Create
                     }
                     session()->flash('message', 'Client wallet withdrawal performed successfully!');
                     $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                    return redirect()->route('transactions.cash.withdrawal');
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                    return;
                 } else {
                     // Non-admin: pending, do not update balances
-                    \App\Models\Domain\Entities\CashTransaction::create([
+                    $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
                         'customer_name' => $customerName,
                         'customer_code' => $customerCode,
                         'amount' => abs($this->amount),
@@ -344,8 +355,10 @@ class Withdrawal extends Create
 
                 $user = Auth::user();
                 $status = $user->hasRole('admin') ? 'completed' : 'pending';
-
-                Transaction::create([
+                $safe = \App\Models\Domain\Entities\Safe::find($safeId);
+                $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
+                $referenceNumber = generate_reference_number($branchName);
+                $cashTx = Transaction::create([
                     'customer_name' => $customerName,
                     'amount' => abs($this->amount),
                     'notes' => $this->notes,
@@ -354,6 +367,7 @@ class Withdrawal extends Create
                     'status' => $status,
                     'transaction_date_time' => now(),
                     'agent_id' => $user->id,
+                    'reference_number' => $referenceNumber,
                 ]);
                 if ($user->hasRole('admin')) {
                     $safe->current_balance -= abs($this->amount);
@@ -361,13 +375,17 @@ class Withdrawal extends Create
                 }
                 session()->flash('message', $status === 'completed' ? 'Withdrawal performed successfully!' : 'Withdrawal submitted for admin approval!');
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                return redirect()->route('transactions.cash.withdrawal');
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                return;
             }
 
             if ($this->withdrawalType === 'admin') {
                 $user = Auth::user();
                 $status = $user->hasRole('admin') ? 'completed' : 'pending';
-                \App\Models\Domain\Entities\CashTransaction::create([
+                $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
+                $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
+                $referenceNumber = generate_reference_number($branchName);
+                $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
                     'customer_name' => 'Admin',
                     'amount' => abs($this->amount),
                     'notes' => $this->notes,
@@ -376,6 +394,7 @@ class Withdrawal extends Create
                     'status' => $status,
                     'transaction_date_time' => now(),
                     'agent_id' => $user->id,
+                    'reference_number' => $referenceNumber,
                 ]);
                 if ($user->hasRole('admin')) {
                     $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
@@ -386,7 +405,8 @@ class Withdrawal extends Create
                 }
                 session()->flash('message', $status === 'completed' ? 'Admin withdrawal performed successfully!' : 'Admin withdrawal submitted for approval!');
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                return redirect()->route('transactions.cash.withdrawal');
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                return;
             }
 
             if ($this->withdrawalType === 'branch') {
