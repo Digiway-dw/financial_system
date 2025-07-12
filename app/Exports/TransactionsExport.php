@@ -16,16 +16,16 @@ class TransactionsExport implements FromCollection, WithHeadings
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
-        return $this->transactions->map(function($transaction) {
+        return $this->transactions->map(function ($transaction) {
             return [
                 'Transaction ID' => $transaction->id,
                 'Customer Name' => $transaction->customer_name,
                 'Customer Mobile' => $transaction->customer_mobile_number,
-                'Line Mobile' => $transaction->line_mobile_number,
+                // Line Mobile field removed as it doesn't exist in the database
                 'Customer Code' => $transaction->customer_code,
                 'Amount (EGP)' => $transaction->amount,
                 'Commission (EGP)' => $transaction->commission,

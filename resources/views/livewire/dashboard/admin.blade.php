@@ -1,12 +1,12 @@
 <div>
-@if(isset($showAdminAgentToggle) && $showAdminAgentToggle)
-    <div class="mb-6 flex justify-end">
-        <a href="{{ route('dashboard', ['as_agent' => 1]) }}"
-           class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 transition">
-            Switch to Agent Dashboard View
-        </a>
-    </div>
-@endif
+    @if (isset($showAdminAgentToggle) && $showAdminAgentToggle)
+        <div class="mb-6 flex justify-end">
+            <a href="{{ route('dashboard', ['as_agent' => 1]) }}"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 transition">
+                Switch to Agent Dashboard View
+            </a>
+        </div>
+    @endif
     <h3 class="text-2xl font-bold text-gray-900 mb-6">Admin Dashboard Overview</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -34,6 +34,20 @@
                 <div>
                     <p class="text-gray-600 text-lg font-medium">Total Branches</p>
                     <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $totalBranches }}</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- Work Sessions -->
+        <a href="{{ route('work-sessions.index') }}"
+            class="bg-white border border-gray-200 rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 ease-in-out hover:shadow-xl">
+            <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    <x-heroicon-o-clock class="h-10 w-10 text-teal-600" />
+                </div>
+                <div>
+                    <p class="text-gray-600 text-lg font-medium">Work Sessions</p>
+                    <p class="text-gray-900 text-4xl font-extrabold mt-1">View</p>
                 </div>
             </div>
         </a>

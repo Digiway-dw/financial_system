@@ -10,5 +10,6 @@ return [
     App\Providers\VoltServiceProvider::class,
     App\Providers\AgentAuthorizationProvider::class,
     App\Providers\SpatieLaravelPermissionProvider::class,
+    App\Providers\EventServiceProvider::class,
     Spatie\Permission\PermissionServiceProvider::class,
 ];

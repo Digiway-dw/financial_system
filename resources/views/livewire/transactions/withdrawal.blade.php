@@ -51,19 +51,19 @@
                 <div class="p-6">
                     <div class="mb-6">
                         <div class="flex flex-wrap gap-4">
-                            <button wire:click="$set('withdrawalType', 'direct')" 
+                            <button wire:click="$set('withdrawalType', 'direct')"
                                 class="px-4 py-2 rounded-md {{ $withdrawalType === 'direct' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700' }}">
                                 Direct Withdrawal
                             </button>
-                            <button wire:click="$set('withdrawalType', 'client_wallet')" 
+                            <button wire:click="$set('withdrawalType', 'client_wallet')"
                                 class="px-4 py-2 rounded-md {{ $withdrawalType === 'client_wallet' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700' }}">
                                 Client Wallet
                             </button>
-                            <button wire:click="$set('withdrawalType', 'user')" 
+                            <button wire:click="$set('withdrawalType', 'user')"
                                 class="px-4 py-2 rounded-md {{ $withdrawalType === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700' }}">
                                 User Withdrawal
                             </button>
-                            <button wire:click="$set('withdrawalType', 'admin')" 
+                            <button wire:click="$set('withdrawalType', 'admin')"
                                 class="px-4 py-2 rounded-md {{ $withdrawalType === 'admin' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700' }}">
                                 Administrative
                             </button>
@@ -77,7 +77,7 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <form wire:submit.prevent="submitWithdrawal">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Safe Selection and Amount for other types -->
@@ -176,8 +176,10 @@
                             @if($withdrawalType === 'user')
                                 <!-- User Selection -->
                                 <div>
-                                    <label for="userId" class="block text-sm font-medium text-gray-700 mb-1">Select User</label>
-                                    <select id="userId" wire:model="userId" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    <label for="userId" class="block text-sm font-medium text-gray-700 mb-1">Select
+                                        User</label>
+                                    <select id="userId" wire:model="userId"
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                                         <option value="">Select a user</option>
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -279,10 +281,12 @@
                             @endif
                         </div>
                         <div class="mt-6 flex justify-end">
-                            <a href="{{ route('transactions.cash') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition mr-2">
+                            <a href="{{ route('transactions.cash') }}"
+                                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition mr-2">
                                 Cancel
                             </a>
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring focus:ring-blue-300 disabled:opacity-25 transition">
+                            <button type="submit"
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring focus:ring-blue-300 disabled:opacity-25 transition">
                                 Process Withdrawal
                             </button>
                         </div>

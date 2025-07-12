@@ -12,6 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Skip for SQLite (used in testing)
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            return;
+        }
+
         // Add enhanced constraints and data validation
 
         // Enhance transactions table with better constraints
@@ -69,6 +74,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Skip for SQLite (used in testing)
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            return;
+        }
+
         // Remove constraints in reverse order
         DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS chk_transaction_amount_positive');
         DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS chk_commission_non_negative');

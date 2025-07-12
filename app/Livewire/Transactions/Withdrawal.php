@@ -334,6 +334,7 @@ class Withdrawal extends Create
                 // Check if safe has sufficient balance
                 $safe = Safe::find($safeId);
                 if (!$safe || $safe->current_balance < $this->amount) {
+                if (!$safe || $safe->current_balance < $this->amount) {
                     session()->flash('error', 'Insufficient balance in the selected safe.');
                     return;
                 }

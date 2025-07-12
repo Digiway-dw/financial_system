@@ -31,20 +31,20 @@ return new class extends Migration
 
         // Enhance transactions table with better constraints
         // Add check constraints for amounts
-        if (!$checkConstraintExists('transactions', 'chk_transaction_amount_positive')) {
+        if (DB::connection()->getDriverName() !== 'sqlite' && !$checkConstraintExists('transactions', 'chk_transaction_amount_positive')) {
             DB::statement('ALTER TABLE transactions ADD CONSTRAINT chk_transaction_amount_positive CHECK (amount > 0)');
         }
 
-        if (!$checkConstraintExists('transactions', 'chk_commission_non_negative')) {
+        if (DB::connection()->getDriverName() !== 'sqlite' && !$checkConstraintExists('transactions', 'chk_commission_non_negative')) {
             DB::statement('ALTER TABLE transactions ADD CONSTRAINT chk_commission_non_negative CHECK (commission >= 0)');
         }
 
-        if (!$checkConstraintExists('transactions', 'chk_deduction_non_negative')) {
+        if (DB::connection()->getDriverName() !== 'sqlite' && !$checkConstraintExists('transactions', 'chk_deduction_non_negative')) {
             DB::statement('ALTER TABLE transactions ADD CONSTRAINT chk_deduction_non_negative CHECK (deduction >= 0)');
         }
 
         // Add constraint for transaction types
-        if (!$checkConstraintExists('transactions', 'chk_transaction_type')) {
+        if (DB::connection()->getDriverName() !== 'sqlite' && !$checkConstraintExists('transactions', 'chk_transaction_type')) {
             DB::statement("ALTER TABLE transactions ADD CONSTRAINT chk_transaction_type CHECK (transaction_type IN ('Transfer', 'Withdrawal', 'Deposit', 'Adjustment'))");
         }
 

@@ -168,7 +168,7 @@
                                 <td class="px-6 py-4 text-sm font-mono text-slate-700">
                                     {{ number_format($transaction->commission, 2) }} EGP</td>
                                 <td class="px-6 py-4 text-sm text-slate-700">
-                                    {{ $transaction->line_mobile_number ?? '-' }}</td>
+                                    {{ $transaction->line->mobile_number ?? '-' }}</td>
                                 <td class="px-6 py-4">
                                     <span
                                         class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $transaction->status === 'completed'

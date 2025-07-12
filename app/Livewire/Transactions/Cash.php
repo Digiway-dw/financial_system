@@ -10,17 +10,17 @@ use App\Models\Domain\Entities\CashTransaction;
 class Cash extends Component
 {
     public $user;
-    
+
     public function mount()
     {
         $this->user = Auth::user();
-        
+
         // Check if user has access to cash transactions
         if (!Gate::allows('cash-transactions')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to access cash transactions.');
         }
     }
-    
+
     public function render()
     {
         return view('livewire.transactions.cash', [

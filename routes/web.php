@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -101,12 +103,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('permissions.roles')
         ->middleware('role:admin');
 
+    // Work Sessions Routes
+    Route::get('work-sessions', \App\Livewire\Admin\WorkSessions\Index::class)
+        ->name('work-sessions.index')
+        ->middleware('can:view-work-sessions');
+
     // Notifications Routes
     Route::get('notifications', \App\Livewire\AdminNotificationsBox::class)->name('notifications.index');
 });
 
 Route::middleware(['auth'])->group(function () {
     // Removed profile, profile.update, password.update, and profile.destroy routes
+
+    // Session heartbeat and auto-logout routes (alternative to API routes)
+    Route::post('/session-heartbeat', [\App\Http\Controllers\SessionController::class, 'heartbeat'])
+        ->name('session.heartbeat');
+
+    Route::post('/auto-logout', [\App\Http\Controllers\SessionController::class, 'autoLogout'])
+        ->name('session.logout');
+
+    Route::get('/session-status', [\App\Http\Controllers\SessionController::class, 'checkStatus'])
+        ->name('session.status');
 });
 
 Route::get('/test-icons', function () {
@@ -118,13 +135,11 @@ Route::get('direct-user-edit/{userId}', function ($userId) {
     return app()->call(\App\Livewire\Users\Edit::class, ['userId' => $userId]);
 })->name('direct-user-edit');
 
-// Simple test route
-Route::get('test-user-edit/{userId}', function ($userId) {
-    $user = \App\Domain\Entities\User::findOrFail($userId);
-    return view('test-user-edit', [
-        'user' => $user
-    ]);
-})->name('test-user-edit');
+// Clean stale sessions on login
+Route::get('/cleanup-sessions', function () {
+    \Illuminate\Support\Facades\Artisan::call('sessions:cleanup');
+    return redirect()->intended(route('dashboard'));
+})->middleware(['auth'])->name('cleanup-sessions');
 
 // Route to handle the form submission
 Route::post('test-user-update/{userId}', function ($userId) {
