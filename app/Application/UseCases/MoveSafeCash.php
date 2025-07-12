@@ -42,7 +42,12 @@ class MoveSafeCash
         }
 
         if ($fromSafe->current_balance < $amount) {
-            throw new \Exception('Insufficient balance in source safe.');
+            throw new \Exception('Insufficient balance in source safe. Available: ' . number_format($fromSafe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+        }
+
+        // Validate balances before updating
+        if (($fromSafe->current_balance - $amount) < 0) {
+            throw new \Exception('Insufficient balance in source safe. Available: ' . number_format($fromSafe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
         }
 
         // Deduct from source safe

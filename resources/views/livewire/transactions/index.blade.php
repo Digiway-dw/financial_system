@@ -286,8 +286,8 @@
         <div class="mt-4 overflow-x-auto">
             <div class="bg-white rounded-2xl shadow border border-gray-200">
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead>
-                        <tr>
+                <thead>
+                    <tr>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer Name</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Mobile Number</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
@@ -297,10 +297,10 @@
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
                             <th class="px-6 py-3 bg-gray-50">Actions</th>
-                        </tr>
-                    </thead>
+                    </tr>
+                </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse ($transactions as $transaction)
+                    @forelse ($transactions as $transaction)
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ $transaction['customer_name'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['customer_mobile_number'] }}</td>
@@ -312,26 +312,26 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d H:i') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{ route('transactions.edit', $transaction['id']) }}" class="text-blue-600 hover:text-blue-800 mr-3">
-                                        @can('edit-all-transactions')
+                                    @can('edit-all-transactions')
+                                        Edit
+                                    @elsecan('edit-own-transactions')
+                                        @if ($transaction['agent_id'] == auth()->id())
                                             Edit
-                                        @elsecan('edit-own-transactions')
-                                            @if ($transaction['agent_id'] == auth()->id())
-                                                Edit
-                                            @endif
-                                        @endcan
-                                    </a>
-                                    @can('delete-transactions')
-                                        <button wire:click="deleteTransaction('{{ $transaction['id'] }}')" class="text-red-600 hover:text-red-800">Delete</button>
+                                        @endif
                                     @endcan
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
+                                </a>
+                                @can('delete-transactions')
+                                        <button wire:click="deleteTransaction('{{ $transaction['id'] }}')" class="text-red-600 hover:text-red-800">Delete</button>
+                                @endcan
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
                                 <td colspan="9" class="px-6 py-4 text-gray-500 text-center">No transactions found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
             </div>
         </div>
     </div>

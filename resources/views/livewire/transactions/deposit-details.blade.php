@@ -142,7 +142,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
                         <input type="number" step="0.01" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter amount">
                     </div>
-                    <div>
+<div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Note</label>
                         <textarea class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter note"></textarea>
                     </div>

@@ -62,7 +62,7 @@ class CreateSafeToSafeTransfer
 
         // Check if source safe has enough balance
         if ($sourceSafe->current_balance < $amount) {
-            throw new \Exception('Insufficient balance in source safe.');
+            throw new \Exception('Insufficient balance in source safe. Available: ' . number_format($sourceSafe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
         }
 
         // Determine status - Only Admin can do unrestricted transfers, others need approval
@@ -91,6 +91,11 @@ class CreateSafeToSafeTransfer
 
         // If Admin (unrestricted), update balances immediately
         if (!$requiresApproval) {
+            // Validate balances before updating
+            if (($sourceSafe->current_balance - $amount) < 0) {
+                throw new \Exception('Insufficient balance in source safe. Available: ' . number_format($sourceSafe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+            }
+            
             // Deduct from source safe
             $this->safeRepository->update(
                 $sourceSafeId,
@@ -106,7 +111,12 @@ class CreateSafeToSafeTransfer
             // Notify relevant users about completed transfer
             $this->notifyAboutCompletedTransfer($createdTransaction, $sourceSafe, $destinationSafe, $initiator);
         } else {
-            // For non-Admin, deduct from source safe immediately but recipient needs to approve
+            // For non-Admin, validate balance before deducting
+            if (($sourceSafe->current_balance - $amount) < 0) {
+                throw new \Exception('Insufficient balance in source safe. Available: ' . number_format($sourceSafe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+            }
+            
+            // Deduct from source safe immediately but recipient needs to approve
             $this->safeRepository->update(
                 $sourceSafeId,
                 ['current_balance' => $sourceSafe->current_balance - $amount]

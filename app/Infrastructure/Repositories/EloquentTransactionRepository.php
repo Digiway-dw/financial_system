@@ -302,4 +302,11 @@ class EloquentTransactionRepository implements TransactionRepository
             ],
         ];
     }
+
+    public function countAllPending(): int
+    {
+        $ordinaryCount = EloquentTransaction::where('status', 'Pending')->count();
+        $cashCount = CashTransaction::where('status', 'pending')->count();
+        return $ordinaryCount + $cashCount;
+    }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('transactions', function (Blueprint $table) {
             if (!Schema::hasColumn('transactions', 'notes')) {
-                $table->text('notes')->nullable()->after('amount');
+            $table->text('notes')->nullable()->after('amount');
             }
         });
     }
@@ -25,7 +25,7 @@ return new class extends Migration
     {
         Schema::table('transactions', function (Blueprint $table) {
             if (Schema::hasColumn('transactions', 'notes')) {
-                $table->dropColumn('notes');
+            $table->dropColumn('notes');
             }
         });
     }

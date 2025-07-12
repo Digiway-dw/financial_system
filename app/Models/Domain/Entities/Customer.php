@@ -22,11 +22,25 @@ class Customer extends Model
         'mobile_number',
         'customer_code',
         'gender',
-        'balance',
         'is_client',
         'agent_id',
         'branch_id',
+        'balance',
     ];
+
+    protected $casts = [
+        'balance' => 'decimal:2',
+        'is_client' => 'boolean',
+    ];
+
+    // Prevent negative balance
+    public function setBalanceAttribute($value)
+    {
+        if ($value < 0) {
+            throw new \InvalidArgumentException('Customer balance cannot be negative. Attempted to set: ' . $value);
+        }
+        $this->attributes['balance'] = $value;
+    }
 
     /**
      * Get the transactions for the customer.

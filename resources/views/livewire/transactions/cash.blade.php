@@ -64,12 +64,12 @@
                                     </tbody>
                                 </table>
                             @else
-                                <p class="text-gray-500 text-center py-6">
+                            <p class="text-gray-500 text-center py-6">
                                     Cash transaction history will be displayed here.<br>
-                                    <a href="{{ route('transactions.index') }}" class="text-indigo-600 hover:text-indigo-800">
-                                        View all transactions
-                                    </a>
-                                </p>
+                                <a href="{{ route('transactions.index') }}" class="text-indigo-600 hover:text-indigo-800">
+                                    View all transactions
+                                </a>
+                            </p>
                             @endif
                         </div>
                     </div>

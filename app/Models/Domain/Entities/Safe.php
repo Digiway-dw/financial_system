@@ -21,7 +21,6 @@ class Safe extends Model
         'name',
         'current_balance',
         'branch_id',
-        'description',
         'type',
     ];
 
@@ -31,8 +30,17 @@ class Safe extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'current_balance' => 'float',
+        'current_balance' => 'decimal:2',
     ];
+
+    // Prevent negative balance
+    public function setCurrentBalanceAttribute($value)
+    {
+        if ($value < 0) {
+            throw new \InvalidArgumentException('Safe balance cannot be negative. Attempted to set: ' . $value);
+        }
+        $this->attributes['current_balance'] = $value;
+    }
 
     /**
      * Get the branch that owns the safe.

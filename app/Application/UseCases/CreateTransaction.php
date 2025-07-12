@@ -182,7 +182,7 @@ class CreateTransaction
         // Check current balance for transfer type only
         if ($transactionType === 'Transfer') {
             if (($line->current_balance - $amount) < 0) {
-                throw new \Exception('Insufficient balance in line for this transaction.');
+                throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
             }
             // Deduct amount from line balance
             $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance - $amount]);
@@ -203,7 +203,7 @@ class CreateTransaction
             }
 
             if (($safe->current_balance - $amount) < 0) {
-                throw new \Exception('Insufficient balance in safe for this transaction.');
+                throw new \Exception('Insufficient balance in safe for this transaction. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
             }
             $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $amount]);
             $safe->refresh(); // Refresh to get the updated balance
@@ -219,7 +219,7 @@ class CreateTransaction
         if ($paymentMethod === 'client wallet') {
             if ($transactionType === 'Withdrawal' || $transactionType === 'Transfer') {
                 if (($customer->balance - $amount) < 0) {
-                    throw new \Exception('Insufficient balance in client wallet for this transaction.');
+                    throw new \Exception('Insufficient balance in client wallet for this transaction. Available: ' . number_format($customer->balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
                 }
                 $customer->balance -= $amount;
                 $this->customerRepository->save($customer);

@@ -19,17 +19,33 @@ class Line extends Model
      */
     protected $fillable = [
         'mobile_number',
+        'network',
         'current_balance',
         'daily_limit',
         'monthly_limit',
-        'daily_usage',
-        'monthly_usage',
-        'network',
-        'status',
-        'branch_id',
         'starting_balance',
         'daily_starting_balance',
+        'status',
+        'branch_id',
+        'user_id',
     ];
+
+    protected $casts = [
+        'current_balance' => 'decimal:2',
+        'daily_limit' => 'decimal:2',
+        'monthly_limit' => 'decimal:2',
+        'starting_balance' => 'decimal:2',
+        'daily_starting_balance' => 'decimal:2',
+    ];
+
+    // Prevent negative balance
+    public function setCurrentBalanceAttribute($value)
+    {
+        if ($value < 0) {
+            throw new \InvalidArgumentException('Line balance cannot be negative. Attempted to set: ' . $value);
+        }
+        $this->attributes['current_balance'] = $value;
+    }
 
     /**
      * Get the branch that owns the line.
