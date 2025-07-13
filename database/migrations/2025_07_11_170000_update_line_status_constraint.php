@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lines', function (Blueprint $table) {
-            // Change the status column to allow 'frozen' as a value
-            $table->enum('status', ['active', 'inactive', 'blocked', 'frozen'])->default('active')->change();
+            // Change the status column to allow all valid values including 'frozen', 'suspended', and 'maintenance'
+            $table->enum('status', ['active', 'inactive', 'suspended', 'maintenance', 'frozen'])->default('active')->change();
         });
     }
 
@@ -23,8 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('lines', function (Blueprint $table) {
-            // Revert to previous allowed values (without 'frozen')
-            $table->enum('status', ['active', 'inactive', 'blocked'])->default('active')->change();
+            // Revert to previous allowed values (without 'frozen', 'suspended', 'maintenance')
+            $table->enum('status', ['active', 'inactive'])->default('active')->change();
         });
     }
 }; 

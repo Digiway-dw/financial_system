@@ -10,6 +10,9 @@ use App\Models\Domain\Entities\Customer;
 use App\Models\Domain\Entities\Line;
 use App\Models\Domain\Entities\Safe;
 use App\Application\UseCases\CreateTransaction;
+use Illuminate\Support\Facades\Notification;
+use App\Domain\Entities\User;
+use App\Notifications\AdminNotification;
 
 class Send extends Component
 {
@@ -32,7 +35,7 @@ class Send extends Component
     public $receiverMobile = '';
 
     // Transaction Details
-    #[Validate('required|numeric|min:5|multiple_of:5')]
+    #[Validate('required|numeric|min:0.01')]
     public $amount = 0;
 
     public $commission = 0;
@@ -173,8 +176,9 @@ class Send extends Component
             return;
         }
 
-        // Commission: 5 EGP per 500 EGP (no fractions)
-        $baseCommission = floor($amount / 500) * 5;
+        // New commission structure: 5 EGP per 500 EGP increment
+        // 1-500 = 5 EGP, 501-1000 = 10 EGP, 1001-1500 = 15 EGP, etc.
+        $baseCommission = ceil($amount / 500) * 5;
         $this->commission = max(0, $baseCommission - $discount);
     }
 
@@ -317,8 +321,28 @@ class Send extends Component
                     discountNotes: $this->discountNotes,
                     notes: null
                 );
-                // Redirect to receipt page for printing
-                $this->js('window.location.href = "' . route('transactions.receipt', ['transaction' => $transaction->id]) . '"');
+
+                // Notify admin if a discount was applied
+                if ($discount > 0) {
+                    $adminNotificationMessage = "A send transaction was created with a discount of " . $discount . " EGP. Note: " . $this->discountNotes . ". Transaction ID: " . $transaction->id;
+                    $admins = User::role('admin')->get();
+                    Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
+                    
+                    // Redirect to waiting approval screen for transactions with discount
+                    session()->flash('message', 'Transaction submitted for admin approval due to discount applied.');
+                    $this->reset(['clientName', 'clientMobile', 'clientCode', 'clientGender', 'amount', 'commission', 'discount', 'discountNotes', 'selectedLineId', 'receiverMobile']);
+                    return redirect()->route('transactions.waiting-approval', ['transactionId' => $transaction->id]);
+                }
+
+                // Display receipt for completed transactions (no discount)
+                // $this->completedTransaction = $transaction; // This line was removed as per the new_code
+                // $this->showReceiptModal = true; // This line was removed as per the new_code
+
+                // Print receipt
+                app(\App\Services\ReceiptPrinterService::class)->printReceipt($transaction, 'html');
+
+                session()->flash('message', 'Send transaction completed successfully.');
+                $this->reset(['clientName', 'clientMobile', 'clientCode', 'clientGender', 'amount', 'commission', 'discount', 'discountNotes', 'selectedLineId', 'receiverMobile']);
             });
         } catch (\Exception $e) {
             $this->errorMessage = 'Failed to create transaction: ' . $e->getMessage();

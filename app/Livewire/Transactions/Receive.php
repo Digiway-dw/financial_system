@@ -10,6 +10,8 @@ use App\Models\Domain\Entities\Customer;
 use App\Models\Domain\Entities\Line;
 use App\Models\Domain\Entities\Safe;
 use App\Application\UseCases\CreateTransaction;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\AdminNotification;
 
 class Receive extends Component
 {
@@ -32,7 +34,7 @@ class Receive extends Component
     public $senderMobile = '';
 
     // Transaction Details
-    #[Validate('required|numeric|min:5|multiple_of:5')]
+    #[Validate('required|numeric|min:0.01')]
     public $amount = 0;
 
     public $commission = 0;
@@ -147,8 +149,9 @@ class Receive extends Component
             return;
         }
 
-        // Commission: 5 EGP per 500 EGP (no fractions)
-        $baseCommission = floor($amount / 500) * 5;
+        // New commission structure: 5 EGP per 500 EGP increment
+        // 1-500 = 5 EGP, 501-1000 = 10 EGP, 1001-1500 = 15 EGP, etc.
+        $baseCommission = ceil($amount / 500) * 5;
         $this->commission = max(0, $baseCommission - $discount);
     }
 
@@ -215,106 +218,66 @@ class Receive extends Component
     {
         $this->validate();
 
-        // Cast to proper types for arithmetic operations
-        $amount = (float) $this->amount;
-        $commission = (float) $this->commission;
-        $discount = (float) $this->discount;
-
-        // Additional validation
-        if ($amount <= 0) {
-            $this->errorMessage = 'Invalid transaction amount.';
-            return;
+        // Pre-save line limit checks for receive transactions
+        $line = Line::find($this->selectedLineId);
+        if ($line) {
+            $monthStart = now()->startOfMonth();
+            $monthEnd = now()->endOfMonth();
+            $todayStart = now()->startOfDay();
+            $todayEnd = now()->endOfDay();
+            $monthlyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
+                ->whereIn('transaction_type', ['Receive', 'Deposit'])
+                ->whereBetween('created_at', [$monthStart, $monthEnd])
+                ->sum('amount');
+            $dailyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
+                ->whereIn('transaction_type', ['Receive', 'Deposit'])
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('amount');
+            if ($monthlyReceived + $this->amount > $line->monthly_receive_limit) {
+                $exceededBy = ($monthlyReceived + $this->amount) - $line->monthly_receive_limit;
+                $this->errorMessage = "This transaction would exceed the line's monthly receive limit. Current monthly usage: {$monthlyReceived} EGP, Limit: {$line->monthly_receive_limit} EGP. You would exceed by: {$exceededBy} EGP.";
+                return;
+            }
+            if ($dailyReceived + $this->amount > $line->daily_receive_limit) {
+                $exceededBy = ($dailyReceived + $this->amount) - $line->daily_receive_limit;
+                $this->errorMessage = "This transaction would exceed the line's daily receive limit. Current daily usage: {$dailyReceived} EGP, Limit: {$line->daily_receive_limit} EGP. You would exceed by: {$exceededBy} EGP.";
+                return;
+            }
         }
 
-        if ($this->safeBalanceWarning) {
-            $this->errorMessage = 'Please resolve safe balance issues before submitting.';
-            return;
-        }
-
+        DB::beginTransaction();
         try {
-            DB::transaction(function () use ($amount, $commission, $discount) {
-                // Create or update client
-                if (!$this->clientId) {
-                    $client = Customer::create([
-                        'name' => $this->clientName,
-                        'mobile_number' => $this->clientMobile,
-                        'customer_code' => $this->clientCode ?: $this->generateClientCode(),
-                        'gender' => $this->clientGender ?: 'male',
-                        'balance' => 0,
-                        'is_client' => true,
-                        'agent_id' => Auth::id(),
-                        'branch_id' => Auth::user()->branch_id,
-                    ]);
-                    $this->clientId = $client->id;
+            $createdTransaction = $this->createTransactionUseCase->execute(
+                $this->customerName,
+                $this->customerMobileNumber,
+                $this->amount,
+                $this->selectedLineId,
+                $this->transactionType,
+                $this->deduction,
+                $this->notes,
+                $this->isAbsoluteWithdrawal
+            );
+
+            // Only if transaction was created, proceed with notification and redirect
+            if ($createdTransaction) {
+                if ($this->deduction > 0) {
+                    // Notify admin for approval
+                    $this->notifyAdmin($createdTransaction);
+                    DB::commit();
+                    return redirect()->route('transactions.waiting-approval', ['transaction' => $createdTransaction->id]);
                 } else {
-                    // Update existing client
-                    Customer::where('id', $this->clientId)->update([
-                        'name' => $this->clientName,
-                        'gender' => $this->clientGender,
-                        'customer_code' => $this->clientCode,
-                    ]);
+                    DB::commit();
+                    return redirect()->route('transactions.receipt', ['transaction' => $createdTransaction->id]);
                 }
-
-                // Get selected line for transaction
-                $line = Line::find($this->selectedLineId);
-                if (!$line) {
-                    throw new \Exception('Selected line not found.');
-                }
-
-                $safe = $line->branch->safe;
-                if (!$safe) {
-                    // Try to find any safe for this branch as fallback
-                    $safe = Safe::where('branch_id', $line->branch_id)->first();
-                    if (!$safe) {
-                        throw new \Exception('No safe found for this branch.');
-                    }
-                }
-
-                // For receive transactions:
-                // - Increase line balance by full amount
-                // - Decrease safe balance by (amount - commission)
-                // - Log commission as earnings
-
-                $requiredFromSafe = $amount - $commission;
-
-                // Validate safe has enough balance
-                if ($safe->current_balance < $requiredFromSafe) {
-                    throw new \Exception('Insufficient safe balance for this transaction.');
-                }
-
-                // Create transaction record using CreateTransaction use case
-                // The use case will handle all balance updates automatically
-                $transaction = app(CreateTransaction::class)->execute(
-                    customerName: $this->clientName,
-                    customerMobileNumber: $this->clientMobile,
-                    customerCode: $this->clientCode,
-                    amount: $amount,
-                    commission: $commission,
-                    deduction: $discount,
-                    transactionType: 'Receive',
-                    agentId: Auth::id(),
-                    lineId: $this->selectedLineId,
-                    safeId: $safe->id,
-                    isAbsoluteWithdrawal: false,
-                    paymentMethod: 'branch safe',
-                    gender: $this->clientGender ?: 'male',
-                    isClient: true,
-                    receiverMobileNumber: $this->senderMobile, // For receive, sender becomes receiver in record
-                    discountNotes: $this->discountNotes,
-                    notes: null
-                );
-                // Redirect to receipt page for printing
-                $this->js('window.location.href = "' . route('transactions.receipt', ['transaction' => $transaction->id]) . '"');
-            });
-
-            // Success
-            $this->successMessage = 'Receive transaction created successfully!';
-            $this->resetForm();
-
-            // Redirect after a short delay
-            // $this->js('setTimeout(() => window.location.href = "' . route('transactions.index') . '", 2000)');
+            } else {
+                DB::rollBack();
+                session()->flash('error', 'Transaction could not be created.');
+                return;
+            }
         } catch (\Exception $e) {
-            $this->errorMessage = 'Failed to create receive transaction: ' . $e->getMessage();
+            DB::rollBack();
+            session()->flash('error', $e->getMessage());
+            return;
         }
     }
 

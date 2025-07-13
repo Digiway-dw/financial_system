@@ -111,11 +111,11 @@ class CreateTransaction
         if ($agent->hasRole('admin') && $isAbsoluteWithdrawal) {
             $status = 'Completed';
         } else {
-            // If agent has a deduction, mark as pending, otherwise, mark as completed unless Trainee
-            if ($agent->hasRole('agent') && $deduction > 0) {
+            // Only mark as pending if there's a deduction (discount)
+            if ($deduction > 0) {
                 $status = 'Pending';
             } else {
-                $status = $agent->hasRole('trainee') ? 'Pending' : 'Completed';
+                $status = 'Completed';
             }
         }
 
@@ -179,57 +179,6 @@ class CreateTransaction
             throw new \Exception('Transaction amount exceeds monthly limit for this line.');
         }
 
-        // Check current balance for transfer type only
-        if ($transactionType === 'Transfer') {
-            if (($line->current_balance - $amount) < 0) {
-                throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
-            }
-            // Deduct amount from line balance
-            $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance - $amount]);
-            $line->refresh(); // Refresh to get the updated balance
-
-            // Check for low line balance after deduction
-            if ($line->current_balance < 500) { // Example threshold: 500 EGP
-                $notificationMessage = "Warning: Line " . $line->mobile_number . " balance is low ( " . $line->current_balance . " EGP). Please top up.";
-                $this->notifyRelevantUsers($notificationMessage, route('lines.edit', $line->id), $line->branch_id);
-            }
-        }
-
-        // For withdrawals, only deduct from safe if it's not an absolute withdrawal and payment method is 'branch safe'
-        if ($transactionType === 'Withdrawal' && !$isAbsoluteWithdrawal && $paymentMethod === 'branch safe') {
-            $safe = $this->safeRepository->findById($safeId);
-            if (!$safe) {
-                throw new \Exception('Safe not found.');
-            }
-
-            if (($safe->current_balance - $amount) < 0) {
-                throw new \Exception('Insufficient balance in safe for this transaction. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
-            }
-            $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $amount]);
-            $safe->refresh(); // Refresh to get the updated balance
-
-            // Check for low safe balance after deduction
-            if ($safe->current_balance < 500) { // Example threshold: 500 EGP
-                $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
-                $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
-            }
-        }
-
-        // Handle client wallet deductions/deposits
-        if ($paymentMethod === 'client wallet') {
-            if ($transactionType === 'Withdrawal' || $transactionType === 'Transfer') {
-                if (($customer->balance - $amount) < 0) {
-                    throw new \Exception('Insufficient balance in client wallet for this transaction. Available: ' . number_format($customer->balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
-                }
-                $customer->balance -= $amount;
-                $this->customerRepository->save($customer);
-            } elseif ($transactionType === 'Deposit' || $transactionType === 'Receive') {
-                $customer->balance += $amount;
-                $this->customerRepository->save($customer);
-            }
-            $customer->refresh(); // Refresh to get the updated balance
-        }
-
         // --- New Daily/Monthly Receive Limit Logic ---
         $monthStart = Carbon::now()->startOfMonth();
         $monthEnd = Carbon::now()->endOfMonth();
@@ -262,6 +211,61 @@ class CreateTransaction
             }
         }
         // --- End New Limit Logic ---
+
+        // Only apply balance changes if status is not 'Pending'
+        $shouldApplyBalances = !in_array($status, ['Pending', 'pending']);
+
+        // Check current balance for transfer type only
+        if ($shouldApplyBalances && $transactionType === 'Transfer') {
+            if (($line->current_balance - $amount) < 0) {
+                throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+            }
+            $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance - $amount]);
+            $line->refresh();
+            if ($line->current_balance < 500) {
+                $notificationMessage = "Warning: Line " . $line->mobile_number . " balance is low ( " . $line->current_balance . " EGP). Please top up.";
+                $this->notifyRelevantUsers($notificationMessage, route('lines.edit', $line->id), $line->branch_id);
+            }
+        }
+
+        if ($shouldApplyBalances && $transactionType === 'Withdrawal' && !$isAbsoluteWithdrawal && $paymentMethod === 'branch safe') {
+            $safe = $this->safeRepository->findById($safeId);
+            if (!$safe) {
+                throw new \Exception('Safe not found.');
+            }
+            if (($safe->current_balance - $amount) < 0) {
+                throw new \Exception('Insufficient balance in safe for this transaction. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+            }
+            $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $amount]);
+            $safe->refresh();
+            if ($safe->current_balance < 500) {
+                $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
+                $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
+            }
+        }
+
+        if ($shouldApplyBalances && $paymentMethod === 'client wallet') {
+            if ($transactionType === 'Withdrawal' || $transactionType === 'Transfer') {
+                if (($customer->balance - $amount) < 0) {
+                    throw new \Exception('Insufficient balance in client wallet for this transaction. Available: ' . number_format($customer->balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                }
+                $customer->balance -= $amount;
+                $this->customerRepository->save($customer);
+            } elseif ($transactionType === 'Deposit' || $transactionType === 'Receive') {
+                $customer->balance += $amount;
+                $this->customerRepository->save($customer);
+            }
+            $customer->refresh();
+        }
+
+        if ($shouldApplyBalances && in_array($transactionType, ['Deposit', 'Receive'])) {
+            $this->lineRepository->update($lineId, [
+                'current_balance' => $line->current_balance + $amount,
+                'daily_usage' => ($line->daily_usage ?? 0) + $amount,
+                'monthly_usage' => ($line->monthly_usage ?? 0) + $amount,
+            ]);
+            $line->refresh();
+        }
 
         // Generate reference number using branch name and unique number
         $branchName = $line->branch->name ?? 'Unknown';

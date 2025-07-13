@@ -41,6 +41,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('transactions.cash.deposit');
     Route::get('transactions/pending', \App\Livewire\Transactions\Pending::class)
         ->name('transactions.pending');
+    Route::get('transactions/waiting-approval/{transactionId}', \App\Livewire\Transactions\WaitingApproval::class)
+        ->name('transactions.waiting-approval');
+    Route::get('transactions/cash/waiting-approval/{cashTransaction}', \App\Livewire\Transactions\WaitingApproval::class)
+        ->name('transactions.cash.waiting-approval');
     Route::get('transactions/{transactionId}/edit', \App\Livewire\Transactions\Edit::class)
         ->name('transactions.edit');
     Route::get('transactions/{transaction}/receipt', [\App\Http\Controllers\TransactionController::class, 'receipt'])->name('transactions.receipt');

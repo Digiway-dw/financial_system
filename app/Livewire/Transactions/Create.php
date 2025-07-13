@@ -206,8 +206,45 @@ class Create extends Component
     {
         $this->validate();
 
+        // If this transaction is for a line and needs admin approval, check line limits before saving
+        $needsApproval = $this->deduction > 0 || $this->transactionType === 'Receive' || $this->transactionType === 'Deposit';
+        if ($this->lineId && $needsApproval) {
+            $line = \App\Models\Domain\Entities\Line::find($this->lineId);
+            if ($line) {
+                $monthStart = now()->startOfMonth();
+                $monthEnd = now()->endOfMonth();
+                $todayStart = now()->startOfDay();
+                $todayEnd = now()->endOfDay();
+                $monthlyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
+                    ->whereIn('transaction_type', ['Deposit', 'Receive'])
+                    ->whereBetween('transaction_date_time', [$monthStart, $monthEnd])
+                    ->sum('amount');
+                $monthlyLimit = $line->monthly_limit;
+                $startingBalance = $line->starting_balance ?? 0;
+                $maxAllowedMonthly = ($monthlyLimit !== null) ? ($monthlyLimit - $startingBalance) : null;
+                if ($maxAllowedMonthly !== null && ($monthlyReceived + $this->amount) > $maxAllowedMonthly) {
+                    $line->status = 'frozen';
+                    $line->save();
+                    session()->flash('error', 'Transaction exceeds the allowed monthly receive limit for this line. The line has been frozen until the start of next month.');
+                    return;
+                }
+                $dailyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
+                    ->whereIn('transaction_type', ['Deposit', 'Receive'])
+                    ->whereBetween('transaction_date_time', [$todayStart, $todayEnd])
+                    ->sum('amount');
+                $dailyLimit = $line->daily_limit;
+                $dailyStartingBalance = $line->daily_starting_balance ?? 0;
+                $maxAllowedDaily = ($dailyLimit !== null) ? ($dailyLimit - $dailyStartingBalance) : null;
+                if ($maxAllowedDaily !== null && ($dailyReceived + $this->amount) > $maxAllowedDaily) {
+                    $line->status = 'frozen';
+                    $line->save();
+                    session()->flash('error', 'Transaction exceeds the allowed daily receive limit for this line. The line has been frozen until the end of the day.');
+                    return;
+                }
+            }
+        }
+
         // Ensure isAbsoluteWithdrawal is only true for Admin with permission and Withdrawal type
-        // Using Gate::allows() for better IDE support and explicit authorization checking
         if (!Gate::allows('perform-unrestricted-withdrawal') || $this->transactionType !== 'Withdrawal') {
             $this->isAbsoluteWithdrawal = false;
         }
@@ -230,25 +267,27 @@ class Create extends Component
                 $this->isClient
             );
 
-            // Notify admin if a deduction was applied
+            // If we reach here, the transaction was created successfully
             if ($this->deduction > 0) {
                 $adminNotificationMessage = "A transaction was created with a deduction of " . $this->deduction . " EGP. Note: " . $this->notes . ". Transaction ID: " . $createdTransaction->id;
                 $admins = \App\Domain\Entities\User::role('admin')->get();
                 Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $createdTransaction->id)));
+                session()->flash('message', 'Transaction submitted for admin approval due to discount applied.');
+                $this->reset(['customerName', 'customerMobileNumber', 'lineMobileNumber', 'customerCode', 'amount', 'commission', 'deduction', 'transactionType', 'branchId', 'lineId', 'safeId', 'isAbsoluteWithdrawal', 'paymentMethod', 'gender', 'isClient']);
+                $this->calculateCommission();
+                return redirect()->route('transactions.waiting-approval', ['transactionId' => $createdTransaction->id]);
             }
 
-            // Display receipt
             $this->completedTransaction = $createdTransaction;
             $this->showReceiptModal = true;
-
-            // Print receipt (HTML by default)
             app(\App\Services\ReceiptPrinterService::class)->printReceipt($createdTransaction, 'html');
-
             session()->flash('message', 'Transaction created successfully.');
-            $this->reset(['customerName', 'customerMobileNumber', 'lineMobileNumber', 'customerCode', 'amount', 'commission', 'deduction', 'transactionType', 'branchId', 'lineId', 'safeId', 'isAbsoluteWithdrawal', 'paymentMethod', 'gender', 'isClient']); // Clear form fields after submission
-            $this->calculateCommission(); // Recalculate commission after reset
+            $this->reset(['customerName', 'customerMobileNumber', 'lineMobileNumber', 'customerCode', 'amount', 'commission', 'deduction', 'transactionType', 'branchId', 'lineId', 'safeId', 'isAbsoluteWithdrawal', 'paymentMethod', 'gender', 'isClient']);
+            $this->calculateCommission();
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to create transaction: ' . $e->getMessage());
+            // If any exception occurs (such as exceeding line limit), show error and do NOT save or send for approval
+            session()->flash('error', $e->getMessage());
+            return;
         }
     }
 

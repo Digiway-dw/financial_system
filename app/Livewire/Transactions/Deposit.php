@@ -95,6 +95,46 @@ class Deposit extends Create
             $transactionType = 'Deposit';
             $notes = $this->notes;
 
+            // If this deposit is associated with a line, check line limits before saving
+            if ($this->lineId) {
+                $line = \App\Models\Domain\Entities\Line::find($this->lineId);
+                if ($line) {
+                    $monthStart = now()->startOfMonth();
+                    $monthEnd = now()->endOfMonth();
+                    $todayStart = now()->startOfDay();
+                    $todayEnd = now()->endOfDay();
+                    $monthlyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
+                        ->whereIn('transaction_type', ['Deposit', 'Receive'])
+                        ->whereBetween('transaction_date_time', [$monthStart, $monthEnd])
+                        ->sum('amount');
+                    $monthlyLimit = $line->monthly_limit;
+                    $startingBalance = $line->starting_balance ?? 0;
+                    $maxAllowedMonthly = ($monthlyLimit !== null) ? ($monthlyLimit - $startingBalance) : null;
+                    if ($maxAllowedMonthly !== null && ($monthlyReceived + $this->amount) > $maxAllowedMonthly) {
+                        $line->status = 'frozen';
+                        $line->save();
+                        session()->flash('error', 'Transaction exceeds the allowed monthly receive limit for this line. The line has been frozen until the start of next month.');
+                        return;
+                    }
+                    $dailyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
+                        ->whereIn('transaction_type', ['Deposit', 'Receive'])
+                        ->whereBetween('transaction_date_time', [$todayStart, $todayEnd])
+                        ->sum('amount');
+                    $dailyLimit = $line->daily_limit;
+                    $dailyStartingBalance = $line->daily_starting_balance ?? 0;
+                    $maxAllowedDaily = ($dailyLimit !== null) ? ($dailyLimit - $dailyStartingBalance) : null;
+                    if ($maxAllowedDaily !== null && ($dailyReceived + $this->amount) > $maxAllowedDaily) {
+                        $line->status = 'frozen';
+                        $line->save();
+                        session()->flash('error', 'Transaction exceeds the allowed daily receive limit for this line. The line has been frozen until the end of the day.');
+                        return;
+                    }
+                }
+            }
+
+            // Deposits don't need approval - always completed
+            $status = 'completed';
+
             if ($this->depositType === 'user') {
                 $user = User::find($this->userId);
                 if (!$user) {
@@ -110,11 +150,12 @@ class Deposit extends Create
                     'notes' => $this->notes,
                     'safe_id' => $safeId,
                     'transaction_type' => $transactionType,
-                    'status' => 'Completed',
+                    'status' => $status,
                     'transaction_date_time' => now(),
                     'agent_id' => $agent->id,
                     'reference_number' => $referenceNumber,
                 ]);
+                // Apply balance changes immediately for deposits
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
@@ -143,7 +184,7 @@ class Deposit extends Create
                     'notes' => $this->notes,
                     'safe_id' => $safeId,
                     'transaction_type' => $transactionType,
-                    'status' => 'Completed',
+                    'status' => $status,
                     'transaction_date_time' => now(),
                     'depositor_national_id' => $this->depositorNationalId,
                     'depositor_mobile_number' => $this->depositorMobileNumber,
@@ -168,16 +209,15 @@ class Deposit extends Create
                     'notes' => $this->notes,
                     'safe_id' => $safeId,
                     'transaction_type' => $transactionType,
-                    'status' => 'Completed',
+                    'status' => $status,
                     'transaction_date_time' => now(),
                     'agent_id' => $agent->id,
                     'reference_number' => $referenceNumber,
                 ]);
-                $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
                 }
-                $this->reset(['amount', 'notes']);
+                $this->reset(['amount', 'notes', 'userId', 'customerName', 'clientCode', 'clientNumber', 'clientNationalNumber']);
                 $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 return;
             }
@@ -191,12 +231,11 @@ class Deposit extends Create
                     'notes' => $this->notes,
                     'safe_id' => $safeId,
                     'transaction_type' => $transactionType,
-                    'status' => 'Completed',
+                    'status' => $status,
                     'transaction_date_time' => now(),
                     'agent_id' => $agent->id,
                     'reference_number' => $referenceNumber,
                 ]);
-                $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
                 }
@@ -205,7 +244,7 @@ class Deposit extends Create
                 return;
             }
         } catch (\Exception $e) {
-            session()->flash('message', 'خطأ: ' . $e->getMessage());
+            session()->flash('error', 'Deposit failed: ' . $e->getMessage());
         }
     }
     public function render()

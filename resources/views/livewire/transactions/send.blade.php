@@ -202,10 +202,10 @@
                             <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
                                 Amount (EGP) <span class="text-red-500">*</span>
                             </label>
-                            <input wire:model.live="amount" id="amount" type="number" step="5"
-                                min="5"
+                            <input wire:model.live="amount" id="amount" type="number" step="any"
+                                min="0.01"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 @error('amount') border-red-500 @enderror"
-                                placeholder="Enter amount (minimum 5 EGP)">
+                                placeholder="Enter amount">
                             <p class="mt-1 text-xs text-gray-500">Amount must be a multiple of 5 EGP</p>
                             @error('amount')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

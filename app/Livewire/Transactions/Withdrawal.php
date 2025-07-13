@@ -145,6 +145,43 @@ class Withdrawal extends Create
             return;
         }
 
+        // If this withdrawal is associated with a line, check line limits before saving
+        if ($this->lineId) {
+            $line = \App\Models\Domain\Entities\Line::find($this->lineId);
+            if ($line) {
+                $monthStart = now()->startOfMonth();
+                $monthEnd = now()->endOfMonth();
+                $todayStart = now()->startOfDay();
+                $todayEnd = now()->endOfDay();
+                $monthlyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
+                    ->whereIn('transaction_type', ['Deposit', 'Receive'])
+                    ->whereBetween('transaction_date_time', [$monthStart, $monthEnd])
+                    ->sum('amount');
+                $monthlyLimit = $line->monthly_limit;
+                $startingBalance = $line->starting_balance ?? 0;
+                $maxAllowedMonthly = ($monthlyLimit !== null) ? ($monthlyLimit - $startingBalance) : null;
+                if ($maxAllowedMonthly !== null && ($monthlyReceived + $this->amount) > $maxAllowedMonthly) {
+                    $line->status = 'frozen';
+                    $line->save();
+                    session()->flash('error', 'Transaction exceeds the allowed monthly receive limit for this line. The line has been frozen until the start of next month.');
+                    return;
+                }
+                $dailyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
+                    ->whereIn('transaction_type', ['Deposit', 'Receive'])
+                    ->whereBetween('transaction_date_time', [$todayStart, $todayEnd])
+                    ->sum('amount');
+                $dailyLimit = $line->daily_limit;
+                $dailyStartingBalance = $line->daily_starting_balance ?? 0;
+                $maxAllowedDaily = ($dailyLimit !== null) ? ($dailyLimit - $dailyStartingBalance) : null;
+                if ($maxAllowedDaily !== null && ($dailyReceived + $this->amount) > $maxAllowedDaily) {
+                    $line->status = 'frozen';
+                    $line->save();
+                    session()->flash('error', 'Transaction exceeds the allowed daily receive limit for this line. The line has been frozen until the end of the day.');
+                    return;
+                }
+            }
+        }
+
         // Additional validation for client wallet withdrawals
         if ($this->withdrawalType === 'client_wallet') {
             if (!$this->clientId) {
@@ -251,7 +288,8 @@ class Withdrawal extends Create
                 $user = User::find($this->userId);
                 $customerName = $user?->name ?? '';
                 $agent = Auth::user();
-                $status = $agent->hasRole('admin') ? 'completed' : 'pending';
+                $isAdmin = $agent->hasRole('admin');
+                $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
@@ -267,7 +305,11 @@ class Withdrawal extends Create
                     'reference_number' => $referenceNumber,
                 ]);
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                if ($isAdmin) {
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                } else {
+                    return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
+                }
                 return;
             }
             if ($this->withdrawalType === 'client_wallet') {
@@ -294,71 +336,41 @@ class Withdrawal extends Create
                 $isClient = true;
                 $notes = $this->notes . ' | Withdrawal to: ' . $this->withdrawalToName;
                 $user = $agent;
-                if ($user->hasRole('admin')) {
-                    // Admin: complete immediately and update balances
-                    $safe = \App\Models\Domain\Entities\Safe::find($safeId);
-                    $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
-                    $referenceNumber = generate_reference_number($branchName);
-                    $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
-                        'customer_name' => $customerName,
-                        'customer_code' => $customerCode,
-                        'amount' => abs($this->amount),
-                        'notes' => $notes,
-                        'safe_id' => $safeId,
-                        'transaction_type' => $transactionType,
-                        'status' => 'completed',
-                        'transaction_date_time' => now(),
-                        'depositor_national_id' => $this->withdrawalNationalId,
-                        'depositor_mobile_number' => $this->clientMobile,
-                        'agent_id' => $user->id,
-                        'reference_number' => $referenceNumber,
-                    ]);
-                    // Deduct from client wallet
-                    $client->balance -= abs($this->amount);
-                    $client->save();
-                    // Deduct from safe
-                    $safe = \App\Models\Domain\Entities\Safe::find($safeId);
-                    if ($safe) {
-                        $safe->current_balance -= abs($this->amount);
-                        $safe->save();
-                    }
-                    session()->flash('message', 'Client wallet withdrawal performed successfully!');
-                    $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
-                    return;
-                } else {
-                    // Non-admin: pending, do not update balances
-                    $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
-                        'customer_name' => $customerName,
-                        'customer_code' => $customerCode,
-                        'amount' => abs($this->amount),
-                        'notes' => $notes,
-                        'safe_id' => $safeId,
-                        'transaction_type' => $transactionType,
-                        'status' => 'pending',
-                        'transaction_date_time' => now(),
-                        'depositor_national_id' => $this->withdrawalNationalId,
-                        'agent_id' => $user->id,
-                    ]);
-                    session()->flash('message', 'Client wallet withdrawal submitted for admin approval!');
-                    $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                    return redirect()->route('transactions.cash.withdrawal');
-                }
-            }
-            if ($this->withdrawalType === 'direct') {
-                // Check if safe has sufficient balance
-                $safe = Safe::find($safeId);
-                if (!$safe || $safe->current_balance < $this->amount) {
-                    session()->flash('error', 'Insufficient balance in the selected safe.');
-                    return;
-                }
-
-                $user = Auth::user();
-                $status = $user->hasRole('admin') ? 'completed' : 'pending';
+                $isAdmin = $user->hasRole('admin');
+                $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
-                $cashTx = Transaction::create([
+                $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
+                    'customer_name' => $customerName,
+                    'customer_code' => $customerCode,
+                    'amount' => abs($this->amount),
+                    'notes' => $notes,
+                    'safe_id' => $safeId,
+                    'transaction_type' => $transactionType,
+                    'status' => $status,
+                    'transaction_date_time' => now(),
+                    'depositor_national_id' => $this->withdrawalNationalId,
+                    'depositor_mobile_number' => $this->clientMobile,
+                    'agent_id' => $user->id,
+                    'reference_number' => $referenceNumber,
+                ]);
+                $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
+                if ($isAdmin) {
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                } else {
+                    return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
+                }
+                return;
+            }
+            if ($this->withdrawalType === 'direct') {
+                $user = Auth::user();
+                $isAdmin = $user->hasRole('admin');
+                $status = $isAdmin ? 'completed' : 'pending';
+                $safe = \App\Models\Domain\Entities\Safe::find($safeId);
+                $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
+                $referenceNumber = generate_reference_number($branchName);
+                $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
                     'customer_name' => $customerName,
                     'amount' => abs($this->amount),
                     'notes' => $this->notes,
@@ -369,19 +381,19 @@ class Withdrawal extends Create
                     'agent_id' => $user->id,
                     'reference_number' => $referenceNumber,
                 ]);
-                if ($user->hasRole('admin')) {
-                    $safe->current_balance -= abs($this->amount);
-                    $safe->save();
-                }
-                session()->flash('message', $status === 'completed' ? 'Withdrawal performed successfully!' : 'Withdrawal submitted for admin approval!');
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                if ($isAdmin) {
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                } else {
+                    return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
+                }
                 return;
             }
 
             if ($this->withdrawalType === 'admin') {
                 $user = Auth::user();
-                $status = $user->hasRole('admin') ? 'completed' : 'pending';
+                $isAdmin = $user->hasRole('admin');
+                $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
@@ -396,16 +408,12 @@ class Withdrawal extends Create
                     'agent_id' => $user->id,
                     'reference_number' => $referenceNumber,
                 ]);
-                if ($user->hasRole('admin')) {
-                    $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
-                    if ($safe) {
-                        $safe->current_balance -= abs($this->amount);
-                        $safe->save();
-                    }
-                }
-                session()->flash('message', $status === 'completed' ? 'Admin withdrawal performed successfully!' : 'Admin withdrawal submitted for approval!');
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                if ($isAdmin) {
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                } else {
+                    return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
+                }
                 return;
             }
 
@@ -436,7 +444,7 @@ class Withdrawal extends Create
                 \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, url()->current()));
                 session()->flash('message', 'Branch withdrawal submitted for admin approval!');
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                return redirect()->route('transactions.cash.withdrawal');
+                return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
             }
 
             if ($this->withdrawalType === 'expense') {
@@ -479,7 +487,7 @@ class Withdrawal extends Create
 
                 session()->flash('message', 'Expense withdrawal request submitted for admin approval!');
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId', 'selectedExpenseItem', 'customExpenseItem']);
-                return redirect()->route('transactions.cash.withdrawal');
+                return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
             }
 
             $this->createTransactionUseCase->execute(

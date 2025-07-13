@@ -37,6 +37,48 @@ class ApproveTransaction
 
         $this->transactionRepository->save($transaction);
 
+        // Apply balance changes for all transaction types on approval
+        if (in_array($transaction->transaction_type, ['Transfer', 'Withdrawal', 'Deposit', 'Receive'])) {
+            $line = $transaction->line_id ? $this->lineRepository->findById($transaction->line_id) : null;
+            $safe = $transaction->safe_id ? $this->safeRepository->findById($transaction->safe_id) : null;
+            $amount = $transaction->amount;
+            $commission = $transaction->commission ?? 0;
+            $deduction = $transaction->deduction ?? 0;
+            $paymentMethod = $transaction->payment_method ?? null;
+
+            if ($transaction->transaction_type === 'Transfer') {
+                if ($line) {
+                    $this->lineRepository->update($line->id, [
+                        'current_balance' => $line->current_balance - $amount
+                    ]);
+                }
+            } elseif ($transaction->transaction_type === 'Withdrawal') {
+                if ($safe) {
+                    $this->safeRepository->update($safe->id, [
+                        'current_balance' => $safe->current_balance - $amount
+                    ]);
+                }
+                if ($line) {
+                    $this->lineRepository->update($line->id, [
+                        'current_balance' => $line->current_balance - $amount
+                    ]);
+                }
+            } elseif ($transaction->transaction_type === 'Deposit' || $transaction->transaction_type === 'Receive') {
+                if ($line) {
+                    $this->lineRepository->update($line->id, [
+                        'current_balance' => $line->current_balance + $amount,
+                        'daily_usage' => ($line->daily_usage ?? 0) + $amount,
+                        'monthly_usage' => ($line->monthly_usage ?? 0) + $amount,
+                    ]);
+                }
+                if ($safe) {
+                    $this->safeRepository->update($safe->id, [
+                        'current_balance' => $safe->current_balance - ($amount - $commission)
+                    ]);
+                }
+            }
+        }
+
         if ($transaction->transaction_type === 'Safe Transfer' && $transaction->destination_safe_id) {
             $destinationSafe = $this->safeRepository->findById($transaction->destination_safe_id);
             if (!$destinationSafe) {

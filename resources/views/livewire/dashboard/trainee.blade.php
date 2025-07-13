@@ -1,5 +1,11 @@
 <div>
-    <h3 class="text-2xl font-bold text-gray-900 mb-6">Trainee Dashboard Overview</h3>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Trainee Dashboard Overview</h2>
+    @if(isset($totalSafeBalance))
+        <div class="text-lg text-gray-700 mb-1">Total Safe Balance: <span class="font-bold">{{ number_format($totalSafeBalance, 2) }} EGP</span></div>
+    @endif
+    @if(isset($branchSafeBalance))
+        <div class="text-lg text-gray-700 mb-4">Branch Safe Balance: <span class="font-bold">{{ number_format($branchSafeBalance, 2) }} EGP</span></div>
+    @endif
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Your Total Line Balance -->

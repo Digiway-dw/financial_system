@@ -55,6 +55,11 @@ class Dashboard extends Component
         $data = [];
         $dashboardView = 'livewire.dashboard.trainee'; // Default to trainee dashboard
 
+        // Always set branchSafeBalance for the user's branch
+        $userBranch = $user->branch;
+        $branchSafes = collect($this->safeRepository->all())->where('branch_id', $userBranch->id ?? null);
+        $data['branchSafeBalance'] = $branchSafes->sum('current_balance');
+
         if ($user->hasRole('admin') && request()->query('as_agent')) {
             // Admin as agent dashboard: show lines filtered by selected branches
             $allBranches = collect($this->branchRepository->all());
@@ -80,17 +85,22 @@ class Dashboard extends Component
             $data['totalSafes'] = count($this->safeRepository->all());
             $data['totalCustomers'] = \App\Models\Domain\Entities\Customer::count();
             $data['totalTransactions'] = count($this->transactionRepository->all());
+            $data['totalSafeBalance'] = collect($this->safeRepository->all())->sum('current_balance');
 
             $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);
             $data['totalTransferred'] = $allTransactions['totals']['total_transferred'];
             $data['netProfits'] = $allTransactions['totals']['net_profit'];
-            $data['pendingTransactionsCount'] = $this->transactionRepository->countAllPending();
+            // Count all transactions and cash transactions that require approval
+            $pendingTransactionsCount = \App\Models\Domain\Entities\Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
+            $pendingCashCount = \App\Models\Domain\Entities\CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
+            $data['pendingTransactionsCount'] = $pendingTransactionsCount + $pendingCashCount;
             $dashboardView = 'livewire.dashboard.admin';
         } elseif ($user->hasRole('general_supervisor')) {
             $data['pendingTransactionsCount'] = count($this->listPendingTransactionsUseCase->execute());
             $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);
             $data['totalTransferred'] = $allTransactions['totals']['total_transferred'];
             $data['netProfits'] = $allTransactions['totals']['net_profit'];
+            $data['totalSafeBalance'] = collect($this->safeRepository->all())->sum('current_balance');
             $dashboardView = 'livewire.dashboard.general_supervisor';
         } elseif ($user->hasRole('branch_manager')) {
             $userBranch = $user->branch;

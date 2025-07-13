@@ -238,24 +238,6 @@
                                             </svg>
                                             Edit
                                         </a>
-                                        <a href="{{ route('lines.transfer', $line['id']) }}"
-                                            class="inline-flex items-center px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 text-xs font-medium rounded-md transition-colors duration-150">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M7 16l-4-4m0 0l4-4m-4 4h18" />
-                                            </svg>
-                                            Transfer
-                                        </a>
-                                        <a href="{{ route('lines.change-provider', $line['id']) }}"
-                                            class="inline-flex items-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs font-medium rounded-md transition-colors duration-150">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                                            </svg>
-                                            Provider
-                                        </a>
                                         <button wire:click="toggleStatus('{{ $line['id'] }}')"
                                             class="inline-flex items-center px-3 py-1.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 text-xs font-medium rounded-md transition-colors duration-150">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"

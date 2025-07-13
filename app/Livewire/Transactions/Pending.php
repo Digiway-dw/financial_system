@@ -47,24 +47,24 @@ class Pending extends Component
         }
     }
 
-    public function loadPendingTransactions(?int $branchId = null)
+    public function loadPendingTransactions()
     {
-        $transactions = $this->listPendingTransactionsUseCase->execute($branchId);
-        // Eager load line relationship if it's a withdrawal and line_id exists
-        $pendingTransactions = array_map(function ($transaction) {
-            if ($transaction['transaction_type'] === 'withdrawal' && $transaction['line_id']) {
-                $transaction['line'] = $this->lineRepository->findById($transaction['line_id']);
-            }
-            // Add agent_name for transactions
-            if (isset($transaction['agent_id'])) {
-                $agent = \App\Domain\Entities\User::find($transaction['agent_id']);
-                $transaction['agent_name'] = $agent ? $agent->name : '';
-            }
-            $transaction['source'] = 'transactions';
-            return $transaction;
-        }, $transactions);
+        // Transactions that require approval: status 'Pending' and deduction > 0
+        $pendingTransactions = \App\Models\Domain\Entities\Transaction::where('status', 'Pending')
+            ->where('deduction', '>', 0)
+            ->get()
+            ->map(function ($tx) {
+                $arr = $tx->toArray();
+                $arr['source'] = 'transactions';
+                // Add agent_name for transactions
+                if (isset($arr['agent_id'])) {
+                    $agent = \App\Domain\Entities\User::find($arr['agent_id']);
+                    $arr['agent_name'] = $agent ? $agent->name : '';
+                }
+                return $arr;
+            })->toArray();
 
-        // Add pending withdrawals from cash_transactions (only pending status)
+        // Cash withdrawals that require approval: status 'pending' and type 'Withdrawal'
         $pendingCashWithdrawals = \App\Models\Domain\Entities\CashTransaction::where('status', 'pending')
             ->where('transaction_type', 'Withdrawal')
             ->get()
@@ -79,112 +79,93 @@ class Pending extends Component
                 return $arr;
             })->toArray();
 
-        // Filter out any non-pending transactions and merge
         $this->pendingTransactions = array_merge($pendingTransactions, $pendingCashWithdrawals);
     }
 
     public function approve($transactionId)
     {
-        // Try to approve both Transaction and CashTransaction
-        $transaction = \App\Models\Domain\Entities\Transaction::find($transactionId);
-        if ($transaction && $transaction->status === 'Pending') {
-            // Update status to completed
-            $transaction->status = 'completed';
-            $transaction->save();
-            // Update safe balance
-            $safe = \App\Models\Domain\Entities\Safe::find($transaction->safe_id);
-            if ($safe) {
-                $safe->current_balance -= $transaction->amount;
-                $safe->save();
+        // Find the transaction in the pending list to determine its source
+        $transaction = collect($this->pendingTransactions)->firstWhere('id', $transactionId);
+        $source = $transaction['source'] ?? null;
+
+        if ($source === 'transactions') {
+            // Approve regular transaction (with discount)
+            try {
+                $this->approveTransactionUseCase->execute($transactionId, Auth::user()->id);
+                session()->flash('message', 'Transaction approved and balances updated!');
+                $this->loadPendingTransactions();
+                $this->dispatch('$refresh');
+                return;
+            } catch (\Exception $e) {
+                session()->flash('error', 'Failed to approve transaction: ' . $e->getMessage());
+                return;
             }
-            session()->flash('message', 'Transaction approved successfully!');
-            $this->loadPendingTransactions();
-            $this->dispatch('$refresh');
-            return;
         }
-        
-        // Try CashTransaction (for withdrawals)
+
+        // Try CashTransaction (for withdrawals only - deposits don't need approval)
         $cashTransaction = \App\Models\Domain\Entities\CashTransaction::find($transactionId);
         if ($cashTransaction && $cashTransaction->status === 'pending' && $cashTransaction->transaction_type === 'Withdrawal') {
+            $safe = \App\Models\Domain\Entities\Safe::find($cashTransaction->safe_id);
+            $amount = abs($cashTransaction->amount);
+            
             // Branch withdrawal logic
             if ($cashTransaction->destination_branch_id && $cashTransaction->destination_safe_id) {
                 // Deduct from selected branch's safe (destination_safe_id)
                 $sourceSafe = \App\Models\Domain\Entities\Safe::find($cashTransaction->destination_safe_id);
                 if ($sourceSafe) {
-                    if (($sourceSafe->current_balance - abs($cashTransaction->amount)) < 0) {
-                        session()->flash('error', 'Insufficient balance in source branch safe. Available: ' . number_format($sourceSafe->current_balance, 2) . ' EGP, Required: ' . number_format(abs($cashTransaction->amount), 2) . ' EGP');
+                    if (($sourceSafe->current_balance - $amount) < 0) {
+                        session()->flash('error', 'Insufficient balance in source branch safe. Available: ' . number_format($sourceSafe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
                         return;
                     }
-                    $sourceSafe->current_balance -= abs($cashTransaction->amount);
+                    $sourceSafe->current_balance -= $amount;
                     $sourceSafe->save();
                 }
                 // Add to agent's branch safe (safe_id)
                 $destSafe = \App\Models\Domain\Entities\Safe::find($cashTransaction->safe_id);
                 if ($destSafe) {
-                    $destSafe->current_balance += abs($cashTransaction->amount);
+                    $destSafe->current_balance += $amount;
                     $destSafe->save();
                 }
-                $cashTransaction->status = 'completed';
-                $cashTransaction->save();
-                session()->flash('message', 'Branch withdrawal approved and balances updated!');
-                $this->loadPendingTransactions();
-                $this->dispatch('$refresh');
-                return;
-            }
-            
-            // Regular withdrawal logic
-            // Deduct from client wallet if applicable
-            if ($cashTransaction->customer_code) {
-                $client = \App\Models\Domain\Entities\Customer::where('customer_code', $cashTransaction->customer_code)->first();
-                if ($client) {
-                    if (($client->balance - abs($cashTransaction->amount)) < 0) {
-                        session()->flash('error', 'Insufficient client balance. Available: ' . number_format($client->balance, 2) . ' EGP, Required: ' . number_format(abs($cashTransaction->amount), 2) . ' EGP');
-                        return;
+            } else {
+                // Regular withdrawal logic
+                // Deduct from client wallet if applicable
+                if ($cashTransaction->customer_code) {
+                    $client = \App\Models\Domain\Entities\Customer::where('customer_code', $cashTransaction->customer_code)->first();
+                    if ($client) {
+                        if (($client->balance - $amount) < 0) {
+                            session()->flash('error', 'Insufficient client balance. Available: ' . number_format($client->balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                            return;
+                        }
+                        $client->balance -= $amount;
+                        $client->save();
                     }
-                    $client->balance -= abs($cashTransaction->amount);
-                    $client->save();
                 }
-            }
-            
-            // Check if this is an expense withdrawal (has destination_branch_id but no customer_code)
-            if ($cashTransaction->destination_branch_id && !$cashTransaction->customer_code && str_contains($cashTransaction->customer_name, 'Expense:')) {
-                // Expense withdrawal logic - deduct from safe
-                $safe = \App\Models\Domain\Entities\Safe::find($cashTransaction->safe_id);
-                if ($safe) {
-                    if (($safe->current_balance - abs($cashTransaction->amount)) < 0) {
-                        session()->flash('error', 'Insufficient safe balance for expense withdrawal. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format(abs($cashTransaction->amount), 2) . ' EGP');
-                        return;
+                // Expense withdrawal
+                if ($cashTransaction->destination_branch_id && !$cashTransaction->customer_code && str_contains($cashTransaction->customer_name, 'Expense:')) {
+                    if ($safe) {
+                        if (($safe->current_balance - $amount) < 0) {
+                            session()->flash('error', 'Insufficient safe balance for expense withdrawal. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                            return;
+                        }
+                        $safe->current_balance -= $amount;
+                        $safe->save();
                     }
-                    $safe->current_balance -= abs($cashTransaction->amount);
-                    $safe->save();
+                } else {
+                    // Deduct from safe for regular withdrawal
+                    if ($safe) {
+                        if (($safe->current_balance - $amount) < 0) {
+                            session()->flash('error', 'Insufficient safe balance. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                            return;
+                        }
+                        $safe->current_balance -= $amount;
+                        $safe->save();
+                    }
                 }
-                
-                // Update status to completed
-                $cashTransaction->status = 'completed';
-                $cashTransaction->save();
-                
-                session()->flash('message', 'Expense withdrawal approved and safe balance updated!');
-                $this->loadPendingTransactions();
-                $this->dispatch('$refresh');
-                return;
             }
-            
-            // Deduct from safe
-            $safe = \App\Models\Domain\Entities\Safe::find($cashTransaction->safe_id);
-            if ($safe) {
-                if (($safe->current_balance - abs($cashTransaction->amount)) < 0) {
-                    session()->flash('error', 'Insufficient safe balance. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format(abs($cashTransaction->amount), 2) . ' EGP');
-                    return;
-                }
-                $safe->current_balance -= abs($cashTransaction->amount);
-                $safe->save();
-            }
-            
             // Update status to completed
             $cashTransaction->status = 'completed';
             $cashTransaction->save();
-            
-            session()->flash('message', 'Withdrawal approved and balances updated!');
+            session()->flash('message', 'Cash withdrawal approved and balances updated!');
             $this->loadPendingTransactions();
             $this->dispatch('$refresh');
             return;
