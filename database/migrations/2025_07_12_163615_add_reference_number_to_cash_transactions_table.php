@@ -8,9 +8,11 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::table('cash_transactions', function (Blueprint $table) {
-            $table->string('reference_number')->unique()->nullable()->after('customer_code');
-        });
+        if (!Schema::hasColumn('cash_transactions', 'reference_number')) {
+            Schema::table('cash_transactions', function (Blueprint $table) {
+                $table->string('reference_number')->unique()->nullable()->after('customer_code');
+            });
+        }
     }
 
     public function down()
