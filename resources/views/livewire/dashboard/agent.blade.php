@@ -22,6 +22,18 @@
         </a>
     </div>
 @endif
+<div class="bg-blue-100 rounded-xl shadow p-4 mb-6 flex items-center justify-between" style="min-height: 60px;">
+    <div>
+        <h2 class="text-xl font-semibold text-blue-900 mb-1">Welcome Back, Agent User!</h2>
+        <p class="text-sm text-blue-700">You are logged in as <span class="font-bold">agent</span></p>
+    </div>
+    <div class="text-right">
+        <div class="bg-white rounded-lg px-4 py-2 shadow text-gray-700 text-sm">
+            Sunday, July 13, 2025<br>
+            <span class="text-xs text-gray-500">05:49:55 AM</span>
+        </div>
+    </div>
+</div>
 <h2 class="text-2xl font-bold text-gray-900 mb-6">Agent Dashboard Overview</h2>
 @if(isset($totalSafeBalance))
     <div class="text-lg text-gray-700 mb-1">Total Safe Balance: <span class="font-bold">{{ number_format($totalSafeBalance, 2) }} EGP</span></div>
@@ -29,7 +41,56 @@
 @if(isset($branchSafeBalance))
     <div class="text-lg text-gray-700 mb-4">Branch Safe Balance: <span class="font-bold">{{ number_format($branchSafeBalance, 2) }} EGP</span></div>
 @endif
-
+<div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
+    <div class="border-b border-gray-100 pb-4 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+            </div>
+            Quick Actions
+        </h2>
+        <p class="text-sm text-gray-500 mt-1">Create new transactions or access transaction tools</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a href="{{ route('transactions.send') }}" class="group flex items-center p-4 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-xl transition-all duration-200">
+            <div class="w-12 h-12 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+            </div>
+            <div>
+                <h3 class="font-semibold text-blue-900">Send Money</h3>
+                <p class="text-sm text-blue-700">Create outgoing transfer</p>
+            </div>
+        </a>
+        <a href="{{ route('transactions.receive') }}" class="group flex items-center p-4 bg-green-50 hover:bg-green-100 border border-green-100 rounded-xl transition-all duration-200">
+            <div class="w-12 h-12 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                </svg>
+            </div>
+            <div>
+                <h3 class="font-semibold text-green-900">Receive Money</h3>
+                <p class="text-sm text-green-700">Process incoming transfer</p>
+            </div>
+        </a>
+        @can('create-cash-transactions')
+            <a href="{{ route('transactions.cash') }}" class="group flex items-center p-4 bg-yellow-50 hover:bg-yellow-100 border border-yellow-100 rounded-xl transition-all duration-200">
+                <div class="w-12 h-12 bg-yellow-100 group-hover:bg-yellow-200 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-yellow-900">Cash Transaction</h3>
+                    <p class="text-sm text-yellow-700">Handle cash operations</p>
+                </div>
+            </a>
+        @endcan
+    </div>
+</div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Your Total Line Balance -->
         <a href="{{ route('lines.index') }}"
@@ -64,19 +125,7 @@
         </div>
 
         <!-- Your Pending Transactions -->
-        <a href="{{ route('transactions.pending') }}"
-            class="bg-gradient-to-br from-amber-500 to-yellow-600 rounded-lg shadow-xl p-6 transform hover:scale-105 transition duration-300 ease-in-out">
-            <div class="flex items-center space-x-4">
-                <div class="flex-shrink-0">
-                    <x-heroicon-o-document-magnifying-glass class="h-10 w-10 text-white" />
-                </div>
-                <div>
-                    <p class="text-white text-lg font-medium">Your Pending Transactions</p>
-                    <p class="text-white text-4xl font-extrabold mt-1">{{ $agentPendingTransactionsCount ?? 0 }}</p>
-                    <p class="text-white text-sm mt-1">Require attention</p>
-                </div>
-            </div>
-        </a>
+        {{-- Removed: Only admins should see pending transactions --}}
     </div>
 
     @if(isset($agentLines) && $agentLines->count())
@@ -115,43 +164,4 @@
         </div>
     @endif
 
-    <div class="mt-8 bg-white dark:bg-gray-800 p-6 shadow-xl sm:rounded-lg">
-        <div class="flex justify-between items-center mb-6">
-            <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100">Quick Actions</h4>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <a href="{{ route('transactions.send') }}"
-                class="flex items-center p-4 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800 rounded-lg transition-colors duration-200">
-                <div class="mr-4 bg-blue-100 dark:bg-blue-700 p-3 rounded-full">
-                    <x-heroicon-o-paper-airplane class="h-6 w-6 text-blue-600 dark:text-blue-300" />
-                </div>
-                <div>
-                    <h5 class="font-medium text-blue-900 dark:text-blue-100">Send Money</h5>
-                    <p class="text-sm text-blue-600 dark:text-blue-300">Create a new send transaction</p>
-                </div>
-            </a>
-
-            <a href="{{ route('transactions.receive') }}"
-                class="flex items-center p-4 bg-green-50 hover:bg-green-100 dark:bg-green-900 dark:hover:bg-green-800 rounded-lg transition-colors duration-200">
-                <div class="mr-4 bg-green-100 dark:bg-green-700 p-3 rounded-full">
-                    <x-heroicon-o-arrow-down-tray class="h-6 w-6 text-green-600 dark:text-green-300" />
-                </div>
-                <div>
-                    <h5 class="font-medium text-green-900 dark:text-green-100">Receive Money</h5>
-                    <p class="text-sm text-green-600 dark:text-green-300">Process incoming transfers</p>
-                </div>
-            </a>
-
-            <a href="{{ route('transactions.index') }}"
-                class="flex items-center p-4 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900 dark:hover:bg-purple-800 rounded-lg transition-colors duration-200">
-                <div class="mr-4 bg-purple-100 dark:bg-purple-700 p-3 rounded-full">
-                    <x-heroicon-o-list-bullet class="h-6 w-6 text-purple-600 dark:text-purple-300" />
-                </div>
-                <div>
-                    <h5 class="font-medium text-purple-900 dark:text-purple-100">Your Transactions</h5>
-                    <p class="text-sm text-purple-600 dark:text-purple-300">View all your transactions</p>
-                </div>
-            </a>
-        </div>
-    </div>
 </div>

@@ -39,18 +39,7 @@
         </div>
 
         <!-- Your Pending Transactions -->
-        <a href="{{ route('transactions.pending') }}"
-            class="bg-gradient-to-br from-amber-500 to-yellow-600 rounded-lg shadow-xl p-6 transform hover:scale-105 transition duration-300 ease-in-out">
-            <div class="flex items-center space-x-4">
-                <div class="flex-shrink-0">
-                    <x-heroicon-o-document-magnifying-glass class="h-10 w-10 text-white" />
-                </div>
-                <div>
-                    <p class="text-white text-lg font-medium">Your Pending Transactions</p>
-                    <p class="text-white text-4xl font-extrabold mt-1">{{ $agentPendingTransactionsCount ?? 0 }}</p>
-                </div>
-            </div>
-        </a>
+        {{-- Removed: Only admins should see pending transactions --}}
     </div>
 
     <!-- Quick Access Cards -->
