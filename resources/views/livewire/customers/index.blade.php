@@ -196,6 +196,7 @@
                                         </svg>
                                         View
                                     </a>
+                                    @can('update', App\Models\Domain\Entities\Customer::find($customer['id']))
                                     <a href="{{ route('customers.edit', $customer['id']) }}"
                                         class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg hover:bg-indigo-200 transition-colors duration-150">
                                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
@@ -205,15 +206,19 @@
                                         </svg>
                                         Edit
                                     </a>
-                                    <button type="button" wire:click="$set('customerToDelete', {{ $customer['id'] }})"
-                                        class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-xs font-medium rounded-lg hover:bg-red-200 transition-colors duration-150">
-                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        Delete
-                                    </button>
+                                    @endcan
+                                    @can('delete', App\Models\Domain\Entities\Customer::find($customer['id']))
+                                    <button type="button"
+    class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-xs font-medium rounded-lg hover:bg-red-200 transition-colors duration-150"
+    onclick="if(confirm('Are you sure you want to delete this customer?')) { @this.deleteCustomer('{{ $customer['id'] }}') }">
+    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M6 18L18 6M6 6l12 12" />
+    </svg>
+    Delete
+</button>
+@endcan
                                 </div>
                             </td>
                         </tr>

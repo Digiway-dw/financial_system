@@ -65,8 +65,8 @@ class CreateSafeToSafeTransfer
             throw new \Exception('Insufficient balance in source safe. Available: ' . number_format($sourceSafe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
         }
 
-        // Determine status - Only Admin can do unrestricted transfers, others need approval
-        $requiresApproval = !$initiator->hasRole(Roles::ADMIN);
+        // Determine status - Only Admin or General Supervisor can do unrestricted transfers, others need approval
+        $requiresApproval = !($initiator->hasRole(Roles::ADMIN) || $initiator->hasRole(Roles::GENERAL_SUPERVISOR));
         $status = $requiresApproval ? 'Pending' : 'Completed';
 
         // Generate unique reference number
@@ -89,7 +89,7 @@ class CreateSafeToSafeTransfer
 
         $createdTransaction = $this->transactionRepository->save($transaction);
 
-        // If Admin (unrestricted), update balances immediately
+        // If Admin or General Supervisor (unrestricted), update balances immediately
         if (!$requiresApproval) {
             // Validate balances before updating
             if (($sourceSafe->current_balance - $amount) < 0) {

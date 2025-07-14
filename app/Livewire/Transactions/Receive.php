@@ -158,7 +158,7 @@ class Receive extends Component
     private function loadAvailableLines()
     {
         $user = Auth::user();
-        if ($user->hasRole('admin') || $user->hasRole('supervisor')) {
+        if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
             $linesQuery = Line::where('status', 'active');
         } else {
             $linesQuery = Line::where('branch_id', $user->branch_id)->where('status', 'active');
@@ -218,52 +218,71 @@ class Receive extends Component
     {
         $this->validate();
 
-        // Pre-save line limit checks for receive transactions
+        // Lookup line and safe
         $line = Line::find($this->selectedLineId);
-        if ($line) {
-            $monthStart = now()->startOfMonth();
-            $monthEnd = now()->endOfMonth();
-            $todayStart = now()->startOfDay();
-            $todayEnd = now()->endOfDay();
-            $monthlyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
-                ->whereIn('transaction_type', ['Receive', 'Deposit'])
-                ->whereBetween('created_at', [$monthStart, $monthEnd])
-                ->sum('amount');
-            $dailyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
-                ->whereIn('transaction_type', ['Receive', 'Deposit'])
-                ->whereBetween('created_at', [$todayStart, $todayEnd])
-                ->sum('amount');
-            if ($monthlyReceived + $this->amount > $line->monthly_receive_limit) {
-                $exceededBy = ($monthlyReceived + $this->amount) - $line->monthly_receive_limit;
-                $this->errorMessage = "This transaction would exceed the line's monthly receive limit. Current monthly usage: {$monthlyReceived} EGP, Limit: {$line->monthly_receive_limit} EGP. You would exceed by: {$exceededBy} EGP.";
-                return;
-            }
-            if ($dailyReceived + $this->amount > $line->daily_receive_limit) {
-                $exceededBy = ($dailyReceived + $this->amount) - $line->daily_receive_limit;
-                $this->errorMessage = "This transaction would exceed the line's daily receive limit. Current daily usage: {$dailyReceived} EGP, Limit: {$line->daily_receive_limit} EGP. You would exceed by: {$exceededBy} EGP.";
-                return;
-            }
+        $safe = $line->branch->safe;
+        if (!$line || !$safe) {
+            $this->errorMessage = 'Line or Safe not found.';
+            return;
         }
 
+        // Limit checks
+        $monthStart = now()->startOfMonth();
+        $monthEnd = now()->endOfMonth();
+        $todayStart = now()->startOfDay();
+        $todayEnd = now()->endOfDay();
+        $monthlyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
+            ->whereIn('transaction_type', ['Receive', 'Deposit'])
+            ->whereBetween('created_at', [$monthStart, $monthEnd])
+            ->sum('amount');
+        $dailyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
+            ->whereIn('transaction_type', ['Receive', 'Deposit'])
+            ->whereBetween('created_at', [$todayStart, $todayEnd])
+            ->sum('amount');
+        if ($monthlyReceived + $this->amount > $line->monthly_limit) {
+            $exceededBy = ($monthlyReceived + $this->amount) - $line->monthly_limit;
+            $this->errorMessage = "This transaction would exceed the line's monthly receive limit. Current monthly usage: {$monthlyReceived} EGP, Limit: {$line->monthly_limit} EGP. You would exceed by: {$exceededBy} EGP.";
+            return;
+        }
+        if ($dailyReceived + $this->amount > $line->daily_limit) {
+            $exceededBy = ($dailyReceived + $this->amount) - $line->daily_limit;
+            $this->errorMessage = "This transaction would exceed the line's daily receive limit. Current daily usage: {$dailyReceived} EGP, Limit: {$line->daily_limit} EGP. You would exceed by: {$exceededBy} EGP.";
+            return;
+        }
+
+        // Transaction creation
         DB::beginTransaction();
         try {
-            $createdTransaction = $this->createTransactionUseCase->execute(
-                $this->customerName,
-                $this->customerMobileNumber,
-                $this->amount,
-                $this->selectedLineId,
-                $this->transactionType,
-                $this->deduction,
-                $this->notes,
-                $this->isAbsoluteWithdrawal
+            $createTransactionUseCase = app(\App\Application\UseCases\CreateTransaction::class);
+            $createdTransaction = $createTransactionUseCase->execute(
+                $this->clientName,                // customerName
+                $this->clientMobile,              // customerMobileNumber
+                $this->clientCode,                // customerCode
+                $this->amount,                    // amount
+                $this->commission,                // commission
+                $this->discount,                  // deduction
+                'Receive',                        // transactionType
+                auth()->id(),                     // agentId
+                $this->selectedLineId,            // lineId
+                $safe->id,                        // safeId
+                false,                            // isAbsoluteWithdrawal
+                'branch safe',                    // paymentMethod
+                $this->clientGender ?: 'Male',    // gender
+                true,                             // isClient
+                $this->senderMobile,              // receiverMobileNumber
+                $this->discountNotes,             // discountNotes
+                null                              // notes
             );
 
             // Only if transaction was created, proceed with notification and redirect
             if ($createdTransaction) {
-                if ($this->deduction > 0) {
+                if ($this->discount > 0) {
                     // Notify admin for approval
                     $this->notifyAdmin($createdTransaction);
                     DB::commit();
+                    if (auth()->user()->hasRole('general_supervisor')) {
+                        return redirect()->route('transactions.receipt', ['transaction' => $createdTransaction->id]);
+                    }
                     return redirect()->route('transactions.waiting-approval', ['transaction' => $createdTransaction->id]);
                 } else {
                     DB::commit();
@@ -276,7 +295,7 @@ class Receive extends Component
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', $e->getMessage());
+            $this->errorMessage = 'Exception: ' . $e->getMessage();
             return;
         }
     }

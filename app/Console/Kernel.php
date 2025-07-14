@@ -22,5 +22,8 @@ class Kernel extends ConsoleKernel
 
         // Run every minute to clean up stale sessions
         $schedule->command('sessions:cleanup')->everyMinute();
+
+        // Record startup safe balances at midnight
+        $schedule->command('safe:record-startup-balances')->dailyAt('00:00');
     }
 }

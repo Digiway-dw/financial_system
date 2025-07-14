@@ -26,9 +26,7 @@ class AuthorizationServiceProvider extends ServiceProvider
 
         // ===== SAFE MANAGEMENT =====
         Gate::define('manage-safes', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::BRANCH_MANAGER);
+            return $user->hasRole(Roles::ADMIN);
         });
 
         // ===== REPORTS =====
@@ -97,8 +95,7 @@ class AuthorizationServiceProvider extends ServiceProvider
 
         // ===== BRANCH MANAGEMENT =====
         Gate::define('manage-branches', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR);
+            return $user->hasRole(Roles::ADMIN);
         });
 
         // ===== USER MANAGEMENT =====
@@ -149,15 +146,13 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('edit-all-transactions', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::AUDITOR);
+                $user->hasRole(Roles::BRANCH_MANAGER);
         });
 
         Gate::define('edit-branch-transactions', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::AUDITOR);
+                $user->hasRole(Roles::BRANCH_MANAGER);
         });
 
         Gate::define('delete-transactions', function (DomainUser $user) {
@@ -318,9 +313,7 @@ class AuthorizationServiceProvider extends ServiceProvider
 
         // ===== WORK SESSIONS =====
         Gate::define('view-work-sessions', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::BRANCH_MANAGER);
+            return $user->hasRole(Roles::ADMIN);
         });
 
         // ===== PRINTING =====
@@ -340,6 +333,16 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('basic-search', function (DomainUser $user) {
             // Agent can only search by Transaction ID, Customer Phone, or Customer Code
             return true;
+        });
+
+        // ===== VIEW BRANCHES =====
+        Gate::define('view-branches', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN);
+        });
+
+        // ===== AUDIT LOG =====
+        Gate::define('view-audit-log', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN);
         });
     }
 }

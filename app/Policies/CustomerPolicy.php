@@ -16,8 +16,9 @@ class CustomerPolicy
      */
     public function viewAny(User $user): bool
     {
-        // Agents, Branch Managers, and Admins can view customer lists
-        return $user->hasRole(Roles::AGENT) ||
+        // Auditors, Agents, Branch Managers, and Admins can view customer lists
+        return $user->hasRole(Roles::AUDITOR) ||
+            $user->hasRole(Roles::AGENT) ||
             $user->hasRole(Roles::BRANCH_MANAGER) ||
             $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::GENERAL_SUPERVISOR);
@@ -28,9 +29,9 @@ class CustomerPolicy
      */
     public function view(User $user, Customer $customer): bool
     {
-        // Agents can view any customer
-        // This allows them to search for customers when creating transactions
-        return $user->hasRole(Roles::AGENT) ||
+        // Auditors, Agents, Branch Managers, and Admins can view any customer
+        return $user->hasRole(Roles::AUDITOR) ||
+            $user->hasRole(Roles::AGENT) ||
             $user->hasRole(Roles::BRANCH_MANAGER) ||
             $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::GENERAL_SUPERVISOR);
@@ -41,7 +42,7 @@ class CustomerPolicy
      */
     public function create(User $user): bool
     {
-        // Agents can create new customers
+        // Auditors cannot create customers
         return $user->hasRole(Roles::AGENT) ||
             $user->hasRole(Roles::BRANCH_MANAGER) ||
             $user->hasRole(Roles::ADMIN) ||
@@ -53,7 +54,7 @@ class CustomerPolicy
      */
     public function update(User $user, Customer $customer): bool
     {
-        // Agents can update any customer
+        // Auditors cannot update customers
         return $user->hasRole(Roles::AGENT) ||
             $user->hasRole(Roles::BRANCH_MANAGER) ||
             $user->hasRole(Roles::ADMIN) ||
@@ -65,8 +66,7 @@ class CustomerPolicy
      */
     public function delete(User $user, Customer $customer): bool
     {
-        // Only Admin and Branch Manager can delete customers
-        // Agents cannot delete customers to prevent fraud
+        // Auditors cannot delete customers
         return $user->hasRole(Roles::BRANCH_MANAGER) ||
             $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::GENERAL_SUPERVISOR);

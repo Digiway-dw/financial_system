@@ -1,19 +1,3 @@
-<?php
-
-use App\Livewire\Actions\Logout;
-use Livewire\Volt\Component;
-
-new class extends Component {
-    /**
-     * Log the current user out of the application.
-     */
-    public function logout(Logout $logout): void
-    {
-        $logout();
-
-        $this->redirect('/', navigate: true);
-    }
-}; ?>
 
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-200">
     <!-- Primary Navigation Menu -->
@@ -88,9 +72,11 @@ new class extends Component {
                     @endcan
 
                     @can('view-audit-log')
+                        @if (!auth()->user() || !auth()->user()->hasRole(\App\Constants\Roles::AUDITOR))
                         <x-nav-link :href="route('audit-log.index')" :active="request()->routeIs('audit-log.*')" wire:navigate>
                             {{ __('Audit Log') }}
                         </x-nav-link>
+                        @endif
                     @endcan
 
                     @role('admin')
@@ -149,11 +135,14 @@ new class extends Component {
                     </x-slot>
 
                     <x-slot name="content">
-                        <button wire:click="logout" class="w-full text-start">
-                            <x-dropdown-link>
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </button>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full text-start">
+                                <x-dropdown-link>
+                                    {{ __('Log Out') }}
+                                </x-dropdown-link>
+                            </button>
+                        </form>
                     </x-slot>
                 </x-dropdown>
             </div>
@@ -236,9 +225,11 @@ new class extends Component {
             @endcan
 
             @can('view-audit-log')
+                @if (!auth()->user() || !auth()->user()->hasRole(\App\Constants\Roles::AUDITOR))
                 <x-responsive-nav-link :href="route('audit-log.index')" :active="request()->routeIs('audit-log.*')" wire:navigate>
                     {{ __('Audit Log') }}
                 </x-responsive-nav-link>
+                @endif
             @endcan
 
             @role('admin')
@@ -260,11 +251,14 @@ new class extends Component {
             </div>
 
             <div class="mt-3 space-y-1">
-                <button wire:click="logout" class="w-full text-start">
-                    <x-responsive-nav-link>
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </button>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full text-start">
+                        <x-responsive-nav-link>
+                            {{ __('Log Out') }}
+                        </x-responsive-nav-link>
+                    </button>
+                </form>
             </div>
         </div>
     </div>

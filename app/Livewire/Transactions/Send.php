@@ -185,7 +185,7 @@ class Send extends Component
     private function loadAvailableLines()
     {
         $user = Auth::user();
-        if ($user->hasRole('admin') || $user->hasRole('supervisor')) {
+        if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
             $linesQuery = Line::where('status', 'active');
         } else {
             $linesQuery = Line::where('branch_id', $user->branch_id)->where('status', 'active');
@@ -331,6 +331,9 @@ class Send extends Component
                     // Redirect to waiting approval screen for transactions with discount
                     session()->flash('message', 'Transaction submitted for admin approval due to discount applied.');
                     $this->reset(['clientName', 'clientMobile', 'clientCode', 'clientGender', 'amount', 'commission', 'discount', 'discountNotes', 'selectedLineId', 'receiverMobile']);
+                    if (auth()->user()->hasRole('general_supervisor')) {
+                        return redirect()->route('transactions.receipt', ['transaction' => $transaction->id]);
+                    }
                     return redirect()->route('transactions.waiting-approval', ['transactionId' => $transaction->id]);
                 }
 

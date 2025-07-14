@@ -13,6 +13,8 @@ use App\Domain\Interfaces\CustomerRepository;
 use App\Application\UseCases\ListFilteredTransactions;
 use App\Application\UseCases\ListPendingTransactions;
 use App\Application\UseCases\ViewLineBalanceAndUsage;
+use Carbon\Carbon;
+use App\Models\StartupSafeBalance;
 
 class Dashboard extends Component
 {
@@ -25,6 +27,14 @@ class Dashboard extends Component
     private ListFilteredTransactions $listFilteredTransactionsUseCase;
     private ListPendingTransactions $listPendingTransactionsUseCase;
     private ViewLineBalanceAndUsage $viewLineBalanceAndUsageUseCase;
+
+    public $branches = [];
+    public $selectedBranchId = 'all';
+    public $startupSafeBalance = 0;
+    public $safesBalance = 0;
+    public $sendTransactionsCount = 0;
+    public $receiveTransactionsCount = 0;
+    public $totalTransactionsCount = 0;
 
     public function boot(
         SafeRepository $safeRepository,
@@ -47,6 +57,44 @@ class Dashboard extends Component
         $this->listFilteredTransactionsUseCase = $listFilteredTransactionsUseCase;
         $this->listPendingTransactionsUseCase = $listPendingTransactionsUseCase;
         $this->viewLineBalanceAndUsageUseCase = $viewLineBalanceAndUsageUseCase;
+    }
+
+    public function mount()
+    {
+        $this->branches = $this->branchRepository->all();
+        $this->selectedBranchId = request('branch', 'all');
+        $this->updateSupervisorMetrics();
+    }
+
+    private function updateSupervisorMetrics()
+    {
+        $today = Carbon::today();
+        $branchId = $this->selectedBranchId;
+
+        // Safes
+        $safes = collect($this->safeRepository->allWithBranch());
+        if ($branchId !== 'all') {
+            $safes = $safes->where('branch_id', $branchId);
+        }
+        $this->safesBalance = $safes->sum('current_balance');
+
+        // Startup Safe Balance (from table, not recalculated during the day)
+        $startup = StartupSafeBalance::where('branch_id', $branchId === 'all' ? null : $branchId)
+            ->where('date', $today->toDateString())
+            ->first();
+        $this->startupSafeBalance = $startup ? $startup->balance : 0;
+
+        // Total Transactions (ordinary + cash) for all dates (debugging)
+        $ordinaryQuery = \App\Models\Domain\Entities\Transaction::query();
+        $cashQuery = \App\Models\Domain\Entities\CashTransaction::query();
+        if ($branchId !== 'all') {
+            $ordinaryQuery->where('branch_id', $branchId);
+            $cashQuery->whereHas('safe', function ($q) use ($branchId) {
+                $q->where('branch_id', $branchId);
+            });
+        }
+        $this->totalTransactionsCount = $ordinaryQuery->count() + $cashQuery->count();
+        logger(['totalTransactionsCount' => $this->totalTransactionsCount]);
     }
 
     public function render()
@@ -96,11 +144,33 @@ class Dashboard extends Component
             $data['pendingTransactionsCount'] = $pendingTransactionsCount + $pendingCashCount;
             $dashboardView = 'livewire.dashboard.admin';
         } elseif ($user->hasRole('general_supervisor')) {
-            $data['pendingTransactionsCount'] = count($this->listPendingTransactionsUseCase->execute());
-            $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);
-            $data['totalTransferred'] = $allTransactions['totals']['total_transferred'];
-            $data['netProfits'] = $allTransactions['totals']['net_profit'];
+            // Supervisor dashboard metrics
+            $data['branches'] = $this->branches;
+            $data['selectedBranchId'] = $this->selectedBranchId;
+            $data['startupSafeBalance'] = $this->startupSafeBalance;
+            $data['safesBalance'] = $this->safesBalance;
+            $data['totalTransactionsCount'] = $this->totalTransactionsCount;
+            $data['supervisorName'] = $user->name;
+            if ($this->selectedBranchId !== 'all') {
+                $branch = $this->branches->first(function ($b) { return (string)$b->id === (string)$this->selectedBranchId; });
+                $data['selectedBranchDetails'] = $branch ? [
+                    'name' => $branch->name,
+                ] : null;
+            } else {
+                $data['selectedBranchDetails'] = null;
+            }
+            // Add all required metrics for dashboard cards
+            $data['totalBranches'] = count($this->branchRepository->all());
+            $data['totalSafes'] = count($this->safeRepository->all());
+            $data['totalLines'] = count($this->lineRepository->all());
+            $data['totalCustomers'] = \App\Models\Domain\Entities\Customer::count();
+            $data['totalTransactions'] = count($this->transactionRepository->all());
             $data['totalSafeBalance'] = collect($this->safeRepository->all())->sum('current_balance');
+            $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);
+            $data['totalTransferred'] = $allTransactions['totals']['total_transferred'] ?? 0;
+            $pendingTransactionsCount = \App\Models\Domain\Entities\Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
+            $pendingCashCount = \App\Models\Domain\Entities\CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
+            $data['pendingTransactionsCount'] = $pendingTransactionsCount + $pendingCashCount;
             $dashboardView = 'livewire.dashboard.general_supervisor';
         } elseif ($user->hasRole('branch_manager')) {
             $userBranch = $user->branch;
@@ -142,6 +212,23 @@ class Dashboard extends Component
             $data['agentTotalTransferred'] = $agentTransactions->sum('amount');
             $data['agentPendingTransactionsCount'] = $agentTransactions->where('status', 'Pending')->count();
             $dashboardView = 'livewire.dashboard.trainee';
+        } elseif ($user->hasRole('auditor')) {
+            // Auditor dashboard metrics (same as supervisor)
+            $data['branches'] = $this->branches;
+            $data['selectedBranchId'] = $this->selectedBranchId;
+            $data['startupSafeBalance'] = $this->startupSafeBalance;
+            $data['safesBalance'] = $this->safesBalance;
+            $data['totalTransactionsCount'] = $this->totalTransactionsCount;
+            $data['auditorName'] = $user->name;
+            if ($this->selectedBranchId !== 'all') {
+                $branch = $this->branches->first(function ($b) { return (string)$b->id === (string)$this->selectedBranchId; });
+                $data['selectedBranchDetails'] = $branch ? [
+                    'name' => $branch->name,
+                ] : null;
+            } else {
+                $data['selectedBranchDetails'] = null;
+            }
+            $dashboardView = 'livewire.dashboard.auditor';
         }
 
         return view($dashboardView, array_merge(['user' => $user], $data));

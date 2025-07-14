@@ -20,6 +20,8 @@
 
     <!-- Content Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        @php use App\Constants\Roles; @endphp
+        @if (!auth()->user() || !auth()->user()->hasRole(Roles::AUDITOR))
         <!-- Transaction Actions Section -->
         <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
             <div class="border-b border-gray-100 pb-4 mb-6">
@@ -71,6 +73,7 @@
                 @endcan
             </div>
         </div>
+        @endif
         <!-- Transaction Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white rounded-2xl shadow border border-gray-200 p-6">
@@ -311,15 +314,17 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['status'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d H:i') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="{{ route('transactions.edit', $transaction['id']) }}" class="text-blue-600 hover:text-blue-800 mr-3">
                                     @can('edit-all-transactions')
-                                        Edit
-                                    @elsecan('edit-own-transactions')
-                                        @if ($transaction['agent_id'] == auth()->id())
+                                        <a href="{{ route('transactions.edit', $transaction['id']) }}"
+                                            class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg hover:bg-indigo-200 transition-colors duration-150">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5h2m-1 0v14m-7-7h14" />
+                                            </svg>
                                             Edit
-                                        @endif
+                                        </a>
                                     @endcan
-                                </a>
                                 <a href="{{ route('transactions.receipt', $transaction['id']) }}" target="_blank" class="inline-block text-green-600 hover:text-green-800 mr-3" title="Print Receipt">
                                     <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-6 0v4m0 0h4m-4 0H8" />

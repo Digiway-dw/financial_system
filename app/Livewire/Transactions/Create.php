@@ -275,6 +275,10 @@ class Create extends Component
                 session()->flash('message', 'Transaction submitted for admin approval due to discount applied.');
                 $this->reset(['customerName', 'customerMobileNumber', 'lineMobileNumber', 'customerCode', 'amount', 'commission', 'deduction', 'transactionType', 'branchId', 'lineId', 'safeId', 'isAbsoluteWithdrawal', 'paymentMethod', 'gender', 'isClient']);
                 $this->calculateCommission();
+                if (auth()->user()->hasRole('general_supervisor')) {
+                    // General supervisor: go to receipt or index
+                    return redirect()->route('transactions.receipt', ['transaction' => $createdTransaction->id]);
+                }
                 return redirect()->route('transactions.waiting-approval', ['transactionId' => $createdTransaction->id]);
             }
 

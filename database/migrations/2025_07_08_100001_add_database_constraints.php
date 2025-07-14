@@ -80,27 +80,27 @@ return new class extends Migration
         }
 
         // Remove constraints in reverse order
-        DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS chk_transaction_amount_positive');
-        DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS chk_commission_non_negative');
-        DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS chk_deduction_non_negative');
-        DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS chk_transaction_type');
-        DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS chk_transaction_status');
+        try { DB::statement('ALTER TABLE transactions DROP CHECK chk_transaction_amount_positive'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE transactions DROP CHECK chk_commission_non_negative'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE transactions DROP CHECK chk_deduction_non_negative'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE transactions DROP CHECK chk_transaction_type'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE transactions DROP CHECK chk_transaction_status'); } catch (\Exception $e) {}
 
-        DB::statement('ALTER TABLE users DROP CONSTRAINT IF EXISTS chk_user_salary_positive');
-        DB::statement('ALTER TABLE users DROP CONSTRAINT IF EXISTS chk_national_number_format');
+        try { DB::statement('ALTER TABLE users DROP CHECK chk_user_salary_positive'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE users DROP CHECK chk_national_number_format'); } catch (\Exception $e) {}
 
-        DB::statement('ALTER TABLE customers DROP CONSTRAINT IF EXISTS chk_customer_balance_reasonable');
-        DB::statement('ALTER TABLE customers DROP CONSTRAINT IF EXISTS chk_customer_gender');
+        try { DB::statement('ALTER TABLE customers DROP CHECK chk_customer_balance_reasonable'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE customers DROP CHECK chk_customer_gender'); } catch (\Exception $e) {}
 
-        DB::statement('ALTER TABLE safes DROP CONSTRAINT IF EXISTS chk_safe_balance_reasonable');
-        DB::statement('ALTER TABLE safes DROP CONSTRAINT IF EXISTS chk_safe_type');
+        try { DB::statement('ALTER TABLE safes DROP CHECK chk_safe_balance_reasonable'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE safes DROP CHECK chk_safe_type'); } catch (\Exception $e) {}
 
-        DB::statement('ALTER TABLE `lines` DROP CONSTRAINT IF EXISTS chk_line_limits_positive');
-        DB::statement('ALTER TABLE `lines` DROP CONSTRAINT IF EXISTS chk_line_usage_non_negative');
-        DB::statement('ALTER TABLE `lines` DROP CONSTRAINT IF EXISTS chk_line_usage_within_limits');
-        DB::statement('ALTER TABLE `lines` DROP CONSTRAINT IF EXISTS chk_line_network');
-        DB::statement('ALTER TABLE `lines` DROP CONSTRAINT IF EXISTS chk_line_status');
+        try { DB::statement('ALTER TABLE `lines` DROP CHECK chk_line_limits_positive'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE `lines` DROP CHECK chk_line_usage_non_negative'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE `lines` DROP CHECK chk_line_usage_within_limits'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE `lines` DROP CHECK chk_line_network'); } catch (\Exception $e) {}
+        try { DB::statement('ALTER TABLE `lines` DROP CHECK chk_line_status'); } catch (\Exception $e) {}
 
-        DB::statement('ALTER TABLE branches DROP CONSTRAINT IF EXISTS chk_branch_code_format');
+        try { DB::statement('ALTER TABLE branches DROP CHECK chk_branch_code_format'); } catch (\Exception $e) {}
     }
 };

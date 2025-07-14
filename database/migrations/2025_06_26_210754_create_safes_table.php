@@ -26,6 +26,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Drop dependent tables first to avoid foreign key constraint errors
+        Schema::dropIfExists('daily_safe_balances');
         Schema::dropIfExists('safes');
     }
 };

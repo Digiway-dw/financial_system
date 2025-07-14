@@ -11,7 +11,11 @@ return new class extends Migration
     public function up(): void
     {
         // Drop the existing constraint
-        DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS chk_transaction_type');
+        try {
+            DB::statement('ALTER TABLE transactions DROP CHECK chk_transaction_type');
+        } catch (\Exception $e) {
+            // Ignore if constraint does not exist
+        }
 
         // Add the updated constraint with 'Receive' included
         DB::statement("ALTER TABLE transactions ADD CONSTRAINT chk_transaction_type CHECK (transaction_type IN ('Transfer', 'Withdrawal', 'Deposit', 'Adjustment', 'Receive'))");
@@ -23,7 +27,11 @@ return new class extends Migration
     public function down(): void
     {
         // Drop the updated constraint
-        DB::statement('ALTER TABLE transactions DROP CONSTRAINT IF EXISTS chk_transaction_type');
+        try {
+            DB::statement('ALTER TABLE transactions DROP CHECK chk_transaction_type');
+        } catch (\Exception $e) {
+            // Ignore if constraint does not exist
+        }
 
         // Restore the original constraint
         DB::statement("ALTER TABLE transactions ADD CONSTRAINT chk_transaction_type CHECK (transaction_type IN ('Transfer', 'Withdrawal', 'Deposit', 'Adjustment'))");

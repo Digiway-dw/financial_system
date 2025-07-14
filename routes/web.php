@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Livewire\Transactions\Receive;
+use App\Livewire\TestComponent;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -31,8 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('transactions.index');
     Route::get('transactions/send', \App\Livewire\Transactions\Send::class)
         ->name('transactions.send');
-    Route::get('transactions/receive', \App\Livewire\Transactions\Receive::class)
-        ->name('transactions.receive');
+    Route::get('transactions/receive', Receive::class)->name('transactions.receive');
     Route::get('transactions/cash', \App\Livewire\Transactions\Cash::class)
         ->name('transactions.cash');
     Route::get('transactions/cash/withdrawal', \App\Livewire\Transactions\Withdrawal::class)
@@ -136,6 +137,8 @@ Route::get('/test-icons', function () {
     return view('test-icons');
 })->name('test-icons');
 
+Route::get('/test-livewire', TestComponent::class);
+
 // Special route for user edit without middleware
 Route::get('direct-user-edit/{userId}', function ($userId) {
     return app()->call(\App\Livewire\Users\Edit::class, ['userId' => $userId]);
@@ -155,5 +158,12 @@ Route::post('test-user-update/{userId}', function ($userId) {
     $user->save();
     return redirect()->route('test-user-edit', ['userId' => $userId])->with('success', 'User updated successfully!');
 })->name('test-user-update');
+
+Route::post('logout', function () {
+    \Illuminate\Support\Facades\Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('login');
+})->name('logout');
 
 require __DIR__ . '/auth.php';
