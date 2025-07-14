@@ -40,6 +40,31 @@ class Branch extends Model
         return $this->hasOne(Safe::class);
     }
 
+    /**
+     * Get all safes for the branch.
+     */
+    public function safes(): HasMany
+    {
+        return $this->hasMany(Safe::class);
+    }
+
+    /**
+     * Get all transactions for the branch.
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(\App\Models\Domain\Entities\Transaction::class, 'branch_id', 'id');
+    }
+
+    /**
+     * Get today's startup safe balance for the branch.
+     */
+    public function startupSafeBalance()
+    {
+        return $this->hasOne(\App\Models\StartupSafeBalance::class, 'branch_id', 'id')
+            ->where('date', now()->toDateString());
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

@@ -1,37 +1,85 @@
 <div>
-    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Branch Manager Dashboard Overview - {{ $branchName ?? 'N/A' }}</h3>
+    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Branch Manager Dashboard Overview</h3>
+    <div class="flex items-center justify-end mb-2">
+        <span class="ml-2 text-base font-bold text-gray-900">{{ $branchName }}</span>
+        <span class="text-sm font-medium text-gray-700"> : الفرع</span>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Branch Safe Balance -->
-        <a href="{{ route('safes.index') }}" class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg shadow-xl p-6 transform hover:scale-105 transition duration-300 ease-in-out">
-            <div class="flex items-center space-x-4">
-                <div class="flex-shrink-0">
-                    <x-heroicon-o-banknotes class="h-10 w-10 text-white" />
-                </div>
-                <div>
-                    <p class="text-white text-lg font-medium">Branch Safe Balance</p>
-                    <p class="text-white text-4xl font-extrabold mt-1">{{ number_format($branchSafeBalance ?? 0, 2) }} EGP</p>
-                </div>
-            </div>
-        </a>
-
-        <!-- Branch Users -->
-        <a href="{{ route('users.index') }}" class="bg-gradient-to-br from-green-500 to-teal-600 rounded-lg shadow-xl p-6 transform hover:scale-105 transition duration-300 ease-in-out">
-            <div class="flex items-center space-x-4">
-                <div class="flex-shrink-0">
-                    <x-heroicon-o-users class="h-10 w-10 text-white" />
-                </div>
-                <div>
-                    <p class="text-white text-lg font-medium">Branch Users</p>
-                    <p class="text-white text-4xl font-extrabold mt-1">{{ $branchUsersCount ?? 0 }}</p>
-                </div>
-            </div>
-        </a>
     </div>
+    <!-- Remove branch selector and branch details section -->
+    <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
+        <thead>
+            <tr class="bg-gray-100 text-center">
+                <th class="px-4 py-2 border">رصيد افتتاحي</th>
+                <th class="px-4 py-2 border">عدد المعاملات</th>
+                <th class="px-4 py-2 border">الخزينة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="text-center">
+                <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($startupSafeBalance, 2) }}</td>
+                <td class="px-4 py-2 border text-purple-700 font-bold">{{ $totalTransactionsCount }}</td>
+                <td class="px-4 py-2 border font-bold">{{ number_format($safesBalance, 2) }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Quick Actions Section -->
+    <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
+        <div class="border-b border-gray-100 pb-4 mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                
+                <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                </div>
+                Quick Actions
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">Create new transactions or access transaction tools</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="{{ route('transactions.send') }}" class="group flex items-center p-4 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-xl transition-all duration-200">
+                <div class="w-12 h-12 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-blue-900">Send Money</h3>
+                    <p class="text-sm text-blue-700">Create outgoing transfer</p>
+                </div>
+            </a>
+            <a href="{{ route('transactions.receive') }}" class="group flex items-center p-4 bg-green-50 hover:bg-green-100 border border-green-100 rounded-xl transition-all duration-200">
+                <div class="w-12 h-12 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-green-900">Receive Money</h3>
+                    <p class="text-sm text-green-700">Process incoming transfer</p>
+                </div>
+            </a>
+            @can('create-cash-transactions')
+                <a href="{{ route('transactions.cash') }}" class="group flex items-center p-4 bg-yellow-50 hover:bg-yellow-100 border border-yellow-100 rounded-xl transition-all duration-200">
+                    <div class="w-12 h-12 bg-yellow-100 group-hover:bg-yellow-200 rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-yellow-900">Cash Transaction</h3>
+                        <p class="text-sm text-yellow-700">Handle cash operations</p>
+                    </div>
+                </a>
+            @endcan
+        </div>
+    </div>
+
+
 
     @if(isset($branchLines) && $branchLines->count())
         <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">
-            <h4 class="text-xl font-bold text-gray-900 mb-4">All Lines in This Branch</h4>
             <div class="mb-4">
                 <span class="text-lg font-semibold text-gray-700">Total Lines Balance: </span>
                 <span class="text-2xl font-bold text-blue-700">{{ number_format($branchLinesTotalBalance ?? 0, 2) }} EGP</span>

@@ -21,6 +21,9 @@
     <!-- Content Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         @php use App\Constants\Roles; @endphp
+        @php
+            $user = Auth::user();
+        @endphp
         @if (!auth()->user() || !auth()->user()->hasRole(Roles::AUDITOR))
         <!-- Transaction Actions Section -->
         <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
@@ -273,14 +276,16 @@
                             </svg>
                             Reset Filters
                         </button>
-                        <a href="{{ route('transactions.pending') }}"
-                            class="px-4 py-3 bg-orange-100 hover:bg-orange-200 text-orange-700 font-medium rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            Pending
-                        </a>
+                        @if($user->hasRole('admin') || $user->hasRole('general_supervisor'))
+                            <a href="{{ route('transactions.pending') }}"
+                                class="px-4 py-3 bg-orange-100 hover:bg-orange-200 text-orange-700 font-medium rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Pending
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>

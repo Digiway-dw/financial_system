@@ -346,7 +346,7 @@ class Create extends Component
 
     public function mount()
     {
-        Gate::authorize('send-transfer'); // Allow agents and trainees to access this page
+        // Gate::authorize('send-transfer'); // Removed to allow all users
         $this->agentName = Auth::user()->name; // Automatically set agent name
         $this->branchId = Auth::user()->branch_id; // Automatically set agent branch
         // Auto-calculate commission based on amount

@@ -56,7 +56,7 @@ class Create extends Component
             'selectedRole' => 'required|string|exists:roles,name',
             'branchId' => [
                 function ($attribute, $value, $fail) {
-                    if (!in_array($this->selectedRole, ['admin']) && empty($value)) {
+                    if (!in_array($this->selectedRole, ['admin', 'general_supervisor', 'auditor']) && empty($value)) {
                         $fail('Branch is required for this role.');
                     }
                 },

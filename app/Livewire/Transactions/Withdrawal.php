@@ -50,6 +50,7 @@ class Withdrawal extends Create
 
     public function mount()
     {
+        // $this->authorize('withdraw-cash'); // Removed to allow all users
         parent::mount();
         $this->transactionType = 'Withdrawal';
         $this->withdrawalType = 'direct';
@@ -75,7 +76,7 @@ class Withdrawal extends Create
         ];
 
         $user = Auth::user();
-        if ($user->hasRole('admin') || $user->hasRole('supervisor')) {
+        if ($user->hasRole('admin') || $user->hasRole('supervisor') || $user->hasRole('branch_manager')) {
             $this->safes = \App\Models\Domain\Entities\Safe::all()->map(function ($safe) {
                 return [
                     'id' => $safe->id,

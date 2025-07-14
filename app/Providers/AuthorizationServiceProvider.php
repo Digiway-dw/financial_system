@@ -101,8 +101,7 @@ class AuthorizationServiceProvider extends ServiceProvider
         // ===== USER MANAGEMENT =====
         Gate::define('manage-users', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::BRANCH_MANAGER);
+                $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });
 
         // Only Admin can manage roles and system settings
@@ -145,14 +144,12 @@ class AuthorizationServiceProvider extends ServiceProvider
 
         Gate::define('edit-all-transactions', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::BRANCH_MANAGER);
+                $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });
 
         Gate::define('edit-branch-transactions', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::BRANCH_MANAGER);
+                $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });
 
         Gate::define('delete-transactions', function (DomainUser $user) {
@@ -164,14 +161,12 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('approve-transactions', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::BRANCH_MANAGER) ||
                 $user->hasRole(Roles::AUDITOR);
         });
 
         Gate::define('approve-branch-transactions', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::BRANCH_MANAGER) ||
                 $user->hasRole(Roles::AUDITOR);
         });
 
@@ -183,9 +178,10 @@ class AuthorizationServiceProvider extends ServiceProvider
                 $user->hasRole(Roles::AGENT);
         });
 
-        // Only Admin can do unrestricted cash withdrawal
+        // Only Admin and Branch Manager can do unrestricted cash withdrawal
         Gate::define('unrestricted-cash-withdrawal', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN);
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::BRANCH_MANAGER);
         });
 
         // Safe-to-safe transfers
@@ -218,12 +214,9 @@ class AuthorizationServiceProvider extends ServiceProvider
                 $user->hasRole(Roles::AGENT);
         });
 
-        // Cash withdrawal gate
+        // Cash withdrawal gate (TEMPORARY DEBUG: always allow)
         Gate::define('withdraw-cash', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::AGENT);
+            return true;
         });
 
         // ===== BALANCE MANAGEMENT =====

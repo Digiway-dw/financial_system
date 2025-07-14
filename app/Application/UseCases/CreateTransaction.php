@@ -107,8 +107,8 @@ class CreateTransaction
         }
 
         // Determine transaction status based on agent role and if it's an absolute withdrawal
-        // Absolute withdrawals by Admin or General Supervisor do not require approval and are 'Completed'
-        if (($agent->hasRole('admin') || $agent->hasRole('general_supervisor')) && $isAbsoluteWithdrawal) {
+        // Absolute withdrawals by Admin, General Supervisor, or Branch Manager do not require approval and are 'Completed'
+        if (($agent->hasRole('admin') || $agent->hasRole('general_supervisor') || $agent->hasRole('branch_manager')) && $isAbsoluteWithdrawal) {
             $status = 'Completed';
         } elseif ($agent->hasRole('general_supervisor')) {
             // General supervisors: all transactions are completed immediately (no approval needed)

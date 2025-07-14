@@ -1,11 +1,33 @@
 <div>
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">General Supervisor Dashboard Overview</h2>
-    @if(isset($totalSafeBalance))
-        <div class="text-lg text-gray-700 mb-1">Total Safe Balance: <span class="font-bold">{{ number_format($totalSafeBalance, 2) }} EGP</span></div>
+    <!-- Admin and Supervisor Names -->
+    <div class="flex flex-col items-end mb-2 space-y-1">
+        <div class="flex items-center justify-end">
+            <span class="text-sm font-medium text-gray-700">المشرف العام</span>
+        </div>
+    </div>
+   
+    <!-- Branch Details -->
+    @if(isset($selectedBranchDetails) && $selectedBranchDetails)
+        <div class="mb-4 text-right">
+            <div class="text-base font-bold text-gray-800">{{ $selectedBranchDetails['name'] }}</div>
+        </div>
     @endif
-    @if(isset($branchSafeBalance))
-        <div class="text-lg text-gray-700 mb-4">Branch Safe Balance: <span class="font-bold">{{ number_format($branchSafeBalance, 2) }} EGP</span></div>
-    @endif
+    <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
+        <thead>
+            <tr class="bg-gray-100 text-center">
+                <th class="px-4 py-2 border">رصيد افتتاحي</th>
+                <th class="px-4 py-2 border">عدد المعاملات</th>
+                <th class="px-4 py-2 border">الخزينة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="text-center">
+                <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($startupSafeBalance, 2) }}</td>
+                <td class="px-4 py-2 border text-purple-700 font-bold">{{ $totalTransactionsCount }}</td>
+                <td class="px-4 py-2 border font-bold">{{ number_format($safesBalance, 2) }}</td>
+            </tr>
+        </tbody>
+    </table>
     <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
         <div class="border-b border-gray-100 pb-4 mb-6">
             <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -56,6 +78,8 @@
             @endcan
         </div>
     </div>
+
+    
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <!-- Total Branches (number only) -->
