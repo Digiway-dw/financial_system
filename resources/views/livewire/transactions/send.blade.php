@@ -267,6 +267,24 @@
                         Line Selection & Payment
                     </h2>
 
+                    <!-- Branch Selection (for admin/supervisor only) -->
+                    @if ($canSelectBranch)
+                        <div class="mb-6">
+                            <label for="selectedBranchId" class="block text-sm font-medium text-gray-700 mb-2">
+                                Select Branch <span class="text-red-500">*</span>
+                            </label>
+                            <select wire:model.live="selectedBranchId" id="selectedBranchId"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200">
+                                <option value="">Select a branch...</option>
+                                @foreach ($availableBranches as $branch)
+                                    <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-sm text-gray-500">Select the branch from which this transaction will be
+                                performed.</p>
+                        </div>
+                    @endif
+
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Available Lines -->
                         <div>

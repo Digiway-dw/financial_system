@@ -51,6 +51,11 @@ class Receive extends Component
 
     public $availableLines = [];
 
+    // Branch Selection (for admin/supervisor)
+    public $selectedBranchId = '';
+    public $availableBranches = [];
+    public $canSelectBranch = false;
+
     // UI State
     public $clientSuggestions = [];
     public $safeBalanceWarning = '';
@@ -71,6 +76,7 @@ class Receive extends Component
 
     public function mount()
     {
+        $this->initializeBranchSelection();
         $this->loadAvailableLines();
     }
 
@@ -93,6 +99,13 @@ class Receive extends Component
 
     public function updatedSelectedLineId()
     {
+        $this->checkSafeBalance();
+    }
+
+    public function updatedSelectedBranchId()
+    {
+        $this->loadAvailableLines();
+        $this->selectedLineId = ''; // Reset line selection when branch changes
         $this->checkSafeBalance();
     }
 
@@ -155,11 +168,36 @@ class Receive extends Component
         $this->commission = max(0, $baseCommission - $discount);
     }
 
+    private function initializeBranchSelection()
+    {
+        $user = Auth::user();
+
+        // Check if user can select branches (admin or supervisor)
+        if ($user && ($user->hasRole('admin') || $user->hasRole('general_supervisor'))) {
+            $this->canSelectBranch = true;
+            $this->availableBranches = \App\Models\Domain\Entities\Branch::orderBy('name')->get(['id', 'name'])->toArray();
+            // Set current user's branch as default
+            $this->selectedBranchId = $user->branch_id;
+        } else {
+            $this->canSelectBranch = false;
+            $this->selectedBranchId = $user->branch_id ?? '';
+        }
+    }
+
     private function loadAvailableLines()
     {
         $user = Auth::user();
+
+        // Use selected branch if user can select branches, otherwise use user's branch
+        $branchId = $this->canSelectBranch && $this->selectedBranchId ? $this->selectedBranchId : $user->branch_id;
+
         if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
-            $linesQuery = Line::where('status', 'active');
+            // If branch is selected, filter by that branch, otherwise show all
+            if ($this->selectedBranchId) {
+                $linesQuery = Line::where('branch_id', $branchId)->where('status', 'active');
+            } else {
+                $linesQuery = Line::where('status', 'active');
+            }
         } else {
             $linesQuery = Line::where('branch_id', $user->branch_id)->where('status', 'active');
         }
