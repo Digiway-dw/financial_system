@@ -94,6 +94,7 @@ class Edit extends Component
             );
 
             session()->flash('message', 'Line updated successfully.');
+            return redirect()->route('lines.index');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update line: ' . $e->getMessage());
         }

@@ -20,9 +20,11 @@
 
     <!-- Content Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        @php use App\Constants\Roles; @endphp
         @php
+            use App\Constants\Roles;
             $user = Auth::user();
+            $hideEmployeeFilter = $user->hasRole(Roles::BRANCH_MANAGER) || $user->hasRole(Roles::AGENT) || $user->hasRole(Roles::TRAINEE);
+            $hideBranchFilter = $user->hasRole(Roles::BRANCH_MANAGER) || $user->hasRole(Roles::AGENT) || $user->hasRole(Roles::TRAINEE);
         @endphp
         @if (!auth()->user() || !auth()->user()->hasRole(Roles::AUDITOR))
         <!-- Transaction Actions Section -->
@@ -226,6 +228,7 @@
                 </div>
 
                 <!-- Branch Filter -->
+                @if(!$hideBranchFilter)
                 <div class="space-y-2">
                     <label for="branch_ids" class="block text-sm font-medium text-gray-700">Branches</label>
                     <select wire:model.defer="branch_ids" id="branch_ids" multiple
@@ -239,8 +242,16 @@
                         <p class="text-xs text-gray-500 mt-1">You can only view data from your assigned branch.</p>
                     @endcannot
                 </div>
+                @else
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Branch</label>
+                    <div class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100 text-gray-700">{{ $user->branch->name ?? 'N/A' }}</div>
+                    <p class="text-xs text-gray-500 mt-1">You can only view data from your assigned branch.</p>
+                </div>
+                @endif
 
-                <!-- Employee Filter -->
+                <!-- Employee Filter (conditionally hidden) -->
+                @if(!$hideEmployeeFilter)
                 <div class="space-y-2">
                     <label for="employee_ids" class="block text-sm font-medium text-gray-700">Employees</label>
                     <select wire:model.defer="employee_ids" id="employee_ids" multiple
@@ -254,6 +265,13 @@
                     @cannot('view-other-employees-data')
                         <p class="text-xs text-gray-500 mt-1">You can only view your own transactions.</p>
                     @endcannot
+                </div>
+                @endif
+
+                <!-- Reference Number -->
+                <div class="space-y-2">
+                    <label for="reference_number" class="block text-sm font-medium text-gray-700">Reference Number</label>
+                    <input wire:model.defer="reference_number" id="reference_number" type="text" placeholder="Enter reference number..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 bg-white" />
                 </div>
 
                 <!-- Filter Actions -->
@@ -302,22 +320,22 @@
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Commission</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Agent</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reference Number</th>
                             <th class="px-6 py-3 bg-gray-50">Actions</th>
                     </tr>
                 </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($transactions as $transaction)
-                            <tr class="hover:bg-gray-50 transition-colors">
+                            <tr class="hover:bg-gray-50 transition-colors @if(strtolower($transaction['status']) === 'pending') bg-yellow-100 @endif">
                                 <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ $transaction['customer_name'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['customer_mobile_number'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ number_format($transaction['amount'], 2) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ number_format($transaction['commission'], 2) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['status'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d H:i') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['reference_number'] ?? '' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @can('edit-all-transactions')
                                         <a href="{{ route('transactions.edit', $transaction['id']) }}"

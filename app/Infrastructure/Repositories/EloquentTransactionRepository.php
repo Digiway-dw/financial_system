@@ -217,6 +217,9 @@ class EloquentTransactionRepository implements TransactionRepository
                 $q->whereIn('branch_id', $filters['branch_ids']);
             });
         }
+        if (isset($filters['reference_number']) && $filters['reference_number']) {
+            $ordinary->where('reference_number', 'like', '%' . $filters['reference_number'] . '%');
+        }
         $ordinaryTxs = $ordinary->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
             $arr = $transaction->toArray();
             $arr['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
@@ -250,6 +253,9 @@ class EloquentTransactionRepository implements TransactionRepository
         }
         if (isset($filters['employee_ids']) && is_array($filters['employee_ids']) && count($filters['employee_ids']) > 0) {
             $cash->whereIn('agent_id', $filters['employee_ids']);
+        }
+        if (isset($filters['reference_number']) && $filters['reference_number']) {
+            $cash->where('reference_number', 'like', '%' . $filters['reference_number'] . '%');
         }
         $cashTxs = $cash->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
             return [

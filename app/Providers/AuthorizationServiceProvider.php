@@ -70,7 +70,17 @@ class AuthorizationServiceProvider extends ServiceProvider
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
                 $user->hasRole(Roles::AGENT) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR);
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::TRAINEE);
+        });
+
+        // ===== LINES VIEWING =====
+        Gate::define('view-lines', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::BRANCH_MANAGER) ||
+                $user->hasRole(Roles::AGENT) ||
+                $user->hasRole(Roles::TRAINEE);
         });
 
         Gate::define('create-customers', function (DomainUser $user) {
@@ -175,7 +185,8 @@ class AuthorizationServiceProvider extends ServiceProvider
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::AGENT);
+                $user->hasRole(Roles::AGENT) ||
+                $user->hasRole(Roles::TRAINEE);
         });
 
         // Only Admin and Branch Manager can do unrestricted cash withdrawal
@@ -189,7 +200,8 @@ class AuthorizationServiceProvider extends ServiceProvider
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::AGENT);
+                $user->hasRole(Roles::AGENT) ||
+                $user->hasRole(Roles::TRAINEE);
         });
 
         Gate::define('approve-safe-transfer', function (DomainUser $user) {
@@ -203,7 +215,8 @@ class AuthorizationServiceProvider extends ServiceProvider
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::AGENT);
+                $user->hasRole(Roles::AGENT) ||
+                $user->hasRole(Roles::TRAINEE);
         });
 
         // Direct cash deposit (no approval needed)
@@ -211,7 +224,8 @@ class AuthorizationServiceProvider extends ServiceProvider
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::AGENT);
+                $user->hasRole(Roles::AGENT) ||
+                $user->hasRole(Roles::TRAINEE);
         });
 
         // Cash withdrawal gate (TEMPORARY DEBUG: always allow)

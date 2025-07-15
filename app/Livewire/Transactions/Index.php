@@ -21,6 +21,7 @@ class Index extends Component
     public $end_date;
     public $employee_ids = [];
     public $branch_ids = [];
+    public $reference_number;
 
     private ListTransactions $listTransactionsUseCase;
     private DeleteTransaction $deleteTransactionUseCase;
@@ -50,6 +51,7 @@ class Index extends Component
             'end_date' => $this->end_date,
             'employee_ids' => $this->employee_ids,
             'branch_ids' => $this->branch_ids,
+            'reference_number' => $this->reference_number,
         ];
         $this->transactions = $this->listTransactionsUseCase->execute($filters);
     }

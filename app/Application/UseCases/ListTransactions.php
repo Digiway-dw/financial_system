@@ -31,23 +31,16 @@ class ListTransactions
             return $result['transactions'] ?? [];
         }
 
-        // Branch Managers can only see transactions from their branch
-        elseif (Gate::forUser($user)->allows('view-own-branch-data')) {
+        // Branch Managers and Agents can see all transactions for their assigned branch
+        elseif (Gate::forUser($user)->allows('view-own-branch-data') || Gate::forUser($user)->allows('view-agent-dashboard')) {
             $filters['branch_id'] = $user->branch_id;
             $result = $this->transactionRepository->allUnified($filters);
             return $result['transactions'] ?? [];
         }
 
-        // Agents can only see their own transactions
-        elseif (Gate::forUser($user)->allows('view-agent-dashboard')) {
-            $filters['agent_id'] = $user->id;
-            $result = $this->transactionRepository->allUnified($filters);
-            return $result['transactions'] ?? [];
-        }
-
-        // Trainees can only see their own transactions (similar to agents)
+        // Trainees can see all transactions for their assigned branch
         elseif (Gate::forUser($user)->allows('view-trainee-dashboard')) {
-            $filters['agent_id'] = $user->id;
+            $filters['branch_id'] = $user->branch_id;
             $result = $this->transactionRepository->allUnified($filters);
             return $result['transactions'] ?? [];
         }

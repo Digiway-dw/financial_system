@@ -78,4 +78,14 @@ class TraineePolicy
             $user->hasRole(Roles::BRANCH_MANAGER) ||
             $user->hasRole(Roles::AUDITOR);
     }
+
+    // Add these methods to explicitly deny line update/delete for trainees
+    public function updateLine(User $user, \App\Models\Domain\Entities\Line $line): bool
+    {
+        return false;
+    }
+    public function deleteLine(User $user, \App\Models\Domain\Entities\Line $line): bool
+    {
+        return false;
+    }
 }

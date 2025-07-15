@@ -329,23 +329,19 @@ class Send extends Component
                     Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
                     
                     // Redirect to waiting approval screen for transactions with discount
-                    session()->flash('message', 'Transaction submitted for admin approval due to discount applied.');
-                    $this->reset(['clientName', 'clientMobile', 'clientCode', 'clientGender', 'amount', 'commission', 'discount', 'discountNotes', 'selectedLineId', 'receiverMobile']);
+                    $this->successMessage = 'Transaction submitted for admin approval due to discount applied.';
+                    $this->resetForm();
                     if (auth()->user()->hasRole('general_supervisor')) {
                         return redirect()->route('transactions.receipt', ['transaction' => $transaction->id]);
                     }
                     return redirect()->route('transactions.waiting-approval', ['transactionId' => $transaction->id]);
                 }
 
-                // Display receipt for completed transactions (no discount)
-                // $this->completedTransaction = $transaction; // This line was removed as per the new_code
-                // $this->showReceiptModal = true; // This line was removed as per the new_code
-
                 // Print receipt
                 app(\App\Services\ReceiptPrinterService::class)->printReceipt($transaction, 'html');
 
-                session()->flash('message', 'Send transaction completed successfully.');
-                $this->reset(['clientName', 'clientMobile', 'clientCode', 'clientGender', 'amount', 'commission', 'discount', 'discountNotes', 'selectedLineId', 'receiverMobile']);
+                // Redirect to receipt page after successful transaction
+                return redirect()->route('transactions.receipt', ['transaction' => $transaction->id]);
             });
         } catch (\Exception $e) {
             $this->errorMessage = 'Failed to create transaction: ' . $e->getMessage();

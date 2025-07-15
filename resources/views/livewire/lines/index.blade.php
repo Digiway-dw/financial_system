@@ -229,6 +229,8 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end space-x-2">
+                                        @php $isAgentOrTrainee = auth()->user()->hasRole('agent') || auth()->user()->hasRole('trainee'); @endphp
+                                        @unless($isAgentOrTrainee)
                                         <a href="{{ route('lines.edit', $line['id']) }}"
                                             class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-md transition-colors duration-150">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
@@ -256,6 +258,7 @@
                                             </svg>
                                             Delete
                                         </button>
+                                        @endunless
                                     </div>
                                 </td>
                             </tr>

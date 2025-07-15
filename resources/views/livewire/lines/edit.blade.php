@@ -33,7 +33,7 @@
         <!-- Network -->
         <div>
             <x-input-label for="network" :value="__('Network')" />
-            <select wire:model="network" id="network" name="network" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
+            <select wire:model="network" id="network" name="network" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                 <option value="Vodafone">Vodafone</option>
                 <option value="Orange">Orange</option>
                 <option value="Etisalat">Etisalat</option>
@@ -45,7 +45,7 @@
         <!-- Status -->
         <div>
             <x-input-label for="status" :value="__('Status')" />
-            <select wire:model="status" id="status" name="status" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
+            <select wire:model="status" id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
             </select>
@@ -55,7 +55,7 @@
         <!-- Assigned Branch -->
         <div>
             <x-input-label for="branchId" :value="__('Assigned Branch')" />
-            <select wire:model="branchId" id="branchId" name="branchId" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
+            <select wire:model="branchId" id="branchId" name="branchId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                 <option value="">Select Branch</option>
                 @foreach ($branches as $branch)
                     <option value="{{ $branch->id }}">{{ $branch->name }}</option>

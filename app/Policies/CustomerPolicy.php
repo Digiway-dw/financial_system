@@ -54,11 +54,8 @@ class CustomerPolicy
      */
     public function update(User $user, Customer $customer): bool
     {
-        // Auditors cannot update customers
-        return $user->hasRole(Roles::AGENT) ||
-            $user->hasRole(Roles::BRANCH_MANAGER) ||
-            $user->hasRole(Roles::ADMIN) ||
-            $user->hasRole(Roles::GENERAL_SUPERVISOR);
+        // Agents and trainees cannot update customers
+        return !($user->hasRole(Roles::AGENT) || $user->hasRole(Roles::TRAINEE));
     }
 
     /**
@@ -66,9 +63,7 @@ class CustomerPolicy
      */
     public function delete(User $user, Customer $customer): bool
     {
-        // Auditors cannot delete customers
-        return $user->hasRole(Roles::BRANCH_MANAGER) ||
-            $user->hasRole(Roles::ADMIN) ||
-            $user->hasRole(Roles::GENERAL_SUPERVISOR);
+        // Agents and trainees cannot delete customers
+        return !($user->hasRole(Roles::AGENT) || $user->hasRole(Roles::TRAINEE));
     }
 }

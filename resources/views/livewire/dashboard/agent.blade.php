@@ -22,24 +22,13 @@
         </a>
     </div>
 @endif
-<div class="bg-blue-100 rounded-xl shadow p-4 mb-6 flex items-center justify-between" style="min-height: 60px;">
-    <div>
-        <h2 class="text-xl font-semibold text-blue-900 mb-1">Welcome Back, Agent User!</h2>
-        <p class="text-sm text-blue-700">You are logged in as <span class="font-bold">agent</span></p>
-    </div>
-    <div class="text-right">
-        <div class="bg-white rounded-lg px-4 py-2 shadow text-gray-700 text-sm">
-            Sunday, July 13, 2025<br>
-            <span class="text-xs text-gray-500">05:49:55 AM</span>
-        </div>
-    </div>
-</div>
-<h2 class="text-2xl font-bold text-gray-900 mb-6">Agent Dashboard Overview</h2>
+
+
 @if(isset($totalSafeBalance))
     <div class="text-lg text-gray-700 mb-1">Total Safe Balance: <span class="font-bold">{{ number_format($totalSafeBalance, 2) }} EGP</span></div>
 @endif
 @if(isset($branchSafeBalance))
-    <div class="text-lg text-gray-700 mb-4">Branch Safe Balance: <span class="font-bold">{{ number_format($branchSafeBalance, 2) }} EGP</span></div>
+    <div class="text-lg text-gray-700 mb-1">Branch Safe Balance: <span class="font-bold">{{ number_format($branchSafeBalance, 2) }} EGP</span></div>
 @endif
 <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
     <div class="border-b border-gray-100 pb-4 mb-6">
@@ -91,42 +80,7 @@
         @endcan
     </div>
 </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Your Total Line Balance -->
-        <a href="{{ route('lines.index') }}"
-            class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg shadow-xl p-6 transform hover:scale-105 transition duration-300 ease-in-out">
-            <div class="flex items-center space-x-4">
-                <div class="flex-shrink-0">
-                    <x-heroicon-o-wallet class="h-10 w-10 text-white" />
-                </div>
-                <div>
-                    <p class="text-white text-lg font-medium">Your Total Line Balance</p>
-                    <p class="text-white text-4xl font-extrabold mt-1">{{ number_format($agentTotalBalance ?? 0, 2) }}
-                        EGP</p>
-                    <p class="text-white text-sm mt-1">Available for transactions</p>
-                </div>
-            </div>
-        </a>
 
-        <!-- Your Total Transferred Amount -->
-        <div
-            class="bg-gradient-to-br from-emerald-500 to-lime-600 rounded-lg shadow-xl p-6 transform hover:scale-105 transition duration-300 ease-in-out">
-            <div class="flex items-center space-x-4">
-                <div class="flex-shrink-0">
-                    <x-heroicon-o-currency-dollar class="h-10 w-10 text-white" />
-                </div>
-                <div>
-                    <p class="text-white text-lg font-medium">Your Total Transferred Amount</p>
-                    <p class="text-white text-4xl font-extrabold mt-1">
-                        {{ number_format($agentTotalTransferred ?? 0, 2) }} EGP</p>
-                    <p class="text-white text-sm mt-1">All time total volume</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Your Pending Transactions -->
-        {{-- Removed: Only admins should see pending transactions --}}
-    </div>
 
     @if(isset($agentLines) && $agentLines->count())
         <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">

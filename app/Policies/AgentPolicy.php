@@ -226,4 +226,14 @@ class AgentPolicy
             $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
             $user->hasRole(Roles::BRANCH_MANAGER);
     }
+
+    // Add these methods to explicitly deny line update/delete for agents
+    public function updateLine(User $user, Line $line): bool
+    {
+        return false;
+    }
+    public function deleteLine(User $user, Line $line): bool
+    {
+        return false;
+    }
 }
