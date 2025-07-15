@@ -6,28 +6,8 @@
         </div>
     </div>
    
-    <!-- Branch Details -->
-    @if(isset($selectedBranchDetails) && $selectedBranchDetails)
-        <div class="mb-4 text-right">
-            <div class="text-base font-bold text-gray-800">{{ $selectedBranchDetails['name'] }}</div>
-        </div>
-    @endif
-    <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
-        <thead>
-            <tr class="bg-gray-100 text-center">
-                <th class="px-4 py-2 border">رصيد افتتاحي</th>
-                <th class="px-4 py-2 border">عدد المعاملات</th>
-                <th class="px-4 py-2 border">الخزينة</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="text-center">
-                <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($startupSafeBalance, 2) }}</td>
-                <td class="px-4 py-2 border text-purple-700 font-bold">{{ $totalTransactionsCount }}</td>
-                <td class="px-4 py-2 border font-bold">{{ number_format($safesBalance, 2) }}</td>
-            </tr>
-        </tbody>
-    </table>
+   
+    
     <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
         <div class="border-b border-gray-100 pb-4 mb-6">
             <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">

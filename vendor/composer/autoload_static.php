@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitce05a3d7c6b5479a70e1b59c5e1c1d3f
+class ComposerStaticInitb50f1a9feb743b813463e1ab0153b5f7
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -845,6 +845,7 @@ class ComposerStaticInitce05a3d7c6b5479a70e1b59c5e1c1d3f
         'App\\Livewire\\Safes\\Index' => __DIR__ . '/../..' . '/app/Livewire/Safes/Index.php',
         'App\\Livewire\\Safes\\Move' => __DIR__ . '/../..' . '/app/Livewire/Safes/Move.php',
         'App\\Livewire\\Safes\\SafeTransfer' => __DIR__ . '/../..' . '/app/Livewire/Safes/SafeTransfer.php',
+        'App\\Livewire\\TestComponent' => __DIR__ . '/../..' . '/app/Livewire/TestComponent.php',
         'App\\Livewire\\Transactions\\ApprovalWaiting' => __DIR__ . '/../..' . '/app/Livewire/Transactions/ApprovalWaiting.php',
         'App\\Livewire\\Transactions\\Cash' => __DIR__ . '/../..' . '/app/Livewire/Transactions/Cash.php',
         'App\\Livewire\\Transactions\\Create' => __DIR__ . '/../..' . '/app/Livewire/Transactions/Create.php',
@@ -5138,6 +5139,7 @@ class ComposerStaticInitce05a3d7c6b5479a70e1b59c5e1c1d3f
         'PHPStan\\PhpDocParser\\Ast\\PhpDoc\\RequireExtendsTagValueNode' => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/RequireExtendsTagValueNode.php',
         'PHPStan\\PhpDocParser\\Ast\\PhpDoc\\RequireImplementsTagValueNode' => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/RequireImplementsTagValueNode.php',
         'PHPStan\\PhpDocParser\\Ast\\PhpDoc\\ReturnTagValueNode' => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/ReturnTagValueNode.php',
+        'PHPStan\\PhpDocParser\\Ast\\PhpDoc\\SealedTagValueNode' => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/SealedTagValueNode.php',
         'PHPStan\\PhpDocParser\\Ast\\PhpDoc\\SelfOutTagValueNode' => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/SelfOutTagValueNode.php',
         'PHPStan\\PhpDocParser\\Ast\\PhpDoc\\TemplateTagValueNode' => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/TemplateTagValueNode.php',
         'PHPStan\\PhpDocParser\\Ast\\PhpDoc\\ThrowsTagValueNode' => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/ThrowsTagValueNode.php',
@@ -9486,10 +9488,10 @@ class ComposerStaticInitce05a3d7c6b5479a70e1b59c5e1c1d3f
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitce05a3d7c6b5479a70e1b59c5e1c1d3f::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitce05a3d7c6b5479a70e1b59c5e1c1d3f::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitce05a3d7c6b5479a70e1b59c5e1c1d3f::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitce05a3d7c6b5479a70e1b59c5e1c1d3f::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitb50f1a9feb743b813463e1ab0153b5f7::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitb50f1a9feb743b813463e1ab0153b5f7::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitb50f1a9feb743b813463e1ab0153b5f7::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitb50f1a9feb743b813463e1ab0153b5f7::$classMap;
 
         }, null, ClassLoader::class);
     }

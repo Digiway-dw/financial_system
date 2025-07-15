@@ -15,6 +15,7 @@ use App\Application\UseCases\ListPendingTransactions;
 use App\Application\UseCases\ViewLineBalanceAndUsage;
 use Carbon\Carbon;
 use App\Models\StartupSafeBalance;
+use App\Domain\Entities\User;
 
 class Dashboard extends Component
 {
@@ -192,7 +193,7 @@ class Dashboard extends Component
             $data['totalTransactionsCount'] = $this->totalTransactionsCount;
             $data['supervisorName'] = $user->name;
             // Add admin name (first user with 'admin' role) using whereHas
-            $adminUser = \App\Models\Domain\Entities\User::whereHas('roles', function($q) { $q->where('name', 'admin'); })->first();
+            $adminUser = User::whereHas('roles', function($q) { $q->where('name', 'admin'); })->first();
             $data['adminName'] = $adminUser ? $adminUser->name : null;
             if ($this->selectedBranchId !== 'all') {
                 $branch = $this->branches->first(function ($b) { return (string)$b->id === (string)$this->selectedBranchId; });

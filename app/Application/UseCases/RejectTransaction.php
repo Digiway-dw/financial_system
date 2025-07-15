@@ -2,7 +2,7 @@
 
 namespace App\Application\UseCases;
 
-use App\Domain\Entities\Transaction;
+use App\Models\Domain\Entities\Transaction;
 use App\Domain\Interfaces\TransactionRepository;
 use App\Domain\Interfaces\SafeRepository;
 use App\Domain\Entities\User;

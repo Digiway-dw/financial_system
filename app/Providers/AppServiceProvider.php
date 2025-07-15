@@ -142,17 +142,6 @@ class AppServiceProvider extends ServiceProvider
         Blade::component('secondary-button', \Illuminate\View\Component::class);
         Blade::component('modal', \Illuminate\View\Component::class);
 
-        // Use HTTP for local development
-        if (app()->environment('local')) {
-            URL::forceScheme('http');
-            URL::forceRootUrl(request()->getSchemeAndHttpHost());
-        }
-
-        // 🔧 إجبار Laravel يولد روابط بناءً على عنوان الزيارة (ngrok أو غيره)
-        if (app()->environment('local') && request()->getSchemeAndHttpHost()) {
-            URL::forceRootUrl(request()->getSchemeAndHttpHost());
-        }
-
         // Add current_password validation rule
         \Illuminate\Support\Facades\Validator::extend('current_password', function ($attribute, $value, $parameters, $validator) {
             return \Illuminate\Support\Facades\Hash::check($value, \Illuminate\Support\Facades\Auth::user()->password);
@@ -312,11 +301,24 @@ class AppServiceProvider extends ServiceProvider
     private function configureLocalUrl(): void
     {
         // Support for development tools like ngrok, Expose, etc.
-        if (request() && request()->hasHeader('X-Forwarded-Proto')) {
-            URL::forceScheme(request()->header('X-Forwarded-Proto'));
-        }
+        $request = request();
+        
+        if ($request) {
+            $host = $request->getSchemeAndHttpHost();
+            
+            // Check if we're using ngrok (contains ngrok in the host)
+            if (str_contains($host, 'ngrok')) {
+                // Force HTTPS for ngrok
+                URL::forceScheme('https');
+                URL::forceRootUrl($host);
+                return;
+            }
+            
+            // Handle X-Forwarded-Proto header for other proxies
+            if ($request->hasHeader('X-Forwarded-Proto')) {
+                URL::forceScheme($request->header('X-Forwarded-Proto'));
+            }
 
-        if (request() && ($host = request()->getSchemeAndHttpHost())) {
             // Only override if it's not the default Laravel dev server
             if (!str_contains($host, '127.0.0.1:8000')) {
                 URL::forceRootUrl($host);

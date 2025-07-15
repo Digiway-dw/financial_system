@@ -10,9 +10,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Drop the existing constraint
+        // Drop the existing constraint (MySQL syntax)
         try {
-            DB::statement('ALTER TABLE transactions DROP CHECK chk_transaction_type');
+            DB::statement('ALTER TABLE transactions DROP CONSTRAINT chk_transaction_type');
         } catch (\Exception $e) {
             // Ignore if constraint does not exist
         }
@@ -28,7 +28,7 @@ return new class extends Migration
     {
         // Drop the updated constraint
         try {
-            DB::statement('ALTER TABLE transactions DROP CHECK chk_transaction_type');
+            DB::statement('ALTER TABLE transactions DROP CONSTRAINT chk_transaction_type');
         } catch (\Exception $e) {
             // Ignore if constraint does not exist
         }
