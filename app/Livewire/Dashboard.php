@@ -67,6 +67,7 @@ class Dashboard extends Component
             $this->selectedBranchId = $user->branch_id;
             $this->updateBranchManagerMetrics();
         } else {
+            $this->branches = collect($this->branchRepository->all());
             $this->selectedBranchId = request('branch', 'all');
             $this->updateSupervisorMetrics();
         }
@@ -102,15 +103,13 @@ class Dashboard extends Component
         }
         $this->safesBalance = $safes->sum('current_balance');
 
-        // Startup Safe Balance (from table, not recalculated during the day)
-        if ($branchId === 'all') {
-            $this->startupSafeBalance = StartupSafeBalance::where('date', $today->toDateString())->sum('balance');
-        } else {
-            $startup = StartupSafeBalance::where('branch_id', $branchId)
-                ->where('date', $today->toDateString())
-                ->first();
-            $this->startupSafeBalance = $startup ? $startup->balance : 0;
-        }
+        // Startup Safe Balance (sum only for branches in $this->branches)
+        $branchIds = $branchId === 'all'
+            ? collect($this->branches)->pluck('id')->all()
+            : [$branchId];
+        $this->startupSafeBalance = \App\Models\StartupSafeBalance::whereIn('branch_id', $branchIds)
+            ->where('date', $today->toDateString())
+            ->sum('balance');
 
         // Total Transactions (ordinary + cash) for all dates (debugging)
         $ordinaryQuery = \App\Models\Domain\Entities\Transaction::query();

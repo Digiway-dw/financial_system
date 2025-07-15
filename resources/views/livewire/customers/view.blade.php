@@ -17,6 +17,10 @@
                     </div>
                 </div>
                 <div class="mt-4 lg:mt-0 flex space-x-3">
+                    @php
+                        $cannotEditRoles = ['agent', 'trainee', 'auditor'];
+                    @endphp
+                    @if (!auth()->user()->hasAnyRole($cannotEditRoles))
                     <a href="{{ route('customers.edit', $customer->id) }}"
                         class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 rounded-xl hover:bg-indigo-200 transition-colors duration-150">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,6 +29,7 @@
                         </svg>
                         Edit Customer
                     </a>
+                    @endif
                     <a href="{{ route('customers.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-slate-200 text-slate-700 rounded-xl hover:bg-slate-300 transition-colors duration-150">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -214,6 +214,13 @@ class Receive extends Component
         }
     }
 
+    private function notifyAdmin($transaction)
+    {
+        $adminNotificationMessage = "A receive transaction was created with a discount of {$this->discount} EGP. Note: {$this->discountNotes}. Transaction ID: {$transaction->id}";
+        $admins = \App\Domain\Entities\User::role('admin')->get();
+        \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
+    }
+
     public function submitTransaction()
     {
         $this->validate();
@@ -283,7 +290,7 @@ class Receive extends Component
                     if (auth()->user()->hasRole('general_supervisor')) {
                         return redirect()->route('transactions.receipt', ['transaction' => $createdTransaction->id]);
                     }
-                    return redirect()->route('transactions.waiting-approval', ['transaction' => $createdTransaction->id]);
+                    return redirect()->route('transactions.waiting-approval', ['transactionId' => $createdTransaction->id]);
                 } else {
                     DB::commit();
                     return redirect()->route('transactions.receipt', ['transaction' => $createdTransaction->id]);

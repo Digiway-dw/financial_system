@@ -7,16 +7,21 @@
                     <h1 class="text-3xl font-bold text-gray-900">Lines Management</h1>
                     <p class="mt-2 text-sm text-gray-600">Manage your financial lines, balances, and limits</p>
                 </div>
-                <div class="mt-4 sm:mt-0">
-                    <a href="{{ route('lines.create') }}"
-                        class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        Add New Line
-                    </a>
-                </div>
+                @php
+                    $canManageLines = auth()->user()->hasRole('admin') || auth()->user()->hasRole('general_supervisor');
+                @endphp
+                @if ($canManageLines)
+                    <div class="mt-4 sm:mt-0">
+                        <a href="{{ route('lines.create') }}"
+                            class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Add New Line
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -228,9 +233,10 @@
                                     {{ $line['branch']['name'] ?? 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <div class="flex items-center justify-end space-x-2">
-                                        @php $isAgentOrTrainee = auth()->user()->hasRole('agent') || auth()->user()->hasRole('trainee'); @endphp
-                                        @unless($isAgentOrTrainee)
+                                    @php
+                                        $canManageLines = auth()->user()->hasRole('admin') || auth()->user()->hasRole('general_supervisor');
+                                    @endphp
+                                    @if ($canManageLines)
                                         <a href="{{ route('lines.edit', $line['id']) }}"
                                             class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-md transition-colors duration-150">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
@@ -258,8 +264,7 @@
                                             </svg>
                                             Delete
                                         </button>
-                                        @endunless
-                                    </div>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
@@ -273,15 +278,17 @@
                                         </svg>
                                         <h3 class="text-lg font-medium text-gray-900 mb-1">No lines found</h3>
                                         <p class="text-sm text-gray-500">Get started by creating your first line.</p>
-                                        <a href="{{ route('lines.create') }}"
-                                            class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-150">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                            </svg>
-                                            Create Line
-                                        </a>
+                                        @if ($canManageLines)
+                                            <a href="{{ route('lines.create') }}"
+                                                class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-150">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                </svg>
+                                                Create Line
+                                            </a>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

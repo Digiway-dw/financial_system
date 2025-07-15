@@ -10,7 +10,10 @@
                     </h1>
                     <p class="text-slate-600 mt-2">Manage your customer base with comprehensive tools and insights</p>
                 </div>
-                @can('manage-customers')
+                @php
+                    $canAddCustomer = !auth()->user()->hasRole('auditor');
+                @endphp
+                @if ($canAddCustomer)
                     <div class="mt-4 lg:mt-0">
                         <a href="{{ route('customers.create') }}"
                             class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transform hover:-translate-y-0.5 transition-all duration-200 border border-blue-500/20">
@@ -196,29 +199,30 @@
                                         </svg>
                                         View
                                     </a>
-                                    @can('update', App\Models\Domain\Entities\Customer::find($customer['id']))
-                                    <a href="{{ route('customers.edit', $customer['id']) }}"
-                                        class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg hover:bg-indigo-200 transition-colors duration-150">
-                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11 5h2m-1 0v14m-7-7h14" />
-                                        </svg>
-                                        Edit
-                                    </a>
-                                    @endcan
-                                    @can('delete', App\Models\Domain\Entities\Customer::find($customer['id']))
-                                    <button type="button"
-    class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-xs font-medium rounded-lg hover:bg-red-200 transition-colors duration-150"
-    onclick="if(confirm('Are you sure you want to delete this customer?')) { @this.deleteCustomer('{{ $customer['id'] }}') }">
-    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-        viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M6 18L18 6M6 6l12 12" />
-    </svg>
-    Delete
-</button>
-@endcan
+                                    @php
+                                        $cannotEditRoles = ['agent', 'trainee', 'auditor'];
+                                    @endphp
+                                    @if (!auth()->user()->hasAnyRole($cannotEditRoles))
+                                        <a href="{{ route('customers.edit', $customer['id']) }}"
+                                            class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg hover:bg-indigo-200 transition-colors duration-150">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5h2m-1 0v14m-7-7h14" />
+                                            </svg>
+                                            Edit
+                                        </a>
+                                        <button type="button"
+                                            class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-xs font-medium rounded-lg hover:bg-red-200 transition-colors duration-150"
+                                            onclick="if(confirm('Are you sure you want to delete this customer?')) { @this.deleteCustomer('{{ $customer['id'] }}') }">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

@@ -178,17 +178,65 @@ class Pending extends Component
     {
         // Authorization check for rejecting transactions
         $user = Auth::user();
-        $transaction = $this->listPendingTransactionsUseCase->findById($transactionId); // Assuming a findById for transaction exists in use case or repository
+        $transaction = collect($this->pendingTransactions)->firstWhere('id', $transactionId);
+        $source = $transaction['source'] ?? null;
+
+        // Debug logging
+        \Log::debug('PendingComponent reject attempt', [
+            'transaction_id' => $transactionId,
+            'transaction_type' => $transaction['transaction_type'] ?? null,
+            'transaction_status' => $transaction['status'] ?? null,
+            'user_id' => $user->id,
+            'user_roles' => $user->getRoleNames(),
+            'source' => $source,
+        ]);
 
         if (!$transaction) {
             session()->flash('error', 'Transaction not found.');
             return;
         }
 
+        if ($source === 'cash_transactions') {
+            // Handle cash withdrawal rejection
+            $cashTransaction = \App\Models\Domain\Entities\CashTransaction::find($transactionId);
+            if (!$cashTransaction) {
+                session()->flash('error', 'Cash transaction not found.');
+                return;
+            }
+            $isAdminOrSupervisor = $user->hasRole('admin') || $user->hasRole('general_supervisor');
+            if ($isAdminOrSupervisor && $cashTransaction->status === 'pending' && $cashTransaction->transaction_type === 'Withdrawal') {
+                $cashTransaction->status = 'rejected';
+                $cashTransaction->rejected_by = $user->id;
+                $cashTransaction->rejected_at = now();
+                $cashTransaction->rejection_reason = 'Rejected by ' . $user->name;
+                $cashTransaction->save();
+                session()->flash('message', 'Cash withdrawal rejected successfully.');
+                $this->loadPendingTransactions();
+                $this->dispatch('$refresh');
+                return;
+            } else {
+                session()->flash('error', 'You can only reject pending cash withdrawals as admin or supervisor.');
+                return;
+            }
+        }
+
+        // Default: handle as normal transaction
+        $isAdminOrSupervisor = $user->hasRole('admin') || $user->hasRole('general_supervisor');
+        $isCashTransaction = in_array($transaction['transaction_type'] ?? '', ['Withdrawal', 'Cash']);
+        $isPending = ($transaction['status'] ?? '') === 'Pending';
+
         if ($user->can('approve-all-requests') || $user->can('approve-pending-transactions')) {
-            // Admin/Auditor can reject any pending transaction
-        } elseif ($user->can('approve-own-branch-transactions') && $user->branch_id === $transaction['branch_id']) {
+            // Admin/Auditor can reject any pending transaction or any cash transaction
+            if (!($isPending || ($isAdminOrSupervisor && $isCashTransaction))) {
+                session()->flash('error', 'You can only reject pending or cash transactions.');
+                return;
+            }
+        } elseif ($user->can('approve-own-branch-transactions') && $user->branch_id === ($transaction['branch_id'] ?? null)) {
             // Branch Manager can reject pending transactions in their own branch
+            if (!$isPending) {
+                session()->flash('error', 'You can only reject pending transactions in your branch.');
+                return;
+            }
         } else {
             abort(403, 'Unauthorized action.');
         }

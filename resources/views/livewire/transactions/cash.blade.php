@@ -70,7 +70,7 @@
                                                 <td class="px-4 py-2 text-gray-700">{{ number_format($tx->amount, 2) }} EGP</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->transaction_type }}</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->status }}</td>
-                                                <td class="px-4 py-2 text-gray-700">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('Y-m-d H:i') }}</td>
+                                                <td class="px-4 py-2 text-gray-700">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('Y-m-d h:i A') }}</td>
                                                 <td class="px-4 py-2 text-right">
                                                     <a href="{{ route('cash-transactions.receipt', $tx->id) }}" target="_blank" class="inline-block text-green-600 hover:text-green-800 mr-2" title="Print Receipt">
                                                         <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">

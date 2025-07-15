@@ -78,6 +78,10 @@ class Edit extends Component
 
     public function mount($customerId)
     {
+        $user = auth()->user();
+        if ($user->hasAnyRole(['agent', 'trainee', 'auditor'])) {
+            abort(403, 'You are not authorized to edit customers.');
+        }
         Gate::authorize('manage-customers');
         $this->customerId = $customerId;
         $this->customer = $this->customerRepository->findById($customerId);
@@ -115,6 +119,10 @@ class Edit extends Component
 
     public function updateCustomer()
     {
+        $user = auth()->user();
+        if ($user->hasAnyRole(['agent', 'trainee', 'auditor'])) {
+            abort(403, 'You are not authorized to edit customers.');
+        }
         $this->validate();
 
         try {

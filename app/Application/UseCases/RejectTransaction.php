@@ -16,7 +16,7 @@ class RejectTransaction
         private SafeRepository $safeRepository
     ) {}
 
-    public function execute(int $transactionId, int $reviewerId, ?string $rejectionReason = null): Transaction
+    public function execute(int $transactionId, int $reviewerId, ?string $rejectionReason = null): \App\Models\Domain\Entities\Transaction
     {
         $transaction = $this->transactionRepository->findById($transactionId);
 
@@ -24,8 +24,23 @@ class RejectTransaction
             throw new \Exception('Transaction not found.');
         }
 
+        // Debug logging
+        \Log::debug('RejectTransaction attempt', [
+            'transaction_id' => $transactionId,
+            'transaction_type' => $transaction->transaction_type,
+            'transaction_status' => $transaction->status,
+            'reviewer_id' => $reviewerId,
+            'reviewer_roles' => \App\Domain\Entities\User::find($reviewerId)?->getRoleNames(),
+        ]);
+
         if ($transaction->status !== 'Pending') {
-            throw new \Exception('Transaction is not pending and cannot be rejected.');
+            // Allow admins and supervisors to reject cash transactions regardless of status
+            $user = \App\Domain\Entities\User::find($reviewerId);
+            $isAdminOrSupervisor = $user && ($user->hasRole('admin') || $user->hasRole('general_supervisor'));
+            $isCashTransaction = in_array($transaction->transaction_type, ['Withdrawal', 'Cash']);
+            if (!($isAdminOrSupervisor && $isCashTransaction)) {
+                throw new \Exception('Transaction is not pending and cannot be rejected.');
+            }
         }
 
         $transaction->status = 'Rejected';

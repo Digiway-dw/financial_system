@@ -41,13 +41,14 @@
         <!-- Transaction History -->
         <a href="{{ route('transactions.index') }}" class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center hover:shadow-lg transition border-b-4 border-gray-400">
             <x-heroicon-o-users class="h-8 w-8 text-gray-500 mb-2" />
-            <span class="text-md font-semibold text-gray-800">Transaction History</span>
+            <span class="text-md font-semibold text-gray-800">المعاملات</span>
+            <span class="text-xs text-gray-500 mt-1">بيانات المعاملات</span>
         </a>
         <!-- Customers -->
         <a href="{{ route('customers.index') }}" class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center hover:shadow-lg transition border-b-4 border-blue-400">
             <x-heroicon-o-user class="h-8 w-8 text-blue-500 mb-2" />
             <span class="text-md font-semibold text-gray-800">العملاء</span>
-            <span class="text-xs text-gray-500 mt-1">ادارة العملاء</span>
+            <span class="text-xs text-gray-500 mt-1">بيانات العملاء</span>
         </a>
     </div>
 </div> 

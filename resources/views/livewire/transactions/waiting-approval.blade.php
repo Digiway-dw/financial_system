@@ -6,6 +6,23 @@
             <p class="text-gray-600">Your transaction has been submitted and is awaiting admin approval.</p>
         </div>
 
+        @if($isRejected)
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-medium text-red-800">Transaction Rejected</h3>
+                        <p class="text-red-700">This transaction was rejected by <span class="font-bold">{{ $rejectedBy ?? 'an administrator' }}</span>.</p>
+                        @if($rejectionReason)
+                            <p class="text-red-600 mt-1">Reason: {{ $rejectionReason }}</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Transaction Details Card -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
             <div class="flex items-center justify-between mb-4">

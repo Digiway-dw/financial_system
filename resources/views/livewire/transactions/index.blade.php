@@ -334,7 +334,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ number_format($transaction['commission'], 2) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d H:i') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d h:i A') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['reference_number'] ?? '' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @can('edit-all-transactions')
