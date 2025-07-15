@@ -226,6 +226,15 @@ class CreateTransaction
                 $notificationMessage = "Warning: Line " . $line->mobile_number . " balance is low ( " . $line->current_balance . " EGP). Please top up.";
                 $this->notifyRelevantUsers($notificationMessage, route('lines.edit', $line->id), $line->branch_id);
             }
+
+            // For Transfer (Send) transactions, safe balance increases by (Amount + Commission)
+            $safe = $this->safeRepository->findById($safeId);
+            if (!$safe) {
+                throw new \Exception('Safe not found.');
+            }
+            $safeIncrease = $amount + $finalCommission;
+            $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance + $safeIncrease]);
+            $safe->refresh();
         }
 
         if ($shouldApplyBalances && $transactionType === 'Withdrawal' && !$isAbsoluteWithdrawal && $paymentMethod === 'branch safe') {
