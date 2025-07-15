@@ -52,6 +52,11 @@ class Send extends Component
 
     public $availableLines = [];
 
+    // Branch Selection (for admin/supervisor)
+    public $selectedBranchId = '';
+    public $availableBranches = [];
+    public $canSelectBranch = false;
+
     // Payment Options
     public $collectFromClientSafe = false;
     public $collectFromCustomerWallet = false;
@@ -77,6 +82,7 @@ class Send extends Component
 
     public function mount()
     {
+        $this->initializeBranchSelection();
         $this->loadAvailableLines();
     }
 
@@ -98,6 +104,13 @@ class Send extends Component
 
     public function updatedSelectedLineId()
     {
+        $this->checkLineBalance();
+    }
+
+    public function updatedSelectedBranchId()
+    {
+        $this->loadAvailableLines();
+        $this->selectedLineId = ''; // Reset line selection when branch changes
         $this->checkLineBalance();
     }
 
@@ -182,11 +195,36 @@ class Send extends Component
         $this->commission = max(0, $baseCommission - $discount);
     }
 
+    private function initializeBranchSelection()
+    {
+        $user = Auth::user();
+
+        // Check if user can select branches (admin or supervisor)
+        if ($user && ($user->hasRole('admin') || $user->hasRole('general_supervisor'))) {
+            $this->canSelectBranch = true;
+            $this->availableBranches = \App\Models\Domain\Entities\Branch::orderBy('name')->get(['id', 'name'])->toArray();
+            // Set current user's branch as default
+            $this->selectedBranchId = $user->branch_id;
+        } else {
+            $this->canSelectBranch = false;
+            $this->selectedBranchId = $user->branch_id ?? '';
+        }
+    }
+
     private function loadAvailableLines()
     {
         $user = Auth::user();
+
+        // Use selected branch if user can select branches, otherwise use user's branch
+        $branchId = $this->canSelectBranch && $this->selectedBranchId ? $this->selectedBranchId : $user->branch_id;
+
         if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
-            $linesQuery = Line::where('status', 'active');
+            // If branch is selected, filter by that branch, otherwise show all
+            if ($this->selectedBranchId) {
+                $linesQuery = Line::where('branch_id', $branchId)->where('status', 'active');
+            } else {
+                $linesQuery = Line::where('status', 'active');
+            }
         } else {
             $linesQuery = Line::where('branch_id', $user->branch_id)->where('status', 'active');
         }
@@ -266,6 +304,9 @@ class Send extends Component
             DB::transaction(function () use ($amount, $commission, $discount) {
                 // Create or update client
                 if (!$this->clientId) {
+                    // Use selected branch if available, otherwise use user's branch
+                    $branchId = $this->canSelectBranch && $this->selectedBranchId ? $this->selectedBranchId : Auth::user()->branch_id;
+
                     $client = Customer::create([
                         'name' => $this->clientName,
                         'mobile_number' => $this->clientMobile,
@@ -274,7 +315,7 @@ class Send extends Component
                         'balance' => 0,
                         'is_client' => true,
                         'agent_id' => Auth::id(),
-                        'branch_id' => Auth::user()->branch_id,
+                        'branch_id' => $branchId,
                     ]);
                     $this->clientId = $client->id;
                 } else {

@@ -15,13 +15,15 @@
         </div>
 
         <!-- Success/Error Messages -->
-        @if(isset($errorMessage) && $errorMessage)
-            <div class="alert alert-danger" style="color: #b91c1c; background: #fee2e2; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+        @if (isset($errorMessage) && $errorMessage)
+            <div class="alert alert-danger"
+                style="color: #b91c1c; background: #fee2e2; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
                 {{ $errorMessage }}
             </div>
         @endif
-        @if(isset($successMessage) && $successMessage)
-            <div class="alert alert-success" style="color: #166534; background: #dcfce7; border: 1px solid #86efac; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+        @if (isset($successMessage) && $successMessage)
+            <div class="alert alert-success"
+                style="color: #166534; background: #dcfce7; border: 1px solid #86efac; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
                 {{ $successMessage }}
             </div>
         @endif
@@ -237,6 +239,24 @@
                         Line Selection
                     </h2>
 
+                    <!-- Branch Selection (for admin/supervisor only) -->
+                    @if ($canSelectBranch)
+                        <div class="mb-6">
+                            <label for="selectedBranchId" class="block text-sm font-medium text-gray-700 mb-2">
+                                Select Branch <span class="text-red-500">*</span>
+                            </label>
+                            <select wire:model.live="selectedBranchId" id="selectedBranchId"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                                <option value="">Select a branch...</option>
+                                @foreach ($availableBranches as $branch)
+                                    <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-sm text-gray-500">Select the branch from which this transaction will be
+                                performed.</p>
+                        </div>
+                    @endif
+
                     <div>
                         <label for="selectedLineId" class="block text-sm font-medium text-gray-700 mb-2">
                             Available Lines <span class="text-red-500">*</span>
@@ -267,12 +287,14 @@
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Commission</p>
-                                <p class="text-lg font-bold text-green-700">{{ number_format((float) $commission, 2) }}
+                                <p class="text-lg font-bold text-green-700">
+                                    {{ number_format((float) $commission, 2) }}
                                     EGP</p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Discount</p>
-                                <p class="text-lg font-bold text-red-700">{{ number_format((float) $discount, 2) }} EGP
+                                <p class="text-lg font-bold text-red-700">{{ number_format((float) $discount, 2) }}
+                                    EGP
                                 </p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
