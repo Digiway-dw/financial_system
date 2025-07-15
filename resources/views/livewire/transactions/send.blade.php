@@ -360,7 +360,7 @@
 
                 <!-- Submit Button -->
                 <div class="flex justify-end space-x-4">
-                    <button type="button" wire:click="resetForm"
+                    <button type="button" wire:click="resetTransactionForm"
                         class="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-300 transition-colors duration-200">
                         Reset Form
                     </button>

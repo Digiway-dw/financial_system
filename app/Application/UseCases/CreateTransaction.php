@@ -97,11 +97,8 @@ class CreateTransaction
             throw new \Exception('Agent not found.');
         }
 
-        // Auto-calculate commission (5 EGP per 500 EGP)
-        $calculatedCommission = (floor($amount / 500)) * 5;
-
-        // Apply optional deduction to commission
-        $finalCommission = $calculatedCommission - $deduction;
+        // Use the commission passed from the component, applying any deduction
+        $finalCommission = $commission - $deduction;
         if ($finalCommission < 0) {
             $finalCommission = 0; // Commission cannot be negative
         }

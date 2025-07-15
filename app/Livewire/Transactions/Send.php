@@ -330,7 +330,7 @@ class Send extends Component
                     
                     // Redirect to waiting approval screen for transactions with discount
                     $this->successMessage = 'Transaction submitted for admin approval due to discount applied.';
-                    $this->resetForm();
+                    $this->resetTransactionForm();
                     if (auth()->user()->hasRole('general_supervisor')) {
                         return redirect()->route('transactions.receipt', ['transaction' => $transaction->id]);
                     }
@@ -359,7 +359,7 @@ class Send extends Component
         }
     }
 
-    private function resetForm()
+    public function resetTransactionForm()
     {
         $this->reset([
             'clientMobile',
