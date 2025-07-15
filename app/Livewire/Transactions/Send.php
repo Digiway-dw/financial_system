@@ -327,7 +327,7 @@ class Send extends Component
                     $adminNotificationMessage = "A send transaction was created with a discount of " . $discount . " EGP. Note: " . $this->discountNotes . ". Transaction ID: " . $transaction->id;
                     $admins = User::role('admin')->get();
                     Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
-                    
+
                     // Redirect to waiting approval screen for transactions with discount
                     $this->successMessage = 'Transaction submitted for admin approval due to discount applied.';
                     $this->resetTransactionForm();

@@ -265,6 +265,23 @@ class CreateTransaction
                 'monthly_usage' => ($line->monthly_usage ?? 0) + $amount,
             ]);
             $line->refresh();
+
+            // For Receive transactions, safe balance decreases by (Amount - Commission)
+            if ($transactionType === 'Receive') {
+                $safeDeduction = $amount - $finalCommission;
+                if (($safe->current_balance - $safeDeduction) < 0) {
+                    throw new \Exception('Insufficient balance in safe for this receive transaction. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($safeDeduction, 2) . ' EGP');
+                }
+                $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $safeDeduction]);
+                $safe->refresh();
+
+                // Check for low safe balance warning
+                if ($safe->current_balance < 500) {
+                    $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
+                    $admins = \App\Domain\Entities\User::role('admin')->get();
+                    Notification::send($admins, new AdminNotification($notificationMessage, route('safes.index')));
+                }
+            }
         }
 
         // Generate reference number using branch name and unique number
