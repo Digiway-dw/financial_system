@@ -34,12 +34,7 @@ Route::get('/test', function () {
     ]);
 });
 
-// Use auth middleware instead of auth:sanctum to work with standard Laravel sessions
-Route::middleware('auth')->group(function () {
-    Route::post('/session-heartbeat', [\App\Http\Controllers\SessionController::class, 'heartbeat']);
-    Route::post('/auto-logout', [\App\Http\Controllers\SessionController::class, 'autoLogout']);
-    Route::get('/session-status', [\App\Http\Controllers\SessionController::class, 'checkStatus']);
-});
+// Authentication routes can be added here as needed
 
 // Add a fallback route for debugging - will help diagnose if the API routes are being reached
 Route::fallback(function () {

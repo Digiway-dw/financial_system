@@ -122,16 +122,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     // Removed profile, profile.update, password.update, and profile.destroy routes
-
-    // Session heartbeat and auto-logout routes (alternative to API routes)
-    Route::post('/session-heartbeat', [\App\Http\Controllers\SessionController::class, 'heartbeat'])
-        ->name('session.heartbeat');
-
-    Route::post('/auto-logout', [\App\Http\Controllers\SessionController::class, 'autoLogout'])
-        ->name('session.logout');
-
-    Route::get('/session-status', [\App\Http\Controllers\SessionController::class, 'checkStatus'])
-        ->name('session.status');
 });
 
 Route::get('/test-icons', function () {

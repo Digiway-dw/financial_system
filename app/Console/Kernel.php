@@ -17,11 +17,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('unfreeze-lines-and-reset-daily-balance')->dailyAt('00:00');
 
-        // Run every 5 minutes to check for inactive sessions
-        $schedule->command('sessions:close-inactive')->everyFiveMinutes();
-
-        // Run every minute to clean up stale sessions
-        $schedule->command('sessions:cleanup')->everyMinute();
+        // Session timing commands have been removed - no auto-logout functionality
 
         // Record startup safe balances at midnight
         $schedule->command('safe:record-startup-balances')->dailyAt('00:00');

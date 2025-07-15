@@ -16,12 +16,20 @@ class SessionController extends Controller
         $this->workSessionService = $workSessionService;
     }
 
+    /*
+     * NOTE: Session timer functionality has been disabled.
+     * All session expiring, auto-logout, and timer features have been removed.
+     * These methods are commented out to preserve controller structure.
+     */
+
+    /*
     /**
      * Handle session heartbeat requests.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
+    /*
     public function heartbeat(Request $request)
     {
         Log::info('Session heartbeat received for user: ' . ($request->user() ? $request->user()->id : 'unknown'));
@@ -33,13 +41,16 @@ class SessionController extends Controller
         return response()->json(['status' => 'success'])
             ->cookie('session_alive', 'true', 5); // 5 minutes
     }
+    */
 
+    /*
     /**
      * Handle auto-logout requests.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
+    /*
     public function autoLogout(Request $request)
     {
         $user = $request->user();
@@ -61,13 +72,16 @@ class SessionController extends Controller
             'message' => 'User logged out successfully'
         ])->cookie('session_alive', '', -1); // Expire the cookie
     }
+    */
 
+    /*
     /**
      * Check session status
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
+    /*
     public function checkStatus(Request $request)
     {
         if (!Auth::check()) {
@@ -102,4 +116,5 @@ class SessionController extends Controller
             'remaining_seconds' => $timeout - $elapsedTime
         ]);
     }
+    */
 }

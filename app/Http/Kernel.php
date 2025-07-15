@@ -21,7 +21,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         // \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\LoginGuard::class,
+        // \App\Http\Middleware\LoginGuard::class, // Session timing middleware disabled
     ];
 
     /**
@@ -37,8 +37,8 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             // \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\TrackActiveSession::class,
-            \App\Http\Middleware\SessionTimeout::class,
+            // \App\Http\Middleware\TrackActiveSession::class, // Session timing middleware disabled
+            // \App\Http\Middleware\SessionTimeout::class, // Session timing middleware disabled
         ],
 
         'api' => [

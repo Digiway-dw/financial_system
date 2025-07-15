@@ -1,9 +1,5 @@
 import './bootstrap';
 import Alpine from 'alpinejs';
-import './direct-timer'; // Direct timer implementation (must be first)
-import './session-tracker'; // Import session tracker
-import './timer-debug'; // Import timer debug script
-import './timer-fix'; // Import direct timer fix
 
 // Ensure Alpine is only initialized once
 if (typeof window.Alpine === 'undefined') {

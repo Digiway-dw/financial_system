@@ -7,6 +7,12 @@ use App\Models\Domain\Entities\WorkSession;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
+/**
+ * NOTE: This command has been disabled as part of removing session timing functionality.
+ * All session expiring, auto-logout, and timer features have been removed.
+ */
+
+/*
 class CloseInactiveSessions extends Command
 {
     protected $signature = 'sessions:close-inactive';
@@ -51,3 +57,4 @@ class CloseInactiveSessions extends Command
         return 0;
     }
 }
+*/
