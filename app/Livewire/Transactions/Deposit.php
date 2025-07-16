@@ -61,12 +61,15 @@ class Deposit extends Create
 
     public function updatedClientSearch()
     {
-        $search = $this->clientSearch;
-        if (strlen($search) >= 3) {
-            $clients = \App\Models\Domain\Entities\Customer::where('mobile_number', 'like', "%$search%")
-                ->orWhere('customer_code', 'like', "%$search%")
-                ->limit(5)
-                ->get(['id', 'name', 'mobile_number', 'customer_code', 'balance']);
+        $search = trim($this->clientSearch);
+        if (strlen($search) >= 2) {
+            $clients = \App\Models\Domain\Entities\Customer::where(function($query) use ($search) {
+                $query->where('mobile_number', 'like', "%$search%")
+                      ->orWhere('customer_code', 'like', "%$search%")
+                      ->orWhere('name', 'like', "%$search%");
+            })
+            ->limit(8)
+            ->get(['id', 'name', 'mobile_number', 'customer_code', 'balance']);
             $this->clientSuggestions = $clients->toArray();
         } else {
             $this->clientSuggestions = [];
@@ -83,8 +86,13 @@ class Deposit extends Create
             $this->clientCode = $client->customer_code;
             $this->clientBalance = $client->balance;
             $this->clientSuggestions = [];
-            $this->clientSearch = $client->mobile_number;
+            $this->clientSearch = $client->name . ' (' . $client->mobile_number . ')';
         }
+    }
+
+    public function clearClientSelection()
+    {
+        $this->reset(['clientId', 'clientName', 'clientMobile', 'clientCode', 'clientBalance', 'clientSearch', 'clientSuggestions']);
     }
 
     public function submitDeposit()
