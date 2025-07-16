@@ -7,6 +7,7 @@ use App\Application\UseCases\DeleteLine;
 use App\Application\UseCases\ToggleLineStatus;
 use Livewire\Component;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class Index extends Component
 {
@@ -33,10 +34,25 @@ class Index extends Component
 
     public function loadLines()
     {
+        $user = Auth::user();
+
         $lines = $this->listLinesUseCase->execute([
             'sortField' => $this->sortField,
             'sortDirection' => $this->sortDirection,
         ]);
+
+        // Filter lines by branch for agents (non-admin, non-supervisor users)
+        if ($user && $user->branch_id) {
+            // Use Gate to check if user has admin permissions
+            // If they don't have manage-sim-lines permission, they're likely an agent
+            if (!Gate::allows('manage-sim-lines')) {
+                $userBranchId = $user->branch_id;
+                $lines = array_filter($lines, function ($line) use ($userBranchId) {
+                    return isset($line['branch_id']) && $line['branch_id'] == $userBranchId;
+                });
+            }
+        }
+
         // Add color classes for each line
         foreach ($lines as &$line) {
             $line['daily_usage_class'] = '';
