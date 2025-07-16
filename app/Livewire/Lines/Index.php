@@ -14,6 +14,7 @@ class Index extends Component
     public $sortField = 'mobile_number';
     public $sortDirection = 'asc';
     public array $lines = [];
+    public $number = ''; // Filter by line number
 
     private ListLines $listLinesUseCase;
     private DeleteLine $deleteLineUseCase;
@@ -53,6 +54,14 @@ class Index extends Component
             }
         }
 
+        // Filter by line number if provided
+        if (!empty($this->number)) {
+            $lines = array_filter($lines, function ($line) {
+                return isset($line['mobile_number']) &&
+                    stripos($line['mobile_number'], $this->number) !== false;
+            });
+        }
+
         // Add color classes for each line
         foreach ($lines as &$line) {
             $line['daily_usage_class'] = '';
@@ -75,6 +84,17 @@ class Index extends Component
             }
         }
         $this->lines = $lines;
+    }
+
+    public function filter()
+    {
+        $this->loadLines();
+    }
+
+    public function resetFilter()
+    {
+        $this->number = '';
+        $this->loadLines();
     }
 
     public function sortBy($field)
