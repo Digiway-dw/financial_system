@@ -136,18 +136,22 @@ class Send extends Component
         $this->checkLineBalance();
     }
 
-    private function searchClient()
+    public function searchClient()
     {
-        if (strlen($this->clientMobile) >= 3) {
-            $clients = Customer::where('mobile_number', 'like', '%' . $this->clientMobile . '%')
-                ->limit(5)
-                ->get(['id', 'name', 'mobile_number', 'customer_code', 'gender', 'balance']);
+        if (strlen($this->clientMobile) >= 2) {
+            $clients = Customer::where(function($query) {
+                $query->where('mobile_number', 'like', '%' . $this->clientMobile . '%')
+                      ->orWhere('customer_code', 'like', '%' . $this->clientMobile . '%')
+                      ->orWhere('name', 'like', '%' . $this->clientMobile . '%');
+            })
+            ->limit(8)
+            ->get(['id', 'name', 'mobile_number', 'customer_code', 'gender', 'balance']);
 
             $this->clientSuggestions = $clients->toArray();
 
-            // Auto-fill if exact match
+            // Only auto-fill if there's an exact mobile number match AND only one result
             $exactMatch = $clients->where('mobile_number', $this->clientMobile)->first();
-            if ($exactMatch) {
+            if ($exactMatch && $clients->count() == 1) {
                 $this->selectClient($exactMatch->id);
             }
         } else {
@@ -424,6 +428,14 @@ class Send extends Component
         ]);
         $this->deductFromLineOnly = true;
         $this->loadAvailableLines();
+    }
+
+    public function clearClientSelection()
+    {
+        $this->reset([
+            'clientId', 'clientName', 'clientMobile', 'clientCode', 
+            'clientGender', 'clientBalance', 'clientSuggestions'
+        ]);
     }
 
     public function render()
