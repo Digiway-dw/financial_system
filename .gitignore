@@ -44,7 +44,30 @@ yarn.lock
 *.tmp
 *.swp
 
-# Reports and summaries
-UI_ENHANCEMENT_SUMMARY.md
-HEROICON_INTEGRATION_REPORT.md
-OPTIMIZATION_REPORT.md
+# Reports and summaries (moved to readme/)
+readme/UI_ENHANCEMENT_SUMMARY.md
+readme/HEROICON_INTEGRATION_REPORT.md
+readme/OPTIMIZATION_REPORT.md
+
+# Temporary files and debug scripts
+check_*.php
+create_*.php
+test_*.php
+_*_helper.php
+*debug*
+*temp*
+*.tmp
+
+# Git command artifacts
+tash*
+*push*
+
+# Method name files (debug artifacts)
+delete()
+email
+get()
+getRoleNames()
+id
+pluck*
+toArray*
+user()
