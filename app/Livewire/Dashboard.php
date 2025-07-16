@@ -46,8 +46,7 @@ class Dashboard extends Component
         ListFilteredTransactions $listFilteredTransactionsUseCase,
         ListPendingTransactions $listPendingTransactionsUseCase,
         ViewLineBalanceAndUsage $viewLineBalanceAndUsageUseCase
-    )
-    {
+    ) {
         $this->safeRepository = $safeRepository;
         $this->lineRepository = $lineRepository;
         $this->transactionRepository = $transactionRepository;
@@ -191,10 +190,14 @@ class Dashboard extends Component
             $data['totalTransactionsCount'] = $this->totalTransactionsCount;
             $data['supervisorName'] = $user->name;
             // Add admin name (first user with 'admin' role) using whereHas
-            $adminUser = \App\Models\Domain\Entities\User::whereHas('roles', function($q) { $q->where('name', 'admin'); })->first();
+            $adminUser = \App\Models\Domain\Entities\User::whereHas('roles', function ($q) {
+                $q->where('name', 'admin');
+            })->first();
             $data['adminName'] = $adminUser ? $adminUser->name : null;
             if ($this->selectedBranchId !== 'all') {
-                $branch = $this->branches->first(function ($b) { return (string)$b->id === (string)$this->selectedBranchId; });
+                $branch = $this->branches->first(function ($b) {
+                    return (string)$b->id === (string)$this->selectedBranchId;
+                });
                 $data['selectedBranchDetails'] = $branch ? [
                     'name' => $branch->name,
                 ] : null;
@@ -251,36 +254,55 @@ class Dashboard extends Component
             $dashboardView = 'livewire.dashboard.branch_manager';
         } elseif ($user->hasRole('agent')) {
             $agentLines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
-            $data['agentLines'] = $agentLines;
+
+            // Enhance agent lines with usage data and color classes
+            $agentLinesWithUsage = $agentLines->map(function ($line) {
+                $lineArray = is_object($line) ? $line->toArray() : $line;
+
+                // Add color classes for daily usage
+                $lineArray['daily_usage_class'] = '';
+                if (
+                    isset($lineArray['daily_limit'], $lineArray['daily_usage'], $lineArray['status']) &&
+                    $lineArray['daily_limit'] > 0 &&
+                    $lineArray['daily_usage'] >= $lineArray['daily_limit'] &&
+                    $lineArray['status'] === 'frozen'
+                ) {
+                    $lineArray['daily_usage_class'] = 'bg-red-100 text-red-700 font-bold';
+                }
+
+                return (object) $lineArray;
+            });
+
+            $data['agentLines'] = $agentLinesWithUsage;
             $data['agentLinesTotalBalance'] = $agentLines->sum('current_balance');
             $data['agentTotalBalance'] = $agentLines->sum('current_balance');
 
             $agentTransactions = collect($this->transactionRepository->all())->where('agent_id', $user->id);
             $data['agentTotalTransferred'] = $agentTransactions->sum('amount');
             $data['agentPendingTransactionsCount'] = $agentTransactions->where('status', 'Pending')->count();
-            
+
             // Add metrics table data for agent dashboard
             $userBranch = $user->branch;
             $branchId = $userBranch->id ?? null;
-            
+
             // Startup Safe Balance for agent's branch
             $today = \Carbon\Carbon::today();
             $startup = \App\Models\StartupSafeBalance::where('branch_id', $branchId)
                 ->where('date', $today->toDateString())
                 ->first();
             $data['startupSafeBalance'] = $startup ? $startup->balance : 0;
-            
+
             // Safes Balance for agent's branch
             $branchSafes = collect($this->safeRepository->allWithBranch())->where('branch_id', $branchId);
             $data['safesBalance'] = $branchSafes->sum('current_balance');
-            
+
             // Total Transactions Count for agent's branch
             $ordinaryQuery = \App\Models\Domain\Entities\Transaction::query()->where('branch_id', $branchId);
             $cashQuery = \App\Models\Domain\Entities\CashTransaction::query()->whereHas('safe', function ($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
             });
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
-            
+
             $dashboardView = 'livewire.dashboard.agent';
         } elseif ($user->hasRole('trainee')) {
             $agentLines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
@@ -291,29 +313,29 @@ class Dashboard extends Component
             $agentTransactions = collect($this->transactionRepository->all())->where('agent_id', $user->id);
             $data['agentTotalTransferred'] = $agentTransactions->sum('amount');
             $data['agentPendingTransactionsCount'] = $agentTransactions->where('status', 'Pending')->count();
-            
+
             // Add metrics table data for trainee dashboard
             $userBranch = $user->branch;
             $branchId = $userBranch->id ?? null;
-            
+
             // Startup Safe Balance for trainee's branch
             $today = \Carbon\Carbon::today();
             $startup = \App\Models\StartupSafeBalance::where('branch_id', $branchId)
                 ->where('date', $today->toDateString())
                 ->first();
             $data['startupSafeBalance'] = $startup ? $startup->balance : 0;
-            
+
             // Safes Balance for trainee's branch
             $branchSafes = collect($this->safeRepository->allWithBranch())->where('branch_id', $branchId);
             $data['safesBalance'] = $branchSafes->sum('current_balance');
-            
+
             // Total Transactions Count for trainee's branch
             $ordinaryQuery = \App\Models\Domain\Entities\Transaction::query()->where('branch_id', $branchId);
             $cashQuery = \App\Models\Domain\Entities\CashTransaction::query()->whereHas('safe', function ($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
             });
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
-            
+
             $dashboardView = 'livewire.dashboard.trainee';
         } elseif ($user->hasRole('auditor')) {
             // Auditor dashboard metrics (same as supervisor)
@@ -324,7 +346,9 @@ class Dashboard extends Component
             $data['totalTransactionsCount'] = $this->totalTransactionsCount;
             $data['auditorName'] = $user->name;
             if ($this->selectedBranchId !== 'all') {
-                $branch = $this->branches->first(function ($b) { return (string)$b->id === (string)$this->selectedBranchId; });
+                $branch = $this->branches->first(function ($b) {
+                    return (string)$b->id === (string)$this->selectedBranchId;
+                });
                 $data['selectedBranchDetails'] = $branch ? [
                     'name' => $branch->name,
                 ] : null;
