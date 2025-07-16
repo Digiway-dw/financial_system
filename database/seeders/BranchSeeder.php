@@ -12,7 +12,7 @@ class BranchSeeder extends Seeder
         Branch::firstOrCreate([
             'name' => 'Main Branch',
             'location' => 'Downtown',
-            'branch_code' => 'BR001',
+            'branch_code' => 'BR001', // This already matches the constraint: 2 letters + 3 digits
         ]);
     }
-} 
+}

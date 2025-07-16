@@ -8,6 +8,7 @@ use App\Application\UseCases\RejectTransaction;
 use Livewire\Component;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Domain\Interfaces\LineRepository;
 
 class Pending extends Component
@@ -24,8 +25,7 @@ class Pending extends Component
         ApproveTransaction $approveTransactionUseCase,
         RejectTransaction $rejectTransactionUseCase,
         LineRepository $lineRepository
-    )
-    {
+    ) {
         $this->listPendingTransactionsUseCase = $listPendingTransactionsUseCase;
         $this->approveTransactionUseCase = $approveTransactionUseCase;
         $this->rejectTransactionUseCase = $rejectTransactionUseCase;
@@ -107,7 +107,7 @@ class Pending extends Component
         if ($cashTransaction && $cashTransaction->status === 'pending' && $cashTransaction->transaction_type === 'Withdrawal') {
             $safe = \App\Models\Domain\Entities\Safe::find($cashTransaction->safe_id);
             $amount = abs($cashTransaction->amount);
-            
+
             // Branch withdrawal logic
             if ($cashTransaction->destination_branch_id && $cashTransaction->destination_safe_id) {
                 // Deduct from selected branch's safe (destination_safe_id)
@@ -128,8 +128,13 @@ class Pending extends Component
                 }
             } else {
                 // Regular withdrawal logic
-                // Deduct from client wallet if applicable
-                if ($cashTransaction->customer_code) {
+                // Check if this is a client wallet withdrawal (identified by the notes)
+                if (str_contains($cashTransaction->notes, 'CLIENT_WALLET_WITHDRAWAL')) {
+                    // For client wallet withdrawals, the customer balance was already deducted
+                    // when the transaction was created, so no safe balance deduction needed
+                    // Just update the status to completed
+                } elseif ($cashTransaction->customer_code) {
+                    // For non-client wallet withdrawals, deduct from client wallet if applicable
                     $client = \App\Models\Domain\Entities\Customer::where('customer_code', $cashTransaction->customer_code)->first();
                     if ($client) {
                         if (($client->balance - $amount) < 0) {
@@ -139,9 +144,18 @@ class Pending extends Component
                         $client->balance -= $amount;
                         $client->save();
                     }
-                }
-                // Expense withdrawal
-                if ($cashTransaction->destination_branch_id && !$cashTransaction->customer_code && str_contains($cashTransaction->customer_name, 'Expense:')) {
+
+                    // Also deduct from safe for regular customer withdrawals
+                    if ($safe) {
+                        if (($safe->current_balance - $amount) < 0) {
+                            session()->flash('error', 'Insufficient safe balance. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                            return;
+                        }
+                        $safe->current_balance -= $amount;
+                        $safe->save();
+                    }
+                } elseif ($cashTransaction->destination_branch_id && !$cashTransaction->customer_code && str_contains($cashTransaction->customer_name, 'Expense:')) {
+                    // Expense withdrawal
                     if ($safe) {
                         if (($safe->current_balance - $amount) < 0) {
                             session()->flash('error', 'Insufficient safe balance for expense withdrawal. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
@@ -151,7 +165,7 @@ class Pending extends Component
                         $safe->save();
                     }
                 } else {
-                    // Deduct from safe for regular withdrawal
+                    // Deduct from safe for other types of withdrawals (direct, user, admin)
                     if ($safe) {
                         if (($safe->current_balance - $amount) < 0) {
                             session()->flash('error', 'Insufficient safe balance. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
@@ -170,7 +184,7 @@ class Pending extends Component
             $this->dispatch('$refresh');
             return;
         }
-        
+
         session()->flash('error', 'Failed to approve transaction: Transaction not found or already processed.');
     }
 
@@ -182,7 +196,7 @@ class Pending extends Component
         $source = $transaction['source'] ?? null;
 
         // Debug logging
-        \Log::debug('PendingComponent reject attempt', [
+        Log::debug('PendingComponent reject attempt', [
             'transaction_id' => $transactionId,
             'transaction_type' => $transaction['transaction_type'] ?? null,
             'transaction_status' => $transaction['status'] ?? null,

@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
             'name' => 'Cairo Branch',
             'location' => 'Cairo',
         ], [
-            'branch_code' => 'CAI001',
+            'branch_code' => 'CA001', // Fixed to match constraint: 2 letters + 3 digits
             'description' => 'Test branch for Cairo',
         ]);
 

@@ -19,7 +19,7 @@ class LineSeeder extends Seeder
             $branch = Branch::create([
                 'name' => 'Main Branch',
                 'location' => 'Cairo',
-                'branch_code' => 'MAIN001', // added to match schema
+                'branch_code' => 'MN001', // Fixed to match constraint: 2 letters + 3 digits
             ]);
         }
 

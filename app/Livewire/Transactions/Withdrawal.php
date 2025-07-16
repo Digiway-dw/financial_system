@@ -356,11 +356,16 @@ class Withdrawal extends Create
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
+
+                // Update customer balance immediately (decrease by withdrawal amount)
+                $client->balance -= $this->amount;
+                $client->save();
+
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
                     'customer_name' => $customerName,
                     'customer_code' => $customerCode,
                     'amount' => abs($this->amount),
-                    'notes' => $notes,
+                    'notes' => $notes . ' | CLIENT_WALLET_WITHDRAWAL',
                     'safe_id' => $safeId,
                     'transaction_type' => $transactionType,
                     'status' => $status,
