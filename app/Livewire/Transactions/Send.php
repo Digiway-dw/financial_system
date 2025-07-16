@@ -58,7 +58,6 @@ class Send extends Component
     public $canSelectBranch = false;
 
     // Payment Options
-    public $collectFromClientSafe = false;
     public $collectFromCustomerWallet = false;
     public $deductFromLineOnly = true;
 
@@ -114,24 +113,12 @@ class Send extends Component
         $this->checkLineBalance();
     }
 
-    public function updatedCollectFromClientSafe()
-    {
-        if ($this->collectFromClientSafe) {
-            $this->collectFromCustomerWallet = false;
-            $this->deductFromLineOnly = false;
-        } else {
-            $this->deductFromLineOnly = !$this->collectFromCustomerWallet;
-        }
-        $this->checkLineBalance();
-    }
-
     public function updatedCollectFromCustomerWallet()
     {
         if ($this->collectFromCustomerWallet) {
-            $this->collectFromClientSafe = false;
             $this->deductFromLineOnly = false;
         } else {
-            $this->deductFromLineOnly = !$this->collectFromClientSafe;
+            $this->deductFromLineOnly = !$this->collectFromCustomerWallet;
         }
         $this->checkLineBalance();
     }
@@ -263,10 +250,7 @@ class Send extends Component
         $clientBalance = (float) $this->clientBalance;
         $requiredAmount = $amount;
 
-        if ($this->collectFromClientSafe && $clientBalance > 0) {
-            // If collecting from client safe, reduce required amount from line
-            $requiredAmount = max(0, $amount - $clientBalance);
-        } elseif ($this->collectFromCustomerWallet && $clientBalance > 0) {
+        if ($this->collectFromCustomerWallet && $clientBalance > 0) {
             // If collecting from customer wallet, reduce required amount from line
             $requiredAmount = max(0, $amount - $clientBalance);
         }
@@ -294,7 +278,7 @@ class Send extends Component
             return;
         }
 
-        if (($this->collectFromClientSafe || $this->collectFromCustomerWallet) && $clientBalance < $amount) {
+        if ($this->collectFromCustomerWallet && $clientBalance < $amount) {
             $this->errorMessage = 'Client balance is insufficient for this transaction.';
             return;
         }
@@ -395,9 +379,7 @@ class Send extends Component
 
     private function getPaymentMethod()
     {
-        if ($this->collectFromClientSafe) {
-            return 'client safe';
-        } elseif ($this->collectFromCustomerWallet) {
+        if ($this->collectFromCustomerWallet) {
             return 'client wallet';
         } else {
             return 'line balance';
@@ -419,7 +401,6 @@ class Send extends Component
             'discount',
             'discountNotes',
             'selectedLineId',
-            'collectFromClientSafe',
             'collectFromCustomerWallet',
             'deductFromLineOnly',
             'clientSuggestions',

@@ -392,18 +392,8 @@
                             <label class="block text-sm font-medium text-gray-700 mb-3">Payment Options</label>
 
                             <div class="space-y-3">
-                                <!-- Collect From Client Safe -->
+                                <!-- Collect From Customer Wallet -->
                                 @if ($clientBalance > 0)
-                                    <label
-                                        class="flex items-center p-3 bg-blue-50 rounded-xl cursor-pointer hover:bg-blue-100 transition-colors">
-                                        <input wire:model.live="collectFromClientSafe" type="checkbox"
-                                            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                        <span class="ml-3 text-sm font-medium text-blue-900">
-                                            Collect from Client Safe + Line Balance
-                                        </span>
-                                    </label>
-
-                                    <!-- Collect From Customer Wallet -->
                                     <label
                                         class="flex items-center p-3 bg-purple-50 rounded-xl cursor-pointer hover:bg-purple-100 transition-colors">
                                         <input wire:model.live="collectFromCustomerWallet" type="checkbox"
