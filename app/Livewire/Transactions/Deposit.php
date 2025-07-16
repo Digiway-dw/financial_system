@@ -63,13 +63,13 @@ class Deposit extends Create
     {
         $search = trim($this->clientSearch);
         if (strlen($search) >= 2) {
-            $clients = \App\Models\Domain\Entities\Customer::where(function($query) use ($search) {
+            $clients = \App\Models\Domain\Entities\Customer::where(function ($query) use ($search) {
                 $query->where('mobile_number', 'like', "%$search%")
-                      ->orWhere('customer_code', 'like', "%$search%")
-                      ->orWhere('name', 'like', "%$search%");
+                    ->orWhere('customer_code', 'like', "%$search%")
+                    ->orWhere('name', 'like', "%$search%");
             })
-            ->limit(8)
-            ->get(['id', 'name', 'mobile_number', 'customer_code', 'balance']);
+                ->limit(8)
+                ->get(['id', 'name', 'mobile_number', 'customer_code', 'balance']);
             $this->clientSuggestions = $clients->toArray();
         } else {
             $this->clientSuggestions = [];

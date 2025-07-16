@@ -82,15 +82,16 @@
                                 Client Mobile Number <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
-                                <input wire:model="clientMobile" wire:input="searchClient" id="clientMobile" type="text"
+                                <input wire:model="clientMobile" wire:input="searchClient" id="clientMobile"
+                                    type="text"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('clientMobile') border-red-500 @enderror"
                                     placeholder="Enter mobile number, name, or customer code" autocomplete="off">
                                 @if ($clientId)
-                                    <button type="button" 
-                                            wire:click="clearClientSelection"
-                                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors">
+                                    <button type="button" wire:click="clearClientSelection"
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     </button>
                                 @endif
@@ -101,24 +102,32 @@
 
                             <!-- Enhanced Client Suggestions Dropdown -->
                             @if (!empty($clientSuggestions) && !$clientId && strlen($clientMobile) >= 2)
-                                <div class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-64 overflow-y-auto">
+                                <div
+                                    class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-64 overflow-y-auto">
                                     @foreach ($clientSuggestions as $suggestion)
                                         <div wire:click="selectClient({{ $suggestion['id'] }})"
                                             class="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors">
                                             <div class="flex items-center justify-between">
                                                 <div>
-                                                    <div class="font-semibold text-gray-900">{{ $suggestion['name'] }}</div>
+                                                    <div class="font-semibold text-gray-900">{{ $suggestion['name'] }}
+                                                    </div>
                                                     <div class="text-sm text-gray-600">
                                                         <span class="inline-flex items-center mr-4">
-                                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                            <svg class="w-4 h-4 mr-1" fill="none"
+                                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                                             </svg>
                                                             {{ $suggestion['mobile_number'] }}
                                                         </span>
-                                                        @if($suggestion['customer_code'])
+                                                        @if ($suggestion['customer_code'])
                                                             <span class="inline-flex items-center">
-                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                                <svg class="w-4 h-4 mr-1" fill="none"
+                                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                                        stroke-width="2"
+                                                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                                                 </svg>
                                                                 {{ $suggestion['customer_code'] }}
                                                             </span>
@@ -126,13 +135,14 @@
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
-                                                    <div class="text-sm font-semibold {{ $suggestion['balance'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                                                    <div
+                                                        class="text-sm font-semibold {{ $suggestion['balance'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
                                                         {{ number_format($suggestion['balance'], 2) }} EGP
                                                     </div>
                                                     <div class="text-xs text-gray-500">Balance</div>
                                                 </div>
                                             </div>
-                                            @if($suggestion['gender'])
+                                            @if ($suggestion['gender'])
                                                 <div class="text-xs text-gray-500 mt-1">
                                                     Gender: {{ ucfirst($suggestion['gender']) }}
                                                 </div>
@@ -147,23 +157,27 @@
                                 <div class="mt-3 bg-emerald-50 rounded-lg border border-emerald-200 p-3 shadow-sm">
                                     <div class="flex items-center justify-between mb-2">
                                         <h5 class="font-semibold text-emerald-800 text-sm flex items-center">
-                                            <svg class="w-4 h-4 text-emerald-600 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            <svg class="w-4 h-4 text-emerald-600 mr-1" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                             Selected Client
                                         </h5>
-                                        <button type="button" 
-                                                wire:click="clearClientSelection"
-                                                class="text-gray-400 hover:text-red-500 transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        <button type="button" wire:click="clearClientSelection"
+                                            class="text-gray-400 hover:text-red-500 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
                                             </svg>
                                         </button>
                                     </div>
                                     <div class="grid grid-cols-2 gap-2 text-xs">
                                         <div>
                                             <span class="font-medium text-gray-600">Balance:</span>
-                                            <div class="font-semibold {{ $clientBalance >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                                            <div
+                                                class="font-semibold {{ $clientBalance >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
                                                 {{ number_format($clientBalance, 2) }} EGP
                                             </div>
                                         </div>

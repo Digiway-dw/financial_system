@@ -139,13 +139,13 @@ class Send extends Component
     public function searchClient()
     {
         if (strlen($this->clientMobile) >= 2) {
-            $clients = Customer::where(function($query) {
+            $clients = Customer::where(function ($query) {
                 $query->where('mobile_number', 'like', '%' . $this->clientMobile . '%')
-                      ->orWhere('customer_code', 'like', '%' . $this->clientMobile . '%')
-                      ->orWhere('name', 'like', '%' . $this->clientMobile . '%');
+                    ->orWhere('customer_code', 'like', '%' . $this->clientMobile . '%')
+                    ->orWhere('name', 'like', '%' . $this->clientMobile . '%');
             })
-            ->limit(8)
-            ->get(['id', 'name', 'mobile_number', 'customer_code', 'gender', 'balance']);
+                ->limit(8)
+                ->get(['id', 'name', 'mobile_number', 'customer_code', 'gender', 'balance']);
 
             $this->clientSuggestions = $clients->toArray();
 
@@ -433,8 +433,13 @@ class Send extends Component
     public function clearClientSelection()
     {
         $this->reset([
-            'clientId', 'clientName', 'clientMobile', 'clientCode', 
-            'clientGender', 'clientBalance', 'clientSuggestions'
+            'clientId',
+            'clientName',
+            'clientMobile',
+            'clientCode',
+            'clientGender',
+            'clientBalance',
+            'clientSuggestions'
         ]);
     }
 
