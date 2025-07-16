@@ -63,6 +63,23 @@
 
 ---
 
+## 📚 Documentation
+
+All detailed documentation has been organized in the [`readme/`](readme/) folder:
+
+- **📖 [Documentation Index](readme/INDEX.md)** - Complete overview of all documentation
+- **🔐 Agent & Authorization** - User management and permissions
+- **🏦 Transaction Management** - Financial operations and fixes  
+- **🔒 Roles & Permissions** - Access control documentation
+- **🗄️ Database & Infrastructure** - Technical implementation details
+- **⏱️ Work Sessions & Timers** - Session management features
+- **🎨 UI & Frontend** - Interface enhancements
+- **🔧 Development & Fixes** - Technical fixes and setup guides
+
+For the complete organized documentation index, visit: **[readme/INDEX.md](readme/INDEX.md)**
+
+---
+
 ## 🎯 Features
 
 <div align="center">
