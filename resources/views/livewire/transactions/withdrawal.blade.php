@@ -305,60 +305,149 @@
 
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <!-- Client Search -->
-                                <div class="space-y-2">
+                                <div class="space-y-2 relative">
                                     <label class="flex items-center text-sm font-semibold text-slate-700">
                                         <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                         </svg>
-                                        البحث عن العميل (كود العميل أو رقم الجوال)
+                                        البحث عن العميل (رقم الجوال أو كود العميل)
                                     </label>
-                                    <input type="text" wire:model.debounce.300ms="clientSearch"
-                                        class="w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 bg-white text-slate-900"
-                                        placeholder="أدخل كود العميل أو رقم الجوال" autocomplete="off" />
-
-                                    @if (!empty($clientSuggestions))
+                                    <div class="relative">
                                         <div
-                                            class="absolute z-10 w-full bg-white border border-slate-200 rounded-lg shadow-lg mt-1 max-h-40 overflow-y-auto">
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                        </div>
+                                        <input type="text" wire:model.live.debounce.300ms="clientSearch"
+                                            class="w-full pl-10 pr-10 py-3 rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 bg-white text-slate-900"
+                                            placeholder="ابحث برقم الجوال أو كود العميل..." autocomplete="off" />
+                                        @if ($clientSearch && !$clientId)
+                                            <button type="button" wire:click="clearClientSelection"
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        @endif
+                                    </div>
+
+                                    @if (!empty($clientSuggestions) && !$clientId && strlen($clientSearch) >= 2)
+                                        <div
+                                            class="absolute z-50 w-full bg-white border border-slate-200 rounded-lg shadow-xl mt-1 max-h-64 overflow-y-auto">
+                                            <div class="p-2 border-b border-slate-100 bg-slate-50">
+                                                <p class="text-xs text-slate-600 font-medium">
+                                                    {{ count($clientSuggestions) }} عميل موجود</p>
+                                            </div>
                                             @foreach ($clientSuggestions as $suggestion)
-                                                <div class="px-4 py-3 hover:bg-emerald-50 cursor-pointer border-b border-slate-100 last:border-b-0 transition-colors duration-150"
+                                                <div class="px-4 py-3 hover:bg-emerald-50 cursor-pointer border-b border-slate-100 last:border-b-0 transition-colors duration-150 group"
                                                     wire:click="selectClient({{ $suggestion['id'] }})">
-                                                    <div class="font-semibold text-slate-900">
-                                                        {{ $suggestion['name'] }}</div>
-                                                    <div class="text-sm text-slate-600">
-                                                        {{ $suggestion['mobile_number'] }} •
-                                                        {{ $suggestion['customer_code'] }}</div>
+                                                    <div class="flex items-center justify-between">
+                                                        <div class="flex-1">
+                                                            <div
+                                                                class="font-semibold text-slate-900 group-hover:text-emerald-700">
+                                                                {{ $suggestion['name'] }}
+                                                            </div>
+                                                            <div class="text-sm text-slate-600 mt-1 space-y-1">
+                                                                <div class="flex items-center gap-4">
+                                                                    <span class="flex items-center gap-1 font-medium">
+                                                                        <svg class="w-3 h-3 text-emerald-500"
+                                                                            fill="none" stroke="currentColor"
+                                                                            viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round"
+                                                                                stroke-linejoin="round"
+                                                                                stroke-width="2"
+                                                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                                        </svg>
+                                                                        {{ $suggestion['mobile_number'] }}
+                                                                    </span>
+                                                                    <span class="flex items-center gap-1 font-medium">
+                                                                        <svg class="w-3 h-3 text-blue-500"
+                                                                            fill="none" stroke="currentColor"
+                                                                            viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round"
+                                                                                stroke-linejoin="round"
+                                                                                stroke-width="2"
+                                                                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                                        </svg>
+                                                                        {{ $suggestion['customer_code'] }}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-right">
+                                                            <div class="text-sm font-bold text-emerald-600">
+                                                                {{ number_format($suggestion['balance'], 2) }} ج.م
+                                                            </div>
+                                                            <div class="text-xs text-slate-500">الرصيد المتاح</div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             @endforeach
                                         </div>
                                     @endif
                                     @error('clientSearch')
-                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        <p class="text-red-600 text-sm mt-1 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
 
                                 <!-- Selected Client Info -->
                                 @if ($clientName)
-                                    <div class="bg-white rounded-lg border border-emerald-200 p-4">
-                                        <h5 class="font-semibold text-emerald-800 mb-2">معلومات العميل المحدد</h5>
-                                        <div class="space-y-2 text-sm">
-                                            <div class="flex justify-between"><span
-                                                    class="text-slate-600">الاسم:</span> <span
-                                                    class="font-medium text-slate-900">{{ $clientName }}</span>
+                                    <div class="bg-white rounded-lg border-2 border-emerald-200 p-4 shadow-sm">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h5 class="font-semibold text-emerald-800 flex items-center">
+                                                <svg class="w-4 h-4 mr-2 text-emerald-600" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                العميل المحدد
+                                            </h5>
+                                            <button type="button" wire:click="clearClientSelection"
+                                                class="text-slate-400 hover:text-red-500 transition-colors duration-200 p-1 rounded-full hover:bg-red-50">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="space-y-3 text-sm">
+                                            <div
+                                                class="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg">
+                                                <span class="text-slate-600 font-medium">الاسم:</span>
+                                                <span class="font-semibold text-slate-900">{{ $clientName }}</span>
                                             </div>
-                                            <div class="flex justify-between"><span
-                                                    class="text-slate-600">الجوال:</span> <span
-                                                    class="font-medium text-slate-900">{{ $clientMobile }}</span>
+                                            <div
+                                                class="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg">
+                                                <span class="text-slate-600 font-medium">الجوال:</span>
+                                                <span class="font-semibold text-slate-900">{{ $clientMobile }}</span>
                                             </div>
-                                            <div class="flex justify-between"><span
-                                                    class="text-slate-600">الكود:</span> <span
-                                                    class="font-medium text-slate-900">{{ $clientCode }}</span>
+                                            <div
+                                                class="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg">
+                                                <span class="text-slate-600 font-medium">الكود:</span>
+                                                <span class="font-semibold text-slate-900">{{ $clientCode }}</span>
                                             </div>
-                                            <div class="flex justify-between"><span
-                                                    class="text-slate-600">الرصيد:</span> <span
-                                                    class="font-bold text-emerald-600">{{ number_format($clientBalance, 2) }}
-                                                    ج.م</span></div>
+                                            <div
+                                                class="flex items-center justify-between py-2 px-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                                                <span class="text-emerald-700 font-medium">الرصيد المتاح:</span>
+                                                <span
+                                                    class="font-bold text-emerald-600 text-lg">{{ number_format($clientBalance, 2) }}
+                                                    ج.م</span>
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
@@ -726,7 +815,8 @@
                             إلغاء
                         </a>
                         <button type="submit"
-                            class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 border border-transparent rounded-xl font-semibold text-white hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 active:from-blue-800 active:to-blue-900 transition-all duration-200 shadow-lg hover:shadow-xl">
+                            class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 border border-transparent rounded-xl font-semibold text-white hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 active:from-blue-800 active:to-blue-900 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500"
+                            @if ($withdrawalType === 'client_wallet' && !$clientId) disabled @endif>
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
