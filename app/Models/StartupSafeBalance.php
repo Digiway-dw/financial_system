@@ -9,6 +9,7 @@ class StartupSafeBalance extends Model
 {
     protected $fillable = [
         'branch_id',
+        'safe_id',
         'balance',
         'date',
     ];
@@ -16,5 +17,10 @@ class StartupSafeBalance extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Domain\Entities\Branch::class, 'branch_id');
+    }
+
+    public function safe(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Domain\Entities\Safe::class, 'safe_id');
     }
 }

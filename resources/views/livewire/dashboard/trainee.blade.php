@@ -1,20 +1,25 @@
-<!-- Trainee Summary Table: Startup Balance, Today's Transactions, Safe Balance -->
-<table class="min-w-max w-full table-auto border border-gray-300 mb-6">
-    <thead>
-        <tr class="bg-gray-100 text-center">
-            <th class="px-4 py-2 border">Startup Balance</th>
-            <th class="px-4 py-2 border">Today's Transactions</th>
-            <th class="px-4 py-2 border">Safe Balance</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr class="text-center">
-            <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($startupSafeBalance ?? 0, 2) }}</td>
-            <td class="px-4 py-2 border text-purple-700 font-bold">{{ $agentTodayTransactionsCount ?? 0 }}</td>
-            <td class="px-4 py-2 border font-bold">{{ number_format($safesBalance ?? 0, 2) }}</td>
-        </tr>
-    </tbody>
-</table>
+<div>
+<!-- Trainee Summary Table: Safe Name, Safe Balance, Startup Balance, Today's Transactions -->
+
+
+<!-- Add Customer Quick Action for Trainee -->
+@can('manage-customers')
+<a href="{{ route('customers.create') }}"
+    class="group flex items-center p-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 rounded-xl transition-all duration-200 mb-6">
+    <div
+        class="w-12 h-12 bg-indigo-100 group-hover:bg-indigo-200 rounded-lg flex items-center justify-center mr-4">
+        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+    </div>
+    <div>
+        <h3 class="font-semibold text-indigo-900">Add Customer</h3>
+        <p class="text-sm text-indigo-700">Register a new customer</p>
+    </div>
+</a>
+@endcan
+
 @if(request()->query('search_transaction'))
     <div class="mb-6 bg-white rounded-xl shadow p-6 flex flex-col items-center">
         <form method="GET" action="{{ route('dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
@@ -51,3 +56,4 @@
     </div>
 @endif
 @include('livewire.dashboard.agent', $data ?? [])
+</div>

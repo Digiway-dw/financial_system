@@ -25,7 +25,7 @@ class Create extends Component
     public $balance = 0.00;
 
     #[Validate('boolean')] 
-    public $is_client = false;
+    public $is_client = false; // Default: customer does not have a wallet
 
     #[Validate('nullable|exists:users,id')] 
     public $agent_id = null;
@@ -54,9 +54,7 @@ class Create extends Component
     public function mount()
     {
         $user = auth()->user();
-        if ($user->hasAnyRole(['agent', 'trainee'])) {
-            abort(403, 'You do not have permission to create customers.');
-        }
+        // Remove the abort for agents, rely on Gate authorization
         Gate::authorize('manage-customers');
         $this->agents = User::role('agent')->get();
         $this->branches = $this->branchRepository->all();

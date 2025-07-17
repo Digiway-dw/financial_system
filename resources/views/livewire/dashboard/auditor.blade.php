@@ -20,20 +20,25 @@
             <div class="text-base font-bold text-gray-800">{{ $selectedBranchDetails['name'] }}</div>
         </div>
     @endif
+    <!-- Auditor Summary Table: Safe Name, Safe Balance, Today's Transactions -->
     <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
         <thead>
             <tr class="bg-gray-100 text-center">
-                <th class="px-4 py-2 border">رصيد افتتاحي</th>
-                <th class="px-4 py-2 border">عدد المعاملات</th>
-                <th class="px-4 py-2 border">الخزينة</th>
+                <th class="px-4 py-2 border">Safe Name</th>
+                <th class="px-4 py-2 border">Safe Balance</th>
+                <th class="px-4 py-2 border">Today's Transactions</th>
             </tr>
         </thead>
         <tbody>
-            <tr class="text-center">
-                <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($startupSafeBalance, 2) }}</td>
-                <td class="px-4 py-2 border text-purple-700 font-bold">{{ $totalTransactionsCount }}</td>
-                <td class="px-4 py-2 border font-bold">{{ number_format($safesBalance, 2) }}</td>
-            </tr>
+            @forelse ($branchSafes as $safe)
+                <tr class="text-center">
+                    <td class="px-4 py-2 border font-semibold">{{ $safe['name'] }}</td>
+                    <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($safe['current_balance'], 2) }}</td>
+                    <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="3" class="px-4 py-2 border text-center text-gray-500">No safes found for this branch.</td></tr>
+            @endforelse
         </tbody>
     </table>
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 mb-8">

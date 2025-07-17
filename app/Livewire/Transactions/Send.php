@@ -88,6 +88,14 @@ class Send extends Component
     public function updatedClientMobile()
     {
         $this->searchClient();
+
+        // If the mobile number does not match the selected client, clear selection
+        if ($this->clientId) {
+            $client = Customer::find($this->clientId);
+            if (!$client || $client->mobile_number !== $this->clientMobile) {
+                $this->clearClientSelection();
+            }
+        }
     }
 
     public function updatedAmount()
@@ -357,13 +365,11 @@ class Send extends Component
                     $admins = User::role('admin')->get();
                     Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
 
-                    // Redirect to waiting approval screen for transactions with discount
-                    $this->successMessage = 'Transaction submitted for admin approval due to discount applied.';
+                    // Print receipt and redirect to receipt page for transactions with discount
+                    app(\App\Services\ReceiptPrinterService::class)->printReceipt($transaction, 'html');
+                    $this->successMessage = 'Transaction created with discount. Printing receipt...';
                     $this->resetTransactionForm();
-                    if (auth()->user()->hasRole('general_supervisor')) {
-                        return redirect()->route('transactions.receipt', ['transaction' => $transaction->id]);
-                    }
-                    return redirect()->route('transactions.waiting-approval', ['transactionId' => $transaction->id]);
+                    return redirect()->route('transactions.receipt', ['transaction' => $transaction->id]);
                 }
 
                 // Print receipt

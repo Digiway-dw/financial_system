@@ -63,32 +63,28 @@
         </div>
     @endif
 
-    <!-- Agent Summary Table: Startup Balance, Today's Transactions, Safe Balance -->
+    <!-- Agent Summary Table: Safe Name, Safe Balance, Startup Balance, Today's Transactions -->
     <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
         <thead>
             <tr class="bg-gray-100 text-center">
-                <th class="px-4 py-2 border">Startup Balance</th>
-                <th class="px-4 py-2 border">Today's Transactions</th>
+                <th class="px-4 py-2 border">Safe Name</th>
                 <th class="px-4 py-2 border">Safe Balance</th>
+                <th class="px-4 py-2 border">Today's Transactions</th>
             </tr>
         </thead>
         <tbody>
-            <tr class="text-center">
-                <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($startupSafeBalance ?? 0, 2) }}</td>
-                <td class="px-4 py-2 border text-purple-700 font-bold">{{ $agentTodayTransactionsCount ?? 0 }}</td>
-                <td class="px-4 py-2 border font-bold">{{ number_format($safesBalance ?? 0, 2) }}</td>
-            </tr>
+            @forelse ($branchSafes as $safe)
+                <tr class="text-center">
+                    <td class="px-4 py-2 border font-semibold">{{ $safe['name'] }}</td>
+                    <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($safe['current_balance'], 2) }}</td>
+                    <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="4" class="px-4 py-2 border text-center text-gray-500">No safes found for your branch.</td></tr>
+            @endforelse
         </tbody>
     </table>
 
-    @if (isset($totalSafeBalance))
-        <div class="text-lg text-gray-700 mb-1">Total Safe Balance: <span
-                class="font-bold">{{ number_format($totalSafeBalance, 2) }} EGP</span></div>
-    @endif
-    @if (isset($branchSafeBalance))
-        <div class="text-lg text-gray-700 mb-1">Branch Safe Balance: <span
-                class="font-bold">{{ number_format($branchSafeBalance, 2) }} EGP</span></div>
-    @endif
     <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
         <div class="border-b border-gray-100 pb-4 mb-6">
             <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">

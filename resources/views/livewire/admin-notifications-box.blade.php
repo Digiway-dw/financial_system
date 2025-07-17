@@ -258,8 +258,44 @@
 
                                         <!-- Action Buttons -->
                                         <div class="flex flex-col space-y-2 ml-4">
-                                            @if (isset($notification->data['url']))
-                                                <a href="{{ $notification->data['url'] }}"
+                                            @if (($notification->data['type'] ?? null) === 'withdrawal')
+                                                <div class="flex flex-col items-end space-y-1">
+                                                    <button wire:click="approveNotification('{{ $notification->id }}')"
+                                                        class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg shadow transition-colors duration-200">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                        Accept Withdrawal
+                                                    </button>
+                                                    <button wire:click="rejectNotification('{{ $notification->id }}')"
+                                                        class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg shadow transition-colors duration-200">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                        Reject Withdrawal
+                                                    </button>
+                                                </div>
+                                            @elseif (($notification->data['type'] ?? null) === 'pending_transaction')
+                                                <button wire:click="approveNotification('{{ $notification->id }}')"
+                                                    class="inline-flex items-center px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 text-xs font-medium rounded-lg transition-colors duration-200">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Approve
+                                                </button>
+                                                <button wire:click="rejectNotification('{{ $notification->id }}')"
+                                                    class="inline-flex items-center px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium rounded-lg transition-colors duration-200">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    Reject
+                                                </button>
+                                            @else
+                                                <a href="{{ route('notifications.show', $notification->id) }}"
                                                     class="inline-flex items-center px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-colors duration-200">
                                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -271,8 +307,7 @@
                                                     View
                                                 </a>
                                             @endif
-
-                                            @if ($notification->read_at === null)
+                                            @if ($notification->read_at === null && !in_array(($notification->data['type'] ?? null), ['pending_transaction', 'withdrawal']))
                                                 <button wire:click="markAsRead('{{ $notification->id }}')"
                                                     class="inline-flex items-center px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 text-xs font-medium rounded-lg transition-colors duration-200">
                                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"

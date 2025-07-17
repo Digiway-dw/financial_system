@@ -10,12 +10,14 @@ return new class extends Migration {
         Schema::create('startup_safe_balances', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('branch_id')->nullable();
+            $table->unsignedBigInteger('safe_id')->nullable();
             $table->decimal('balance', 15, 2);
             $table->date('date');
             $table->timestamps();
 
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->unique(['branch_id', 'date']);
+            $table->foreign('safe_id')->references('id')->on('safes')->onDelete('cascade');
+            $table->unique(['safe_id', 'date']);
         });
     }
 

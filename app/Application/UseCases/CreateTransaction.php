@@ -97,8 +97,8 @@ class CreateTransaction
             throw new \Exception('Agent not found.');
         }
 
-        // Use the commission passed from the component, applying any deduction
-        $finalCommission = $commission - $deduction;
+        // Use the commission passed from the component, do NOT apply deduction
+        $finalCommission = $commission;
         if ($finalCommission < 0) {
             $finalCommission = 0; // Commission cannot be negative
         }
@@ -111,9 +111,9 @@ class CreateTransaction
             // General supervisors: all transactions are completed immediately (no approval needed)
             $status = 'Completed';
         } else {
-            // Only mark as pending if there's a deduction (discount)
+            // For discount transactions, do not set to Pending, just notify
             if ($deduction > 0) {
-                $status = 'Pending';
+                $status = 'Completed';
             } else {
                 $status = 'Completed';
             }
@@ -343,29 +343,13 @@ class CreateTransaction
 
         $createdTransaction = $this->transactionRepository->create($attributes);
 
-        // Send notifications to Admin for deductions or pending transactions
+        // Send notifications to Admin and Supervisor for deductions
         $admins = \App\Domain\Entities\User::role('admin')->get();
-
+        $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
         if ($deduction > 0) {
             $message = "A new transaction with a deduction of " . $deduction . " EGP has been created by " . $agent->name . ".";
-            Notification::send($admins, new AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
-        }
-
-        // Notify if transaction is pending (unless it's a client safe withdrawal, which has its own notification)
-        if ($status === 'Pending' && !($transactionType === 'Withdrawal' && $safe->type === 'client')) {
-            $message = "A new " . $transactionType . " transaction of " . $amount . " EGP by " . $agent->name . " is pending and requires your approval.";
-            $recipients = \App\Domain\Entities\User::role('admin')
-                ->orWhere(function ($query) {
-                    $query->role('general_supervisor');
-                });
-            // Include branch manager if the transaction is tied to a specific branch and they are a branch manager
-            if ($agent->branch_id) {
-                $recipients->orWhere(function ($query) use ($agent) {
-                    $query->where('branch_id', $agent->branch_id)
-                        ->role('branch_manager');
-                });
-            }
-            Notification::send($recipients->get(), new AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
+            \Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
+            \Notification::send($supervisors, new \App\Notifications\AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
         }
 
         return $createdTransaction;

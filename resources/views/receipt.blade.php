@@ -93,8 +93,22 @@
                 class="label-en">User</span></div>
         <div class="row"><span class="value">{{ $transaction->customer_name ?? 'N/A' }}</span><span
                 class="label-en">Customer</span></div>
-        <div class="row"><span class="value">{{ $transaction->customer_mobile_number ?? 'N/A' }}</span><span
-                class="label-en">Mobile</span></div>
+        @if (strtolower($transaction->transaction_type) === 'receive' && !empty($transaction->sender_mobile_number))
+            <div class="row">
+                <span class="value">{{ $transaction->sender_mobile_number }}</span>
+                <span class="label-en">Sender Mobile</span>
+            </div>
+        @endif
+        <div class="row">
+            <span class="value">
+                @if (strtolower($transaction->transaction_type) === 'transfer' && !empty($transaction->receiver_mobile_number))
+                    {{ $transaction->receiver_mobile_number }}
+                @else
+                    {{ $transaction->customer_mobile_number ?? 'N/A' }}
+                @endif
+            </span>
+            <span class="label-en">Mobile</span>
+        </div>
         <div class="row"><span class="value">{{ number_format($transaction->amount, 2) }}</span><span
                 class="label-en">Amount</span></div>
         <div class="row"><span class="value">{{ number_format($transaction->commission, 2) }}</span><span
@@ -114,6 +128,7 @@
         <div class="line" style="margin: 4px 0;"></div>
         <h5>01278120303 للشكاوى و المقترحات</h5>
         <button onclick="window.print()">Print</button>
+        <button onclick="window.location.href='{{ route('dashboard') }}'" style="margin-left: 8px;">Home</button>
     </div>
 </body>
 

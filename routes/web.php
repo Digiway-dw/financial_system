@@ -119,6 +119,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Notifications Routes
     Route::get('notifications', \App\Livewire\AdminNotificationsBox::class)->name('notifications.index');
+    Route::get('notifications/{notificationId}', \App\Livewire\Notifications\Details::class)->name('notifications.show');
 });
 
 Route::middleware(['auth'])->group(function () {

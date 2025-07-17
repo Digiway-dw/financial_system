@@ -83,6 +83,14 @@ class Receive extends Component
     public function updatedClientMobile()
     {
         $this->searchClient();
+
+        // If the mobile number does not match the selected client, clear selection
+        if ($this->clientId) {
+            $client = Customer::find($this->clientId);
+            if (!$client || $client->mobile_number !== $this->clientMobile) {
+                $this->clearClientSelection();
+            }
+        }
     }
 
     public function updatedAmount()
@@ -325,10 +333,9 @@ class Receive extends Component
                     // Notify admin for approval
                     $this->notifyAdmin($createdTransaction);
                     DB::commit();
-                    if (auth()->user()->hasRole('general_supervisor')) {
-                        return redirect()->route('transactions.receipt', ['transaction' => $createdTransaction->id]);
-                    }
-                    return redirect()->route('transactions.waiting-approval', ['transactionId' => $createdTransaction->id]);
+                    // Print receipt and redirect to receipt page for transactions with discount
+                    app(\App\Services\ReceiptPrinterService::class)->printReceipt($createdTransaction, 'html');
+                    return redirect()->route('transactions.receipt', ['transaction' => $createdTransaction->id]);
                 } else {
                     DB::commit();
                     return redirect()->route('transactions.receipt', ['transaction' => $createdTransaction->id]);
@@ -365,6 +372,19 @@ class Receive extends Component
             'errorMessage'
         ]);
         $this->loadAvailableLines();
+    }
+
+    public function clearClientSelection()
+    {
+        $this->reset([
+            'clientId',
+            'clientName',
+            'clientMobile',
+            'clientCode',
+            'clientGender',
+            'clientBalance',
+            'clientSuggestions'
+        ]);
     }
 
     public function render()

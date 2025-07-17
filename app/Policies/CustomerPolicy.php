@@ -38,10 +38,11 @@ class CustomerPolicy
      */
     public function create(User $user): bool
     {
-        // Only Admin, Branch Manager, and General Supervisor can create customers
+        // Allow Admin, Branch Manager, General Supervisor, and Agent to create customers
         return $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::BRANCH_MANAGER) ||
-            $user->hasRole(Roles::GENERAL_SUPERVISOR);
+            $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+            $user->hasRole(Roles::AGENT);
     }
 
     /**
