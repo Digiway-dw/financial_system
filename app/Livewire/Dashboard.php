@@ -359,6 +359,23 @@ class Dashboard extends Component
             } else {
                 $data['selectedBranchDetails'] = null;
             }
+            // Add branchSafes for the summary table
+            $today = \Carbon\Carbon::today();
+            if ($this->selectedBranchId !== 'all') {
+                $branchSafes = collect($this->safeRepository->allWithBranch())->where('branch_id', $this->selectedBranchId)->values();
+            } else {
+                $branchSafes = collect($this->safeRepository->allWithBranch());
+            }
+            $data['branchSafes'] = $branchSafes->map(function ($safe) use ($today) {
+                $todaysTransactions = \App\Models\Domain\Entities\CashTransaction::where('safe_id', $safe['id'] ?? $safe->id)
+                    ->whereDate('created_at', $today)
+                    ->count();
+                return [
+                    'name' => $safe['name'] ?? $safe->name ?? '',
+                    'current_balance' => $safe['current_balance'] ?? $safe->current_balance ?? 0,
+                    'todays_transactions' => $todaysTransactions,
+                ];
+            });
             $dashboardView = 'livewire.dashboard.auditor';
         }
 
