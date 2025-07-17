@@ -247,18 +247,24 @@
                             @enderror
                         </div>
 
+                        <!-- Initial Balance Checkbox -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Initial Balance</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" wire:model="useInitialBalance" id="useInitialBalance"
+                                    class="form-checkbox h-5 w-5 text-blue-600">
+                                <label for="useInitialBalance" class="text-slate-700">Activate Initial Balance</label>
+                            </div>
+                        </div>
+
                         <!-- Balance -->
                         <div>
-                            <label for="balance" class="block text-sm font-semibold text-slate-700 mb-2">Initial
-                                Balance</label>
-                            <div class="relative">
-                                <span
-                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">EGP</span>
-                                <input type="number" wire:model="balance" id="balance" name="balance"
-                                    step="0.01" required
-                                    class="w-full pl-14 pr-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                                    placeholder="0.00">
-                            </div>
+                            <label for="balance"
+                                class="block text-sm font-semibold text-slate-700 mb-2">Balance</label>
+                            <input type="number" wire:model="balance" id="balance" name="balance" min="0"
+                                step="0.01"
+                                class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
+                                placeholder="Enter initial balance" :disabled="!useInitialBalance">
                             @error('balance')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror

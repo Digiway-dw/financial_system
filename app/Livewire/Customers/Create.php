@@ -43,6 +43,8 @@ class Create extends Component
     public $creationStatus = null; // 'success', 'error'
     public $statusMessage = '';
 
+    public $useInitialBalance = false;
+
     private CreateCustomer $createCustomerUseCase;
     private UserRepository $userRepository;
     private BranchRepository $branchRepository;
@@ -84,9 +86,9 @@ class Create extends Component
             'mobileNumbers' => 'required|array|min:1',
             'mobileNumbers.*' => 'required|string|max:20|distinct',
             'gender' => 'required|in:male,female',
-            'balance' => 'required|numeric|min:0',
-            'is_client' => 'boolean',
-            'agent_id' => 'nullable|exists:users,id',
+            'balance' => $this->useInitialBalance ? 'required|numeric|min:0' : 'nullable|numeric|min:0',
+            'is_client' => 'required|boolean',
+            'agent_id' => 'required|exists:users,id',
             'branch_id' => 'required|exists:branches,id',
         ];
     }
@@ -106,12 +108,13 @@ class Create extends Component
         try {
             // Use the first mobile number as the primary
             $primaryMobile = $this->mobileNumbers[0];
+            $balance = $this->useInitialBalance ? $this->balance : 0.00;
             $customer = $this->createCustomerUseCase->execute(
                 $this->name,
                 $primaryMobile,
                 null, // customerCode is auto-generated
                 $this->gender,
-                $this->balance,
+                $balance,
                 $this->is_client,
                 $this->agent_id,
                 $this->branch_id
