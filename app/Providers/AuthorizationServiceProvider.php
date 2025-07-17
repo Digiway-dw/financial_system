@@ -69,7 +69,8 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('view-customers', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR);
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::AGENT);
         });
 
         // ===== LINES VIEWING =====

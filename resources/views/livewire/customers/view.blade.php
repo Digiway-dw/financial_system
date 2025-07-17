@@ -87,6 +87,12 @@
                         <p class="text-slate-800">
                             {{ $customer->created_at ? $customer->created_at->format('M d, Y') : 'N/A' }}</p>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">Created by</label>
+                        <div class="text-slate-800 font-semibold">
+                            {{ $customer->createdBy ? $customer->createdBy->name : 'N/A' }}
+                        </div>
+                    </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-slate-500 mb-1">Notes</label>
                         <p class="text-slate-800">{{ $customer->notes ?? 'No notes available' }}</p>

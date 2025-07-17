@@ -12,10 +12,10 @@ return new class extends Migration {
             if (!Schema::hasColumn('startup_safe_balances', 'safe_id')) {
                 $table->unsignedBigInteger('safe_id')->nullable()->after('branch_id');
             }
-            
+
             // Add foreign key constraint for safe_id
             $table->foreign('safe_id')->references('id')->on('safes')->onDelete('cascade');
-            
+
             // Add unique constraint on safe_id and date
             $table->unique(['safe_id', 'date'], 'startup_safe_balances_safe_id_date_unique');
         });
@@ -27,7 +27,7 @@ return new class extends Migration {
             // Drop the constraints
             $table->dropForeign(['safe_id']);
             $table->dropUnique('startup_safe_balances_safe_id_date_unique');
-            
+
             // Drop the safe_id column
             $table->dropColumn('safe_id');
         });
