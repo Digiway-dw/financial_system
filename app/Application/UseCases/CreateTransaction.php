@@ -346,11 +346,11 @@ class CreateTransaction
         // Send notifications to Admin and Supervisor for deductions
         $admins = \App\Domain\Entities\User::role('admin')->get();
         $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
-        if ($deduction > 0) {
-            $message = "A new transaction with a deduction of " . $deduction . " EGP has been created by " . $agent->name . ".";
-            \Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
-            \Notification::send($supervisors, new \App\Notifications\AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
-        }
+        // if ($deduction > 0) {
+        //     $message = "A new transaction with a deduction of " . $deduction . " EGP has been created by " . $agent->name . ".";
+        //     \Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
+        //     \Notification::send($supervisors, new \App\Notifications\AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
+        // }
 
         return $createdTransaction;
     }
