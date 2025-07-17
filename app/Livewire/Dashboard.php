@@ -15,6 +15,11 @@ use App\Application\UseCases\ListPendingTransactions;
 use App\Application\UseCases\ViewLineBalanceAndUsage;
 use Carbon\Carbon;
 use App\Models\StartupSafeBalance;
+use App\Domain\Entities\User;
+use App\Models\Domain\Entities\Transaction;
+use App\Models\Domain\Entities\CashTransaction;
+use App\Models\Domain\Entities\Customer;
+use App\Models\Domain\Entities\Line;
 
 class Dashboard extends Component
 {
@@ -111,8 +116,8 @@ class Dashboard extends Component
             ->sum('balance');
 
         // Total Transactions (ordinary + cash) for all dates (debugging)
-        $ordinaryQuery = \App\Models\Domain\Entities\Transaction::query();
-        $cashQuery = \App\Models\Domain\Entities\CashTransaction::query();
+        $ordinaryQuery = Transaction::query();
+        $cashQuery = CashTransaction::query();
         if ($branchId !== 'all') {
             $ordinaryQuery->where('branch_id', $branchId);
             $cashQuery->whereHas('safe', function ($q) use ($branchId) {
@@ -169,7 +174,7 @@ class Dashboard extends Component
             $data['totalBranches'] = count($this->branchRepository->all());
             $data['totalLines'] = count($this->lineRepository->all());
             $data['totalSafes'] = count($this->safeRepository->all());
-            $data['totalCustomers'] = \App\Models\Domain\Entities\Customer::count();
+            $data['totalCustomers'] = Customer::count();
             $data['totalTransactions'] = count($this->transactionRepository->all());
             $data['totalSafeBalance'] = collect($this->safeRepository->all())->sum('current_balance');
 
@@ -177,8 +182,8 @@ class Dashboard extends Component
             $data['totalTransferred'] = $allTransactions['totals']['total_transferred'];
             $data['netProfits'] = $allTransactions['totals']['net_profit'];
             // Count all transactions and cash transactions that require approval
-            $pendingTransactionsCount = \App\Models\Domain\Entities\Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
-            $pendingCashCount = \App\Models\Domain\Entities\CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
+            $pendingTransactionsCount = Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
+            $pendingCashCount = CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
             $data['pendingTransactionsCount'] = $pendingTransactionsCount + $pendingCashCount;
             $dashboardView = 'livewire.dashboard.admin';
         } elseif ($user->hasRole('general_supervisor')) {
@@ -190,7 +195,7 @@ class Dashboard extends Component
             $data['totalTransactionsCount'] = $this->totalTransactionsCount;
             $data['supervisorName'] = $user->name;
             // Add admin name (first user with 'admin' role) using whereHas
-            $adminUser = \App\Models\Domain\Entities\User::whereHas('roles', function ($q) {
+            $adminUser = User::whereHas('roles', function ($q) {
                 $q->where('name', 'admin');
             })->first();
             $data['adminName'] = $adminUser ? $adminUser->name : null;
@@ -208,13 +213,13 @@ class Dashboard extends Component
             $data['totalBranches'] = count($this->branchRepository->all());
             $data['totalSafes'] = count($this->safeRepository->all());
             $data['totalLines'] = count($this->lineRepository->all());
-            $data['totalCustomers'] = \App\Models\Domain\Entities\Customer::count();
+            $data['totalCustomers'] = Customer::count();
             $data['totalTransactions'] = count($this->transactionRepository->all());
             $data['totalSafeBalance'] = collect($this->safeRepository->all())->sum('current_balance');
             $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);
             $data['totalTransferred'] = $allTransactions['totals']['total_transferred'] ?? 0;
-            $pendingTransactionsCount = \App\Models\Domain\Entities\Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
-            $pendingCashCount = \App\Models\Domain\Entities\CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
+            $pendingTransactionsCount = Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
+            $pendingCashCount = CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
             $data['pendingTransactionsCount'] = $pendingTransactionsCount + $pendingCashCount;
             $dashboardView = 'livewire.dashboard.general_supervisor';
         } elseif ($user->hasRole('branch_manager')) {
@@ -235,7 +240,7 @@ class Dashboard extends Component
             });
             $data['branchUsersCount'] = $branchUsers->count();
             // Fetch all lines for the branch
-            $branchLines = \App\Models\Domain\Entities\Line::where('branch_id', $branchId)->get();
+            $branchLines = Line::where('branch_id', $branchId)->get();
             $data['branchLines'] = $branchLines;
             $data['branchLinesTotalBalance'] = $branchLines->sum('current_balance');
             // Metrics table values
@@ -246,8 +251,8 @@ class Dashboard extends Component
             $data['startupSafeBalance'] = $startup ? $startup->balance : 0;
             $safes = collect($this->safeRepository->allWithBranch())->where('branch_id', $branchId);
             $data['safesBalance'] = $safes->sum('current_balance');
-            $ordinaryQuery = \App\Models\Domain\Entities\Transaction::query()->where('branch_id', $branchId);
-            $cashQuery = \App\Models\Domain\Entities\CashTransaction::query()->whereHas('safe', function ($q) use ($branchId) {
+            $ordinaryQuery = Transaction::query()->where('branch_id', $branchId);
+            $cashQuery = CashTransaction::query()->whereHas('safe', function ($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
             });
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
@@ -297,20 +302,20 @@ class Dashboard extends Component
             $data['safesBalance'] = $branchSafes->sum('current_balance');
 
             // Total Transactions Count for agent's branch
-            $ordinaryQuery = \App\Models\Domain\Entities\Transaction::query()->where('branch_id', $branchId);
-            $cashQuery = \App\Models\Domain\Entities\CashTransaction::query()->whereHas('safe', function ($q) use ($branchId) {
+            $ordinaryQuery = Transaction::query()->where('branch_id', $branchId);
+            $cashQuery = CashTransaction::query()->whereHas('safe', function ($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
             });
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
 
             // Today's transactions for this agent
-            $data['agentTodayTransactionsCount'] = \App\Models\Domain\Entities\Transaction::where('agent_id', $user->id)
+            $data['agentTodayTransactionsCount'] = Transaction::where('agent_id', $user->id)
                 ->whereDate('created_at', $today)
                 ->count();
 
             // Transaction search by reference number (agent)
             if (request()->query('search_transaction') && request()->query('reference_number')) {
-                $searched = \App\Models\Domain\Entities\Transaction::where('agent_id', $user->id)
+                $searched = Transaction::where('agent_id', $user->id)
                     ->where('reference_number', request()->query('reference_number'))
                     ->first();
                 $data['searchedTransaction'] = $searched;
@@ -343,20 +348,20 @@ class Dashboard extends Component
             $data['safesBalance'] = $branchSafes->sum('current_balance');
 
             // Total Transactions Count for trainee's branch
-            $ordinaryQuery = \App\Models\Domain\Entities\Transaction::query()->where('branch_id', $branchId);
-            $cashQuery = \App\Models\Domain\Entities\CashTransaction::query()->whereHas('safe', function ($q) use ($branchId) {
+            $ordinaryQuery = Transaction::query()->where('branch_id', $branchId);
+            $cashQuery = CashTransaction::query()->whereHas('safe', function ($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
             });
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
 
             // Today's transactions for this trainee
-            $data['agentTodayTransactionsCount'] = \App\Models\Domain\Entities\Transaction::where('agent_id', $user->id)
+            $data['agentTodayTransactionsCount'] = Transaction::where('agent_id', $user->id)
                 ->whereDate('created_at', $today)
                 ->count();
 
             // Transaction search by reference number (trainee)
             if (request()->query('search_transaction') && request()->query('reference_number')) {
-                $searched = \App\Models\Domain\Entities\Transaction::where('agent_id', $user->id)
+                $searched = Transaction::where('agent_id', $user->id)
                     ->where('reference_number', request()->query('reference_number'))
                     ->first();
                 $data['searchedTransaction'] = $searched;

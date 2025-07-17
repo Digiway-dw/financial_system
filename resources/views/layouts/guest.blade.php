@@ -13,7 +13,10 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Debug: Host is {{ request()->getHost() }} -->
+    <!-- Temporarily forcing built assets -->
+    <link rel="stylesheet" href="{{ asset('build/assets/app-BizWfs3r.css') }}">
+    <script type="module" src="{{ asset('build/assets/app-DsYpAsBD.js') }}"></script>
 </head>
 
 <body class="font-sans antialiased">

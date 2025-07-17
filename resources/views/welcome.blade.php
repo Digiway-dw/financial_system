@@ -11,7 +11,9 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
 
         <!-- Styles -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- Temporarily forcing built assets -->
+        <link rel="stylesheet" href="{{ asset('build/assets/app-BizWfs3r.css') }}">
+        <script type="module" src="{{ asset('build/assets/app-DsYpAsBD.js') }}"></script>
     </head>
     <body class="antialiased font-sans">
         <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
