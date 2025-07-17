@@ -97,8 +97,8 @@ class CreateTransaction
             throw new \Exception('Agent not found.');
         }
 
-        // Use the commission passed from the component, applying any deduction
-        $finalCommission = $commission - $deduction;
+        // Use the commission passed from the component, do NOT apply deduction
+        $finalCommission = $commission;
         if ($finalCommission < 0) {
             $finalCommission = 0; // Commission cannot be negative
         }
