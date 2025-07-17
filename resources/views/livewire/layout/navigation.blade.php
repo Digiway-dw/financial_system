@@ -17,27 +17,35 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    @can('view-customers')
+                    @if(auth()->user() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('branch_manager') || auth()->user()->hasRole('general_supervisor')))
                         <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
                             {{ __('Customers') }}
                         </x-nav-link>
-                    @endcan
+                    @endif
 
-                    <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
-                        request()->routeIs('transactions.create') ||
-                        request()->routeIs('transactions.pending')" wire:navigate>
-                        {{ __('Transactions') }}
-                    </x-nav-link>
+                    @if(auth()->user() && !auth()->user()->hasAnyRole(['agent', 'trainee']))
+                        <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
+                            request()->routeIs('transactions.create') ||
+                            request()->routeIs('transactions.pending')" wire:navigate>
+                            {{ __('Transactions') }}
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
+                            {{ __('Search Transaction') }}
+                        </x-nav-link>
+                    @endif
 
                     @canany(['send-transfer', 'send-transfer-pending'])
                         {{-- Removed New Transaction link --}}
                     @endcanany
 
-                    @can('view-lines')
-                        <x-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
-                            {{ __('Lines') }}
-                        </x-nav-link>
-                    @endcan
+                    @if(auth()->user() && !auth()->user()->hasAnyRole(['agent', 'trainee']))
+                        @can('view-lines')
+                            <x-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
+                                {{ __('Lines') }}
+                            </x-nav-link>
+                        @endcan
+                    @endif
 
                     @can('manage-safes')
                         <x-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') ||
@@ -170,27 +178,35 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
-            @can('view-customers')
+            @if(auth()->user() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('branch_manager') || auth()->user()->hasRole('general_supervisor')))
                 <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
                     {{ __('Customers') }}
                 </x-responsive-nav-link>
-            @endcan
+            @endif
 
-            <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
-                request()->routeIs('transactions.create') ||
-                request()->routeIs('transactions.pending')" wire:navigate>
-                {{ __('Transactions') }}
-            </x-responsive-nav-link>
+            @if(auth()->user() && !auth()->user()->hasAnyRole(['agent', 'trainee']))
+                <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
+                    request()->routeIs('transactions.create') ||
+                    request()->routeIs('transactions.pending')" wire:navigate>
+                    {{ __('Transactions') }}
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
+                    {{ __('Search Transaction') }}
+                </x-responsive-nav-link>
+            @endif
 
             @canany(['send-transfer', 'send-transfer-pending'])
                 {{-- Removed New Transaction link --}}
             @endcanany
 
-            @can('view-lines')
-                <x-responsive-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
-                    {{ __('Lines') }}
-                </x-responsive-nav-link>
-            @endcan
+            @if(auth()->user() && !auth()->user()->hasAnyRole(['agent', 'trainee']))
+                @can('view-lines')
+                    <x-responsive-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
+                        {{ __('Lines') }}
+                    </x-responsive-nav-link>
+                @endcan
+            @endif
 
             @can('manage-safes')
                 <x-responsive-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') ||

@@ -53,6 +53,10 @@ class Create extends Component
 
     public function mount()
     {
+        $user = auth()->user();
+        if ($user->hasAnyRole(['agent', 'trainee'])) {
+            abort(403, 'You do not have permission to create customers.');
+        }
         Gate::authorize('manage-customers');
         $this->agents = User::role('agent')->get();
         $this->branches = $this->branchRepository->all();

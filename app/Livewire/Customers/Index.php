@@ -32,6 +32,10 @@ class Index extends Component
 
     public function mount()
     {
+        $user = auth()->user();
+        if ($user->hasAnyRole(['agent', 'trainee'])) {
+            abort(403, 'You do not have permission to access the Customers screen.');
+        }
         Gate::authorize('view-customers');
         $this->loadCustomers();
     }

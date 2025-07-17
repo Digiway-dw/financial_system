@@ -61,7 +61,6 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('manage-customers', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::AGENT) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });
 
@@ -69,9 +68,7 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('view-customers', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::AGENT) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::TRAINEE);
+                $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });
 
         // ===== LINES VIEWING =====
@@ -86,7 +83,6 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('create-customers', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::AGENT) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });
 

@@ -50,6 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('transactions/{transactionId}/edit', \App\Livewire\Transactions\Edit::class)
         ->name('transactions.edit');
     Route::get('transactions/{transaction}/receipt', [\App\Http\Controllers\TransactionController::class, 'receipt'])->name('transactions.receipt');
+    Route::get('transactions/{transaction}/print', [\App\Http\Controllers\TransactionController::class, 'receipt'])->name('transactions.print');
     Route::get('cash-transactions/{cashTransaction}/receipt', [\App\Http\Controllers\TransactionController::class, 'cashReceipt'])->name('cash-transactions.receipt');
 
     // Line Management Routes

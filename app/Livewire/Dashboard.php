@@ -303,6 +303,19 @@ class Dashboard extends Component
             });
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
 
+            // Today's transactions for this agent
+            $data['agentTodayTransactionsCount'] = \App\Models\Domain\Entities\Transaction::where('agent_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->count();
+
+            // Transaction search by reference number (agent)
+            if (request()->query('search_transaction') && request()->query('reference_number')) {
+                $searched = \App\Models\Domain\Entities\Transaction::where('agent_id', $user->id)
+                    ->where('reference_number', request()->query('reference_number'))
+                    ->first();
+                $data['searchedTransaction'] = $searched;
+            }
+
             $dashboardView = 'livewire.dashboard.agent';
         } elseif ($user->hasRole('trainee')) {
             $agentLines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
@@ -335,6 +348,19 @@ class Dashboard extends Component
                 $q->where('branch_id', $branchId);
             });
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
+
+            // Today's transactions for this trainee
+            $data['agentTodayTransactionsCount'] = \App\Models\Domain\Entities\Transaction::where('agent_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->count();
+
+            // Transaction search by reference number (trainee)
+            if (request()->query('search_transaction') && request()->query('reference_number')) {
+                $searched = \App\Models\Domain\Entities\Transaction::where('agent_id', $user->id)
+                    ->where('reference_number', request()->query('reference_number'))
+                    ->first();
+                $data['searchedTransaction'] = $searched;
+            }
 
             $dashboardView = 'livewire.dashboard.trainee';
         } elseif ($user->hasRole('auditor')) {

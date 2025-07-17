@@ -17,4 +17,4 @@ class StartupSafeBalance extends Model
     {
         return $this->belongsTo(\App\Models\Domain\Entities\Branch::class, 'branch_id');
     }
-} 
+}

@@ -16,11 +16,9 @@ class CustomerPolicy
      */
     public function viewAny(User $user): bool
     {
-        // Auditors, Agents, Branch Managers, and Admins can view customer lists
-        return $user->hasRole(Roles::AUDITOR) ||
-            $user->hasRole(Roles::AGENT) ||
+        // Only Admin, Branch Manager, and General Supervisor can view customer lists
+        return $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::BRANCH_MANAGER) ||
-            $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::GENERAL_SUPERVISOR);
     }
 
@@ -29,11 +27,9 @@ class CustomerPolicy
      */
     public function view(User $user, Customer $customer): bool
     {
-        // Auditors, Agents, Branch Managers, and Admins can view any customer
-        return $user->hasRole(Roles::AUDITOR) ||
-            $user->hasRole(Roles::AGENT) ||
+        // Only Admin, Branch Manager, and General Supervisor can view any customer
+        return $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::BRANCH_MANAGER) ||
-            $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::GENERAL_SUPERVISOR);
     }
 
@@ -42,10 +38,9 @@ class CustomerPolicy
      */
     public function create(User $user): bool
     {
-        // Auditors cannot create customers
-        return $user->hasRole(Roles::AGENT) ||
+        // Only Admin, Branch Manager, and General Supervisor can create customers
+        return $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::BRANCH_MANAGER) ||
-            $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::GENERAL_SUPERVISOR);
     }
 
@@ -54,8 +49,10 @@ class CustomerPolicy
      */
     public function update(User $user, Customer $customer): bool
     {
-        // Agents and trainees cannot update customers
-        return !($user->hasRole(Roles::AGENT) || $user->hasRole(Roles::TRAINEE));
+        // Only Admin, Branch Manager, and General Supervisor can update customers
+        return $user->hasRole(Roles::ADMIN) ||
+            $user->hasRole(Roles::BRANCH_MANAGER) ||
+            $user->hasRole(Roles::GENERAL_SUPERVISOR);
     }
 
     /**
