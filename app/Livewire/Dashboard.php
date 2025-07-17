@@ -65,7 +65,7 @@ class Dashboard extends Component
 
     public function mount()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         if ($user->hasRole('branch_manager')) {
             // Always use assigned branch for branch manager
             $this->selectedBranchId = $user->branch_id;
@@ -79,7 +79,7 @@ class Dashboard extends Component
 
     protected function updateBranchManagerMetrics()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $branch = $user->branch;
         if ($branch) {
             // Startup safe balance for this branch
@@ -133,7 +133,7 @@ class Dashboard extends Component
 
     public function updatedSelectedBranchId($value)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         if ($user->hasRole('branch_manager')) {
             // Ignore updates for branch manager
             $this->selectedBranchId = $user->branch_id;

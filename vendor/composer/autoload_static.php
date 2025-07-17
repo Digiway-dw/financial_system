@@ -838,6 +838,7 @@ class ComposerStaticInitb50f1a9feb743b813463e1ab0153b5f7
         'App\\Livewire\\Lines\\Index' => __DIR__ . '/../..' . '/app/Livewire/Lines/Index.php',
         'App\\Livewire\\Lines\\Transfer' => __DIR__ . '/../..' . '/app/Livewire/Lines/Transfer.php',
         'App\\Livewire\\NotificationBell' => __DIR__ . '/../..' . '/app/Livewire/NotificationBell.php',
+        'App\\Livewire\\Notifications\\Details' => __DIR__ . '/../..' . '/app/Livewire/Notifications/Details.php',
         'App\\Livewire\\Permissions\\Index' => __DIR__ . '/../..' . '/app/Livewire/Permissions/Index.php',
         'App\\Livewire\\Permissions\\RolePermissions' => __DIR__ . '/../..' . '/app/Livewire/Permissions/RolePermissions.php',
         'App\\Livewire\\Reports\\Index' => __DIR__ . '/../..' . '/app/Livewire/Reports/Index.php',

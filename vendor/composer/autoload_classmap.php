@@ -103,6 +103,7 @@ return array(
     'App\\Livewire\\Lines\\Index' => $baseDir . '/app/Livewire/Lines/Index.php',
     'App\\Livewire\\Lines\\Transfer' => $baseDir . '/app/Livewire/Lines/Transfer.php',
     'App\\Livewire\\NotificationBell' => $baseDir . '/app/Livewire/NotificationBell.php',
+    'App\\Livewire\\Notifications\\Details' => $baseDir . '/app/Livewire/Notifications/Details.php',
     'App\\Livewire\\Permissions\\Index' => $baseDir . '/app/Livewire/Permissions/Index.php',
     'App\\Livewire\\Permissions\\RolePermissions' => $baseDir . '/app/Livewire/Permissions/RolePermissions.php',
     'App\\Livewire\\Reports\\Index' => $baseDir . '/app/Livewire/Reports/Index.php',
