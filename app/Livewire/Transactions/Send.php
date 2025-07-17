@@ -43,7 +43,7 @@ class Send extends Component
     #[Validate('nullable|numeric|min:0')]
     public $discount = 0;
 
-    #[Validate('required_if:discount,>0')]
+    #[Validate('required_if:discount,>0|string|min:3')]
     public $discountNotes = '';
 
     // Line Selection
@@ -76,7 +76,8 @@ class Send extends Component
         'receiverMobile.required' => 'Receiver mobile number is required.',
         'selectedLineId.required' => 'Please select an available line.',
         'selectedLineId.exists' => 'Selected line is not valid.',
-        'discountNotes.required_if' => 'Discount notes are required when discount is provided.',
+        'discountNotes.required_if' => 'Discount notes are required when a discount is provided.',
+        'discountNotes.min' => 'Discount notes must be at least 3 characters.',
     ];
 
     public function mount()
@@ -188,10 +189,16 @@ class Send extends Component
             return;
         }
 
-        // New commission structure: 5 EGP per 500 EGP increment
-        // 1-500 = 5 EGP, 501-1000 = 10 EGP, 1001-1500 = 15 EGP, etc.
+        // Commission: 5 EGP per 500 EGP increment
         $baseCommission = ceil($amount / 500) * 5;
-        $this->commission = max(0, $baseCommission - $discount);
+        $commissionAfterDiscount = $baseCommission - $discount;
+        // If discount equals commission, commission is 0
+        if ($discount == $baseCommission) {
+            $this->commission = 0;
+        } else {
+            // Minimum commission is 5 EGP if amount > 0 and discount < commission
+            $this->commission = max(5, $commissionAfterDiscount);
+        }
     }
 
     private function initializeBranchSelection()
@@ -283,6 +290,13 @@ class Send extends Component
         // Additional validation
         if ($amount <= 0) {
             $this->errorMessage = 'Invalid transaction amount.';
+            return;
+        }
+
+        // Check discount against base commission (before discount)
+        $baseCommission = ceil($amount / 500) * 5;
+        if ($discount > $baseCommission) {
+            $this->errorMessage = 'Discount cannot be greater than commission.';
             return;
         }
 
