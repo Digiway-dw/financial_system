@@ -55,9 +55,18 @@ class AdminNotification extends Notification implements ShouldQueue
      */
     public function toArray(object $notifiable): array
     {
-        return [
+        $data = [
             'message' => $this->message,
             'url' => $this->url,
         ];
+        // Add type and transaction_id for withdrawal notifications
+        if (stripos($this->message, 'withdrawal') !== false) {
+            $data['type'] = 'withdrawal';
+            // Try to extract transaction id from the url if present
+            if ($this->url && preg_match('/cashTransaction=([0-9]+)/', $this->url, $matches)) {
+                $data['transaction_id'] = $matches[1];
+            }
+        }
+        return $data;
     }
 }

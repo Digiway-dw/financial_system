@@ -61,7 +61,8 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('manage-customers', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR);
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::AGENT);
         });
 
         // More specific customer management gates
@@ -83,7 +84,8 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('create-customers', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
-                $user->hasRole(Roles::GENERAL_SUPERVISOR);
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::AGENT);
         });
 
         Gate::define('edit-customers', function (DomainUser $user) {
