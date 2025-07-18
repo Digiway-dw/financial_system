@@ -36,6 +36,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('transactions/receive', Receive::class)->name('transactions.receive');
     Route::get('transactions/cash', \App\Livewire\Transactions\Cash::class)
         ->name('transactions.cash');
+    // Alias for RouteNotFoundException fix
+    Route::get('transactions/cash', \App\Livewire\Transactions\Cash::class)
+        ->name('transactions.cash.index');
     Route::get('transactions/cash/withdrawal', \App\Livewire\Transactions\Withdrawal::class)
         ->name('transactions.cash.withdrawal');
     Route::get('transactions/cash/deposit', \App\Livewire\Transactions\Deposit::class)
