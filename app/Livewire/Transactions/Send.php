@@ -376,19 +376,15 @@ class Send extends Component
                 // Notify admin if a discount was applied
                 if ($discount > 0) {
                     $user = Auth::user();
-                    // Try to get related data for better notification
-                    // Prefer customer relation if available
-                    if (method_exists($transaction, 'customer') && $transaction->customer) {
-                        $clientName = $transaction->customer->name ?: 'N/A';
-                        $clientMobile = $transaction->customer->mobile_number ?: 'N/A';
-                    } else {
-                        $clientName = $transaction->customerName ?: 'N/A';
-                        $clientMobile = $transaction->customerMobileNumber ?: 'N/A';
-                    }
-                    $lineMobile = ($transaction->line && $transaction->line->mobile_number) ? $transaction->line->mobile_number : ($transaction->lineId ? $transaction->lineId : 'N/A');
-                    $safeName = ($transaction->safe && $transaction->safe->name) ? $transaction->safe->name : ($transaction->safeId ? $transaction->safeId : 'N/A');
-                    $receiverMobile = $transaction->receiverMobileNumber ?: 'N/A';
-                    $typeName = $transaction->transactionType ?: 'N/A';
+                    // Always eager load customer relation for notification
+                    $transaction->loadMissing('customer');
+                    // Always use related model data if available, fallback to transaction fields, never "N/A"
+                    $clientName = $transaction->customer && $transaction->customer->name ? $transaction->customer->name : ($transaction->customerName ?: 'Unknown');
+                    $clientMobile = $transaction->customer && $transaction->customer->mobile_number ? $transaction->customer->mobile_number : ($transaction->customerMobileNumber ?: 'Unknown');
+                    $lineMobile = ($transaction->line && $transaction->line->mobile_number) ? $transaction->line->mobile_number : ($transaction->lineId ? $transaction->lineId : 'Unknown');
+                    $safeName = ($transaction->safe && $transaction->safe->name) ? $transaction->safe->name : ($transaction->safeId ? $transaction->safeId : 'Unknown');
+                    $receiverMobile = $transaction->receiverMobileNumber ?: 'Unknown';
+                    $typeName = $transaction->transactionType ?: 'Unknown';
 
                     $adminNotificationMessage =
                         "==============================\n" .
