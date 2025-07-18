@@ -136,11 +136,15 @@
                             </label>
                             <div class="flex space-x-6 mt-2">
                                 <label class="inline-flex items-center">
-                                    <input wire:model="clientGender" type="radio" value="male" class="form-radio h-5 w-5 text-blue-600" @if ($clientId) disabled @endif>
+                                    <input wire:model="clientGender" type="radio" value="male"
+                                        class="form-radio h-5 w-5 text-blue-600"
+                                        @if ($clientId) disabled @endif>
                                     <span class="ml-2 text-gray-700">Male</span>
                                 </label>
                                 <label class="inline-flex items-center">
-                                    <input wire:model="clientGender" type="radio" value="female" class="form-radio h-5 w-5 text-pink-600" @if ($clientId) disabled @endif>
+                                    <input wire:model="clientGender" type="radio" value="female"
+                                        class="form-radio h-5 w-5 text-pink-600"
+                                        @if ($clientId) disabled @endif>
                                     <span class="ml-2 text-gray-700">Female</span>
                                 </label>
                             </div>

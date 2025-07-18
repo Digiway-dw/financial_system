@@ -375,36 +375,18 @@ class Send extends Component
 
                 // Notify admin if a discount was applied
                 if ($discount > 0) {
-                    $user = Auth::user();
-                    // Always eager load customer relation for notification
-                    $transaction->loadMissing('customer');
-                    // Always use related model data if available, fallback to transaction fields, never "N/A"
-                    $clientName = $transaction->customer && $transaction->customer->name ? $transaction->customer->name : ($transaction->customerName ?: 'Unknown');
-                    $clientMobile = $transaction->customer && $transaction->customer->mobile_number ? $transaction->customer->mobile_number : ($transaction->customerMobileNumber ?: 'Unknown');
-                    $lineMobile = ($transaction->line && $transaction->line->mobile_number) ? $transaction->line->mobile_number : ($transaction->lineId ? $transaction->lineId : 'Unknown');
-                    $safeName = ($transaction->safe && $transaction->safe->name) ? $transaction->safe->name : ($transaction->safeId ? $transaction->safeId : 'Unknown');
-                    $receiverMobile = $transaction->receiverMobileNumber ?: 'Unknown';
-                    $typeName = $transaction->transactionType ?: 'Unknown';
-
-                    $adminNotificationMessage =
-                        "==============================\n" .
-                        "🟢 DISCOUNT APPLIED\n" .
-                        "==============================\n" .
-                        "Amount: " . $discount . " EGP\n" .
-                        "Note: " . $this->discountNotes . "\n" .
-                        "Applied by: " . $user->name . " (ID: " . $user->id . ")\n" .
-                        "Date/Time: " . now()->format('Y-m-d H:i:s') . "\n" .
-                        "------------------------------\n" .
-                        "Transaction Details\n" .
-                        "Reference #: " . ($transaction->reference_number ?? $transaction->id) . "\n" .
-                        "Amount: " . $transaction->amount . "\n" .
-                        "Commission: " . $transaction->commission . "\n" .
-                        "Client: " . $clientName . " (" . $clientMobile . ")\n" .
-                        "Line: " . $lineMobile . "\n" .
-                        "Safe: " . $safeName . "\n" .
-                        "Receiver: " . $receiverMobile . "\n" .
-                        "Type: " . $typeName . "\n" .
-                        "==============================";
+                    $adminNotificationMessage = "A send transaction was created with a discount of {$discount} EGP.\n"
+                        . "Transaction Details:" . "\n"
+                        . "Reference Number: {$transaction->reference_number}\n"
+                        . "Client: {$this->clientName} ({$this->clientMobile})\n"
+                        . "Amount: {$this->amount} EGP\n"
+                        . "Commission: {$this->commission} EGP\n"
+                        . "Discount: {$this->discount} EGP\n"
+                        . "Receiver: {$this->receiverMobile}\n"
+                        . "Line: {$this->selectedLineId}\n"
+                        . "Branch: {$transaction->branch->name}\n"
+                        . "Note: {$this->discountNotes}\n"
+                        . "Transaction ID: {$transaction->id}";
                     $admins = User::role('admin')->get();
                     Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
                 }
