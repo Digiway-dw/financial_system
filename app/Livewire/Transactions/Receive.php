@@ -262,7 +262,18 @@ class Receive extends Component
 
     private function notifyAdmin($transaction)
     {
-        $adminNotificationMessage = "A receive transaction was created with a discount of {$this->discount} EGP. Note: {$this->discountNotes}. Transaction ID: {$transaction->id}";
+        $adminNotificationMessage = "A receive transaction was created with a discount of {$this->discount} EGP.\n"
+            . "Transaction Details:" . "\n"
+            . "Reference Number: {$transaction->reference_number}\n"
+            . "Client: {$this->clientName} ({$this->clientMobile})\n"
+            . "Amount: {$this->amount} EGP\n"
+            . "Commission: {$this->commission} EGP\n"
+            . "Discount: {$this->discount} EGP\n"
+            . "Sender: {$this->senderMobile}\n"
+            . "Line: {$this->selectedLineId}\n"
+            . "Branch: {$transaction->branch->name}\n"
+            . "Note: {$this->discountNotes}\n"
+            . "Transaction ID: {$transaction->id}";
         $admins = \App\Domain\Entities\User::role('admin')->get();
         \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
     }
@@ -276,6 +287,15 @@ class Receive extends Component
         $safe = $line->branch->safe;
         if (!$line || !$safe) {
             $this->errorMessage = 'Line or Safe not found.';
+            return;
+        }
+
+        // Discount must not exceed commission
+        $amount = (float) $this->amount;
+        $discount = (float) $this->discount;
+        $baseCommission = ceil($amount / 500) * 5;
+        if ($discount > $baseCommission) {
+            $this->errorMessage = "Discount ({$discount} EGP) cannot be greater than the allowed commission ({$baseCommission} EGP). Please enter a discount less than or equal to the commission.";
             return;
         }
 

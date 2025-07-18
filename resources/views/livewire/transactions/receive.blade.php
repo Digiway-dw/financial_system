@@ -112,8 +112,8 @@
                                 Client Code
                             </label>
                             <input wire:model="clientCode" id="clientCode" type="text"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 cursor-not-allowed"
-                                placeholder="Auto-generated" readonly>
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-700"
+                                placeholder="Auto-generated" readonly @if ($clientId) disabled @endif>
                         </div>
 
                         <!-- Client Name -->
@@ -123,7 +123,7 @@
                             </label>
                             <input wire:model="clientName" id="clientName" type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('clientName') border-red-500 @enderror"
-                                placeholder="Enter client name">
+                                placeholder="Enter client name" @if ($clientId) disabled @endif>
                             @error('clientName')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -136,13 +136,11 @@
                             </label>
                             <div class="flex space-x-6 mt-2">
                                 <label class="inline-flex items-center">
-                                    <input wire:model="clientGender" type="radio" value="male"
-                                        class="form-radio h-5 w-5 text-blue-600">
-                                    <span class="ml-2 text-gray-700">Male  </span>
+                                    <input wire:model="clientGender" type="radio" value="male" class="form-radio h-5 w-5 text-blue-600" @if ($clientId) disabled @endif>
+                                    <span class="ml-2 text-gray-700">Male</span>
                                 </label>
                                 <label class="inline-flex items-center">
-                                    <input wire:model="clientGender" type="radio" value="female"
-                                        class="form-radio h-5 w-5 text-pink-600">
+                                    <input wire:model="clientGender" type="radio" value="female" class="form-radio h-5 w-5 text-pink-600" @if ($clientId) disabled @endif>
                                     <span class="ml-2 text-gray-700">Female</span>
                                 </label>
                             </div>
