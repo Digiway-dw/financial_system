@@ -69,7 +69,7 @@ class AdminNotificationsBox extends Component
                 // Approve withdrawal: set status to completed
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::find($transactionId);
                 if ($cashTx) {
-                    $cashTx->status = 'completed';
+                    $cashTx->status = 'Completed';
                     $cashTx->save();
                     $notification->markAsRead();
                     session()->flash('message', 'Withdrawal approved and notification marked as read.');
@@ -98,7 +98,7 @@ class AdminNotificationsBox extends Component
                 // Reject withdrawal: set status to rejected
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::find($transactionId);
                 if ($cashTx) {
-                    $cashTx->status = 'rejected';
+                    $cashTx->status = 'Rejected';
                     $cashTx->save();
                     $notification->markAsRead();
                     session()->flash('message', 'Withdrawal rejected and notification marked as read.');

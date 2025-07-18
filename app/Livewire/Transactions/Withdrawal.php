@@ -146,6 +146,8 @@ class Withdrawal extends Create
             'amount' => 'required|numeric|min:0.01',
             'safeId' => 'required|exists:safes,id',
             'notes' => 'nullable|string|max:500',
+            'customerName' => 'required|string',
+            'nationalId' => 'required|string|min:14|max:14',
         ]);
 
         // Check safe balance for all withdrawal types
@@ -309,7 +311,7 @@ class Withdrawal extends Create
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
-                    'customer_name' => $customerName,
+                    'customer_name' => $this->customerName,
                     'amount' => abs($this->amount),
                     'notes' => $this->notes,
                     'safe_id' => $this->safeId,
@@ -553,13 +555,13 @@ class Withdrawal extends Create
     public function rules()
     {
         $rules = [
-            'amount' => 'required|numeric|min:0.01',
-            'notes' => 'nullable|string',
-            'safeId' => 'required|integer|exists:safes,id',
+            'amount' => 'required|numeric|min:0.01', // مبلغ السحب
+            'notes' => 'required|string', // ملاحظات
+            'safeId' => 'required|integer|exists:safes,id', // اختيار الخزنة
         ];
         if ($this->withdrawalType === 'direct') {
-            $rules['customerName'] = 'required|string';
-            $rules['nationalId'] = 'required|string|min:6';
+            $rules['customerName'] = 'required|string'; // اسم المستلم
+            $rules['nationalId'] = 'required|string|min:6'; // رقم الهوية الوطنية
         }
         if ($this->withdrawalType === 'user') {
             $rules['userId'] = 'required|integer|exists:users,id';
