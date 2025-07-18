@@ -264,7 +264,8 @@ class Withdrawal extends Create
 
             // Check if user has permission to access this branch
             $user = Auth::user();
-            if (!$user->hasRole(['admin', 'general_supervisor']) && $user->branch_id != $this->selectedBranchId) {
+            $userRole = $user->role ?? null;
+            if (!in_array($userRole, ['admin', 'general_supervisor']) && $user->branch_id != $this->selectedBranchId) {
                 session()->flash('error', 'You can only create expense withdrawals for your own branch.');
                 return;
             }
@@ -305,7 +306,7 @@ class Withdrawal extends Create
                 $user = User::find($this->userId);
                 $customerName = $user?->name ?? '';
                 $agent = Auth::user();
-                $isAdmin = $agent->hasRole('admin');
+                $isAdmin = ($agent->role ?? null) === 'admin';
                 $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
@@ -357,7 +358,7 @@ class Withdrawal extends Create
                 $isClient = true;
                 $notes = $this->notes . ' | Withdrawal to: ' . $this->withdrawalToName;
                 $user = $agent;
-                $isAdmin = $user->hasRole('admin');
+                $isAdmin = ($user->role ?? null) === 'admin';
                 $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
@@ -395,7 +396,7 @@ class Withdrawal extends Create
             }
             if ($this->withdrawalType === 'direct') {
                 $user = Auth::user();
-                $isAdmin = $user->hasRole('admin');
+                $isAdmin = ($user->role ?? null) === 'admin';
                 $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
@@ -426,7 +427,7 @@ class Withdrawal extends Create
 
             if ($this->withdrawalType === 'admin') {
                 $user = Auth::user();
-                $isAdmin = $user->hasRole('admin');
+                $isAdmin = ($user->role ?? null) === 'admin';
                 $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
