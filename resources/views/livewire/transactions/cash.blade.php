@@ -55,6 +55,7 @@
                                 <table class="min-w-full divide-y divide-gray-200 text-sm">
                                     <thead>
                                         <tr>
+                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">Reference Number</th>
                                             <th class="px-4 py-2 text-left font-semibold text-gray-600">Customer Name</th>
                                             <th class="px-4 py-2 text-left font-semibold text-gray-600">Amount</th>
                                             <th class="px-4 py-2 text-left font-semibold text-gray-600">Type</th>
@@ -66,6 +67,7 @@
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         @foreach ($recentCashTransactions as $tx)
                                             <tr>
+                                                <td class="px-4 py-2 text-gray-700">{{ $tx->reference_number ?? 'N/A' }}</td>
                                                 <td class="px-4 py-2 font-medium text-gray-900">{{ $tx->customer_name }}</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ number_format($tx->amount, 2) }} EGP</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->transaction_type }}</td>
