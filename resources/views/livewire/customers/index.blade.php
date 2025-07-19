@@ -183,7 +183,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M5 13l4 4L19 7" />
                                         </svg>
-                                        Active Wallet
+                                        {{ number_format($customer['balance'] ?? 0, 2) }} EGP
                                     </span>
                                 @else
                                     <span
@@ -193,7 +193,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12" />
                                         </svg>
-                                        Inactive
+                                        No wallet
                                     </span>
                                 @endif
                             </td>

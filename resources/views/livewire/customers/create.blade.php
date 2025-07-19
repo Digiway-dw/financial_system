@@ -273,22 +273,14 @@
 
                     <!-- Right Column -->
                     <div class="space-y-6">
-                        <!-- Is Client -->
+                        <!-- Wallet Status -->
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-3">Account Settings</label>
-                            <label for="is_client"
-                                class="flex items-center p-4 bg-slate-50/80 border border-slate-200 rounded-xl hover:bg-slate-100/80 cursor-pointer transition-colors duration-150">
-                                <input type="checkbox" wire:model="is_client" id="is_client" name="is_client"
-                                    class="w-4 h-4 text-blue-600 bg-white border-slate-300 rounded focus:ring-blue-500 focus:ring-2">
-                                <div class="ml-3">
-                                    <span class="text-sm font-medium text-slate-700">Is Client</span>
-                                    <p class="text-xs text-slate-500 mt-1">Mark this customer as a client for special
-                                        handling</p>
-                                </div>
-                            </label>
-                            @error('is_client')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                            <label class="block text-sm font-semibold text-slate-700 mb-3">Wallet Status</label>
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" wire:model="is_client" id="is_client" class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500 focus:ring-2">
+                                <span class="text-sm font-medium text-slate-700">Activate Wallet</span>
+                                <span class="ml-2 text-xs text-gray-500">(Leave unchecked for no wallet)</span>
+                            </div>
                         </div>
 
                         <!-- Agent ID -->

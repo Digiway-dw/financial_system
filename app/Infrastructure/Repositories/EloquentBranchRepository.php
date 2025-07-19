@@ -28,7 +28,14 @@ class EloquentBranchRepository implements BranchRepository
 
     public function delete(string $id): void
     {
-        EloquentBranch::destroy($id);
+        $branch = EloquentBranch::find($id);
+        if ($branch) {
+            // Delete all associated safes
+            foreach ($branch->safes as $safe) {
+                $safe->delete();
+            }
+            $branch->delete();
+        }
     }
 
     public function all(): Collection

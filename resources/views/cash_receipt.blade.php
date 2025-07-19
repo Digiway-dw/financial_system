@@ -19,7 +19,7 @@
 <body>
 <div class="receipt">
     <h2>Fido Dido</h2>
-    <div class="row"><span class="value">{{ \Carbon\Carbon::parse($cashTransaction->transaction_date_time)->format('d/m/y - h:i A') }}</span><span class="label-en"></span>ref:  {{ $cashTransaction->reference_number ?? $cashTransaction->id }}</div>
+    <div class="row"><span class="value">{{ \Carbon\Carbon::parse($cashTransaction->transaction_date_time)->timezone('Africa/Cairo')->format('d/m/y - h:i A') }}</span><span class="label-en"></span>ref:  {{ $cashTransaction->reference_number ?? $cashTransaction->id }}</div>
     <div class="line" style="margin: 4px 0;"></div>
     <div class="row"><span class="value">{{ $cashTransaction->safe->name ?? $cashTransaction->safe_id ?? 'N/A' }}</span><span class="label-en">Safe</span></div>
     <div class="row"><span class="value">{{ $cashTransaction->agent->name ?? $cashTransaction->agent_id ?? 'N/A' }}</span><span class="label-en">User</span></div>
@@ -33,12 +33,19 @@
         <div class="row"><span class="value">{{ $cashTransaction->depositor_mobile_number }}</span><span class="label-en">Mobile</span></div>
     @endif
     @php
-        // For cash transactions, total is amount + commission for deposits, amount - commission for withdrawals
         $isWithdrawal = strtolower($cashTransaction->transaction_type) === 'withdrawal';
+        $commission = abs($cashTransaction->commission ?? 0);
+        $discount = abs($cashTransaction->discount ?? 0);
+        $amount = $cashTransaction->amount;
         $finalTotal = $isWithdrawal
-            ? $cashTransaction->amount - ($cashTransaction->commission ?? 0)
-            : $cashTransaction->amount + ($cashTransaction->commission ?? 0);
+            ? $amount - $commission
+            : $amount + $commission - $discount;
     @endphp
+    <div class="row"><span class="value">{{ number_format($amount, 2) }}</span><span class="label-ar">Amount</span></div>
+    <div class="row"><span class="value">{{ number_format($commission, 2) }}</span><span class="label-ar">Commission</span></div>
+    @if($discount > 0)
+        <div class="row"><span class="value">{{ number_format($discount, 2) }}</span><span class="label-ar">Discount</span></div>
+    @endif
     <div class="row"><span class="value branch-bold">{{ number_format($finalTotal, 2) }}</span><span class="label-ar branch-bold">Total</span></div>
     <div class="line" style="margin: 4px 0;" ></div>
     <h5>01278120303  للشكاوى و المقترحات</h5>

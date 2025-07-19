@@ -147,6 +147,7 @@
                             <option value="Orange">Orange</option>
                             <option value="Etisalat">Etisalat</option>
                             <option value="We">We</option>
+                            <option value="Fawry">Fawry</option>
                         </select>
                         <x-input-error class="mt-2" :messages="$errors->get('network')" />
                     </div>

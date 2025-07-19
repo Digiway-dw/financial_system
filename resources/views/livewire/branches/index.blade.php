@@ -206,25 +206,19 @@
                                         {{ \Carbon\Carbon::parse($branch['created_at'])->format('H:i') }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if (isset($branch['safe']))
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    @if (isset($branch['is_active']) && $branch['is_active'])
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clip-rule="evenodd" />
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                             </svg>
                                             Active
                                         </span>
                                     @else
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                             <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                                    clip-rule="evenodd" />
+                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                                             </svg>
-                                            Setup Required
+                                            Inactive
                                         </span>
                                     @endif
                                 </td>
@@ -242,7 +236,7 @@
                                             </a>
                                         @endcan
                                         @can('delete-branches')
-                                            <button wire:click="deleteBranch('{{ $branch['id'] }}')"
+                                            <button type="button" onclick="window.dispatchEvent(new CustomEvent('confirm-delete-branch', { detail: { branchId: '{{ $branch['id'] }}' } }))"
                                                 class="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium rounded-md transition-colors duration-150">
                                                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -283,6 +277,24 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div x-data="{ show: false, branchId: null }"
+         x-on:confirm-delete-branch.window="show = true; branchId = $event.detail.branchId"
+         x-show="show"
+         style="display: none;"
+         class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full">
+            <h2 class="text-lg font-bold mb-4">Confirm Delete</h2>
+            <p class="mb-6">Are you sure you want to delete this branch? This will also delete its associated safe(s). This action cannot be undone.</p>
+            <div class="flex justify-end gap-4">
+                <button type="button" @click="show = false"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
+                <button type="button" @click="$wire.deleteBranch(branchId); show = false"
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Delete</button>
             </div>
         </div>
     </div>

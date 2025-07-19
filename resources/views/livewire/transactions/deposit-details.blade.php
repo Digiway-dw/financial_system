@@ -121,7 +121,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">National ID</label>
-                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter national ID">
+                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" minlength="14" maxlength="14" pattern="[0-9]{14}" required placeholder="Enter national ID (14 digits)">
                         </div>
                     </div>
                     <div>

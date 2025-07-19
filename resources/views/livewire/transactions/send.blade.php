@@ -304,22 +304,26 @@
                             <label for="commission" class="block text-sm font-medium text-gray-700 mb-2">
                                 Commission (Auto-calculated)
                             </label>
-                            <input value="{{ number_format((float) $commission, 2) }}" id="commission"
-                                type="text"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-700"
-                                readonly>
-                            <p class="mt-1 text-xs text-gray-500">5 EGP per 500 EGP (no fractions)</p>
+                            <input wire:model="commission" id="commission" type="text"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('commission') border-red-500 @enderror"
+                                placeholder="0.00" autocomplete="off"
+                                value="{{ old('commission', '') }}"
+                                readonly />
+                            <span class="text-xs text-gray-500">5 EGP per 500 EGP (no fractions)</span>
+                            @error('commission')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
-
-                        <!-- Discount -->
+                        <!-- Discount (Optional) -->
                         <div>
                             <label for="discount" class="block text-sm font-medium text-gray-700 mb-2">
                                 Discount (Optional)
                             </label>
-                            <input wire:model.live="discount" id="discount" type="number" step="0.01"
-                                min="0"
+                            <input wire:model="discount" id="discount" type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('discount') border-red-500 @enderror"
-                                placeholder="Enter discount amount">
+                                placeholder="0" autocomplete="off"
+                                value="{{ old('discount', '') }}"
+                                onfocus="if(this.value=='0'||this.value=='0.00'){this.value='';}" />
                             @error('discount')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -445,7 +449,7 @@
                             </div>
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-purple-600">
-                                    {{ number_format((float) $amount + (float) $commission, 2) }}
+                                    {{ number_format((float) $amount + (float) $commission - abs((float) $discount), 2) }}
                                 </div>
                                 <div class="text-sm text-gray-600">Total</div>
                             </div>

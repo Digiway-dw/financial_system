@@ -63,7 +63,7 @@ class AdminNotification extends Notification implements ShouldQueue
         if (stripos($this->message, 'withdrawal') !== false) {
             $data['type'] = 'withdrawal';
             // Try to extract transaction id from the url if present
-            if ($this->url && preg_match('/cashTransaction=([0-9]+)/', $this->url, $matches)) {
+            if ($this->url && preg_match('/\/cash\/waiting-approval\/([0-9]+)/', $this->url, $matches)) {
                 $data['transaction_id'] = $matches[1];
             }
         }

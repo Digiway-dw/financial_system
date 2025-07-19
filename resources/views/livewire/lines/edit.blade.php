@@ -34,10 +34,12 @@
         <div>
             <x-input-label for="network" :value="__('Network')" />
             <select wire:model="network" id="network" name="network" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                <option value="Vodafone">Vodafone</option>
-                <option value="Orange">Orange</option>
-                <option value="Etisalat">Etisalat</option>
-                <option value="We">We</option>
+                <option value="">Select network...</option>
+                <option value="vodafone">Vodafone</option>
+                <option value="orange">Orange</option>
+                <option value="etisalat">Etisalat</option>
+                <option value="we">WE</option>
+                <option value="fawry">Fawry</option>
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('network')" />
         </div>

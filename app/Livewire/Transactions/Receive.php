@@ -27,7 +27,7 @@ class Receive extends Component
 
     public $clientCode = '';
     public $clientId = null;
-    public $clientBalance = 0;
+    public $clientBalance = null;
 
     // Sender Information
     #[Validate('required|string|max:20')]
@@ -35,12 +35,12 @@ class Receive extends Component
 
     // Transaction Details
     #[Validate('required|numeric|min:0.01')]
-    public $amount = 0;
+    public $amount = null;
 
-    public $commission = 0;
+    public $commission = null;
 
     #[Validate('nullable|numeric|min:0')]
-    public $discount = 0;
+    public $discount = null;
 
     #[Validate('required_if:discount,>0')]
     public $discountNotes = '';
@@ -163,17 +163,12 @@ class Receive extends Component
     private function calculateCommission()
     {
         $amount = (float) $this->amount;
-        $discount = (float) $this->discount;
-
         if ($amount <= 0) {
             $this->commission = 0;
             return;
         }
-
-        // New commission structure: 5 EGP per 500 EGP increment
-        // 1-500 = 5 EGP, 501-1000 = 10 EGP, 1001-1500 = 15 EGP, etc.
-        $baseCommission = ceil($amount / 500) * 5;
-        $this->commission = max(0, $baseCommission - $discount);
+        // Commission: 5 EGP per 500 EGP increment
+        $this->commission = ceil($amount / 500) * 5;
     }
 
     private function initializeBranchSelection()

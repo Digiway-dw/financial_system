@@ -36,12 +36,12 @@ class Send extends Component
 
     // Transaction Details
     #[Validate('required|numeric|min:0.01')]
-    public $amount = 0;
+    public $amount = null;
 
-    public $commission = 0;
+    public $commission = null;
 
     #[Validate('nullable|numeric|min:0')]
-    public $discount = 0;
+    public $discount = null;
 
     #[Validate('required_if:discount,>0|string|min:3')]
     public $discountNotes = '';
@@ -107,6 +107,7 @@ class Send extends Component
 
     public function updatedDiscount()
     {
+        $this->discount = abs((float) $this->discount);
         $this->calculateCommission();
     }
 
@@ -182,23 +183,12 @@ class Send extends Component
     private function calculateCommission()
     {
         $amount = (float) $this->amount;
-        $discount = (float) $this->discount;
-
+        // Commission: 5 EGP per 500 EGP increment
         if ($amount <= 0) {
-            $this->commission = 0;
+            $this->commission = null;
             return;
         }
-
-        // Commission: 5 EGP per 500 EGP increment
-        $baseCommission = ceil($amount / 500) * 5;
-        $commissionAfterDiscount = $baseCommission - $discount;
-        // If discount equals commission, commission is 0
-        if ($discount == $baseCommission) {
-            $this->commission = 0;
-        } else {
-            // Minimum commission is 5 EGP if amount > 0 and discount < commission
-            $this->commission = max(5, $commissionAfterDiscount);
-        }
+        $this->commission = ceil($amount / 500) * 5;
     }
 
     private function initializeBranchSelection()
@@ -279,6 +269,7 @@ class Send extends Component
 
     public function submitTransaction()
     {
+        $this->discount = abs((float) $this->discount);
         $this->validate();
 
         // Cast to proper types for arithmetic operations

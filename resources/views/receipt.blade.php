@@ -114,14 +114,18 @@
         <div class="row"><span class="value">{{ number_format($transaction->commission, 2) }}</span><span
                 class="label-en">Commission</span></div>
         @if ($transaction->deduction > 0)
-            <div class="row"><span class="value">-{{ number_format($transaction->deduction, 2) }}</span><span
+            <div class="row"><span class="value">{{ number_format(abs($transaction->deduction), 2) }}</span><span
                     class="label-en">Discount</span></div>
         @endif
         @php
             $isReceive = strtolower($transaction->transaction_type) === 'receive';
+            $isWithdrawal = strtolower($transaction->transaction_type) === 'withdrawal';
+            $amount = $transaction->amount;
+            $commission = $transaction->commission;
+            $deduction = abs($transaction->deduction ?? 0);
             $finalTotal = $isReceive
-                ? $transaction->amount - $transaction->commission
-                : $transaction->amount + $transaction->commission;
+                ? $amount - ($commission - $deduction)
+                : ($isWithdrawal ? $amount - $commission : $amount + $commission - $deduction);
         @endphp
         <div class="row"><span class="value branch-bold">{{ number_format($finalTotal, 2) }}</span><span
                 class="label-ar branch-bold">Total</span></div>

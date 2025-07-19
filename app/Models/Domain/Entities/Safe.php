@@ -22,6 +22,7 @@ class Safe extends Model
         'current_balance',
         'branch_id',
         'type',
+        'is_active',
     ];
 
     /**

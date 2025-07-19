@@ -64,6 +64,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('lines.transfer');
     Route::get('lines/{lineId}/change-provider', \App\Livewire\Lines\ChangeProvider::class)
         ->name('lines.change-provider');
+    Route::get('lines/{lineId}/view', \App\Livewire\Lines\View::class)
+        ->name('lines.view');
 
     // Safe Management Routes
     Route::get('safes', \App\Livewire\Safes\Index::class)
@@ -72,8 +74,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('safes.transfer');
     Route::get('safes/{safeId}/edit', \App\Livewire\Safes\Edit::class)
         ->name('safes.edit');
-    Route::get('safes/move', \App\Livewire\Safes\Move::class)
-        ->name('safes.move');
 
     // Branch Management Routes
     Route::get('branches', \App\Livewire\Branches\Index::class)

@@ -7,6 +7,8 @@ use App\Domain\Interfaces\BranchRepository;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Gate;
+use App\Domain\Interfaces\SafeRepository;
+use App\Application\UseCases\UpdateSafe;
 
 class Edit extends Component
 {
@@ -19,13 +21,25 @@ class Edit extends Component
     #[Validate('nullable|string|max:1000')] 
     public $description = '';
 
+    public $is_active = true;
+
+    public $safe;
+    public $safeId;
+    public $safe_name = '';
+    public $safe_current_balance = 0.00;
+    public $safe_description = '';
+
     private BranchRepository $branchRepository;
     private UpdateBranch $updateBranchUseCase;
+    private SafeRepository $safeRepository;
+    private UpdateSafe $updateSafeUseCase;
 
-    public function boot(BranchRepository $branchRepository, UpdateBranch $updateBranchUseCase)
+    public function boot(BranchRepository $branchRepository, UpdateBranch $updateBranchUseCase, SafeRepository $safeRepository, UpdateSafe $updateSafeUseCase)
     {
         $this->branchRepository = $branchRepository;
         $this->updateBranchUseCase = $updateBranchUseCase;
+        $this->safeRepository = $safeRepository;
+        $this->updateSafeUseCase = $updateSafeUseCase;
     }
 
     public function mount(string $branchId)
@@ -40,11 +54,24 @@ class Edit extends Component
 
         $this->name = $this->branch->name;
         $this->description = $this->branch->description;
+        $this->is_active = (bool)($this->branch->is_active ?? true);
+
+        // Load the first associated safe (main safe)
+        $safe = $this->branch->safes->first();
+        if ($safe) {
+            $this->safe = $safe;
+            $this->safeId = $safe->id;
+            $this->safe_name = $safe->name;
+            $this->safe_current_balance = $safe->current_balance;
+            $this->safe_description = $safe->description;
+        }
     }
 
     public function updateBranch()
     {
-        $this->validate();
+        $this->validate([
+            'is_active' => 'boolean',
+        ]);
 
         try {
             $this->updateBranchUseCase->execute(
@@ -52,13 +79,36 @@ class Edit extends Component
                 [
                     'name' => $this->name,
                     'description' => $this->description,
+                    'is_active' => $this->is_active,
                 ]
             );
-
-            session()->flash('message', 'Branch updated successfully.');
+            // Update safe if loaded
+            if ($this->safeId) {
+                $this->updateSafeUseCase->execute(
+                    $this->safeId,
+                    [
+                        'name' => $this->safe_name,
+                        'current_balance' => (float) $this->safe_current_balance,
+                        'description' => $this->safe_description,
+                        'is_active' => $this->is_active,
+                    ]
+                );
+            }
+            // Update all other safes for this branch to match status
+            if ($this->branch) {
+                foreach ($this->branch->safes as $safe) {
+                    if ($safe->id != $this->safeId) {
+                        $this->updateSafeUseCase->execute(
+                            $safe->id,
+                            ['is_active' => $this->is_active]
+                        );
+                    }
+                }
+            }
+            session()->flash('message', 'Branch and safe updated successfully.');
             $this->redirect(route('branches.index'), navigate: true); // Redirect after successful update
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to update branch: ' . $e->getMessage());
+            session()->flash('error', 'Failed to update branch or safe: ' . $e->getMessage());
         }
     }
 

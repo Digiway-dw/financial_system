@@ -145,9 +145,22 @@ class Edit extends Component
                 $this->customer->mobileNumbers()->create(['mobile_number' => $number]);
             }
             session()->flash('message', 'Customer updated successfully.');
+            return redirect()->route('customers.index');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update customer: ' . $e->getMessage());
         }
+    }
+
+    public function activateWallet()
+    {
+        $this->is_client = true;
+        $this->updateCustomer();
+    }
+
+    public function deactivateWallet()
+    {
+        $this->is_client = false;
+        $this->updateCustomer();
     }
 
     public function render()

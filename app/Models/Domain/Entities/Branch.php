@@ -22,6 +22,7 @@ class Branch extends Model
         'description',
         'location',
         'branch_code',
+        'is_active',
     ];
 
     /**

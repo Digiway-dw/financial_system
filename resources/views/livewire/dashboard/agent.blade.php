@@ -181,52 +181,51 @@
                 <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Mobile Number</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Balance</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Daily Limit</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Daily Usage</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Monthly Limit</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Monthly Usage</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Network</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mobile Number</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Balance</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Daily Remaining</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Daily Receive</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly Remaining</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly Receive</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Network</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($agentLines as $line)
+                            @php
+                                $dailyLimit = $line->daily_limit ?? 0;
+                                $dailyUsage = $line->daily_usage ?? 0;
+                                $monthlyLimit = $line->monthly_limit ?? 0;
+                                $monthlyUsage = $line->monthly_usage ?? 0;
+                                $dailyRemaining = $dailyLimit - $dailyUsage;
+                                $monthlyRemaining = $monthlyLimit - $monthlyUsage;
+                                $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
+                                $circleColor = 'bg-green-400';
+                                if ($usagePercent >= 98) {
+                                    $circleColor = 'bg-red-500';
+                                } elseif ($usagePercent >= 80) {
+                                    $circleColor = 'bg-yellow-400';
+                                }
+                            @endphp
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $line->mobile_number }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ number_format($line->current_balance, 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ number_format($line->daily_limit, 2) }} EGP</td>
-                                <td
-                                    class="px-6 py-4 whitespace-nowrap text-sm {{ isset($line->daily_usage_class) ? $line->daily_usage_class : 'text-gray-900' }}">
-                                    {{ number_format($line->daily_usage ?? 0, 2) }} EGP
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <div class="w-1.5 h-1.5 rounded-full {{ $circleColor }}"></div>
+                                        </div>
+                                        <div class="text-sm font-medium text-gray-900">{{ $line->mobile_number }}</div>
+                                    </div>
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->current_balance, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($dailyRemaining, 2) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ number_format($line->monthly_limit, 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ number_format($line->monthly_usage ?? 0, 2) }} EGP</td>
+                                    {{ number_format($dailyUsage, 2) }} EGP
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($monthlyRemaining, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($monthlyUsage, 2) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ ucfirst($line->status) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($line->status) }}</td>
                             </tr>
                         @endforeach
                     </tbody>

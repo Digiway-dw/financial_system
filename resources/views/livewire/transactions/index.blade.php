@@ -314,29 +314,29 @@
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead>
                     <tr>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer Name</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Mobile Number</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Commission</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Agent</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reference Number</th>
-                            <th class="px-6 py-3 bg-gray-50">Actions</th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px]">Customer Name</th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px]">Mobile Number</th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px]">Amount</th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px]">Commission</th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[70px]">Type</th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[90px]">Agent</th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px]">Date</th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[120px]">Reference Number</th>
+                        <th class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px]">Actions</th>
                     </tr>
                 </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-gray-200 text-xs">
                     @forelse ($transactions as $transaction)
                             <tr class="hover:bg-gray-50 transition-colors @if(strtolower($transaction['status']) === 'pending') bg-yellow-100 @endif">
-                                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ $transaction['customer_name'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['customer_mobile_number'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ number_format($transaction['amount'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ number_format($transaction['commission'], 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d h:i A') }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $transaction['reference_number'] ?? '' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-900">{{ $transaction['customer_name'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['customer_mobile_number'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ number_format($transaction['amount'], 2) }} EGP</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ number_format($transaction['commission'], 2) }} EGP</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d h:i A') }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['reference_number'] ?? '' }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-right text-sm font-medium">
                                     @can('edit-all-transactions')
                                         <a href="{{ route('transactions.edit', $transaction['id']) }}"
                                             class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg hover:bg-indigo-200 transition-colors duration-150">

@@ -22,7 +22,7 @@ class Create extends Component
     #[Validate('required|numeric|min:0')]
     public $monthlyLimit = '';
 
-    #[Validate('required|string|in:Vodafone,Orange,Etisalat,We')]
+    #[Validate('required|string|in:Vodafone,Orange,Etisalat,We,Fawry')]
     public $network = 'Vodafone';
 
     #[Validate('required|exists:branches,id')]

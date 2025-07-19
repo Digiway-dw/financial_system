@@ -76,18 +76,6 @@
                         </div>
                     </div>
 
-                    <!-- Customer Code -->
-                    <div>
-                        <label for="customerCode" class="block text-sm font-semibold text-slate-700 mb-2">Customer Code
-                            (Optional)</label>
-                        <input type="text" wire:model="customerCode" id="customerCode" name="customerCode"
-                            class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                            placeholder="Enter customer code">
-                        @error('customerCode')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
                     <!-- Gender -->
                     <div>
                         <label for="gender" class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
@@ -123,20 +111,22 @@
 
                     <!-- Is Client -->
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-3">Account Settings</label>
-                        <label for="is_client"
-                            class="flex items-center p-4 bg-slate-50/80 border border-slate-200 rounded-xl hover:bg-slate-100/80 cursor-pointer transition-colors duration-150">
-                            <input type="checkbox" wire:model="is_client" id="is_client" name="is_client"
-                                class="w-4 h-4 text-blue-600 bg-white border-slate-300 rounded focus:ring-blue-500 focus:ring-2">
-                            <div class="ml-3">
-                                <span class="text-sm font-medium text-slate-700">Is Client</span>
-                                <p class="text-xs text-slate-500 mt-1">Mark this customer as a client for special
-                                    handling</p>
+                        <label class="block text-sm font-semibold text-slate-700 mb-3">Wallet Status</label>
+                        @if ($is_client)
+                            <div class="flex items-center space-x-3">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                    Active Wallet
+                                </span>
+                                <button type="button" wire:click="deactivateWallet" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl hover:bg-red-200 transition-colors duration-150 text-xs font-medium">Deactivate Wallet</button>
                             </div>
-                        </label>
-                        @error('is_client')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                        @else
+                            <div class="flex items-center space-x-3">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                                    No wallet
+                                </span>
+                                <button type="button" wire:click="activateWallet" class="px-4 py-2 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors duration-150 text-xs font-medium">Activate Wallet</button>
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Agent ID -->

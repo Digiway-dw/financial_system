@@ -325,7 +325,14 @@
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">From Safe</p>
                                 <p class="text-lg font-bold text-purple-700">
-                                    {{ number_format((float) $amount - (float) $commission, 2) }} EGP</p>
+                                    {{ number_format((float) $amount - ((float) $commission - abs((float) $discount)), 2) }} EGP
+                                </p>
+                            </div>
+                            <div class="bg-white rounded-lg p-3">
+                                <p class="text-gray-600">Total</p>
+                                <p class="text-lg font-bold text-purple-700">
+                                    {{ number_format((float) $amount - ((float) $commission - abs((float) $discount)), 2) }} EGP
+                                </p>
                             </div>
                         </div>
                         <div class="mt-4 text-xs text-gray-600">

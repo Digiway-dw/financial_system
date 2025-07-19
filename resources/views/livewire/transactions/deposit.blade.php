@@ -326,9 +326,9 @@
                                 <div>
                                     <label class="block text-gray-700 font-medium mb-2">Depositor National ID</label>
                                     <input type="text" wire:model.defer="depositorNationalId" minlength="14"
-                                        maxlength="14" pattern="[0-9]{14}"
+                                        maxlength="14" pattern="[0-9]{14}" required
                                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                                        placeholder="14-digit national ID" required />
+                                        placeholder="14-digit national ID" />
                                     @error('depositorNationalId')
                                         <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
                                     @enderror

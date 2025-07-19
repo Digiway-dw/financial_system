@@ -278,6 +278,7 @@
                                     رقم الهوية الوطنية
                                 </label>
                                 <input type="text" wire:model="nationalId" id="nationalId"
+                                    minlength="14" maxlength="14" pattern="[0-9]{14}" required
                                     class="w-full rounded-lg border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 bg-white text-slate-900"
                                     placeholder="أدخل رقم الهوية الوطنية">
                                 @error('nationalId')
@@ -504,9 +505,9 @@
                                         رقم الهوية الوطنية للمستلم
                                     </label>
                                     <input type="text" wire:model.defer="withdrawalNationalId" minlength="14"
-                                        maxlength="14" pattern="[0-9]{14}"
+                                        maxlength="14" pattern="[0-9]{14}" required
                                         class="w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 bg-white text-slate-900"
-                                        placeholder="أدخل رقم الهوية الوطنية (14 رقم)" required />
+                                        placeholder="أدخل رقم الهوية الوطنية (14 رقم)" />
                                     @error('withdrawalNationalId')
                                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                                     @enderror
@@ -582,81 +583,49 @@
                         </div>
                     @endif
 
-                    <!-- Branch Withdrawal -->
+                    <!-- Branch Withdrawal Specific Fields -->
                     @if ($withdrawalType === 'branch')
-                        <div class="bg-indigo-50/50 rounded-xl p-6 border border-indigo-200">
-                            <h4 class="text-lg font-semibold text-indigo-800 mb-4 flex items-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                </svg>
-                                تحويل فرع
-                            </h4>
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <div class="space-y-2">
-                                    <label for="selectedBranchId"
-                                        class="flex items-center text-sm font-semibold text-slate-700">
-                                        <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                        </svg>
-                                        اختر الفرع
-                                    </label>
-                                    <select id="selectedBranchId" wire:model="selectedBranchId"
-                                        class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 bg-white text-slate-900">
-                                        <option value="">اختر الفرع</option>
-                                        @foreach ($branches as $branch)
-                                            @if (Auth::user()->hasRole(['admin', 'general_supervisor']) || Auth::user()->branch_id == $branch['id'])
-                                                <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                    @error('selectedBranchId')
-                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div class="space-y-2">
-                                    <label for="amount"
-                                        class="flex items-center text-sm font-semibold text-slate-700">
-                                        <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                                        </svg>
-                                        المبلغ
-                                    </label>
-                                    <div class="relative">
-                                        <div
-                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <span class="text-slate-500 text-sm font-medium">ج.م</span>
-                                        </div>
-                                        <input type="number" id="amount" wire:model="amount" step="0.01"
-                                            min="0.01"
-                                            class="w-full pl-12 pr-4 py-3 rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 bg-white text-slate-900"
-                                            placeholder="أدخل المبلغ">
-                                    </div>
-                                    @error('amount')
-                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div class="lg:col-span-2 space-y-2">
-                                    <label for="notes"
-                                        class="flex items-center text-sm font-semibold text-slate-700">
-                                        <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                        ملاحظات
-                                    </label>
-                                    <textarea id="notes" wire:model="notes" rows="3"
-                                        class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 bg-white text-slate-900"
-                                        placeholder="أدخل ملاحظات إضافية"></textarea>
-                                    @error('notes')
-                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="selectedBranchId" class="flex items-center text-sm font-semibold text-slate-700">
+                                    <svg class="w-4 h-4 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    اختر الفرع
+                                </label>
+                                <select id="selectedBranchId" wire:model="selectedBranchId" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 bg-white text-slate-900">
+                                    <option value="">اختر الفرع</option>
+                                    @foreach ($branches as $branch)
+                                        <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
+                                    @endforeach
+                                </select>
+                                @error('selectedBranchId')
+                                    <p class="text-red-600 text-sm mt-1 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div class="space-y-2">
+                                <label for="amount" class="flex items-center text-sm font-semibold text-slate-700">
+                                    <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                    </svg>
+                                    المبلغ
+                                </label>
+                                <input type="number" step="0.01" min="0" wire:model="amount" id="amount" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 bg-white text-slate-900" placeholder="أدخل المبلغ ج.م">
+                                @error('amount')
+                                    <p class="text-red-600 text-sm mt-1 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div class="lg:col-span-2 space-y-2">
+                                <label for="notes" class="flex items-center text-sm font-semibold text-slate-700">
+                                    <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    ملاحظات
+                                </label>
+                                <textarea id="notes" wire:model="notes" rows="3" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 bg-white text-slate-900" placeholder="أدخل ملاحظات إضافية"></textarea>
+                                @error('notes')
+                                    <p class="text-red-600 text-sm mt-1 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
                     @endif

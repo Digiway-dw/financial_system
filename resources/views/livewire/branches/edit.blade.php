@@ -92,6 +92,46 @@
                             </p>
                         @endif
                     </div>
+
+                    <!-- Branch Status -->
+                    <div class="space-y-2">
+                        <label for="is_active" class="block text-sm font-medium text-gray-700">
+                            Branch Status
+                        </label>
+                        <select wire:model="is_active" id="is_active" name="is_active" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Safe Information Section -->
+                <div class="space-y-6 border-t border-gray-200 pt-8 mt-8">
+                    <div class="border-b border-gray-200 pb-4">
+                        <h2 class="text-lg font-semibold text-amber-900 flex items-center">
+                            <div class="w-6 h-6 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            Safe Information
+                        </h2>
+                        <p class="text-sm text-amber-700 mt-1">Edit the safe associated with this branch</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="safe_name" class="block text-sm font-medium text-gray-700">Safe Name</label>
+                            <input wire:model="safe_name" id="safe_name" name="safe_name" type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Enter safe name" />
+                        </div>
+                        <div>
+                            <label for="safe_current_balance" class="block text-sm font-medium text-gray-700">Balance (EGP)</label>
+                            <input wire:model="safe_current_balance" id="safe_current_balance" name="safe_current_balance" type="number" step="0.01" min="0" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="0.00" />
+                        </div>
+                        <div>
+                            <label for="safe_description" class="block text-sm font-medium text-gray-700">Description</label>
+                            <input wire:model="safe_description" id="safe_description" name="safe_description" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Optional safe description" />
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Action Buttons -->

@@ -142,13 +142,21 @@ class Withdrawal extends Create
 
     public function submitWithdrawal()
     {
-        $this->validate([
+        $rules = [
             'amount' => 'required|numeric|min:0.01',
             'safeId' => 'required|exists:safes,id',
             'notes' => 'nullable|string|max:500',
-            'customerName' => 'required|string',
-            'nationalId' => 'required|string|min:14|max:14',
-        ]);
+        ];
+        if ($this->withdrawalType === 'direct') {
+            $rules['customerName'] = 'required|string';
+            $rules['nationalId'] = 'required|string|digits:14';
+        }
+        if ($this->withdrawalType === 'client_wallet') {
+            $rules['clientSearch'] = 'required|string|min:3';
+            $rules['withdrawalToName'] = 'required|string';
+            $rules['withdrawalNationalId'] = 'required|string|digits:14';
+        }
+        $this->validate($rules);
 
         // Check safe balance for all withdrawal types
         $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
@@ -304,7 +312,11 @@ class Withdrawal extends Create
 
             if ($this->withdrawalType === 'user') {
                 $user = User::find($this->userId);
-                $customerName = $user?->name ?? '';
+                if (!$user) {
+                    session()->flash('error', 'Selected user not found.');
+                    return;
+                }
+                $customerName = $user->name;
                 $agent = Auth::user();
                 $isAdmin = ($agent->role ?? null) === 'admin';
                 $status = $isAdmin ? 'completed' : 'pending';
@@ -312,7 +324,7 @@ class Withdrawal extends Create
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
-                    'customer_name' => $this->customerName,
+                    'customer_name' => $customerName,
                     'amount' => abs($this->amount),
                     'notes' => $this->notes,
                     'safe_id' => $this->safeId,
@@ -556,13 +568,13 @@ class Withdrawal extends Create
     public function rules()
     {
         $rules = [
-            'amount' => 'required|numeric|min:0.01', // مبلغ السحب
-            'notes' => 'required|string', // ملاحظات
-            'safeId' => 'required|integer|exists:safes,id', // اختيار الخزنة
+            'amount' => 'required|numeric|min:0.01',
+            'notes' => 'required|string',
+            'safeId' => 'required|integer|exists:safes,id',
         ];
         if ($this->withdrawalType === 'direct') {
-            $rules['customerName'] = 'required|string'; // اسم المستلم
-            $rules['nationalId'] = 'required|string|min:6'; // رقم الهوية الوطنية
+            $rules['customerName'] = 'required|string';
+            $rules['nationalId'] = 'required|string|digits:14';
         }
         if ($this->withdrawalType === 'user') {
             $rules['userId'] = 'required|integer|exists:users,id';
@@ -570,7 +582,7 @@ class Withdrawal extends Create
         if ($this->withdrawalType === 'client_wallet') {
             $rules['clientSearch'] = 'required|string|min:3';
             $rules['withdrawalToName'] = 'required|string';
-            $rules['withdrawalNationalId'] = 'required|string|min:6';
+            $rules['withdrawalNationalId'] = 'required|string|digits:14';
         }
         return $rules;
     }

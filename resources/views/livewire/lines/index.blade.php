@@ -70,8 +70,7 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150"
-                                wire:click="sortBy('mobile_number')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[120px]" wire:click="sortBy('mobile_number')">
                                 <div class="flex items-center space-x-1">
                                     <span>Mobile Number</span>
                                     @if ($sortField === 'mobile_number')
@@ -79,8 +78,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150"
-                                wire:click="sortBy('current_balance')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px]" wire:click="sortBy('current_balance')">
                                 <div class="flex items-center space-x-1">
                                     <span>Current Balance</span>
                                     @if ($sortField === 'current_balance')
@@ -88,8 +86,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150"
-                                wire:click="sortBy('daily_limit')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px]" wire:click="sortBy('daily_limit')">
                                 <div class="flex items-center space-x-1">
                                     <span>Daily Limit</span>
                                     @if ($sortField === 'daily_limit')
@@ -97,8 +94,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150"
-                                wire:click="sortBy('monthly_limit')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px]" wire:click="sortBy('monthly_limit')">
                                 <div class="flex items-center space-x-1">
                                     <span>Monthly Limit</span>
                                     @if ($sortField === 'monthly_limit')
@@ -106,8 +102,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150"
-                                wire:click="sortBy('daily_usage')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px]" wire:click="sortBy('daily_usage')">
                                 <div class="flex items-center space-x-1">
                                     <span>Daily Usage</span>
                                     @if ($sortField === 'daily_usage')
@@ -115,8 +110,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150"
-                                wire:click="sortBy('monthly_usage')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px]" wire:click="sortBy('monthly_usage')">
                                 <div class="flex items-center space-x-1">
                                     <span>Monthly Usage</span>
                                     @if ($sortField === 'monthly_usage')
@@ -124,8 +118,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150"
-                                wire:click="sortBy('network')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px]" wire:click="sortBy('network')">
                                 <div class="flex items-center space-x-1">
                                     <span>Network</span>
                                     @if ($sortField === 'network')
@@ -133,8 +126,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150"
-                                wire:click="sortBy('status')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px]" wire:click="sortBy('status')">
                                 <div class="flex items-center space-x-1">
                                     <span>Status</span>
                                     @if ($sortField === 'status')
@@ -142,8 +134,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150"
-                                wire:click="sortBy('branch_id')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px]" wire:click="sortBy('branch_id')">
                                 <div class="flex items-center space-x-1">
                                     <span>Branch</span>
                                     @if ($sortField === 'branch_id')
@@ -151,62 +142,59 @@
                                     @endif
                                 </div>
                             </th>
-                            <th
-                                class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Actions</th>
+                            <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px]">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-gray-200 text-xs">
                         @forelse ($lines as $line)
                             <tr class="hover:bg-gray-50 transition-colors duration-150 {{ $line['monthly_limit_row_class'] }}">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-3 py-2 whitespace-nowrap">
                                     <div class="flex items-center">
                                         @if ($line['status'] === 'active')
                                             <div
-                                                class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                                class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-2">
                                                 <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
                                             </div>
                                         @else
                                             <div
-                                                class="flex-shrink-0 w-3 h-3 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                                                class="flex-shrink-0 w-3 h-3 bg-red-100 rounded-full flex items-center justify-center mr-2">
                                                 <div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
                                             </div>
                                         @endif
-                                        <div class="text-sm font-medium text-gray-900">{{ $line['mobile_number'] }}
-                                        </div>
+                                        <div class="text-xs font-medium text-gray-900">{{ $line['mobile_number'] }}</div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-3 py-2 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">
                                         {{ number_format($line['current_balance'], 2) }}</div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-3 py-2 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ number_format($line['daily_limit'], 2) }}
                                     </div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-3 py-2 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ number_format($line['monthly_limit'], 2) }}
                                     </div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap {{ $line['daily_usage_class'] }}">
+                                <td class="px-3 py-2 whitespace-nowrap {{ $line['daily_usage_class'] }}">
                                     <div class="text-sm text-gray-900">{{ number_format($line['daily_usage'], 2) }}</div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-3 py-2 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ number_format($line['monthly_usage'], 2) }}
                                     </div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-3 py-2 whitespace-nowrap">
                                     <span
                                         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                         {{ $line['network'] }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-3 py-2 whitespace-nowrap">
                                     @if ($line['status'] === 'active')
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -229,10 +217,22 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
                                     {{ $line['branch']['name'] ?? 'N/A' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <td class="px-3 py-2 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="{{ route('lines.view', $line['id']) }}"
+                                        class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-md transition-colors duration-150">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                            </path>
+                                        </svg>
+                                        View
+                                    </a>
                                     @php
                                         $canManageLines = auth()->user()->hasRole('admin') || auth()->user()->hasRole('general_supervisor');
                                     @endphp
@@ -251,18 +251,9 @@
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                                                    d="M10 9V3m4 6V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
-                                            {{ $line['status'] === 'active' ? 'Deactivate' : 'Activate' }}
-                                        </button>
-                                        <button wire:click="deleteLine('{{ $line['id'] }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium rounded-md transition-colors duration-150">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                            Delete
+                                            Toggle Status
                                         </button>
                                     @endif
                                 </td>

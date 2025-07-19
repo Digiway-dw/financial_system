@@ -41,7 +41,7 @@ class Edit extends Component
             'currentBalance' => 'required|numeric|min:0',
             'dailyLimit' => 'required|numeric|min:0',
             'monthlyLimit' => 'required|numeric|min:0',
-            'network' => 'required|string|in:Vodafone,Orange,Etisalat,We',
+            'network' => 'required|in:vodafone,orange,etisalat,we,fawry',
             'status' => 'required|string|in:active,inactive',
             'branchId' => 'required|exists:branches,id',
         ];

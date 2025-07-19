@@ -274,6 +274,14 @@
                                                         </svg>
                                                         Reject Withdrawal
                                                     </button>
+                                                    <a href="{{ route('transactions.cash.waiting-approval', ['cashTransaction' => $notification->data['transaction_id'] ?? 0]) }}"
+                                                        wire:click.prevent="viewNotification('{{ $notification->id }}')"
+                                                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow transition-colors duration-200">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        </svg>
+                                                        View
+                                                    </a>
                                                 </div>
                                             @elseif (($notification->data['type'] ?? null) === 'pending_transaction')
                                                 <button wire:click="approveNotification('{{ $notification->id }}')"
