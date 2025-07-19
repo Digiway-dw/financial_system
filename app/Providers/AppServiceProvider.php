@@ -142,16 +142,7 @@ class AppServiceProvider extends ServiceProvider
         Blade::component('secondary-button', \Illuminate\View\Component::class);
         Blade::component('modal', \Illuminate\View\Component::class);
 
-        // Use HTTP for local development
-        if (app()->environment('local')) {
-            URL::forceScheme('http');
-            URL::forceRootUrl(request()->getSchemeAndHttpHost());
-        }
-
-        // 🔧 إجبار Laravel يولد روابط بناءً على عنوان الزيارة (ngrok أو غيره)
-        if (app()->environment('local') && request()->getSchemeAndHttpHost()) {
-            URL::forceRootUrl(request()->getSchemeAndHttpHost());
-        }
+        // 🔧 Let the proper URL configuration method handle schemes and URLs
 
         // Add current_password validation rule
         \Illuminate\Support\Facades\Validator::extend('current_password', function ($attribute, $value, $parameters, $validator) {
@@ -314,12 +305,21 @@ class AppServiceProvider extends ServiceProvider
         // Support for development tools like ngrok, Expose, etc.
         if (request() && request()->hasHeader('X-Forwarded-Proto')) {
             URL::forceScheme(request()->header('X-Forwarded-Proto'));
+        } elseif (request() && request()->isSecure()) {
+            // If the request is already secure (HTTPS), force HTTPS
+            URL::forceScheme('https');
         }
 
         if (request() && ($host = request()->getSchemeAndHttpHost())) {
             // Only override if it's not the default Laravel dev server
-            if (!str_contains($host, '127.0.0.1:8000')) {
+            if (!str_contains($host, '127.0.0.1:8000') && !str_contains($host, 'localhost:8000')) {
                 URL::forceRootUrl($host);
+
+                // Force built assets when using external URLs like ngrok
+                if (str_contains($host, 'ngrok') || str_contains($host, 'localtunnel') || str_contains($host, 'expose')) {
+                    putenv('VITE_DEV_SERVER_KEY=');
+                    config(['app.asset.version' => time()]);
+                }
             }
         }
     }
@@ -520,6 +520,28 @@ class AppServiceProvider extends ServiceProvider
         Blade::component('App\View\Components\Button', 'button');
         Blade::component('App\View\Components\SecondaryButton', 'secondary-button');
         Blade::component('App\View\Components\DangerButton', 'danger-button');
+
+        // Custom Blade directive for forcing built assets when using ngrok
+        Blade::directive('viteBuilt', function ($expression) {
+            return "<?php
+                \$manifestPath = public_path('build/manifest.json');
+                if (file_exists(\$manifestPath)) {
+                    \$manifest = json_decode(file_get_contents(\$manifestPath), true);
+                    \$assets = $expression;
+                    foreach (\$assets as \$asset) {
+                        if (isset(\$manifest[\$asset])) {
+                            if (str_contains(\$asset, '.css')) {
+                                echo '<link rel=\"stylesheet\" href=\"' . asset('build/' . \$manifest[\$asset]['file']) . '\">';
+                            } else {
+                                echo '<script type=\"module\" src=\"' . asset('build/' . \$manifest[\$asset]['file']) . '\"></script>';
+                            }
+                        }
+                    }
+                } else {
+                    echo '<!-- Vite manifest not found -->';
+                }
+            ?>";
+        });
     }
 
     /**

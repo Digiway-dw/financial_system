@@ -15,16 +15,33 @@
         </div>
 
         <!-- Success/Error Messages -->
-        @if (isset($errorMessage) && $errorMessage)
-            <div class="alert alert-danger"
-                style="color: #b91c1c; background: #fee2e2; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
-                {{ $errorMessage }}
+        @if ($successMessage)
+            <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-green-800 font-medium">{{ $successMessage }}</p>
+                </div>
             </div>
         @endif
-        @if (isset($successMessage) && $successMessage)
-            <div class="alert alert-success"
-                style="color: #166534; background: #dcfce7; border: 1px solid #86efac; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
-                {{ $successMessage }}
+
+        @if ($errorMessage)
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-center">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-red-800 font-medium">{{ $errorMessage }}</p>
+                </div>
             </div>
         @endif
 
@@ -89,6 +106,16 @@
                             @endif
                         </div>
 
+                        <!-- Client Code (Display Only) -->
+                        <div>
+                            <label for="clientCode" class="block text-sm font-medium text-gray-700 mb-2">
+                                Client Code
+                            </label>
+                            <input wire:model="clientCode" id="clientCode" type="text"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-700"
+                                placeholder="Auto-generated" readonly @if ($clientId) disabled @endif>
+                        </div>
+
                         <!-- Client Name -->
                         <div>
                             <label for="clientName" class="block text-sm font-medium text-gray-700 mb-2">
@@ -96,36 +123,34 @@
                             </label>
                             <input wire:model="clientName" id="clientName" type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('clientName') border-red-500 @enderror"
-                                placeholder="Enter client name">
+                                placeholder="Enter client name" @if ($clientId) disabled @endif>
                             @error('clientName')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <!-- Client Gender -->
+                        <!-- Client Gender (Bubble) -->
                         <div>
-                            <label for="clientGender" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Gender
                             </label>
-                            <select wire:model="clientGender" id="clientGender"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                                <option value="">Select Gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                            </select>
+                            <div class="flex space-x-6 mt-2">
+                                <label class="inline-flex items-center">
+                                    <input wire:model="clientGender" type="radio" value="male"
+                                        class="form-radio h-5 w-5 text-blue-600"
+                                        @if ($clientId) disabled @endif>
+                                    <span class="ml-2 text-gray-700">Male</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input wire:model="clientGender" type="radio" value="female"
+                                        class="form-radio h-5 w-5 text-pink-600"
+                                        @if ($clientId) disabled @endif>
+                                    <span class="ml-2 text-gray-700">Female</span>
+                                </label>
+                            </div>
                             @error('clientGender')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                        </div>
-
-                        <!-- Client Code (Display Only) -->
-                        <div>
-                            <label for="clientCode" class="block text-sm font-medium text-gray-700 mb-2">
-                                Client Code
-                            </label>
-                            <input wire:model="clientCode" id="clientCode" type="text"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 cursor-not-allowed"
-                                placeholder="Auto-generated" readonly>
                         </div>
                     </div>
                 </div>

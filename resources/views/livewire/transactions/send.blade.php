@@ -198,7 +198,8 @@
                             </label>
                             <input wire:model="clientCode" id="clientCode" type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-700"
-                                placeholder="Auto-generated" readonly>
+                                placeholder="Auto-generated" readonly
+                                @if ($clientId) disabled @endif>
                         </div>
 
                         <!-- Client Name -->
@@ -208,7 +209,7 @@
                             </label>
                             <input wire:model="clientName" id="clientName" type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('clientName') border-red-500 @enderror"
-                                placeholder="Enter client name">
+                                placeholder="Enter client name" @if ($clientId) disabled @endif>
                             @error('clientName')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -222,12 +223,14 @@
                             <div class="flex space-x-4">
                                 <label class="flex items-center">
                                     <input wire:model="clientGender" type="radio" value="male"
-                                        class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                        class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                        @if ($clientId) disabled @endif>
                                     <span class="ml-2 text-sm text-gray-700">Male</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input wire:model="clientGender" type="radio" value="female"
-                                        class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                        class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                        @if ($clientId) disabled @endif>
                                     <span class="ml-2 text-sm text-gray-700">Female</span>
                                 </label>
                             </div>

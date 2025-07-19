@@ -146,6 +146,8 @@ class Withdrawal extends Create
             'amount' => 'required|numeric|min:0.01',
             'safeId' => 'required|exists:safes,id',
             'notes' => 'nullable|string|max:500',
+            'customerName' => 'required|string',
+            'nationalId' => 'required|string|min:14|max:14',
         ]);
 
         // Check safe balance for all withdrawal types
@@ -262,7 +264,8 @@ class Withdrawal extends Create
 
             // Check if user has permission to access this branch
             $user = Auth::user();
-            if (!$user->hasRole(['admin', 'general_supervisor']) && $user->branch_id != $this->selectedBranchId) {
+            $userRole = $user->role ?? null;
+            if (!in_array($userRole, ['admin', 'general_supervisor']) && $user->branch_id != $this->selectedBranchId) {
                 session()->flash('error', 'You can only create expense withdrawals for your own branch.');
                 return;
             }
@@ -303,13 +306,13 @@ class Withdrawal extends Create
                 $user = User::find($this->userId);
                 $customerName = $user?->name ?? '';
                 $agent = Auth::user();
-                $isAdmin = $agent->hasRole('admin');
+                $isAdmin = ($agent->role ?? null) === 'admin';
                 $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
-                    'customer_name' => $customerName,
+                    'customer_name' => $this->customerName,
                     'amount' => abs($this->amount),
                     'notes' => $this->notes,
                     'safe_id' => $this->safeId,
@@ -355,7 +358,7 @@ class Withdrawal extends Create
                 $isClient = true;
                 $notes = $this->notes . ' | Withdrawal to: ' . $this->withdrawalToName;
                 $user = $agent;
-                $isAdmin = $user->hasRole('admin');
+                $isAdmin = ($user->role ?? null) === 'admin';
                 $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
@@ -393,7 +396,7 @@ class Withdrawal extends Create
             }
             if ($this->withdrawalType === 'direct') {
                 $user = Auth::user();
-                $isAdmin = $user->hasRole('admin');
+                $isAdmin = ($user->role ?? null) === 'admin';
                 $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
@@ -424,7 +427,7 @@ class Withdrawal extends Create
 
             if ($this->withdrawalType === 'admin') {
                 $user = Auth::user();
-                $isAdmin = $user->hasRole('admin');
+                $isAdmin = ($user->role ?? null) === 'admin';
                 $status = $isAdmin ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
@@ -553,13 +556,13 @@ class Withdrawal extends Create
     public function rules()
     {
         $rules = [
-            'amount' => 'required|numeric|min:0.01',
-            'notes' => 'nullable|string',
-            'safeId' => 'required|integer|exists:safes,id',
+            'amount' => 'required|numeric|min:0.01', // مبلغ السحب
+            'notes' => 'required|string', // ملاحظات
+            'safeId' => 'required|integer|exists:safes,id', // اختيار الخزنة
         ];
         if ($this->withdrawalType === 'direct') {
-            $rules['customerName'] = 'required|string';
-            $rules['nationalId'] = 'required|string|min:6';
+            $rules['customerName'] = 'required|string'; // اسم المستلم
+            $rules['nationalId'] = 'required|string|min:6'; // رقم الهوية الوطنية
         }
         if ($this->withdrawalType === 'user') {
             $rules['userId'] = 'required|integer|exists:users,id';

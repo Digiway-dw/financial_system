@@ -21,14 +21,14 @@
                         $cannotEditRoles = ['agent', 'trainee', 'auditor'];
                     @endphp
                     @if (!auth()->user()->hasAnyRole($cannotEditRoles))
-                    <a href="{{ route('customers.edit', $customer->id) }}"
-                        class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 rounded-xl hover:bg-indigo-200 transition-colors duration-150">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Edit Customer
-                    </a>
+                        <a href="{{ route('customers.edit', $customer->id) }}"
+                            class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 rounded-xl hover:bg-indigo-200 transition-colors duration-150">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit Customer
+                        </a>
                     @endif
                     <a href="{{ route('customers.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-slate-200 text-slate-700 rounded-xl hover:bg-slate-300 transition-colors duration-150">
@@ -86,6 +86,12 @@
                         <label class="block text-sm font-medium text-slate-500 mb-1">Date Added</label>
                         <p class="text-slate-800">
                             {{ $customer->created_at ? $customer->created_at->format('M d, Y') : 'N/A' }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">Created by</label>
+                        <div class="text-slate-800 font-semibold">
+                            {{ $customer->createdBy ? $customer->createdBy->name : 'N/A' }}
+                        </div>
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-slate-500 mb-1">Notes</label>

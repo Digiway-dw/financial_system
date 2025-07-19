@@ -58,9 +58,25 @@ class Customer extends Model
         return $this->belongsTo(\App\Domain\Entities\User::class, 'agent_id');
     }
 
+    /**
+     * Get the branch that is linked to the customer.
+     */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Domain\Entities\Branch::class, 'branch_id');
+    }
+
     public function mobileNumbers(): HasMany
     {
         return $this->hasMany(\App\Models\Domain\Entities\CustomerMobileNumber::class);
+    }
+
+    /**
+     * Get the user who created the customer.
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(\App\Domain\Entities\User::class, 'created_by');
     }
 
     public function getActivitylogOptions(): LogOptions

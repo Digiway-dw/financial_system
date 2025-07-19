@@ -8,25 +8,28 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('startup_safe_balances', function (Blueprint $table) {
-            // Drop any foreign key constraints on branch_id if they exist
-            try {
-                $table->dropForeign(['branch_id']);
-            } catch (\Exception $e) {}
-            // Remove old unique
-            $table->dropUnique('startup_safe_balances_branch_id_date_unique');
-            // Add foreign key and new unique constraint
+            // Add safe_id column if it doesn't exist
+            if (!Schema::hasColumn('startup_safe_balances', 'safe_id')) {
+                $table->unsignedBigInteger('safe_id')->nullable()->after('branch_id');
+            }
+
+            // Add foreign key constraint for safe_id
             $table->foreign('safe_id')->references('id')->on('safes')->onDelete('cascade');
-            $table->unique(['safe_id', 'date']);
+
+            // Add unique constraint on safe_id and date
+            $table->unique(['safe_id', 'date'], 'startup_safe_balances_safe_id_date_unique');
         });
     }
 
     public function down(): void
     {
         Schema::table('startup_safe_balances', function (Blueprint $table) {
+            // Drop the constraints
             $table->dropForeign(['safe_id']);
-            $table->dropUnique(['safe_id', 'date']);
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->unique(['branch_id', 'date']);
+            $table->dropUnique('startup_safe_balances_safe_id_date_unique');
+
+            // Drop the safe_id column
+            $table->dropColumn('safe_id');
         });
     }
 };
