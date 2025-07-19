@@ -27,7 +27,7 @@ class Index extends Component
 
     public function mount()
     {
-        Gate::authorize('manage-safes');
+        Gate::authorize('view-safes');
         $this->loadSafes();
         $this->loadClients();
     }
@@ -49,7 +49,7 @@ class Index extends Component
 
     public function deleteSafe(string $safeId)
     {
-        Gate::authorize('manage-safes');
+        Gate::authorize('delete-safes');
         try {
             $this->deleteSafeUseCase->execute($safeId);
             session()->flash('message', 'Safe deleted successfully.');

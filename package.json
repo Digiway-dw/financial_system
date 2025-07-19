@@ -3,8 +3,9 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "build": "vite build && node -e \"const fs = require('fs'); const path = require('path'); const source = path.join('public', 'build', '.vite', 'manifest.json'); const dest = path.join('public', 'build', 'manifest.json'); if (fs.existsSync(source)) { fs.copyFileSync(source, dest); console.log('Manifest copied successfully'); } else { console.log('Source manifest not found'); }\"",
+        "preview": "vite preview"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",

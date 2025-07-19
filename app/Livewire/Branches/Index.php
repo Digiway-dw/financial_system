@@ -34,6 +34,7 @@ class Index extends Component
 
     public function deleteBranch(string $branchId)
     {
+        Gate::authorize('delete-branches');
         try {
             $this->deleteBranchUseCase->execute($branchId);
             session()->flash('message', 'Branch deleted successfully.');

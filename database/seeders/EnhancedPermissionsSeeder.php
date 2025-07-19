@@ -48,6 +48,9 @@ class EnhancedPermissionsSeeder extends Seeder
                 'view-branches' => 'Ability to view branch information',
                 'view-all-branches-data' => 'Ability to view data from all branches',
                 'view-own-branch-data' => 'Ability to view data from own branch only',
+                'edit-branches' => 'Ability to edit branch information',
+                'delete-branches' => 'Ability to delete branches',
+                'create-branches' => 'Ability to create new branches',
             ],
             'line_management' => [
                 'manage-sim-lines' => 'Ability to manage SIM card lines',
@@ -56,6 +59,9 @@ class EnhancedPermissionsSeeder extends Seeder
             'safe_management' => [
                 'manage-safes' => 'Ability to manage all safes',
                 'manage-own-branch-safes' => 'Ability to manage safes within own branch',
+                'edit-safes' => 'Ability to edit safe information',
+                'delete-safes' => 'Ability to delete safes',
+                'create-safes' => 'Ability to create new safes',
             ],
             'customer_management' => [
                 'view-customers' => 'Ability to view customer information',
@@ -121,13 +127,17 @@ class EnhancedPermissionsSeeder extends Seeder
                     'view-lines',
                     'view-branches',
                     'manage-customers',
+                    'edit-safes',
+                    'delete-safes',
+                    'create-safes',
+                    'edit-branches',
+                    'delete-branches',
+                    'create-branches',
                 ],
             ],
             'general_supervisor' => [
                 'description' => 'General Supervisor with cross-branch oversight',
                 'permissions' => [
-                    // All admin permissions except the following:
-                    // 'manage-safes', 'view-audit-log', 'manage-branches', 'view-branches', 'view-work-sessions'
                     'create-users',
                     'perform-unrestricted-withdrawal',
                     'approve-all-requests',
@@ -156,11 +166,9 @@ class EnhancedPermissionsSeeder extends Seeder
                     'view-customers',
                     'view-lines',
                     'manage-customers',
-                    // 'manage-safes',
-                    // 'view-audit-log',
-                    // 'manage-branches',
-                    // 'view-branches',
-                    // 'view-work-sessions',
+                    'manage-safes',
+                    'manage-branches',
+                    'view-branches',
                 ],
             ],
             'auditor' => [

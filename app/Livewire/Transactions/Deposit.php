@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Domain\Entities\Transaction;
 use App\Models\Domain\Entities\CashTransaction;
 use App\Helpers\helpers;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\AdminNotification;
 
 class Deposit extends Create
 {
@@ -168,6 +170,8 @@ class Deposit extends Create
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
                 }
+                // Send notification to admins and supervisors
+                $this->sendDepositNotification($cashTx, $agent);
                 $this->reset(['userId', 'amount', 'notes', 'customerName', 'clientCode', 'clientNumber', 'clientNationalNumber']);
                 $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 return;
@@ -203,6 +207,8 @@ class Deposit extends Create
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
                 }
+                // Send notification to admins and supervisors
+                $this->sendDepositNotification($cashTx, $agent);
                 $this->reset(['clientId', 'clientName', 'clientMobile', 'clientCode', 'clientBalance', 'clientSearch', 'amount', 'notes', 'userId', 'customerName', 'clientNumber', 'clientNationalNumber', 'depositorNationalId', 'depositorMobileNumber']);
                 $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 return;
@@ -225,6 +231,8 @@ class Deposit extends Create
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
                 }
+                // Send notification to admins and supervisors
+                $this->sendDepositNotification($cashTx, $agent);
                 $this->reset(['amount', 'notes', 'userId', 'customerName', 'clientCode', 'clientNumber', 'clientNationalNumber']);
                 $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 return;
@@ -247,6 +255,8 @@ class Deposit extends Create
                 if ($safe) {
                     $safe->increment('current_balance', $this->amount);
                 }
+                // Send notification to admins and supervisors
+                $this->sendDepositNotification($cashTx, $agent);
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber']);
                 $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 return;
@@ -255,6 +265,30 @@ class Deposit extends Create
             session()->flash('error', 'Deposit failed: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Send deposit notification to admins and supervisors
+     */
+    protected function sendDepositNotification($cashTx, $agent)
+    {
+        $admins = \App\Domain\Entities\User::role('admin')->get();
+        $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+        $recipients = $admins->merge($supervisors)->unique('id');
+        $safe = $cashTx->safe;
+        $branch = $safe ? $safe->branch : null;
+        $url = route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]);
+        $customerCode = $cashTx->customer_code ?: 'N/A';
+        $message = "New Deposit Transaction\n" .
+            "Reference: {$cashTx->reference_number}\n" .
+            "Customer: {$cashTx->customer_name} (" . $customerCode . ")\n" .
+            "Amount: {$cashTx->amount} EGP\n" .
+            "Safe: " . ($safe ? $safe->name : 'N/A') . "\n" .
+            "Branch: " . ($branch ? $branch->name : 'N/A') . "\n" .
+            "Agent: {$agent->name}\n" .
+            "Notes: {$cashTx->notes}";
+        Notification::send($recipients, new AdminNotification($message, $url));
+    }
+
     public function render()
     {
         return view('livewire.transactions.deposit');

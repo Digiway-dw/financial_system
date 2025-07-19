@@ -26,6 +26,19 @@ class AuthorizationServiceProvider extends ServiceProvider
 
         // ===== SAFE MANAGEMENT =====
         Gate::define('manage-safes', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR);
+        });
+
+        Gate::define('edit-safes', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN);
+        });
+
+        Gate::define('delete-safes', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN);
+        });
+
+        Gate::define('create-safes', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN);
         });
 
@@ -79,7 +92,8 @@ class AuthorizationServiceProvider extends ServiceProvider
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
                 $user->hasRole(Roles::AGENT) ||
-                $user->hasRole(Roles::TRAINEE);
+                $user->hasRole(Roles::TRAINEE) ||
+                $user->hasRole(Roles::AUDITOR);
         });
 
         Gate::define('create-customers', function (DomainUser $user) {
@@ -104,6 +118,19 @@ class AuthorizationServiceProvider extends ServiceProvider
 
         // ===== BRANCH MANAGEMENT =====
         Gate::define('manage-branches', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR);
+        });
+
+        Gate::define('edit-branches', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN);
+        });
+
+        Gate::define('delete-branches', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN);
+        });
+
+        Gate::define('create-branches', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN);
         });
 
@@ -343,7 +370,26 @@ class AuthorizationServiceProvider extends ServiceProvider
 
         // ===== VIEW BRANCHES =====
         Gate::define('view-branches', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN);
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::AUDITOR);
+        });
+
+        // ===== VIEW SAFES =====
+        Gate::define('view-safes', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::AUDITOR);
+        });
+
+        // ===== VIEW TRANSACTIONS =====
+        Gate::define('view-transactions', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+                $user->hasRole(Roles::BRANCH_MANAGER) ||
+                $user->hasRole(Roles::AGENT) ||
+                $user->hasRole(Roles::TRAINEE) ||
+                $user->hasRole(Roles::AUDITOR);
         });
 
         // ===== AUDIT LOG =====

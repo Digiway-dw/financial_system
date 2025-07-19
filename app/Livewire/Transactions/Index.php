@@ -34,7 +34,8 @@ class Index extends Component
 
     public function mount()
     {
-        // Authorization check for viewing transactions is now handled inside ListTransactions use case
+        // Authorization check for viewing transactions
+        Gate::authorize('view-transactions');
         $this->loadTransactions();
     }
 

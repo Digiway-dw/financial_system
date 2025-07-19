@@ -38,7 +38,7 @@ class Edit extends Component
 
     public function mount($safeId)
     {
-        $this->authorize('manage-safes');
+        $this->authorize('edit-safes');
 
         $this->safeId = $safeId;
         $this->safe = $this->safeRepository->findById($safeId);

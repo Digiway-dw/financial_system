@@ -19,8 +19,6 @@
                 <span class="text-sm font-medium text-gray-700">المشرف العام</span>
             </div>
         </div>
-       
-       
         
         <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
             <div class="border-b border-gray-100 pb-4 mb-6">
@@ -70,14 +68,45 @@
                         </div>
                     </a>
                 @endcan
+                @can('manage-customers')
+                <a href="{{ route('customers.create') }}"
+                    class="group flex items-center p-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 rounded-xl transition-all duration-200">
+                    <div
+                        class="w-12 h-12 bg-indigo-100 group-hover:bg-indigo-200 rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-indigo-900">Add Customer</h3>
+                        <p class="text-sm text-indigo-700">Register a new customer</p>
+                        </div>
+                    </a>
+                @endcan
             </div>
         </div>
 
         
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <!-- Total Branches (number only) -->
-            <div class="bg-white border border-gray-200 rounded-lg shadow-lg p-6">
+            <!-- Total Users -->
+            <a href="{{ route('users.index') }}"
+                class="bg-white border border-gray-200 rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 ease-in-out hover:shadow-xl">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                        <x-heroicon-o-users class="h-10 w-10 text-indigo-600" />
+                    </div>
+                    <div>
+                        <p class="text-gray-600 text-lg font-medium">Total Users</p>
+                        <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $totalUsers ?? '-' }}</p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Total Branches -->
+            <a href="{{ route('branches.index') }}"
+                class="bg-white border border-gray-200 rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 ease-in-out hover:shadow-xl">
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0">
                         <x-heroicon-o-building-office-2 class="h-10 w-10 text-green-600" />
@@ -87,9 +116,10 @@
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $totalBranches ?? '-' }}</p>
                     </div>
                 </div>
-            </div>
-            <!-- Total Safes (number only) -->
-            <div class="bg-white border border-gray-200 rounded-lg shadow-lg p-6">
+            </a>
+            <!-- Total Safes -->
+            <a href="{{ route('safes.index') }}"
+                class="bg-white border border-gray-200 rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 ease-in-out hover:shadow-xl">
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0">
                         <x-heroicon-o-banknotes class="h-10 w-10 text-red-600" />
@@ -99,7 +129,21 @@
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $totalSafes ?? '-' }}</p>
                     </div>
                 </div>
+            </a>
+
+            <!-- Work Sessions -->
+            <a href="{{ route('work-sessions.index') }}"
+                class="bg-white border border-gray-200 rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 ease-in-out hover:shadow-xl">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                        <x-heroicon-o-clock class="h-10 w-10 text-teal-600" />
+                    </div>
+                    <div>
+                        <p class="text-gray-600 text-lg font-medium">Work Sessions</p>
+                        <p class="text-gray-900 text-4xl font-extrabold mt-1">View</p>
+                </div>
             </div>
+            </a>
             <!-- Total Lines -->
             <a href="{{ route('lines.index') }}"
                 class="bg-white border border-gray-200 rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 ease-in-out hover:shadow-xl">
@@ -149,6 +193,20 @@
                     <div>
                         <p class="text-gray-600 text-lg font-medium">Total Amount Transferred</p>
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ number_format($totalTransferred ?? 0, 2) }} EGP</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Net Profits -->
+            <div
+                class="bg-white border border-gray-200 rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 ease-in-out hover:shadow-xl">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                        <x-heroicon-o-chart-bar class="h-10 w-10 text-rose-600" />
+                    </div>
+                    <div>
+                        <p class="text-gray-600 text-lg font-medium">Net Profits</p>
+                        <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ number_format($netProfits ?? 0, 2) }} EGP</p>
                     </div>
                 </div>
             </div>

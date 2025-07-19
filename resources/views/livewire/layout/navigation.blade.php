@@ -23,7 +23,7 @@
                         </x-nav-link>
                     @endif
 
-                    @if(auth()->user() && !auth()->user()->hasAnyRole(['agent', 'trainee']))
+                    @can('view-transactions')
                         <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
                             request()->routeIs('transactions.create') ||
                             request()->routeIs('transactions.pending')" wire:navigate>
@@ -33,7 +33,7 @@
                         <x-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
                             {{ __('Search Transaction') }}
                         </x-nav-link>
-                    @endif
+                    @endcan
 
                     @canany(['send-transfer', 'send-transfer-pending'])
                         {{-- Removed New Transaction link --}}
@@ -47,7 +47,7 @@
                         @endcan
                     @endif
 
-                    @can('manage-safes')
+                    @can('view-safes')
                         <x-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') ||
                             request()->routeIs('safes.edit') ||
                             request()->routeIs('safes.move')" wire:navigate>
@@ -184,7 +184,7 @@
                 </x-responsive-nav-link>
             @endif
 
-            @if(auth()->user() && !auth()->user()->hasAnyRole(['agent', 'trainee']))
+            @can('view-transactions')
                 <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
                     request()->routeIs('transactions.create') ||
                     request()->routeIs('transactions.pending')" wire:navigate>
@@ -194,7 +194,7 @@
                 <x-responsive-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
                     {{ __('Search Transaction') }}
                 </x-responsive-nav-link>
-            @endif
+            @endcan
 
             @canany(['send-transfer', 'send-transfer-pending'])
                 {{-- Removed New Transaction link --}}
@@ -208,7 +208,7 @@
                 @endcan
             @endif
 
-            @can('manage-safes')
+            @can('view-safes')
                 <x-responsive-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') ||
                     request()->routeIs('safes.edit') ||
                     request()->routeIs('safes.move')" wire:navigate>

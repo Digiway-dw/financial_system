@@ -37,7 +37,7 @@ class Create extends Component
 
     public function mount()
     {
-        Gate::authorize('manage-branches');
+        Gate::authorize('create-branches');
         $this->generateBranchCode();
     }
 

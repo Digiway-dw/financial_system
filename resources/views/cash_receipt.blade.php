@@ -43,6 +43,7 @@
     <div class="line" style="margin: 4px 0;" ></div>
     <h5>01278120303  للشكاوى و المقترحات</h5>
     <button onclick="window.print()">Print</button>
+    <button onclick="window.location.href='{{ route('dashboard') }}'" style="margin-left: 8px;">Home</button>
 </div>
 </body>
 </html> 

@@ -30,7 +30,7 @@ class Edit extends Component
 
     public function mount(string $branchId)
     {
-        Gate::authorize('manage-branches');
+        Gate::authorize('edit-branches');
         $this->branchId = $branchId;
         $this->branch = $this->branchRepository->findById($branchId);
 

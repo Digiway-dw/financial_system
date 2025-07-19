@@ -41,7 +41,7 @@
             @endforelse
         </tbody>
     </table>
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
 
         <!-- Transaction History -->
         <a href="{{ route('transactions.index') }}" class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center hover:shadow-lg transition border-b-4 border-gray-400">
@@ -54,6 +54,24 @@
             <x-heroicon-o-user class="h-8 w-8 text-blue-500 mb-2" />
             <span class="text-md font-semibold text-gray-800">العملاء</span>
             <span class="text-xs text-gray-500 mt-1">بيانات العملاء</span>
+        </a>
+        <!-- Branches -->
+        <a href="{{ route('branches.index') }}" class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center hover:shadow-lg transition border-b-4 border-green-400">
+            <x-heroicon-o-building-office-2 class="h-8 w-8 text-green-500 mb-2" />
+            <span class="text-md font-semibold text-gray-800">الفروع</span>
+            <span class="text-xs text-gray-500 mt-1">بيانات الفروع</span>
+        </a>
+        <!-- Safes -->
+        <a href="{{ route('safes.index') }}" class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center hover:shadow-lg transition border-b-4 border-red-400">
+            <x-heroicon-o-banknotes class="h-8 w-8 text-red-500 mb-2" />
+            <span class="text-md font-semibold text-gray-800">الخزائن</span>
+            <span class="text-xs text-gray-500 mt-1">بيانات الخزائن</span>
+        </a>
+        <!-- Lines -->
+        <a href="{{ route('lines.index') }}" class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center hover:shadow-lg transition border-b-4 border-yellow-400">
+            <x-heroicon-o-phone class="h-8 w-8 text-yellow-500 mb-2" />
+            <span class="text-md font-semibold text-gray-800">الخطوط</span>
+            <span class="text-xs text-gray-500 mt-1">بيانات الخطوط</span>
         </a>
     </div>
 </div> 
