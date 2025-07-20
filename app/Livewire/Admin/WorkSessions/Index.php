@@ -26,6 +26,10 @@ class Index extends Component
     public $sortField = 'login_at';
     public $sortDirection = 'desc';
 
+    // Session lifetime settings
+    public $sessionLifetime = 120; // Default 2 hours
+    public $showSessionLifetimeModal = false;
+
     public function mount()
     {
         // Check permissions
@@ -42,6 +46,57 @@ class Index extends Component
 
         // Load users based on permissions
         $this->loadUsers();
+
+        // Load current session lifetime
+        $this->loadSessionLifetime();
+    }
+
+    /**
+     * Load the current session lifetime setting
+     */
+    public function loadSessionLifetime()
+    {
+        $workSessionService = app(WorkSessionService::class);
+        $this->sessionLifetime = $workSessionService->getSessionLifetime();
+    }
+
+    /**
+     * Open the session lifetime modal
+     */
+    public function openSessionLifetimeModal()
+    {
+        $this->loadSessionLifetime();
+        $this->showSessionLifetimeModal = true;
+    }
+
+    /**
+     * Close the session lifetime modal
+     */
+    public function closeSessionLifetimeModal()
+    {
+        $this->showSessionLifetimeModal = false;
+    }
+
+    /**
+     * Save the session lifetime setting
+     */
+    public function saveSessionLifetime()
+    {
+        // Validate the input
+        $this->validate([
+            'sessionLifetime' => 'required|integer|min:1|max:1440', // Max 24 hours
+        ]);
+
+        $workSessionService = app(WorkSessionService::class);
+        $success = $workSessionService->updateSessionLifetime($this->sessionLifetime);
+
+        if ($success) {
+            session()->flash('message', 'Session lifetime updated successfully.');
+        } else {
+            session()->flash('error', 'Failed to update session lifetime.');
+        }
+
+        $this->closeSessionLifetimeModal();
     }
 
     public function loadUsers()
@@ -108,18 +163,18 @@ class Index extends Component
         if ($this->sortField === 'status') {
             // Status sorting: use logout_at (null = active, not null = closed)
             $query->orderBy('logout_at', $this->sortDirection === 'asc' ? 'asc' : 'desc')
-                  ->orderBy('login_at', 'desc'); // Secondary sort for consistent results
+                ->orderBy('login_at', 'desc'); // Secondary sort for consistent results
         } elseif ($this->sortField === 'branch_id') {
             // Branch sorting: use collection sorting after loading
             $sessions = $query->get();
             $sortedSessions = $sessions->sortBy(function ($session) {
                 return $session->user->branch->name ?? '';
             });
-            
+
             if ($this->sortDirection === 'desc') {
                 $sortedSessions = $sortedSessions->reverse();
             }
-            
+
             return $sortedSessions->values();
         } elseif ($this->sortField === 'user_id') {
             // User sorting: use collection sorting after loading
@@ -127,11 +182,11 @@ class Index extends Component
             $sortedSessions = $sessions->sortBy(function ($session) {
                 return $session->user->name ?? '';
             });
-            
+
             if ($this->sortDirection === 'desc') {
                 $sortedSessions = $sortedSessions->reverse();
             }
-            
+
             return $sortedSessions->values();
         } else {
             // Direct column sorting for existing columns
@@ -224,20 +279,20 @@ class Index extends Component
         if ($this->sortField === 'status') {
             // Status sorting: use logout_at (null = active, not null = closed)
             $query->orderBy('logout_at', $this->sortDirection === 'asc' ? 'asc' : 'desc')
-                  ->orderBy('login_at', 'desc'); // Secondary sort for consistent results
+                ->orderBy('login_at', 'desc'); // Secondary sort for consistent results
         } elseif ($this->sortField === 'branch_id') {
             // Branch sorting: join with users and branches tables
             $query->leftJoin('users', 'work_sessions.user_id', '=', 'users.id')
-                  ->leftJoin('branches', 'users.branch_id', '=', 'branches.id')
-                  ->orderBy('branches.name', $this->sortDirection)
-                  ->orderBy('work_sessions.login_at', 'desc') // Secondary sort
-                  ->select('work_sessions.*');
+                ->leftJoin('branches', 'users.branch_id', '=', 'branches.id')
+                ->orderBy('branches.name', $this->sortDirection)
+                ->orderBy('work_sessions.login_at', 'desc') // Secondary sort
+                ->select('work_sessions.*');
         } elseif ($this->sortField === 'user_id') {
             // User sorting: join with users table
             $query->leftJoin('users', 'work_sessions.user_id', '=', 'users.id')
-                  ->orderBy('users.name', $this->sortDirection)
-                  ->orderBy('work_sessions.login_at', 'desc') // Secondary sort
-                  ->select('work_sessions.*');
+                ->orderBy('users.name', $this->sortDirection)
+                ->orderBy('work_sessions.login_at', 'desc') // Secondary sort
+                ->select('work_sessions.*');
         } else {
             // Direct column sorting for existing columns
             $query->orderBy($this->sortField, $this->sortDirection);

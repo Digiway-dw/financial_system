@@ -4,10 +4,12 @@
             cursor: pointer;
             transition: all 0.2s ease-in-out;
         }
+
         .sortable-header:hover {
             background-color: #f3f4f6 !important;
             transform: translateY(-1px);
         }
+
         .sortable-header:active {
             transform: translateY(0);
         }
@@ -38,6 +40,19 @@
                                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
                                 <span>Refresh</span>
+                            </button>
+
+                            <!-- Session Lifetime Settings Button -->
+                            <button wire:click="openSessionLifetimeModal"
+                                class="flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span>Session Settings</span>
                             </button>
                         </div>
                     </div>
@@ -122,6 +137,26 @@
                                 <h3 class="text-amber-800 text-sm font-semibold">Active Sessions</h3>
                                 <p class="text-3xl font-bold text-amber-600">
                                     {{ $sessions->where('logout_at', null)->count() }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Session Lifetime Card -->
+                        <div class="bg-purple-50 rounded-lg p-5 shadow-sm border border-purple-100 flex items-center cursor-pointer" wire:click="openSessionLifetimeModal">
+                            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-purple-800 text-sm font-semibold">Session Timeout</h3>
+                                <p class="text-3xl font-bold text-purple-600">
+                                    {{ $sessionLifetime }} <span class="text-sm">min</span>
+                                </p>
+                                <p class="text-xs text-purple-600 mt-1">(Click to change)</p>
                             </div>
                         </div>
                     </div>
@@ -288,7 +323,8 @@
                                             wire:click="sortBy('status')">
                                             Status
                                             @if ($sortField === 'status')
-                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                                <span
+                                                    class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                             @endif
                                         </th>
                                         <th scope="col"
@@ -296,7 +332,8 @@
                                             wire:click="sortBy('user_id')">
                                             User
                                             @if ($sortField === 'user_id')
-                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                                <span
+                                                    class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                             @endif
                                         </th>
                                         <th scope="col"
@@ -304,7 +341,8 @@
                                             wire:click="sortBy('branch_id')">
                                             Branch
                                             @if ($sortField === 'branch_id')
-                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                                <span
+                                                    class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                             @endif
                                         </th>
                                         <th scope="col"
@@ -312,7 +350,8 @@
                                             wire:click="sortBy('login_at')">
                                             Login At
                                             @if ($sortField === 'login_at')
-                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                                <span
+                                                    class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                             @endif
                                         </th>
                                         <th scope="col"
@@ -320,7 +359,8 @@
                                             wire:click="sortBy('logout_at')">
                                             Logout At
                                             @if ($sortField === 'logout_at')
-                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                                <span
+                                                    class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                             @endif
                                         </th>
                                         <th scope="col"
@@ -328,7 +368,8 @@
                                             wire:click="sortBy('duration_minutes')">
                                             Duration
                                             @if ($sortField === 'duration_minutes')
-                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                                <span
+                                                    class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                             @endif
                                         </th>
                                         <th scope="col"
@@ -336,7 +377,8 @@
                                             wire:click="sortBy('ip_address')">
                                             IP Address
                                             @if ($sortField === 'ip_address')
-                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                                <span
+                                                    class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                             @endif
                                         </th>
                                         <th scope="col"
@@ -344,7 +386,8 @@
                                             wire:click="sortBy('user_agent')">
                                             Browser
                                             @if ($sortField === 'user_agent')
-                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                                <span
+                                                    class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                             @endif
                                         </th>
                                     </tr>
@@ -574,6 +617,109 @@
                             </div>
                         </div>
                     @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session Lifetime Modal -->
+    <div x-data="{ show: @entangle('showSessionLifetimeModal') }" x-show="show" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="show" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                class="fixed inset-0 transition-opacity">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>&#8203;
+
+            <div x-show="show" x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div
+                            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-purple-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                                Session Lifetime Settings
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 mb-4">
+                                    Set the amount of time (in minutes) that a user can be inactive before being
+                                    automatically logged out.
+                                </p>
+
+                                <div class="mt-4">
+                                    <label for="sessionLifetime"
+                                        class="block text-sm font-medium text-gray-700">Session Lifetime
+                                        (minutes)</label>
+                                    <div class="mt-1 relative rounded-md shadow-sm">
+                                        <input type="number" wire:model="sessionLifetime" id="sessionLifetime"
+                                            min="1" max="1440"
+                                            class="focus:ring-purple-500 focus:border-purple-500 block w-full pl-4 pr-12 sm:text-sm border-gray-300 rounded-md"
+                                            placeholder="120">
+                                        <div
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">min</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1 text-xs text-gray-500">
+                                        Recommended: 120 minutes (2 hours). Maximum: 1440 minutes (24 hours).
+                                    </div>
+                                    @error('sessionLifetime')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="mt-4 bg-yellow-50 p-3 rounded-md">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h3 class="text-sm font-medium text-yellow-800">Important Note</h3>
+                                            <div class="mt-2 text-sm text-yellow-700">
+                                                <p>
+                                                    This setting affects all users. Users who are inactive for longer
+                                                    than the specified time will be automatically logged out.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button wire:click="saveSessionLifetime" type="button"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Save Settings
+                    </button>
+                    <button wire:click="closeSessionLifetimeModal" type="button"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
                 </div>
             </div>
         </div>

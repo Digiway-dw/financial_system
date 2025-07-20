@@ -1,4 +1,3 @@
-
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-200">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -17,19 +16,22 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    @if(auth()->user() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('branch_manager') || auth()->user()->hasRole('general_supervisor')))
+                    @if (auth()->user() &&
+                            (auth()->user()->hasRole('admin') ||
+                                auth()->user()->hasRole('branch_manager') ||
+                                auth()->user()->hasRole('general_supervisor')))
                         <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
                             {{ __('Customers') }}
                         </x-nav-link>
                     @endif
 
                     @can('view-transactions')
-                        @if(!auth()->user()->hasAnyRole(['agent', 'trainee']))
-                        <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
-                            request()->routeIs('transactions.create') ||
-                            request()->routeIs('transactions.pending')" wire:navigate>
-                            {{ __('Transactions') }}
-                        </x-nav-link>
+                        @if (!auth()->user()->hasAnyRole(['agent', 'trainee']))
+                            <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
+                                request()->routeIs('transactions.create') ||
+                                request()->routeIs('transactions.pending')" wire:navigate>
+                                {{ __('Transactions') }}
+                            </x-nav-link>
                         @endif
                     @else
                         <x-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
@@ -41,7 +43,8 @@
                         {{-- Removed New Transaction link --}}
                     @endcanany
 
-                    @if(auth()->user() && !auth()->user()->hasAnyRole(['agent', 'trainee']))
+                    @if (auth()->user() &&
+                            !auth()->user()->hasAnyRole(['agent', 'trainee']))
                         @can('view-lines')
                             <x-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
                                 {{ __('Lines') }}
@@ -50,8 +53,7 @@
                     @endif
 
                     @can('view-safes')
-                        <x-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') ||
-                            request()->routeIs('safes.edit')" wire:navigate>
+                        <x-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') || request()->routeIs('safes.edit')" wire:navigate>
                             {{ __('Safes') }}
                         </x-nav-link>
                     @endcan
@@ -78,14 +80,14 @@
 
                     @can('view-audit-log')
                         @if (!auth()->user() || !auth()->user()->hasRole(\App\Constants\Roles::AUDITOR))
-                        <x-nav-link :href="route('audit-log.index')" :active="request()->routeIs('audit-log.*')" wire:navigate>
-                            {{ __('Audit Log') }}
-                        </x-nav-link>
+                            <x-nav-link :href="route('audit-log.index')" :active="request()->routeIs('audit-log.*')" wire:navigate>
+                                {{ __('Audit Log') }}
+                            </x-nav-link>
                         @endif
                     @endcan
 
                     @role('admin')
-                        {{-- Removed Permissions dropdown and tab for admin --}}
+                        {{-- Admin specific links --}}
                     @endrole
                 </div>
             </div>
@@ -147,19 +149,22 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
-            @if(auth()->user() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('branch_manager') || auth()->user()->hasRole('general_supervisor')))
+            @if (auth()->user() &&
+                    (auth()->user()->hasRole('admin') ||
+                        auth()->user()->hasRole('branch_manager') ||
+                        auth()->user()->hasRole('general_supervisor')))
                 <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
                     {{ __('Customers') }}
                 </x-responsive-nav-link>
             @endif
 
             @can('view-transactions')
-                @if(!auth()->user()->hasAnyRole(['agent', 'trainee']))
-                <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
-                    request()->routeIs('transactions.create') ||
-                    request()->routeIs('transactions.pending')" wire:navigate>
-                    {{ __('Transactions') }}
-                </x-responsive-nav-link>
+                @if (!auth()->user()->hasAnyRole(['agent', 'trainee']))
+                    <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
+                        request()->routeIs('transactions.create') ||
+                        request()->routeIs('transactions.pending')" wire:navigate>
+                        {{ __('Transactions') }}
+                    </x-responsive-nav-link>
                 @endif
             @else
                 <x-responsive-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
@@ -171,7 +176,8 @@
                 {{-- Removed New Transaction link --}}
             @endcanany
 
-            @if(auth()->user() && !auth()->user()->hasAnyRole(['agent', 'trainee']))
+            @if (auth()->user() &&
+                    !auth()->user()->hasAnyRole(['agent', 'trainee']))
                 @can('view-lines')
                     <x-responsive-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
                         {{ __('Lines') }}
@@ -180,8 +186,7 @@
             @endif
 
             @can('view-safes')
-                <x-responsive-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') ||
-                    request()->routeIs('safes.edit')" wire:navigate>
+                <x-responsive-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') || request()->routeIs('safes.edit')" wire:navigate>
                     {{ __('Safes') }}
                 </x-responsive-nav-link>
             @endcan
@@ -208,9 +213,9 @@
 
             @can('view-audit-log')
                 @if (!auth()->user() || !auth()->user()->hasRole(\App\Constants\Roles::AUDITOR))
-                <x-responsive-nav-link :href="route('audit-log.index')" :active="request()->routeIs('audit-log.*')" wire:navigate>
-                    {{ __('Audit Log') }}
-                </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('audit-log.index')" :active="request()->routeIs('audit-log.*')" wire:navigate>
+                        {{ __('Audit Log') }}
+                    </x-responsive-nav-link>
                 @endif
             @endcan
 

@@ -5,6 +5,7 @@ namespace App\Application\Services;
 use App\Models\Domain\Entities\WorkSession;
 use App\Domain\Entities\User;
 use App\Exports\WorkSessionsExport;
+use App\Models\SessionSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
@@ -122,5 +123,52 @@ class WorkSessionService
     public function exportToCsv(Collection $sessions): BinaryFileResponse
     {
         return Excel::download(new WorkSessionsExport($sessions), 'work_sessions_' . now()->format('Y-m-d_H-i-s') . '.csv', \Maatwebsite\Excel\Excel::CSV);
+    }
+
+    /**
+     * Check for inactive sessions based on the configured session lifetime
+     * and end them if they exceed the timeout.
+     *
+     * @return int Number of sessions that were ended
+     */
+    public function checkInactiveSessions(): int
+    {
+        $sessionLifetime = SessionSetting::getSessionLifetime();
+        $inactiveThreshold = now()->subMinutes($sessionLifetime);
+
+        $inactiveSessions = WorkSession::whereNull('logout_at')
+            ->where('login_at', '<', $inactiveThreshold)
+            ->get();
+
+        $count = 0;
+        foreach ($inactiveSessions as $session) {
+            $session->logout_at = now();
+            $session->calculateDuration();
+            $session->save();
+            $count++;
+        }
+
+        return $count;
+    }
+
+    /**
+     * Get the current session lifetime setting
+     *
+     * @return int Minutes
+     */
+    public function getSessionLifetime(): int
+    {
+        return SessionSetting::getSessionLifetime();
+    }
+
+    /**
+     * Update the session lifetime setting
+     *
+     * @param int $minutes
+     * @return bool
+     */
+    public function updateSessionLifetime(int $minutes): bool
+    {
+        return SessionSetting::updateSessionLifetime($minutes);
     }
 }

@@ -39,6 +39,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             // \App\Http\Middleware\TrackActiveSession::class, // Session timing middleware disabled
             // \App\Http\Middleware\SessionTimeout::class, // Session timing middleware disabled
+            \App\Http\Middleware\WorkingHoursCheck::class, // Working hours restriction middleware
         ],
 
         'api' => [
