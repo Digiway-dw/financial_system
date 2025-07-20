@@ -1,5 +1,18 @@
-<div class="p-6 bg-gradient-to-b from-gray-50 to-white min-h-screen">
-    <!-- Page Header -->
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .sortable-header:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateY(-1px);
+        }
+        .sortable-header:active {
+            transform: translateY(0);
+        }
+    </style>
+    <!-- Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-indigo-500 w-full md:w-auto">
             <h1 class="text-2xl font-bold text-gray-900 flex items-center">
@@ -157,7 +170,8 @@
                 <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
                         <th scope="col"
-                            class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                            wire:click="sortBy('name')">
                             <div class="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -165,10 +179,14 @@
                                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                                 User Information
+                                @if ($sortField === 'name')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
                             </div>
                         </th>
                         <th scope="col"
-                            class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                            wire:click="sortBy('branch_id')">
                             <div class="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -176,10 +194,14 @@
                                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
                                 Branch
+                                @if ($sortField === 'branch_id')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
                             </div>
                         </th>
                         <th scope="col"
-                            class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                            wire:click="sortBy('role')">
                             <div class="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -187,10 +209,13 @@
                                         d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
                                 Role
+                                @if ($sortField === 'role')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
                             </div>
                         </th>
                         <th scope="col"
-                            class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header">
                             <div class="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -405,7 +430,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                                     </svg>
                                                     View
                                                 </a>

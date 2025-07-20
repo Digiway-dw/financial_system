@@ -11,5 +11,5 @@ interface BranchRepository
     public function findById(string $id): ?Branch;
     public function update(string $id, array $attributes): Branch;
     public function delete(string $id): void;
-    public function all(): Collection;
+    public function all(string $sortField = 'name', string $sortDirection = 'asc'): Collection;
 } 

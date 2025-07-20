@@ -10,14 +10,24 @@ use App\Livewire\TestComponent;
 
 Route::get('/', function () {
     if (Auth::check()) {
+        $user = Auth::user();
+        if ($user->hasRole('agent') || $user->hasRole('trainee')) {
+            return redirect()->route('agent-dashboard');
+        }
         return redirect()->route('dashboard');
     }
     return redirect()->route('login');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Main dashboard - Admin Dashboard
     Route::view('dashboard', 'dashboard')
         ->name('dashboard');
+    
+    // Agent Dashboard - Separate page
+    Route::view('agent-dashboard', 'agent-dashboard')
+        ->name('agent-dashboard')
+        ->middleware('can:view-agent-dashboard');
 
     // Customer Management Routes
     Route::get('customers', \App\Livewire\Customers\Index::class)
@@ -51,7 +61,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('transactions.edit');
     Route::get('transactions/{transaction}/receipt', [\App\Http\Controllers\TransactionController::class, 'receipt'])->name('transactions.receipt');
     Route::get('transactions/{transaction}/print', [\App\Http\Controllers\TransactionController::class, 'receipt'])->name('transactions.print');
+    Route::get('transactions/{transactionId}/details', \App\Livewire\Transactions\Details::class)->name('transactions.details');
     Route::get('cash-transactions/{cashTransaction}/receipt', [\App\Http\Controllers\TransactionController::class, 'cashReceipt'])->name('cash-transactions.receipt');
+    Route::get('cash-transactions/{cashTransactionId}/details', \App\Livewire\Transactions\Details::class)->name('cash-transactions.details');
 
     // Line Management Routes
     Route::get('lines', \App\Livewire\Lines\Index::class)

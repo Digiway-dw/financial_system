@@ -12,41 +12,73 @@
             transform: translateY(0);
         }
     </style>
-    @if (isset($showAdminAgentToggle) && $showAdminAgentToggle && request()->query('as_agent'))
-        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <form method="get" action="{{ route('dashboard') }}" class="flex items-center gap-2">
-                <input type="hidden" name="as_agent" value="1">
-                <label for="branches" class="font-semibold text-gray-700">Select Branches:</label>
-                <select name="branches[]" id="branches" multiple
-                    class="border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
-                    onchange="
-                if ([...this.options].find(o => o.value === 'all' && o.selected)) {
-                    [...this.options].forEach(o => o.selected = true);
-                }
-                this.form.submit();">
-                    <option value="all" @if (empty($selectedBranches) || (isset($branches) && count($selectedBranches) == $branches->count())) selected @endif>All Branches</option>
-                    @foreach ($branches as $branch)
-                        <option value="{{ $branch->id }}" @if (in_array($branch->id, $selectedBranches ?? [])) selected @endif>
-                            {{ $branch->name }}</option>
-                    @endforeach
-                </select>
-                <button type="submit"
-                    class="ml-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Apply</button>
-            </form>
-            <a href="{{ route('dashboard') }}"
-                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 transition">
-                @if(auth()->user()->hasRole('admin'))
-                    Switch to Main Admin Dashboard
-                @else
-                    Switch to Supervisor Dashboard
-                @endif
-            </a>
-        </div>
-    @endif
 
+    <!-- Search Transactions Section (always at the top) -->
+    <div class="mb-8">
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center border border-blue-100">
+            <h2 class="text-lg font-bold text-blue-800 mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                Search Transactions by Reference Number
+            </h2>
+            <form method="GET" action="{{ route('agent-dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
+                <div class="flex gap-2">
+                    <input type="text" name="reference_number" id="reference_number" value="{{ request('reference_number') }}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200" placeholder="Enter reference number...">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Search</button>
+                </div>
+            </form>
+            @if(request('reference_number'))
+                @if(isset($searchedTransaction) && $searchedTransaction)
+                    <div class="mt-6 w-full max-w-md bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h4 class="font-bold text-blue-800 mb-2">Transaction Details</h4>
+                        <div class="text-sm text-gray-700">
+                            <div><span class="font-semibold">Reference:</span> {{ $searchedTransaction->reference_number }}</div>
+                            <div><span class="font-semibold">Amount:</span> {{ number_format($searchedTransaction->amount, 2) }}</div>
+                            <div><span class="font-semibold">Status:</span> {{ $searchedTransaction->status }}</div>
+                            <div><span class="font-semibold">Date:</span> {{ $searchedTransaction->created_at }}</div>
+                        </div>
+                        <div class="mt-4 text-right">
+                            <a href="{{ route('transactions.print', $searchedTransaction->id) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
+                                    <rect width="12" height="8" x="6" y="14" rx="2" />
+                                </svg>
+                                Print
+                            </a>
+                        </div>
+                    </div>
+                @else
+                    <div class="mt-4 text-red-600 font-semibold">No transaction found with this reference number.</div>
+                @endif
+            @endif
+        </div>
+    </div>
+
+    <!-- Branch Selection -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-2">
+            <label for="branches" class="font-semibold text-gray-700">Select Branches:</label>
+            <select wire:model.live="selectedBranches" id="branches" multiple
+                class="border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200">
+                @foreach ($branches as $branch)
+                    <option value="{{ $branch->id }}" @if (in_array($branch->id, $selectedBranches)) selected @endif>
+                        {{ $branch->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <a href="{{ route('dashboard') }}"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 transition">
+            Switch to Admin Dashboard
+        </a>
+    </div>
+
+    <!-- Transaction Search -->
     @if(request()->query('search_transaction'))
         <div class="mb-6 bg-white rounded-xl shadow p-6 flex flex-col items-center">
-            <form method="GET" action="{{ route('dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
+            <form method="GET" action="{{ route('agent-dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
                 <input type="hidden" name="search_transaction" value="1">
                 <label for="reference_number" class="block text-sm font-medium text-gray-700">Search Transaction by Reference Number</label>
                 <div class="flex gap-2">
@@ -80,7 +112,7 @@
         </div>
     @endif
 
-    <!-- Agent Summary Table: Safe Name, Safe Balance, Startup Balance, Today's Transactions -->
+    <!-- Agent Summary Table: Safe Name, Safe Balance, Today's Transactions -->
     <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
         <thead>
             <tr class="bg-gray-100 text-center">
@@ -97,11 +129,12 @@
                     <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}</td>
                 </tr>
             @empty
-                <tr><td colspan="4" class="px-4 py-2 border text-center text-gray-500">No safes found for your branch.</td></tr>
+                <tr><td colspan="4" class="px-4 py-2 border text-center text-gray-500">No safes found for selected branches.</td></tr>
             @endforelse
         </tbody>
     </table>
 
+    <!-- Quick Actions -->
     <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
         <div class="border-b border-gray-100 pb-4 mb-6">
             <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -181,10 +214,10 @@
         </div>
     </div>
 
-
+    <!-- Lines Table -->
     @if (isset($agentLines) && $agentLines->count())
         <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">
-            <h4 class="text-xl font-bold text-gray-900 mb-4">All Lines in Your Branch</h4>
+            <h4 class="text-xl font-bold text-gray-900 mb-4">All Lines in Selected Branches</h4>
             <div class="mb-4">
                 <span class="text-lg font-semibold text-gray-700">Total Lines Balance: </span>
                 <span class="text-2xl font-bold text-blue-700">{{ number_format($agentLinesTotalBalance ?? 0, 2) }}
@@ -287,4 +320,4 @@
         </div>
     @endif
 
-</div>
+</div> 

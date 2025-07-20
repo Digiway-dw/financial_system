@@ -11,7 +11,7 @@ interface CustomerRepository
     public function findByCustomerCode(string $customerCode): ?Customer;
     public function save(Customer $customer): Customer;
     public function delete(Customer $customer): void;
-    public function getAll(): array;
+    public function getAll(array $filters = []): array;
     public function getAllClients(): array;
     /**
      * Search customers by name or mobile number (partial match).

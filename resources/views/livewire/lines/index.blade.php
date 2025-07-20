@@ -1,4 +1,17 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .sortable-header:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateY(-1px);
+        }
+        .sortable-header:active {
+            transform: translateY(0);
+        }
+    </style>
     <!-- Header Section -->
     <div class="bg-white shadow-sm border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -70,7 +83,7 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[120px]" wire:click="sortBy('mobile_number')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] sortable-header" wire:click="sortBy('mobile_number')">
                                 <div class="flex items-center space-x-1">
                                     <span>Mobile Number</span>
                                     @if ($sortField === 'mobile_number')
@@ -78,7 +91,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px]" wire:click="sortBy('current_balance')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header" wire:click="sortBy('current_balance')">
                                 <div class="flex items-center space-x-1">
                                     <span>Current Balance</span>
                                     @if ($sortField === 'current_balance')
@@ -86,7 +99,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px]" wire:click="sortBy('daily_limit')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px] sortable-header" wire:click="sortBy('daily_limit')">
                                 <div class="flex items-center space-x-1">
                                     <span>Daily Limit</span>
                                     @if ($sortField === 'daily_limit')
@@ -94,7 +107,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px]" wire:click="sortBy('monthly_limit')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header" wire:click="sortBy('monthly_limit')">
                                 <div class="flex items-center space-x-1">
                                     <span>Monthly Limit</span>
                                     @if ($sortField === 'monthly_limit')
@@ -102,7 +115,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px]" wire:click="sortBy('daily_usage')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px] sortable-header" wire:click="sortBy('daily_usage')">
                                 <div class="flex items-center space-x-1">
                                     <span>Daily Usage</span>
                                     @if ($sortField === 'daily_usage')
@@ -110,7 +123,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px]" wire:click="sortBy('monthly_usage')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header" wire:click="sortBy('monthly_usage')">
                                 <div class="flex items-center space-x-1">
                                     <span>Monthly Usage</span>
                                     @if ($sortField === 'monthly_usage')
@@ -118,7 +131,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px]" wire:click="sortBy('network')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px] sortable-header" wire:click="sortBy('network')">
                                 <div class="flex items-center space-x-1">
                                     <span>Network</span>
                                     @if ($sortField === 'network')
@@ -126,7 +139,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px]" wire:click="sortBy('status')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px] sortable-header" wire:click="sortBy('status')">
                                 <div class="flex items-center space-x-1">
                                     <span>Status</span>
                                     @if ($sortField === 'status')
@@ -134,7 +147,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px]" wire:click="sortBy('branch_id')">
+                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px] sortable-header" wire:click="sortBy('branch_id')">
                                 <div class="flex items-center space-x-1">
                                     <span>Branch</span>
                                     @if ($sortField === 'branch_id')

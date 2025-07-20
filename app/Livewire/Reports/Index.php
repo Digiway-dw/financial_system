@@ -37,6 +37,9 @@ class Index extends Component
     public $customers;
     public $transactionTypes = ['Transfer', 'Withdrawal', 'Deposit', 'Adjustment'];
 
+    public $sortField = 'created_at';
+    public $sortDirection = 'desc';
+
     private ListFilteredTransactions $listFilteredTransactionsUseCase;
     private SafeRepository $safeRepository;
     private LineRepository $lineRepository;
@@ -73,6 +76,8 @@ class Index extends Component
             'branch_id' => $this->selectedBranch,
             'customer_name' => $this->selectedCustomer,
             'transaction_type' => $this->selectedTransactionType,
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
         ];
 
         $result = $this->listFilteredTransactionsUseCase->execute($filters);
@@ -93,6 +98,17 @@ class Index extends Component
                                              ->mapWithKeys(function ($group, $userName) {
                                                  return [$userName => $group->sum('current_balance')];
                                              })->toArray();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+        $this->generateReport();
     }
 
     public function exportToExcel()
@@ -164,6 +180,8 @@ class Index extends Component
             'branches' => $this->branches,
             'customers' => $this->customers,
             'transactionTypes' => $this->transactionTypes,
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
         ]);
     }
 }

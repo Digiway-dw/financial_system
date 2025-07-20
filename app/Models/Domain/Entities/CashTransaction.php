@@ -22,6 +22,7 @@ class CashTransaction extends Model
         'agent_id',
         'destination_branch_id',
         'destination_safe_id',
+        'reference_number',
     ];
 
     public function getCommissionAttribute()

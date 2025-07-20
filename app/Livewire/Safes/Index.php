@@ -14,6 +14,13 @@ class Index extends Component
     public array $clients;
     public $name = '';
 
+    public $sortField = 'name';
+    public $sortDirection = 'asc';
+    
+    // Separate sorting variables for client wallets table
+    public $clientSortField = 'name';
+    public $clientSortDirection = 'asc';
+
     private ListSafes $listSafesUseCase;
     private DeleteSafe $deleteSafeUseCase;
     private CustomerRepository $customerRepository;
@@ -34,17 +41,49 @@ class Index extends Component
 
     public function loadSafes()
     {
-        $this->safes = $this->listSafesUseCase->execute();
+        $filters = [
+            'name' => $this->name,
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
+        ];
+        $this->safes = $this->listSafesUseCase->execute($filters);
     }
 
     public function loadClients()
     {
-        $this->clients = $this->customerRepository->getAllClients(); // Assuming a method to get only clients
+        $filters = [
+            'sortField' => $this->clientSortField,
+            'sortDirection' => $this->clientSortDirection,
+        ];
+        $result = $this->customerRepository->getAll($filters);
+        $this->clients = $result['customers'] ?? $result;
     }
 
     public function filter()
     {
-        $this->safes = $this->listSafesUseCase->execute($this->name);
+        $this->loadSafes();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+        $this->loadSafes();
+    }
+
+    public function sortClientsBy($field)
+    {
+        if ($this->clientSortField === $field) {
+            $this->clientSortDirection = $this->clientSortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->clientSortField = $field;
+            $this->clientSortDirection = 'asc';
+        }
+        $this->loadClients();
     }
 
     public function deleteSafe(string $safeId)

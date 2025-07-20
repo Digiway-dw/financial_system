@@ -74,6 +74,13 @@
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->status }}</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('Y-m-d h:i A') }}</td>
                                                 <td class="px-4 py-2 text-right">
+                                                    <a href="{{ route('cash-transactions.details', $tx->id) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-200 transition-colors duration-150 mr-2">
+                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                        View
+                                                    </a>
                                                     <a href="{{ route('cash-transactions.receipt', $tx->id) }}" target="_blank" class="inline-block text-green-600 hover:text-green-800 mr-2" title="Print Receipt">
                                                         <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-6 0v4m0 0h4m-4 0H8" />

@@ -23,6 +23,9 @@ class Index extends Component
     public $totalSessions = 0;
     public $averageSessionLength = 0;
 
+    public $sortField = 'login_at';
+    public $sortDirection = 'desc';
+
     public function mount()
     {
         // Check permissions
@@ -59,6 +62,17 @@ class Index extends Component
         $this->resetPage();
     }
 
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+        $this->resetPage();
+    }
+
     public function calculateStatistics($sessions)
     {
         $this->totalSessions = $sessions->count();
@@ -88,8 +102,41 @@ class Index extends Component
     {
         $query = WorkSession::with(['user' => function ($q) {
             $q->withTrashed(); // Include deleted users
-        }, 'user.branch'])
-            ->orderBy('login_at', 'desc');
+        }, 'user.branch']);
+
+        // Handle different sorting scenarios
+        if ($this->sortField === 'status') {
+            // Status sorting: use logout_at (null = active, not null = closed)
+            $query->orderBy('logout_at', $this->sortDirection === 'asc' ? 'asc' : 'desc')
+                  ->orderBy('login_at', 'desc'); // Secondary sort for consistent results
+        } elseif ($this->sortField === 'branch_id') {
+            // Branch sorting: use collection sorting after loading
+            $sessions = $query->get();
+            $sortedSessions = $sessions->sortBy(function ($session) {
+                return $session->user->branch->name ?? '';
+            });
+            
+            if ($this->sortDirection === 'desc') {
+                $sortedSessions = $sortedSessions->reverse();
+            }
+            
+            return $sortedSessions->values();
+        } elseif ($this->sortField === 'user_id') {
+            // User sorting: use collection sorting after loading
+            $sessions = $query->get();
+            $sortedSessions = $sessions->sortBy(function ($session) {
+                return $session->user->name ?? '';
+            });
+            
+            if ($this->sortDirection === 'desc') {
+                $sortedSessions = $sortedSessions->reverse();
+            }
+            
+            return $sortedSessions->values();
+        } else {
+            // Direct column sorting for existing columns
+            $query->orderBy($this->sortField, $this->sortDirection);
+        }
 
         // Filter by user if selected
         if ($this->selectedUser) {
@@ -150,8 +197,7 @@ class Index extends Component
     {
         $query = WorkSession::with(['user' => function ($q) {
             $q->withTrashed(); // Include deleted users
-        }, 'user.branch'])
-            ->orderBy('login_at', 'desc');
+        }, 'user.branch']);
 
         // Filter by user if selected
         if ($this->selectedUser) {
@@ -174,6 +220,29 @@ class Index extends Component
             $query->whereDate('login_at', '<=', $this->dateTo);
         }
 
+        // Handle different sorting scenarios
+        if ($this->sortField === 'status') {
+            // Status sorting: use logout_at (null = active, not null = closed)
+            $query->orderBy('logout_at', $this->sortDirection === 'asc' ? 'asc' : 'desc')
+                  ->orderBy('login_at', 'desc'); // Secondary sort for consistent results
+        } elseif ($this->sortField === 'branch_id') {
+            // Branch sorting: join with users and branches tables
+            $query->leftJoin('users', 'work_sessions.user_id', '=', 'users.id')
+                  ->leftJoin('branches', 'users.branch_id', '=', 'branches.id')
+                  ->orderBy('branches.name', $this->sortDirection)
+                  ->orderBy('work_sessions.login_at', 'desc') // Secondary sort
+                  ->select('work_sessions.*');
+        } elseif ($this->sortField === 'user_id') {
+            // User sorting: join with users table
+            $query->leftJoin('users', 'work_sessions.user_id', '=', 'users.id')
+                  ->orderBy('users.name', $this->sortDirection)
+                  ->orderBy('work_sessions.login_at', 'desc') // Secondary sort
+                  ->select('work_sessions.*');
+        } else {
+            // Direct column sorting for existing columns
+            $query->orderBy($this->sortField, $this->sortDirection);
+        }
+
         $sessions = $query->paginate(15);
 
         // Calculate statistics for filtered sessions (using the full set, not just the current page)
@@ -181,6 +250,8 @@ class Index extends Component
 
         return view('livewire.admin.work-sessions.index', [
             'sessions' => $sessions,
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
         ]);
     }
 }

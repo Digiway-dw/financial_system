@@ -58,6 +58,11 @@ class EloquentCustomerRepository implements CustomerRepository
             $query->whereDate('created_at', '<=', $filters['date_added_end']);
         }
 
+        // Apply sorting
+        $sortField = $filters['sortField'] ?? 'name';
+        $sortDirection = $filters['sortDirection'] ?? 'asc';
+        $query->orderBy($sortField, $sortDirection);
+
         $customers = $query->withCount('transactions')->get();
 
         // Statistics with simpler approach to avoid N+1 queries

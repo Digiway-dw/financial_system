@@ -42,6 +42,10 @@ class Dashboard extends Component
     public $receiveTransactionsCount = 0;
     public $totalTransactionsCount = 0;
 
+    // Sorting properties for line tables
+    public $sortField = 'mobile_number';
+    public $sortDirection = 'asc';
+
     public function boot(
         SafeRepository $safeRepository,
         LineRepository $lineRepository,
@@ -185,46 +189,46 @@ class Dashboard extends Component
         }
     }
 
+    public function sortBy($field)
+    {
+        // Log the current URL parameters for debugging
+        logger()->info('Sorting triggered', [
+            'field' => $field,
+            'current_sort_field' => $this->sortField,
+            'current_sort_direction' => $this->sortDirection,
+            'url_params' => request()->all(),
+            'current_url' => request()->url(),
+            'as_agent' => request()->query('as_agent'),
+            'branches' => request()->query('branches'),
+            'user_role' => Auth::user()->roles->pluck('name')->toArray()
+        ]);
+        
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+    }
+
     public function render()
     {
         $user = Auth::user();
         $data = [];
         $dashboardView = 'livewire.dashboard.trainee'; // Default to trainee dashboard
 
+        // Debug logging for dashboard view selection
+        logger()->info('Dashboard render', [
+            'user_role' => $user->roles->pluck('name')->toArray(),
+            'is_admin' => $user->hasRole('admin'),
+        ]);
+
         // Always set branchSafeBalance for the user's branch
         $userBranch = $user->branch;
         $branchSafes = collect($this->safeRepository->all())->where('branch_id', $userBranch->id ?? null);
         $data['branchSafeBalance'] = $branchSafes->sum('current_balance');
 
-        if ($user->hasRole('admin') && request()->query('as_agent')) {
-            // Admin as agent dashboard: show lines filtered by selected branches
-            $allBranches = collect($this->branchRepository->all());
-            $selectedBranches = request()->query('branches');
-            if ($selectedBranches) {
-                $selectedBranches = is_array($selectedBranches) ? $selectedBranches : explode(',', $selectedBranches);
-                $lines = collect($this->lineRepository->all())->whereIn('branch_id', $selectedBranches);
-                $safes = collect($this->safeRepository->allWithBranch())->whereIn('branch_id', $selectedBranches);
-            } else {
-                $lines = collect($this->lineRepository->all());
-                $safes = collect($this->safeRepository->allWithBranch());
-            }
-            $data['branches'] = $allBranches;
-            $data['selectedBranches'] = $selectedBranches ?? [];
-            $data['agentLines'] = $lines;
-            $data['agentLinesTotalBalance'] = $lines->sum('current_balance');
-            $data['agentTotalBalance'] = $lines->sum('current_balance');
-            $data['showAdminAgentToggle'] = true;
-            // Provide branchSafes for the agent dashboard summary table
-            $data['branchSafes'] = $safes->map(function ($safe) {
-                return [
-                    'name' => $safe['name'] ?? '',
-                    'current_balance' => $safe['current_balance'] ?? 0,
-                    'startup_balance' => 0, // Optionally fetch startup balance if needed
-                ];
-            })->values();
-            $data['agentTodayTransactionsCount'] = 0;
-            $dashboardView = 'livewire.dashboard.agent';
-        } else if ($user->hasRole('admin')) {
+        if ($user->hasRole('admin')) {
             $data['showAdminAgentToggle'] = true;
             $data['totalUsers'] = count($this->userRepository->all());
             $data['totalBranches'] = count($this->branchRepository->all());
@@ -279,84 +283,6 @@ class Dashboard extends Component
             $pendingTransactionsCount = Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
             $pendingCashCount = CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
             $data['pendingTransactionsCount'] = $pendingTransactionsCount + $pendingCashCount;
-
-            // Add agent-specific data only when in agent view
-            if (request()->query('as_agent')) {
-                // Set the toggle flag for supervisors to show branch selector
-                $data['showAdminAgentToggle'] = true;
-                
-                // Branch selection data
-                $data['selectedBranches'] = request()->query('branches', []);
-                if (empty($data['selectedBranches']) || in_array('all', $data['selectedBranches'])) {
-                    $data['selectedBranches'] = $this->branches->pluck('id')->toArray();
-                }
-
-                // Filter data based on selected branches
-                $selectedBranchIds = $data['selectedBranches'];
-                if (!empty($selectedBranchIds) && !in_array('all', $selectedBranchIds)) {
-                    // Filter safes by selected branches
-                    $branchSafes = collect($this->safeRepository->allWithBranch())->filter(function ($safe) use ($selectedBranchIds) {
-                        return in_array($safe['branch_id'] ?? $safe->branch_id, $selectedBranchIds);
-                    });
-                    
-                    // Filter lines by selected branches
-                    $allLines = collect($this->lineRepository->all())->filter(function ($line) use ($selectedBranchIds) {
-                        return in_array($line->branch_id, $selectedBranchIds);
-                    });
-                } else {
-                    // Show all safes and lines
-                    $branchSafes = collect($this->safeRepository->allWithBranch());
-                    $allLines = collect($this->lineRepository->all());
-                }
-
-                // Transaction search functionality
-                if (request()->query('search_transaction') && request()->query('reference_number')) {
-                    $searched = Transaction::where('reference_number', request()->query('reference_number'))->first();
-                    $data['searchedTransaction'] = $searched;
-                }
-
-                // Safe summary data (filtered by selected branches)
-                $today = \Carbon\Carbon::today();
-                $data['branchSafes'] = $branchSafes->map(function ($safe) use ($today) {
-                    // Count BOTH CashTransaction and regular Transaction records for this safe's branch
-                    $safeId = $safe['id'] ?? $safe->id;
-                    $branchId = $safe['branch_id'] ?? $safe->branch_id;
-                    
-                    $cashTransactions = \App\Models\Domain\Entities\CashTransaction::where('safe_id', $safeId)
-                        ->whereDate('created_at', $today)
-                        ->count();
-                    $regularTransactions = \App\Models\Domain\Entities\Transaction::where('branch_id', $branchId)
-                        ->whereDate('created_at', $today)
-                        ->count();
-                    
-                    $todaysTransactions = $cashTransactions + $regularTransactions;
-                    
-                    return [
-                        'name' => $safe['name'] ?? $safe->name ?? '',
-                        'current_balance' => $safe['current_balance'] ?? $safe->current_balance ?? 0,
-                        'todays_transactions' => $todaysTransactions,
-                    ];
-                });
-
-                // Lines overview data (filtered by selected branches)
-                $data['agentLines'] = $allLines->map(function ($line) {
-                    $lineArray = is_object($line) ? $line->toArray() : $line;
-                    
-                    // Add color classes for daily usage
-                    $lineArray['daily_usage_class'] = '';
-                    if (
-                        isset($lineArray['daily_limit'], $lineArray['daily_usage'], $lineArray['status']) &&
-                        $lineArray['daily_limit'] > 0 &&
-                        $lineArray['daily_usage'] >= $lineArray['daily_limit'] &&
-                        $lineArray['status'] === 'frozen'
-                    ) {
-                        $lineArray['daily_usage_class'] = 'bg-red-100 text-red-700 font-bold';
-                    }
-
-                    return (object) $lineArray;
-                });
-                $data['agentLinesTotalBalance'] = $allLines->sum('current_balance');
-            }
             $dashboardView = 'livewire.dashboard.general_supervisor';
         } elseif ($user->hasRole('branch_manager')) {
             $userBranch = $user->branch;
@@ -377,6 +303,26 @@ class Dashboard extends Component
             $data['branchUsersCount'] = $branchUsers->count();
             // Fetch all lines for the branch
             $branchLines = Line::where('branch_id', $branchId)->get();
+            
+            // Apply sorting to branch manager lines
+            if ($this->sortField === 'mobile_number') {
+                $branchLines = $branchLines->sortBy('mobile_number');
+            } elseif ($this->sortField === 'current_balance') {
+                $branchLines = $branchLines->sortBy('current_balance');
+            } elseif ($this->sortField === 'daily_limit') {
+                $branchLines = $branchLines->sortBy('daily_limit');
+            } elseif ($this->sortField === 'monthly_limit') {
+                $branchLines = $branchLines->sortBy('monthly_limit');
+            } elseif ($this->sortField === 'network') {
+                $branchLines = $branchLines->sortBy('network');
+            } elseif ($this->sortField === 'status') {
+                $branchLines = $branchLines->sortBy('status');
+            }
+
+            if ($this->sortDirection === 'desc') {
+                $branchLines = $branchLines->reverse();
+            }
+            
             $data['branchLines'] = $branchLines;
             $data['branchLinesTotalBalance'] = $branchLines->sum('current_balance');
             // Metrics table values
@@ -395,6 +341,29 @@ class Dashboard extends Component
             $dashboardView = 'livewire.dashboard.branch_manager';
         } elseif ($user->hasRole('agent') || $user->hasRole('trainee')) {
             $agentLines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
+
+            // Apply sorting to agent lines
+            if ($this->sortField === 'mobile_number') {
+                $agentLines = $agentLines->sortBy('mobile_number');
+            } elseif ($this->sortField === 'current_balance') {
+                $agentLines = $agentLines->sortBy('current_balance');
+            } elseif ($this->sortField === 'daily_limit') {
+                $agentLines = $agentLines->sortBy('daily_limit');
+            } elseif ($this->sortField === 'daily_usage') {
+                $agentLines = $agentLines->sortBy('daily_usage');
+            } elseif ($this->sortField === 'monthly_limit') {
+                $agentLines = $agentLines->sortBy('monthly_limit');
+            } elseif ($this->sortField === 'monthly_usage') {
+                $agentLines = $agentLines->sortBy('monthly_usage');
+            } elseif ($this->sortField === 'network') {
+                $agentLines = $agentLines->sortBy('network');
+            } elseif ($this->sortField === 'status') {
+                $agentLines = $agentLines->sortBy('status');
+            }
+
+            if ($this->sortDirection === 'desc') {
+                $agentLines = $agentLines->reverse();
+            }
 
             // Enhance agent lines with usage data and color classes
             $agentLinesWithUsage = $agentLines->map(function ($line) {
@@ -526,6 +495,11 @@ class Dashboard extends Component
             $dashboardView = 'livewire.dashboard.auditor';
         }
 
-        return view($dashboardView, array_merge(['user' => $user], $data));
+        return view($dashboardView, array_merge(['user' => $user], $data, [
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
+            'currentUrl' => request()->url(),
+            'currentParams' => request()->all(),
+        ]));
     }
 }

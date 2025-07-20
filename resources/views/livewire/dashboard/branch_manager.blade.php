@@ -1,4 +1,17 @@
 <div>
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .sortable-header:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateY(-1px);
+        }
+        .sortable-header:active {
+            transform: translateY(0);
+        }
+    </style>
     <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Branch Manager Dashboard Overview</h3>
     <div class="flex items-center justify-end mb-2">
         <span class="ml-2 text-base font-bold text-gray-900">{{ $branchName }}</span>
@@ -88,12 +101,42 @@
                 <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mobile Number</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Balance</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Daily Limit</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly Limit</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Network</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('mobile_number')" style="cursor: pointer;">
+                                Mobile Number
+                                @if ($sortField === 'mobile_number')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('current_balance')" style="cursor: pointer;">
+                                Balance
+                                @if ($sortField === 'current_balance')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('daily_limit')" style="cursor: pointer;">
+                                Daily Limit
+                                @if ($sortField === 'daily_limit')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('monthly_limit')" style="cursor: pointer;">
+                                Monthly Limit
+                                @if ($sortField === 'monthly_limit')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('network')" style="cursor: pointer;">
+                                Network
+                                @if ($sortField === 'network')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('status')" style="cursor: pointer;">
+                                Status
+                                @if ($sortField === 'status')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">

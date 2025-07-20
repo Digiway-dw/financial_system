@@ -21,6 +21,9 @@ class Index extends Component
     public $topByCommissions = [];
     public $customerToDelete = null;
 
+    public $sortField = 'name';
+    public $sortDirection = 'asc';
+
     private ListCustomers $listCustomersUseCase;
     private DeleteCustomer $deleteCustomerUseCase;
 
@@ -45,6 +48,8 @@ class Index extends Component
             'region' => $this->region,
             'date_added_start' => $this->date_added_start,
             'date_added_end' => $this->date_added_end,
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
         ];
         $result = $this->listCustomersUseCase->execute($filters);
         $this->customers = $result['customers'] ?? $result;
@@ -55,6 +60,17 @@ class Index extends Component
 
     public function filter()
     {
+        $this->loadCustomers();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
         $this->loadCustomers();
     }
 

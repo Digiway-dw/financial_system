@@ -11,6 +11,9 @@ class Index extends Component
 {
     public array $transactions;
 
+    public $sortField = 'created_at';
+    public $sortDirection = 'desc';
+
     public $customer_code;
     public $receiver_mobile;
     public $transfer_line;
@@ -35,6 +38,10 @@ class Index extends Component
     public function mount()
     {
         // Authorization check for viewing transactions
+        if (auth()->user()->hasRole('agent') || auth()->user()->hasRole('trainee')) {
+            session()->flash('error', 'You are not authorized to access the transactions page.');
+            return redirect()->route('dashboard');
+        }
         Gate::authorize('view-transactions');
         $this->loadTransactions();
     }
@@ -53,6 +60,8 @@ class Index extends Component
             'employee_ids' => $this->employee_ids,
             'branch_ids' => $this->branch_ids,
             'reference_number' => $this->reference_number,
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
         ];
         $this->transactions = $this->listTransactionsUseCase->execute($filters);
     }
@@ -74,6 +83,17 @@ class Index extends Component
         $this->end_date = null;
         $this->employee_ids = [];
         $this->branch_ids = [];
+        $this->loadTransactions();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
         $this->loadTransactions();
     }
 

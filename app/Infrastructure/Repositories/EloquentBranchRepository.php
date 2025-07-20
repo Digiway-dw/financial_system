@@ -38,8 +38,27 @@ class EloquentBranchRepository implements BranchRepository
         }
     }
 
-    public function all(): Collection
+    public function all(string $sortField = 'name', string $sortDirection = 'asc'): Collection
     {
-        return EloquentBranch::with('safe')->get();
+        // Handle sorting by safe balance (related table)
+        if ($sortField === 'safe_balance') {
+            // Use a subquery to get branches with their safe balances
+            $branches = EloquentBranch::with('safe')
+                ->get()
+                ->sortBy(function ($branch) {
+                    return $branch->safe ? $branch->safe->current_balance : 0;
+                });
+            
+            if ($sortDirection === 'desc') {
+                $branches = $branches->reverse();
+            }
+            
+            return $branches;
+        } else {
+            // Regular sorting for branches table columns
+            return EloquentBranch::with('safe')
+                ->orderBy($sortField, $sortDirection)
+                ->get();
+        }
     }
 } 

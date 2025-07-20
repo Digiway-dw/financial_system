@@ -135,6 +135,7 @@ class Edit extends Component
             );
 
             session()->flash('message', 'Transaction updated successfully.');
+            return redirect()->route('transactions.index');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update transaction: ' . $e->getMessage());
         }

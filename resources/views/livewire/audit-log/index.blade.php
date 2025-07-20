@@ -1,4 +1,17 @@
-<div class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .sortable-header:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateY(-1px);
+        }
+        .sortable-header:active {
+            transform: translateY(0);
+        }
+    </style>
     <!-- Header Section -->
     <div class="bg-white/70 backdrop-blur-sm border-b border-gray-200/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -233,7 +246,7 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200 sortable-header"
                                 wire:click="sortBy('created_at')">
                                 <div class="flex items-center space-x-1">
                                     <span>Timestamp</span>
@@ -256,7 +269,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200 sortable-header"
                                 wire:click="sortBy('log_name')">
                                 <div class="flex items-center space-x-1">
                                     <span>Category</span>
@@ -279,7 +292,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200 sortable-header"
                                 wire:click="sortBy('event')">
                                 <div class="flex items-center space-x-1">
                                     <span>Event Type</span>

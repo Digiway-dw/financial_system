@@ -1,4 +1,17 @@
-<div class="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .sortable-header:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateY(-1px);
+        }
+        .sortable-header:active {
+            transform: translateY(0);
+        }
+    </style>
     <!-- Header Section -->
     <div class="bg-white/70 backdrop-blur-sm border-b border-gray-200/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -168,7 +181,8 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('name')">
                                 <div class="flex items-center space-x-1">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -177,10 +191,14 @@
                                         </path>
                                     </svg>
                                     <span>Safe Name</span>
+                                    @if ($sortField === 'name')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('current_balance')">
                                 <div class="flex items-center space-x-1">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -189,10 +207,14 @@
                                         </path>
                                     </svg>
                                     <span>Balance</span>
+                                    @if ($sortField === 'current_balance')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('branch_id')">
                                 <div class="flex items-center space-x-1">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -201,10 +223,14 @@
                                         </path>
                                     </svg>
                                     <span>Branch</span>
+                                    @if ($sortField === 'branch_id')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('description')">
                                 <div class="flex items-center space-x-1">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -212,6 +238,9 @@
                                             d="M4 6h16M4 12h16M4 18h7"></path>
                                     </svg>
                                     <span>Description</span>
+                                    @if ($sortField === 'description')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
                             
@@ -304,7 +333,8 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortClientsBy('name')">
                                 <div class="flex items-center space-x-1">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -313,10 +343,14 @@
                                         </path>
                                     </svg>
                                     <span>Customer Name</span>
+                                    @if ($clientSortField === 'name')
+                                        <span class="text-blue-600">{{ $clientSortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortClientsBy('mobile_number')">
                                 <div class="flex items-center space-x-1">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -325,10 +359,14 @@
                                         </path>
                                     </svg>
                                     <span>Mobile Number</span>
+                                    @if ($clientSortField === 'mobile_number')
+                                        <span class="text-blue-600">{{ $clientSortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortClientsBy('balance')">
                                 <div class="flex items-center space-x-1">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -337,6 +375,9 @@
                                         </path>
                                     </svg>
                                     <span>Wallet Balance</span>
+                                    @if ($clientSortField === 'balance')
+                                        <span class="text-blue-600">{{ $clientSortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
                             <th

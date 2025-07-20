@@ -56,9 +56,10 @@ class Index extends Component
 
         // Filter by line number if provided
         if (!empty($this->number)) {
-            $lines = array_filter($lines, function ($line) {
-                return isset($line['mobile_number']) &&
-                    stripos($line['mobile_number'], $this->number) !== false;
+            $search = ltrim($this->number, '+');
+            $lines = array_filter($lines, function ($line) use ($search) {
+                $lineNumber = isset($line['mobile_number']) ? ltrim($line['mobile_number'], '+') : '';
+                return stripos($lineNumber, $search) !== false;
             });
         }
 

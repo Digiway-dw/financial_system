@@ -12,6 +12,9 @@ class Index extends Component
 {
     public Collection $branches;
 
+    public $sortField = 'name';
+    public $sortDirection = 'asc';
+
     private ListBranches $listBranchesUseCase;
     private DeleteBranch $deleteBranchUseCase;
 
@@ -29,7 +32,22 @@ class Index extends Component
 
     public function loadBranches()
     {
-        $this->branches = $this->listBranchesUseCase->execute();
+        $filters = [
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
+        ];
+        $this->branches = $this->listBranchesUseCase->execute($filters);
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+        $this->loadBranches();
     }
 
     public function deleteBranch(string $branchId)

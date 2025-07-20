@@ -1,4 +1,17 @@
 <div x-data="{ showRefreshMsg: false }">
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .sortable-header:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateY(-1px);
+        }
+        .sortable-header:active {
+            transform: translateY(0);
+        }
+    </style>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
@@ -271,29 +284,69 @@
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                            wire:click="sortBy('status')">
+                                            Status
+                                            @if ($sortField === 'status')
+                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                            @endif
+                                        </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            User</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                            wire:click="sortBy('user_id')">
+                                            User
+                                            @if ($sortField === 'user_id')
+                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                            @endif
+                                        </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Branch</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                            wire:click="sortBy('branch_id')">
+                                            Branch
+                                            @if ($sortField === 'branch_id')
+                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                            @endif
+                                        </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Login At</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                            wire:click="sortBy('login_at')">
+                                            Login At
+                                            @if ($sortField === 'login_at')
+                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                            @endif
+                                        </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Logout At</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                            wire:click="sortBy('logout_at')">
+                                            Logout At
+                                            @if ($sortField === 'logout_at')
+                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                            @endif
+                                        </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Duration</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                            wire:click="sortBy('duration_minutes')">
+                                            Duration
+                                            @if ($sortField === 'duration_minutes')
+                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                            @endif
+                                        </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            IP Address</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                            wire:click="sortBy('ip_address')">
+                                            IP Address
+                                            @if ($sortField === 'ip_address')
+                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                            @endif
+                                        </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Browser</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                            wire:click="sortBy('user_agent')">
+                                            Browser
+                                            @if ($sortField === 'user_agent')
+                                                <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                            @endif
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">

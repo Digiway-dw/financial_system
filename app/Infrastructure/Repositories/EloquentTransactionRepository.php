@@ -279,7 +279,7 @@ class EloquentTransactionRepository implements TransactionRepository
                 'safe_id' => $transaction->safe_id,
                 'is_absolute_withdrawal' => null,
                 'payment_method' => null,
-                'reference_number' => null,
+                'reference_number' => $transaction->reference_number, // Use actual reference_number
                 'created_at' => $transaction->created_at,
                 'updated_at' => $transaction->updated_at,
                 'source_table' => 'cash_transactions',
@@ -289,9 +289,38 @@ class EloquentTransactionRepository implements TransactionRepository
         $ordinaryTxsArr = $ordinaryTxs->toArray();
         $cashTxsArr = $cashTxs->toArray();
 
-        $all = collect(array_merge($ordinaryTxsArr, $cashTxsArr))
-            ->sortByDesc('transaction_date_time')
-            ->values();
+        $all = collect(array_merge($ordinaryTxsArr, $cashTxsArr));
+
+        // Apply sorting if provided
+        if (isset($filters['sortField']) && isset($filters['sortDirection'])) {
+            $sortField = $filters['sortField'];
+            $sortDirection = $filters['sortDirection'];
+            
+            // Map frontend field names to actual database field names
+            $fieldMapping = [
+                'customer_name' => 'customer_name',
+                'customer_mobile_number' => 'customer_mobile_number',
+                'amount' => 'amount',
+                'commission' => 'commission',
+                'transaction_type' => 'transaction_type',
+                'agent_name' => 'agent_name',
+                'created_at' => 'created_at',
+                'reference_number' => 'reference_number',
+            ];
+            
+            $actualField = $fieldMapping[$sortField] ?? 'created_at';
+            
+            if ($sortDirection === 'asc') {
+                $all = $all->sortBy($actualField);
+            } else {
+                $all = $all->sortByDesc($actualField);
+            }
+        } else {
+            // Default sorting by transaction date time descending
+            $all = $all->sortByDesc('transaction_date_time');
+        }
+
+        $all = $all->values();
 
         $totalTransferred = $all->sum('amount');
         $totalCommission = $all->sum('commission');

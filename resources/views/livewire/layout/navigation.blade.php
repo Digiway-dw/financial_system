@@ -24,11 +24,13 @@
                     @endif
 
                     @can('view-transactions')
+                        @if(!auth()->user()->hasAnyRole(['agent', 'trainee']))
                         <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
                             request()->routeIs('transactions.create') ||
                             request()->routeIs('transactions.pending')" wire:navigate>
                             {{ __('Transactions') }}
                         </x-nav-link>
+                        @endif
                     @else
                         <x-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
                             {{ __('Search Transaction') }}
@@ -152,11 +154,13 @@
             @endif
 
             @can('view-transactions')
+                @if(!auth()->user()->hasAnyRole(['agent', 'trainee']))
                 <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
                     request()->routeIs('transactions.create') ||
                     request()->routeIs('transactions.pending')" wire:navigate>
                     {{ __('Transactions') }}
                 </x-responsive-nav-link>
+                @endif
             @else
                 <x-responsive-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
                     {{ __('Search Transaction') }}

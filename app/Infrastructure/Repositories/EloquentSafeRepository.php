@@ -35,12 +35,17 @@ class EloquentSafeRepository implements SafeRepository
         return $this->allWithBranch();
     }
 
-    public function allWithBranch($name = null): array
+    public function allWithBranch($name = null, $sortField = 'name', $sortDirection = 'asc'): array
     {
         $query = EloquentSafe::with('branch');
+        
         if ($name) {
             $query->where('name', 'like', '%' . $name . '%');
         }
+        
+        // Apply sorting
+        $query->orderBy($sortField, $sortDirection);
+        
         return $query->get()->toArray();
     }
 } 

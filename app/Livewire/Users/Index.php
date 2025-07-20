@@ -29,6 +29,9 @@ class Index extends Component
     public $userBeingDeleted = null;
     public $userBeingRestored = null;
 
+    public $sortField = 'name';
+    public $sortDirection = 'asc';
+
     protected $queryString = [
         'name' => ['except' => ''],
         'role' => ['except' => ''],
@@ -75,6 +78,17 @@ class Index extends Component
     public function resetFilters()
     {
         $this->reset(['name', 'role', 'branchId', 'showTrashed']);
+        $this->resetPage();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
         $this->resetPage();
     }
 
@@ -164,6 +178,19 @@ class Index extends Component
 
         if ($this->branchId) {
             $query->where('branch_id', $this->branchId);
+        }
+
+        // Apply sorting
+        if ($this->sortField === 'role') {
+            // Handle role sorting by joining with the roles table
+            $query->leftJoin('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+                  ->leftJoin('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                  ->orderBy('roles.name', $this->sortDirection)
+                  ->orderBy('users.name', 'asc') // Secondary sort to ensure consistent results
+                  ->select('users.*');
+        } else {
+            // Regular sorting for users table columns
+            $query->orderBy($this->sortField, $this->sortDirection);
         }
 
         $users = $query->paginate(10);

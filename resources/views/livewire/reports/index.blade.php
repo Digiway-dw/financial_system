@@ -1,4 +1,17 @@
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .sortable-header:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateY(-1px);
+        }
+        .sortable-header:active {
+            transform: translateY(0);
+        }
+    </style>
     <!-- Header Section -->
     <div class="bg-white/70 backdrop-blur-sm border-b border-gray-200/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -370,17 +383,37 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Customer Name</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('name')">
+                                Customer Name
+                                @if ($sortField === 'name')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Mobile Number</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('mobile_number')">
+                                Mobile Number
+                                @if ($sortField === 'mobile_number')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Balance</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('balance')">
+                                Balance
+                                @if ($sortField === 'balance')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Linked Agent</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('agent_name')">
+                                Linked Agent
+                                @if ($sortField === 'agent_name')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -442,26 +475,61 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Customer</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('customer_name')">
+                                Customer
+                                @if ($sortField === 'customer_name')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Amount</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('amount')">
+                                Amount
+                                @if ($sortField === 'amount')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Commission</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('commission')">
+                                Commission
+                                @if ($sortField === 'commission')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Type</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('transaction_type')">
+                                Type
+                                @if ($sortField === 'transaction_type')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Agent</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('agent_name')">
+                                Agent
+                                @if ($sortField === 'agent_name')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Status</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('status')">
+                                Status
+                                @if ($sortField === 'status')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                             <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Date</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('created_at')">
+                                Date
+                                @if ($sortField === 'created_at')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">

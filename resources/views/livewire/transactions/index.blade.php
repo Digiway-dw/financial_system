@@ -1,4 +1,17 @@
 <div class="min-h-screen bg-gray-50">
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .sortable-header:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateY(-1px);
+        }
+        .sortable-header:active {
+            transform: translateY(0);
+        }
+    </style>
     <!-- Header Section -->
     <div class="bg-white border-b border-gray-200 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -314,14 +327,70 @@
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead>
                     <tr>
-                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px]">Customer Name</th>
-                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px]">Mobile Number</th>
-                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px]">Amount</th>
-                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px]">Commission</th>
-                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[70px]">Type</th>
-                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[90px]">Agent</th>
-                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px]">Date</th>
-                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[120px]">Reference Number</th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px] sortable-header" wire:click="sortBy('customer_name')">
+                            <div class="flex items-center space-x-1">
+                                <span>Customer Name</span>
+                                @if ($sortField === 'customer_name')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </div>
+                        </th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px] sortable-header" wire:click="sortBy('customer_mobile_number')">
+                            <div class="flex items-center space-x-1">
+                                <span>Mobile Number</span>
+                                @if ($sortField === 'customer_mobile_number')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </div>
+                        </th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px] sortable-header" wire:click="sortBy('amount')">
+                            <div class="flex items-center space-x-1">
+                                <span>Amount</span>
+                                @if ($sortField === 'amount')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </div>
+                        </th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px] sortable-header" wire:click="sortBy('commission')">
+                            <div class="flex items-center space-x-1">
+                                <span>Commission</span>
+                                @if ($sortField === 'commission')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </div>
+                        </th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[70px] sortable-header" wire:click="sortBy('transaction_type')">
+                            <div class="flex items-center space-x-1">
+                                <span>Type</span>
+                                @if ($sortField === 'transaction_type')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </div>
+                        </th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[90px] sortable-header" wire:click="sortBy('agent_name')">
+                            <div class="flex items-center space-x-1">
+                                <span>Agent</span>
+                                @if ($sortField === 'agent_name')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </div>
+                        </th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px] sortable-header" wire:click="sortBy('created_at')">
+                            <div class="flex items-center space-x-1">
+                                <span>Date</span>
+                                @if ($sortField === 'created_at')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </div>
+                        </th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[120px] sortable-header" wire:click="sortBy('reference_number')">
+                            <div class="flex items-center space-x-1">
+                                <span>Reference Number</span>
+                                @if ($sortField === 'reference_number')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </div>
+                        </th>
                         <th class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px]">Actions</th>
                     </tr>
                 </thead>
@@ -337,9 +406,20 @@
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d h:i A') }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['reference_number'] ?? '' }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="{{ route('transactions.details', $transaction['id']) }}"
+                                        class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-200 transition-colors duration-150 mr-2">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        View
+                                    </a>
                                     @can('edit-all-transactions')
                                         <a href="{{ route('transactions.edit', $transaction['id']) }}"
-                                            class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg hover:bg-indigo-200 transition-colors duration-150">
+                                            class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg hover:bg-indigo-200 transition-colors duration-150 mr-2">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -348,16 +428,16 @@
                                             Edit
                                         </a>
                                     @endcan
-                                <a href="{{ route('transactions.receipt', $transaction['id']) }}" target="_blank" class="inline-block text-green-600 hover:text-green-800 mr-3" title="Print Receipt">
-                                    <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-6 0v4m0 0h4m-4 0H8" />
-                                    </svg>
-                                    Print
-                                </a>
-                                @can('delete-transactions')
+                                    <a href="{{ route('transactions.receipt', $transaction['id']) }}" target="_blank" class="inline-block text-green-600 hover:text-green-800 mr-3" title="Print Receipt">
+                                        <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-6 0v4m0 0h4m-4 0H8" />
+                                        </svg>
+                                        Print
+                                    </a>
+                                    @can('delete-transactions')
                                         <button wire:click="deleteTransaction('{{ $transaction['id'] }}')" class="text-red-600 hover:text-red-800">Delete</button>
-                                @endcan
-                            </td>
+                                    @endcan
+                                </td>
                         </tr>
                     @empty
                         <tr>
