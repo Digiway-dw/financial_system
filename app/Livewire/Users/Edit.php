@@ -42,6 +42,7 @@ class Edit extends Component
         'sunday' => 'Sunday',
     ];
     public $editingWorkingHourId = null;
+    public $deleteConfirmId = null;
     public $dayOfWeek = null;
     public $startTime = '09:00';
     public $endTime = '17:00';
@@ -275,10 +276,84 @@ class Edit extends Component
             // Reload working hours without flashing a message
             $this->loadWorkingHours();
 
+            // Close the confirmation dialog
+            $this->deleteConfirmId = null;
+
             // No session flash message to avoid popup
         } catch (\Exception $e) {
             // Silent fail or log the error, but don't show a popup
             Log::error('Error deleting working hour: ' . $e->getMessage());
+            // Close dialog even on error
+            $this->deleteConfirmId = null;
+        }
+    }
+
+    public function confirmDelete($id)
+    {
+        try {
+            // Debug: Log the method call
+            Log::info('confirmDelete called with ID: ' . $id);
+            
+            // Validate the working hour exists
+            $workingHour = WorkingHour::find($id);
+            if (!$workingHour) {
+                Log::error('Working hour not found with ID: ' . $id);
+                session()->flash('error', 'Working hour not found.');
+                return;
+            }
+            
+            // Set the confirmation ID
+            $this->deleteConfirmId = $id;
+            
+            Log::info('Delete confirmation dialog should appear for ID: ' . $id);
+            
+        } catch (\Exception $e) {
+            Log::error('Error in confirmDelete: ' . $e->getMessage());
+            session()->flash('error', 'Error preparing delete confirmation.');
+        }
+    }
+
+    public function cancelDelete()
+    {
+        Log::info('Delete confirmation cancelled');
+        $this->deleteConfirmId = null;
+    }
+
+    public function confirmDeleteAction()
+    {
+        try {
+            if ($this->deleteConfirmId) {
+                Log::info('Executing delete for ID: ' . $this->deleteConfirmId);
+                $this->deleteWorkingHour($this->deleteConfirmId);
+                Log::info('Delete completed successfully');
+            } else {
+                Log::warning('confirmDeleteAction called but no deleteConfirmId set');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error in confirmDeleteAction: ' . $e->getMessage());
+            $this->deleteConfirmId = null;
+        }
+    }
+
+    public function directDelete($id)
+    {
+        try {
+            Log::info('Direct delete called for ID: ' . $id);
+            
+            $workingHour = WorkingHour::findOrFail($id);
+            $dayName = ucfirst($workingHour->day_of_week);
+            
+            $workingHour->delete();
+            
+            // Reload working hours
+            $this->loadWorkingHours();
+            
+            session()->flash('success', "Working hours for {$dayName} deleted successfully.");
+            Log::info('Direct delete completed successfully for ID: ' . $id);
+            
+        } catch (\Exception $e) {
+            Log::error('Error in directDelete: ' . $e->getMessage());
+            session()->flash('error', 'Error deleting working hours: ' . $e->getMessage());
         }
     }
 

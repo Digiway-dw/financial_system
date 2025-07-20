@@ -523,10 +523,10 @@
                                                     {{ ucfirst($workingHour->day_of_week) }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {{ \Carbon\Carbon::parse($workingHour->start_time)->format('H:i') }}
+                                                    {{ \Carbon\Carbon::parse($workingHour->start_time)->format('g:i A') }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {{ \Carbon\Carbon::parse($workingHour->end_time)->format('H:i') }}
+                                                    {{ \Carbon\Carbon::parse($workingHour->end_time)->format('g:i A') }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     @if ($workingHour->is_enabled)
@@ -553,10 +553,24 @@
                                                             class="text-blue-600 hover:text-blue-900">
                                                             Edit
                                                         </button>
-                                                        <button wire:click="deleteWorkingHour({{ $workingHour->id }})"
-                                                            wire:confirm="Are you sure you want to delete this working hours entry?"
-                                                            class="text-red-600 hover:text-red-900">
-                                                            Delete
+                                                        <!-- Primary Delete Button with Glass Dialog -->
+                                                        <button wire:click="confirmDelete({{ $workingHour->id }})" 
+                                                            class="text-red-600 hover:text-red-900 transition-colors duration-200 mr-2"
+                                                            wire:loading.attr="disabled"
+                                                            wire:loading.class="opacity-50">
+                                                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                            </svg>
+                                                            <span wire:loading.remove>Delete</span>
+                                                            <span wire:loading>Loading...</span>
+                                                        </button>
+                                                        
+                                                        <!-- Backup Direct Delete Button -->
+                                                        <button wire:click="directDelete({{ $workingHour->id }})" 
+                                                            wire:confirm="Are you sure you want to delete the working hours for {{ ucfirst($workingHour->day_of_week) }}? This action cannot be undone."
+                                                            class="text-red-500 hover:text-red-700 text-xs px-2 py-1 border border-red-300 rounded"
+                                                            wire:loading.attr="disabled">
+                                                            Direct Delete
                                                         </button>
                                                     </div>
                                                 </td>
@@ -575,4 +589,70 @@
             </div>
         </div>
     </div>
+
+    <!-- Glassmorphism Delete Confirmation Dialog -->
+    @if($deleteConfirmId)
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4" 
+         style="backdrop-filter: blur(10px); background: rgba(0, 0, 0, 0.3);"
+         wire:click.self="cancelDelete">
+        <div class="relative bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4"
+             style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1)); box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2);"
+             wire:click.stop>
+            
+            <!-- Debug Info (remove in production) -->
+            <div class="text-xs text-gray-500 mb-2">Debug: deleteConfirmId = {{ $deleteConfirmId }}</div>
+            
+            <!-- Close button -->
+            <button wire:click="cancelDelete" 
+                    class="absolute top-4 right-4 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                    wire:loading.attr="disabled">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <!-- Icon -->
+            <div class="flex justify-center mb-6">
+                <div class="w-16 h-16 bg-red-100/50 backdrop-blur-sm rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="text-center mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Delete Working Hours</h3>
+                <p class="text-gray-700 leading-relaxed">
+                    Are you sure you want to delete the working hours for 
+                    <span class="font-semibold text-gray-900">
+                        @if($deleteConfirmId)
+                            {{ ucfirst($workingHours->where('id', $deleteConfirmId)->first()?->day_of_week ?? 'this day') }}
+                        @endif
+                    </span>?
+                    <br><span class="text-sm text-gray-600 mt-2 block">This action cannot be undone.</span>
+                </p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex space-x-3">
+                <button wire:click="cancelDelete" 
+                        class="flex-1 px-4 py-3 bg-white/30 backdrop-blur-sm border border-white/40 rounded-xl text-gray-700 font-medium hover:bg-white/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                        wire:loading.attr="disabled">
+                    Cancel
+                </button>
+                <button wire:click="confirmDeleteAction" 
+                        class="flex-1 px-4 py-3 bg-red-500/80 backdrop-blur-sm border border-red-400/50 rounded-xl text-white font-medium hover:bg-red-600/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400/50 shadow-lg"
+                        wire:loading.attr="disabled"
+                        wire:loading.class="opacity-50">
+                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" wire:loading.remove>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    <span wire:loading.remove>Delete</span>
+                    <span wire:loading>Deleting...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>

@@ -46,6 +46,7 @@ class Create extends Component
     public $endTime = '17:00';
     public $isEnabled = true;
     public $tempWorkingHours = [];
+    public $deleteConfirmIndex = null;
 
     private UserRepository $userRepository;
 
@@ -233,6 +234,9 @@ class Create extends Component
             $this->tempWorkingHours = array_values($this->tempWorkingHours);
             session()->flash('workingHourMessage', 'Working hours removed successfully.');
         }
+        
+        // Close the confirmation dialog
+        $this->deleteConfirmIndex = null;
     }
 
     public function editWorkingHour($index)
@@ -246,6 +250,23 @@ class Create extends Component
 
             // Remove the entry (it will be re-added when saved)
             $this->removeWorkingHour($index);
+        }
+    }
+
+    public function confirmRemove($index)
+    {
+        $this->deleteConfirmIndex = $index;
+    }
+
+    public function cancelRemove()
+    {
+        $this->deleteConfirmIndex = null;
+    }
+
+    public function confirmRemoveAction()
+    {
+        if ($this->deleteConfirmIndex !== null) {
+            $this->removeWorkingHour($this->deleteConfirmIndex);
         }
     }
 
