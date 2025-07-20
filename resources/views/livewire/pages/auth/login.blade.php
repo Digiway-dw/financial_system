@@ -30,6 +30,18 @@ new #[Layout('layouts.guest')] class extends Component {
             Welcome Back
         </h2>
         <p class="text-slate-600 mt-2">Sign in to your account to continue</p>
+        
+        <!-- Current Time Display -->
+        <div class="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+            <div class="flex items-center justify-center space-x-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-blue-700 font-medium text-sm">Current Time:</span>
+                <span id="current-time" class="text-blue-800 font-bold text-lg">--:--:--</span>
+                <span id="current-date" class="text-blue-600 text-sm">Loading...</span>
+            </div>
+        </div>
     </div>
 
     <!-- Session Status -->
@@ -139,3 +151,45 @@ new #[Layout('layouts.guest')] class extends Component {
         </div>
     </form>
 </div>
+
+<script>
+    // Real-time clock function
+    function updateClock() {
+        const now = new Date();
+        
+        // Format time (12-hour format with AM/PM)
+        const timeOptions = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        };
+        
+        // Format date
+        const dateOptions = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        
+        const timeString = now.toLocaleTimeString('en-US', timeOptions);
+        const dateString = now.toLocaleDateString('en-US', dateOptions);
+        
+        // Update the display
+        const timeElement = document.getElementById('current-time');
+        const dateElement = document.getElementById('current-date');
+        
+        if (timeElement) {
+            timeElement.textContent = timeString;
+        }
+        
+        if (dateElement) {
+            dateElement.textContent = dateString;
+        }
+    }
+    
+    // Update clock immediately and then every second
+    updateClock();
+    setInterval(updateClock, 1000);
+</script>
