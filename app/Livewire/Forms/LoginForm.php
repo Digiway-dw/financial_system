@@ -108,11 +108,46 @@ class LoginForm extends Form
             ->first();
 
         // If no working hours defined for today or user is outside working hours
-        if (
-            !$workingHour ||
-            $currentTime < $workingHour->start_time ||
-            $currentTime > $workingHour->end_time
-        ) {
+        $isOutsideWorkingHours = false;
+        
+        if (!$workingHour) {
+            $isOutsideWorkingHours = true;
+        } else {
+            // Parse times properly using Carbon for accurate comparison with error handling
+            try {
+                // Try different time formats to handle various database formats
+                $currentTimeCarbon = $this->parseTimeString($currentTime);
+                $startTimeCarbon = $this->parseTimeString($workingHour->start_time);
+                $endTimeCarbon = $this->parseTimeString($workingHour->end_time);
+                
+                if (!$currentTimeCarbon || !$startTimeCarbon || !$endTimeCarbon) {
+                    throw new \Exception('Failed to parse one or more time values');
+                }
+            } catch (\Exception $e) {
+                Log::error('Time parsing error in working hours validation', [
+                    'error' => $e->getMessage(),
+                    'current_time' => $currentTime,
+                    'start_time' => $workingHour->start_time,
+                    'end_time' => $workingHour->end_time,
+                    'user_id' => $user->id,
+                ]);
+                
+                // If time parsing fails, allow login to avoid blocking users
+                Log::warning('Working hours validation skipped due to time parsing error - allowing login');
+                return;
+            }
+            
+            // Check if current time is outside the working hours range
+            if ($startTimeCarbon->lte($endTimeCarbon)) {
+                // Normal case: start time is before or equal to end time (e.g., 9:00 AM to 5:00 PM)
+                $isOutsideWorkingHours = $currentTimeCarbon->lt($startTimeCarbon) || $currentTimeCarbon->gt($endTimeCarbon);
+            } else {
+                // Overnight case: start time is after end time (e.g., 10:00 PM to 6:00 AM)
+                $isOutsideWorkingHours = $currentTimeCarbon->lt($startTimeCarbon) && $currentTimeCarbon->gt($endTimeCarbon);
+            }
+        }
+        
+        if ($isOutsideWorkingHours) {
             // Log the violation attempt
             Log::warning("User {$user->id} ({$user->email}) attempted to login outside working hours", [
                 'user_id' => $user->id,
@@ -123,6 +158,12 @@ class LoginForm extends Form
                 'working_hour_id' => $workingHour?->id,
                 'start_time' => $workingHour?->start_time,
                 'end_time' => $workingHour?->end_time,
+                'debug_info' => [
+                    'current_time_parsed' => isset($currentTimeCarbon) ? $currentTimeCarbon->format('H:i:s') : null,
+                    'start_time_parsed' => isset($startTimeCarbon) ? $startTimeCarbon->format('H:i:s') : null,
+                    'end_time_parsed' => isset($endTimeCarbon) ? $endTimeCarbon->format('H:i:s') : null,
+                    'is_outside_hours' => $isOutsideWorkingHours,
+                ],
             ]);
 
             // Logout the user immediately
@@ -156,6 +197,56 @@ class LoginForm extends Form
             'working_hour_id' => $workingHour->id,
             'start_time' => $workingHour->start_time,
             'end_time' => $workingHour->end_time,
+            'debug_info' => [
+                'current_time_parsed' => $this->parseTimeString($currentTime)?->format('H:i:s') ?? $currentTime,
+                'start_time_parsed' => $this->parseTimeString($workingHour->start_time)?->format('H:i:s') ?? $workingHour->start_time,
+                'end_time_parsed' => $this->parseTimeString($workingHour->end_time)?->format('H:i:s') ?? $workingHour->end_time,
+            ],
         ]);
+    }
+
+    /**
+     * Parse time string with multiple format attempts
+     *
+     * @param string $timeString
+     * @return \Carbon\Carbon|null
+     */
+    private function parseTimeString(string $timeString): ?Carbon
+    {
+        // Remove any trailing whitespace or unexpected characters
+        $timeString = trim($timeString);
+        
+        // List of possible time formats to try
+        $formats = [
+            'H:i:s',        // 24-hour format with seconds (e.g., "14:30:00")
+            'H:i',          // 24-hour format without seconds (e.g., "14:30")
+            'h:i:s A',      // 12-hour format with seconds (e.g., "2:30:00 PM")
+            'h:i A',        // 12-hour format without seconds (e.g., "2:30 PM")
+            'g:i:s A',      // 12-hour format with seconds, no leading zero (e.g., "2:30:00 PM")
+            'g:i A',        // 12-hour format without seconds, no leading zero (e.g., "2:30 PM")
+        ];
+        
+        foreach ($formats as $format) {
+            try {
+                $carbon = Carbon::createFromFormat($format, $timeString);
+                if ($carbon !== false) {
+                    return $carbon;
+                }
+            } catch (\Exception $e) {
+                // Continue to next format
+                continue;
+            }
+        }
+        
+        // If all formats fail, try to parse as a general time string
+        try {
+            return Carbon::parse($timeString);
+        } catch (\Exception $e) {
+            Log::error('Failed to parse time string with all methods', [
+                'time_string' => $timeString,
+                'error' => $e->getMessage(),
+            ]);
+            return null;
+        }
     }
 }
