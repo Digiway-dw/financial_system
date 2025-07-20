@@ -117,7 +117,8 @@
                         </x-input-label>
                         <input id="national_number"
                             class="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                            type="text" wire:model="national_number" minlength="14" maxlength="14" pattern="[0-9]{14}" required placeholder="Enter 14-digit national number" />
+                            type="text" wire:model="national_number" minlength="14" maxlength="14"
+                            pattern="[0-9]{14}" required placeholder="Enter 14-digit national number" />
                         <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('national_number')" />
                     </div>
 
@@ -300,45 +301,122 @@
                     </div>
                 </div>
 
-                <!-- Working Hours Section -->
+                <!-- Notes Section -->
                 <div class="mt-8">
-                    <div class="flex items-center mb-6">
-                        <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor"
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                </path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-semibold text-gray-900">Working Hours</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">Additional Notes</h3>
                     </div>
 
-                    <!-- Status Messages -->
-                    @if (session()->has('workingHourMessage'))
-                        <div class="mb-4 p-3 bg-green-100 border border-green-200 rounded-lg">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span class="text-green-700 text-sm">{{ session('workingHourMessage') }}</span>
-                            </div>
-                        </div>
-                    @endif
+                    <x-input-label for="notes" class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                            </path>
+                        </svg>
+                        {{ __('Internal Notes') }}
+                    </x-input-label>
+                    <textarea id="notes"
+                        class="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-none"
+                        wire:model="notes" rows="4" placeholder="Add any special notes or instructions about this user..."></textarea>
+                    <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('notes')" />
+                    <p class="mt-2 text-xs text-gray-500">These notes are for internal use only and will not be visible
+                        to the user.</p>
+                </div>
 
-                    @if (session()->has('workingHourError'))
-                        <div class="mb-4 p-3 bg-red-100 border border-red-200 rounded-lg">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span class="text-red-700 text-sm">{{ session('workingHourError') }}</span>
-                            </div>
+                <!-- Submit Button -->
+                <div class="flex items-center justify-between pt-8 mt-8 border-t border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
                         </div>
-                    @endif
+                        <span class="text-sm text-gray-600">All changes will be saved immediately upon
+                            submission</span>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <a href="{{ route('users.index') }}"
+                            class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Cancel
+                        </a>
+
+                        <button type="submit"
+                            class="inline-flex items-center px-8 py-3 border border-transparent rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 shadow-sm"
+                            wire:loading.attr="disabled">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                wire:loading.remove>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" wire:loading>
+                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            <span wire:loading.remove>Update User</span>
+                            <span wire:loading>Updating...</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Working Hours Section - Separate from main form -->
+            <div class="border-t border-gray-200 p-8">
+                <div class="flex items-center mb-6">
+                    <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">Working Hours</h3>
+                </div>
+
+                <!-- Status Messages -->
+                @if (session()->has('workingHourMessage'))
+                    <div class="p-3 bg-green-100 border border-green-200 rounded-lg mb-6">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600 mr-2" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-green-700 text-sm">{{ session('workingHourMessage') }}</span>
+                        </div>
+                    </div>
+                @endif
+
+                @if (session()->has('workingHourError'))
+                    <div class="p-3 bg-red-100 border border-red-200 rounded-lg mb-6">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600 mr-2" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span class="text-red-700 text-sm">{{ session('workingHourError') }}</span>
+                        </div>
+                    </div>
+                @endif
 
                     <!-- Working Hours Form -->
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-6">
@@ -440,7 +518,8 @@
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         @foreach ($workingHours as $workingHour)
                                             <tr>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ ucfirst($workingHour->day_of_week) }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -464,7 +543,9 @@
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                     <div class="flex justify-end space-x-2">
-                                                        <button wire:click="toggleWorkingHourStatus({{ $workingHour->id }})"
+                                                        <button
+                                                            wire:click="toggleWorkingHourStatus({{ $workingHour->id }})"
+                                                            wire:loading.attr="disabled"
                                                             class="text-indigo-600 hover:text-indigo-900">
                                                             {{ $workingHour->is_enabled ? 'Disable' : 'Enable' }}
                                                         </button>
@@ -473,8 +554,8 @@
                                                             Edit
                                                         </button>
                                                         <button wire:click="deleteWorkingHour({{ $workingHour->id }})"
-                                                            class="text-red-600 hover:text-red-900"
-                                                            onclick="return confirm('Are you sure you want to delete this working hours entry?')">
+                                                            wire:confirm="Are you sure you want to delete this working hours entry?"
+                                                            class="text-red-600 hover:text-red-900">
                                                             Delete
                                                         </button>
                                                     </div>
@@ -491,83 +572,7 @@
                         @endif
                     </div>
                 </div>
-
-                <!-- Notes Section -->
-                <div class="mt-8">
-                    <div class="flex items-center mb-4">
-                        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-semibold text-gray-900">Additional Notes</h3>
-                    </div>
-
-                    <x-input-label for="notes" class="flex items-center text-sm font-medium text-gray-700 mb-2">
-                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                            </path>
-                        </svg>
-                        {{ __('Internal Notes') }}
-                    </x-input-label>
-                    <textarea id="notes"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-none"
-                        wire:model="notes" rows="4" placeholder="Add any special notes or instructions about this user..."></textarea>
-                    <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('notes')" />
-                    <p class="mt-2 text-xs text-gray-500">These notes are for internal use only and will not be visible
-                        to the user.</p>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="flex items-center justify-between pt-8 mt-8 border-t border-gray-200">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <span class="text-sm text-gray-600">All changes will be saved immediately upon
-                            submission</span>
-                    </div>
-
-                    <div class="flex items-center space-x-3">
-                        <a href="{{ route('users.index') }}"
-                            class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            Cancel
-                        </a>
-
-                        <button type="submit"
-                            class="inline-flex items-center px-8 py-3 border border-transparent rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 shadow-sm"
-                            wire:loading.attr="disabled">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                wire:loading.remove>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" wire:loading>
-                                <circle class="opacity-25" cx="12" cy="12" r="10"
-                                    stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            <span wire:loading.remove>Update User</span>
-                            <span wire:loading>Updating...</span>
-                        </button>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

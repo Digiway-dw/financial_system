@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Domain\Entities\User;
 use App\Models\Domain\Entities\Branch;
 use App\Models\WorkingHour;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
@@ -261,10 +262,13 @@ class Edit extends Component
             $workingHour = WorkingHour::findOrFail($id);
             $workingHour->delete();
 
-            session()->flash('workingHourMessage', 'Working hours deleted successfully.');
+            // Reload working hours without flashing a message
             $this->loadWorkingHours();
+
+            // No session flash message to avoid popup
         } catch (\Exception $e) {
-            session()->flash('workingHourError', 'Error deleting working hours: ' . $e->getMessage());
+            // Silent fail or log the error, but don't show a popup
+            Log::error('Error deleting working hour: ' . $e->getMessage());
         }
     }
 
@@ -276,11 +280,18 @@ class Edit extends Component
                 'is_enabled' => !$workingHour->is_enabled,
             ]);
 
-            $status = $workingHour->is_enabled ? 'enabled' : 'disabled';
-            session()->flash('workingHourMessage', "Working hours {$status} successfully.");
-            $this->loadWorkingHours();
+            // Update the workingHour in the local collection instead of reloading all
+            foreach ($this->workingHours as $index => $wh) {
+                if ($wh->id == $id) {
+                    $this->workingHours[$index] = $workingHour->fresh();
+                    break;
+                }
+            }
+
+            // No session flash message to avoid popup
         } catch (\Exception $e) {
-            session()->flash('workingHourError', 'Error toggling status: ' . $e->getMessage());
+            // Silent fail or log the error, but don't show a popup
+            Log::error('Error toggling working hour status: ' . $e->getMessage());
         }
     }
 
