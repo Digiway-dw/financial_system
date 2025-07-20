@@ -282,7 +282,7 @@ class AuthorizationServiceProvider extends ServiceProvider
         });
 
         Gate::define('view-agent-dashboard', function (DomainUser $user) {
-            return $user->hasRole(Roles::AGENT);
+            return $user->hasRole(Roles::AGENT) || $user->hasRole(Roles::ADMIN) || $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });
 
         Gate::define('view-auditor-dashboard', function (DomainUser $user) {
