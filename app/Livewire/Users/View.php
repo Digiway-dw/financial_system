@@ -5,6 +5,7 @@ namespace App\Livewire\Users;
 use Livewire\Component;
 use App\Domain\Entities\User;
 use App\Models\Domain\Entities\Branch;
+use App\Models\WorkingHour;
 use Spatie\Permission\Models\Role;
 
 class View extends Component
@@ -14,6 +15,7 @@ class View extends Component
     public $role;
     public $transactions;
     public $loginHistories;
+    public $workingHours;
 
     public function mount($userId)
     {
@@ -26,16 +28,34 @@ class View extends Component
         $this->role = $user->getRoleNames()->first();
         $this->transactions = $user->transactions()->latest()->get();
         $this->loginHistories = $user->loginHistories()->orderByDesc('login_at')->get();
+
+        // Load working hours
+        $this->workingHours = WorkingHour::where('user_id', $userId)
+            ->orderBy('day_of_week')
+            ->get();
     }
 
     public function render()
     {
+        // Create a days array for displaying day names
+        $days = [
+            'monday' => 'Monday',
+            'tuesday' => 'Tuesday',
+            'wednesday' => 'Wednesday',
+            'thursday' => 'Thursday',
+            'friday' => 'Friday',
+            'saturday' => 'Saturday',
+            'sunday' => 'Sunday',
+        ];
+
         return view('livewire.users.view', [
             'user' => $this->user,
             'branch' => $this->branch,
             'role' => $this->role,
             'transactions' => $this->transactions,
             'loginHistories' => $this->loginHistories,
+            'workingHours' => $this->workingHours,
+            'days' => $days,
         ]);
     }
 }

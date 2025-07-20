@@ -244,7 +244,9 @@
                                     d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
                             </svg>
                         </div>
-                        <input id="national_number" type="text" wire:model="national_number" minlength="14" maxlength="14" pattern="[0-9]{14}" required placeholder="XXXXXXXXXXXX" class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <input id="national_number" type="text" wire:model="national_number" minlength="14"
+                            maxlength="14" pattern="[0-9]{14}" required placeholder="XXXXXXXXXXXX"
+                            class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('national_number')
                         <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
@@ -320,7 +322,175 @@
                     </div>
                 @endif
 
-                <!-- Notes -->
+                <!-- Add Working Hours Section after the System Access section -->
+                <!-- Working Hours Section -->
+                <div class="col-span-2 mt-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-200 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Working Hours
+                    </h3>
+                </div>
+
+                <!-- Status Messages -->
+                @if (session()->has('workingHourMessage'))
+                    <div class="col-span-2 p-3 bg-green-100 border border-green-200 rounded-lg">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-green-600 mr-2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-green-700 text-sm">{{ session('workingHourMessage') }}</span>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Working Hours Form -->
+                <div
+                    class="col-span-2 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <!-- Day of Week -->
+                    <div>
+                        <label for="dayOfWeek" class="block text-sm font-medium text-gray-700 mb-1">Day of
+                            Week</label>
+                        <select id="dayOfWeek" wire:model="dayOfWeek"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="">-- Select day --</option>
+                            @foreach ($days as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('dayOfWeek')
+                            <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <!-- Start Time -->
+                    <div>
+                        <label for="startTime" class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                        <input type="time" id="startTime" wire:model="startTime"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        @error('startTime')
+                            <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <!-- End Time -->
+                    <div>
+                        <label for="endTime" class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                        <input type="time" id="endTime" wire:model="endTime"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        @error('endTime')
+                            <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <!-- Enabled Status -->
+                    <div class="flex items-center mt-6">
+                        <input type="checkbox" id="isEnabled" wire:model="isEnabled"
+                            class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        <label for="isEnabled" class="ml-2 text-sm text-gray-700">Enabled</label>
+                        @error('isEnabled')
+                            <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <!-- Add Button -->
+                    <div class="col-span-4 flex justify-end">
+                        <button type="button" wire:click="addWorkingHour"
+                            class="px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">
+                            Add Working Hours
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Working Hours List -->
+                <div class="col-span-2 mt-4">
+                    @if (count($tempWorkingHours) > 0)
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Day
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Start Time
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            End Time
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach ($tempWorkingHours as $index => $workingHour)
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {{ ucfirst($workingHour['day_of_week']) }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ $workingHour['start_time'] }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ $workingHour['end_time'] }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                @if ($workingHour['is_enabled'])
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                        Enabled
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                        Disabled
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <div class="flex justify-end space-x-2">
+                                                    <button wire:click="toggleWorkingHourStatus({{ $index }})"
+                                                        class="text-indigo-600 hover:text-indigo-900">
+                                                        {{ $workingHour['is_enabled'] ? 'Disable' : 'Enable' }}
+                                                    </button>
+                                                    <button wire:click="editWorkingHour({{ $index }})"
+                                                        class="text-blue-600 hover:text-blue-900">
+                                                        Edit
+                                                    </button>
+                                                    <button wire:click="removeWorkingHour({{ $index }})"
+                                                        class="text-red-600 hover:text-red-900"
+                                                        onclick="return confirm('Are you sure you want to remove this working hours entry?')">
+                                                        Remove
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="p-4 text-center text-gray-500 bg-gray-50 rounded-lg border border-gray-200">
+                            No working hours defined yet. Use the form above to add working hours.
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Notes Section -->
                 <div class="col-span-2 mt-4">
                     <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Additional
                         Notes</label>

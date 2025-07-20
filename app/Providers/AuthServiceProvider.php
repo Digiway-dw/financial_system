@@ -32,5 +32,10 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
+
+        // Working hours management
+        Gate::define('manage-working-hours', function ($user) {
+            return $user->hasRole('admin');
+        });
     }
 }

@@ -10,6 +10,7 @@ use App\Livewire\TestComponent;
 
 Route::get('/', function () {
     if (Auth::check()) {
+        /** @var \App\Domain\Entities\User $user */
         $user = Auth::user();
         if ($user->hasRole('agent') || $user->hasRole('trainee')) {
             return redirect()->route('agent-dashboard');
@@ -23,7 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Main dashboard - Admin Dashboard
     Route::view('dashboard', 'dashboard')
         ->name('dashboard');
-    
+
     // Agent Dashboard - Separate page
     Route::view('agent-dashboard', 'agent-dashboard')
         ->name('agent-dashboard')
@@ -172,3 +173,13 @@ Route::post('logout', function () {
 })->name('logout');
 
 require __DIR__ . '/auth.php';
+
+// Admin routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    // Working Hours Management
+    // Route::get('/working-hours', App\Livewire\Admin\WorkingHours\Index::class)->name('admin.working-hours');
+    // Temporary redirect for any references to the working-hours route
+    Route::get('/working-hours', function () {
+        return redirect()->route('work-sessions.index');
+    })->name('admin.working-hours');
+});

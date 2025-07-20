@@ -16,6 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\WorkingHour;
 
 /**
  * @method bool hasRole(string|array|\Spatie\Permission\Contracts\Role $roles, string $guard = null)
@@ -115,6 +116,14 @@ class User extends Authenticatable
     public function workSessions(): HasMany
     {
         return $this->hasMany(\App\Models\Domain\Entities\WorkSession::class);
+    }
+
+    /**
+     * Get the working hours for the user.
+     */
+    public function workingHours(): HasMany
+    {
+        return $this->hasMany(WorkingHour::class);
     }
 
     public function getActivitylogOptions(): LogOptions
