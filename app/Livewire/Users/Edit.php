@@ -294,11 +294,14 @@ class Edit extends Component
             // Debug: Log the method call
             Log::info('confirmDelete called with ID: ' . $id);
             
-            // Validate the working hour exists
-            $workingHour = WorkingHour::find($id);
+            // Validate the working hour exists and belongs to this user
+            $workingHour = WorkingHour::where('id', $id)
+                ->where('user_id', $this->userId)
+                ->first();
+                
             if (!$workingHour) {
-                Log::error('Working hour not found with ID: ' . $id);
-                session()->flash('error', 'Working hour not found.');
+                Log::error('Working hour not found or does not belong to user. ID: ' . $id . ', User ID: ' . $this->userId);
+                session()->flash('workingHourError', 'Working hour not found or access denied.');
                 return;
             }
             
@@ -307,9 +310,12 @@ class Edit extends Component
             
             Log::info('Delete confirmation dialog should appear for ID: ' . $id);
             
+            // Force a re-render to ensure the dialog appears
+            $this->dispatch('$refresh');
+            
         } catch (\Exception $e) {
             Log::error('Error in confirmDelete: ' . $e->getMessage());
-            session()->flash('error', 'Error preparing delete confirmation.');
+            session()->flash('workingHourError', 'Error preparing delete confirmation: ' . $e->getMessage());
         }
     }
 
