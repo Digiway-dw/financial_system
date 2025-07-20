@@ -155,57 +155,26 @@ class Index extends Component
 
     private function getFilteredSessions()
     {
+        return $this->buildBaseQuery()->get();
+    }
+
+    private function buildBaseQuery()
+    {
         $query = WorkSession::with(['user' => function ($q) {
             $q->withTrashed(); // Include deleted users
         }, 'user.branch']);
 
-        // Handle different sorting scenarios
-        if ($this->sortField === 'status') {
-            // Status sorting: use logout_at (null = active, not null = closed)
-            $query->orderBy('logout_at', $this->sortDirection === 'asc' ? 'asc' : 'desc')
-                ->orderBy('login_at', 'desc'); // Secondary sort for consistent results
-        } elseif ($this->sortField === 'branch_id') {
-            // Branch sorting: use collection sorting after loading
-            $sessions = $query->get();
-            $sortedSessions = $sessions->sortBy(function ($session) {
-                return $session->user->branch->name ?? '';
-            });
-
-            if ($this->sortDirection === 'desc') {
-                $sortedSessions = $sortedSessions->reverse();
-            }
-
-            return $sortedSessions->values();
-        } elseif ($this->sortField === 'user_id') {
-            // User sorting: use collection sorting after loading
-            $sessions = $query->get();
-            $sortedSessions = $sessions->sortBy(function ($session) {
-                return $session->user->name ?? '';
-            });
-
-            if ($this->sortDirection === 'desc') {
-                $sortedSessions = $sortedSessions->reverse();
-            }
-
-            return $sortedSessions->values();
-        } else {
-            // Direct column sorting for existing columns
-            $query->orderBy($this->sortField, $this->sortDirection);
-        }
-
-        // Filter by user if selected
+        // Apply filters first
         if ($this->selectedUser) {
             $query->where('user_id', $this->selectedUser);
         }
 
-        // Filter by branch if selected
         if ($this->selectedBranch) {
             $query->whereHas('user', function ($q) {
                 $q->where('branch_id', $this->selectedBranch);
             });
         }
 
-        // Filter by date range
         if ($this->dateFrom) {
             $query->whereDate('login_at', '>=', $this->dateFrom);
         }
@@ -214,7 +183,18 @@ class Index extends Component
             $query->whereDate('login_at', '<=', $this->dateTo);
         }
 
-        return $query->get();
+        // Apply sorting
+        if ($this->sortField === 'status') {
+            $query->orderBy('logout_at', $this->sortDirection === 'asc' ? 'asc' : 'desc')
+                ->orderBy('login_at', 'desc');
+        } elseif (in_array($this->sortField, ['login_at', 'logout_at', 'duration_minutes', 'ip_address', 'user_agent'])) {
+            $query->orderBy($this->sortField, $this->sortDirection);
+        } else {
+            // Default sorting
+            $query->orderBy('login_at', 'desc');
+        }
+
+        return $query;
     }
 
     /**
@@ -250,55 +230,38 @@ class Index extends Component
 
     public function render()
     {
-        $query = WorkSession::with(['user' => function ($q) {
-            $q->withTrashed(); // Include deleted users
-        }, 'user.branch']);
-
-        // Filter by user if selected
-        if ($this->selectedUser) {
-            $query->where('user_id', $this->selectedUser);
-        }
-
-        // Filter by branch if selected
-        if ($this->selectedBranch) {
-            $query->whereHas('user', function ($q) {
-                $q->where('branch_id', $this->selectedBranch);
-            });
-        }
-
-        // Filter by date range
-        if ($this->dateFrom) {
-            $query->whereDate('login_at', '>=', $this->dateFrom);
-        }
-
-        if ($this->dateTo) {
-            $query->whereDate('login_at', '<=', $this->dateTo);
-        }
-
-        // Handle different sorting scenarios
-        if ($this->sortField === 'status') {
-            // Status sorting: use logout_at (null = active, not null = closed)
-            $query->orderBy('logout_at', $this->sortDirection === 'asc' ? 'asc' : 'desc')
-                ->orderBy('login_at', 'desc'); // Secondary sort for consistent results
-        } elseif ($this->sortField === 'branch_id') {
-            // Branch sorting: join with users and branches tables
-            $query->leftJoin('users', 'work_sessions.user_id', '=', 'users.id')
-                ->leftJoin('branches', 'users.branch_id', '=', 'branches.id')
-                ->orderBy('branches.name', $this->sortDirection)
-                ->orderBy('work_sessions.login_at', 'desc') // Secondary sort
-                ->select('work_sessions.*');
-        } elseif ($this->sortField === 'user_id') {
-            // User sorting: join with users table
-            $query->leftJoin('users', 'work_sessions.user_id', '=', 'users.id')
-                ->orderBy('users.name', $this->sortDirection)
-                ->orderBy('work_sessions.login_at', 'desc') // Secondary sort
-                ->select('work_sessions.*');
+        // Handle special sorting cases that require collection sorting
+        if (in_array($this->sortField, ['branch_id', 'user_id'])) {
+            $allSessions = $this->buildBaseQuery()->get();
+            
+            if ($this->sortField === 'branch_id') {
+                $sortedSessions = $allSessions->sortBy(function ($session) {
+                    return $session->user->branch->name ?? '';
+                });
+            } else { // user_id
+                $sortedSessions = $allSessions->sortBy(function ($session) {
+                    return $session->user->name ?? '';
+                });
+            }
+            
+            if ($this->sortDirection === 'desc') {
+                $sortedSessions = $sortedSessions->reverse();
+            }
+            
+            // Manual pagination for sorted collection
+            $currentPage = request()->get('page', 1);
+            $perPage = 15;
+            $sessions = new \Illuminate\Pagination\LengthAwarePaginator(
+                $sortedSessions->forPage($currentPage, $perPage)->values(),
+                $sortedSessions->count(),
+                $perPage,
+                $currentPage,
+                ['path' => request()->url(), 'pageName' => 'page']
+            );
         } else {
-            // Direct column sorting for existing columns
-            $query->orderBy($this->sortField, $this->sortDirection);
+            // Use database-level sorting and pagination for direct columns
+            $sessions = $this->buildBaseQuery()->paginate(15);
         }
-
-        $sessions = $query->paginate(15);
 
         // Calculate statistics for filtered sessions (using the full set, not just the current page)
         $this->calculateStatistics($this->getFilteredSessions());
