@@ -190,7 +190,7 @@ class Edit extends Component
                 foreach ($weekdays as $day) {
                     // Check for existing record for the same user and day
                     $existing = WorkingHour::where('user_id', $this->userId)
-                        ->where('day_of_week', $dayMap[$day])
+                        ->where('day_of_week', $day)
                         ->first();
 
                     if ($existing) {
@@ -204,7 +204,7 @@ class Edit extends Component
                         // Create new record
                         WorkingHour::create([
                             'user_id' => $this->userId,
-                            'day_of_week' => $dayMap[$day],
+                            'day_of_week' => $day,
                             'start_time' => $this->startTime,
                             'end_time' => $this->endTime,
                             'is_enabled' => $this->isEnabled,
@@ -219,21 +219,11 @@ class Edit extends Component
             }
 
             // Regular single day handling
-            $dayMap = [
-                'sunday' => 0,
-                'monday' => 1,
-                'tuesday' => 2,
-                'wednesday' => 3,
-                'thursday' => 4,
-                'friday' => 5,
-                'saturday' => 6,
-            ];
-            $dayInt = isset($dayMap[$this->dayOfWeek]) ? $dayMap[$this->dayOfWeek] : $this->dayOfWeek;
             if ($this->editingWorkingHourId) {
                 // Update existing record
                 $workingHour = WorkingHour::findOrFail($this->editingWorkingHourId);
                 $workingHour->update([
-                    'day_of_week' => $dayInt,
+                    'day_of_week' => $this->dayOfWeek,
                     'start_time' => $this->startTime,
                     'end_time' => $this->endTime,
                     'is_enabled' => $this->isEnabled,
@@ -243,7 +233,7 @@ class Edit extends Component
             } else {
                 // Check for existing record for the same user and day
                 $existing = WorkingHour::where('user_id', $this->userId)
-                    ->where('day_of_week', $dayInt)
+                    ->where('day_of_week', $this->dayOfWeek)
                     ->first();
 
                 if ($existing) {
@@ -259,7 +249,7 @@ class Edit extends Component
                     // Create new record
                     WorkingHour::create([
                         'user_id' => $this->userId,
-                        'day_of_week' => $dayInt,
+                        'day_of_week' => $this->dayOfWeek,
                         'start_time' => $this->startTime,
                         'end_time' => $this->endTime,
                         'is_enabled' => $this->isEnabled,

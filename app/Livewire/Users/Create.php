@@ -122,19 +122,10 @@ class Create extends Component
         $user->assignRole($this->selectedRole);
 
         // Create working hours for the user
-        $dayMap = [
-            'sunday' => 0,
-            'monday' => 1,
-            'tuesday' => 2,
-            'wednesday' => 3,
-            'thursday' => 4,
-            'friday' => 5,
-            'saturday' => 6,
-        ];
         foreach ($this->tempWorkingHours as $workingHour) {
             $newWorkingHour = new WorkingHour();
             $newWorkingHour->user_id = $user->id;
-            $newWorkingHour->day_of_week = isset($dayMap[$workingHour['day_of_week']]) ? $dayMap[$workingHour['day_of_week']] : $workingHour['day_of_week'];
+            $newWorkingHour->day_of_week = $workingHour['day_of_week'];
             $newWorkingHour->start_time = $workingHour['start_time'];
             $newWorkingHour->end_time = $workingHour['end_time'];
             $newWorkingHour->is_enabled = $workingHour['is_enabled'];
