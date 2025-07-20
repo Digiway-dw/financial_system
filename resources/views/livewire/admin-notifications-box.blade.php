@@ -145,6 +145,21 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Custom Filters: Type and Date -->
+                <div class="mt-4 flex flex-wrap gap-2 items-center">
+                    <span class="font-semibold text-gray-700 mr-2">Type:</span>
+                    <button wire:click="setTypeFilter('all')" class="px-3 py-1 rounded-lg text-sm font-medium border {{ $typeFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300' }}">All</button>
+                    <button wire:click="setTypeFilter('send')" class="px-3 py-1 rounded-lg text-sm font-medium border {{ $typeFilter === 'send' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300' }}">Send</button>
+                    <button wire:click="setTypeFilter('receive')" class="px-3 py-1 rounded-lg text-sm font-medium border {{ $typeFilter === 'receive' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300' }}">Receive</button>
+                    <button wire:click="setTypeFilter('cash')" class="px-3 py-1 rounded-lg text-sm font-medium border {{ $typeFilter === 'cash' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300' }}">Cash</button>
+                    <button wire:click="setTypeFilter('others')" class="px-3 py-1 rounded-lg text-sm font-medium border {{ $typeFilter === 'others' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300' }}">Others</button>
+
+                    <span class="ml-6 font-semibold text-gray-700">From:</span>
+                    <input type="date" wire:model.lazy="fromDate" wire:change="setFromDate($event.target.value)" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
+                    <span class="font-semibold text-gray-700">To:</span>
+                    <input type="date" wire:model.lazy="toDate" wire:change="setToDate($event.target.value)" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
+                </div>
             </div>
 
             <!-- Notifications List -->

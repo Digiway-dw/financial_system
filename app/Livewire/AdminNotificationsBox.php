@@ -9,6 +9,9 @@ class AdminNotificationsBox extends Component
 {
     public $notifications = [];
     public $tab = 'unread';
+    public $typeFilter = 'all';
+    public $fromDate = null;
+    public $toDate = null;
 
     public function getListeners()
     {
@@ -29,16 +32,62 @@ class AdminNotificationsBox extends Component
         $this->loadNotifications();
     }
 
+    public function setTypeFilter($type)
+    {
+        $this->typeFilter = $type;
+        $this->loadNotifications();
+    }
+
+    public function setFromDate($date)
+    {
+        $this->fromDate = $date;
+        $this->loadNotifications();
+    }
+
+    public function setToDate($date)
+    {
+        $this->toDate = $date;
+        $this->loadNotifications();
+    }
+
     public function loadNotifications()
     {
         $user = Auth::user();
         if ($this->tab === 'all') {
-            $this->notifications = $user->notifications()->orderBy('created_at', 'desc')->limit(20)->get();
+            $query = $user->notifications()->orderBy('created_at', 'desc');
         } elseif ($this->tab === 'read') {
-            $this->notifications = $user->readNotifications()->orderBy('created_at', 'desc')->limit(20)->get();
+            $query = $user->readNotifications()->orderBy('created_at', 'desc');
         } else {
-            $this->notifications = $user->unreadNotifications()->orderBy('created_at', 'desc')->limit(20)->get();
+            $query = $user->unreadNotifications()->orderBy('created_at', 'desc');
         }
+
+        // Type filter
+        if ($this->typeFilter !== 'all') {
+            $query = $query->where(function($q) {
+                if ($this->typeFilter === 'send') {
+                    $q->where('data->type', 'send')->orWhere('data->category', 'send');
+                } elseif ($this->typeFilter === 'receive') {
+                    $q->where('data->type', 'receive')->orWhere('data->category', 'receive');
+                } elseif ($this->typeFilter === 'cash') {
+                    $q->where('data->type', 'cash')->orWhere('data->category', 'cash');
+                } elseif ($this->typeFilter === 'others') {
+                    $q->where(function($subq) {
+                        $subq->whereNotIn('data->type', ['send', 'receive', 'cash'])
+                             ->whereNotIn('data->category', ['send', 'receive', 'cash']);
+                    });
+                }
+            });
+        }
+
+        // Date filter
+        if ($this->fromDate) {
+            $query = $query->whereDate('created_at', '>=', $this->fromDate);
+        }
+        if ($this->toDate) {
+            $query = $query->whereDate('created_at', '<=', $this->toDate);
+        }
+
+        $this->notifications = $query->limit(20)->get();
     }
 
     public function markAsRead($notificationId)
