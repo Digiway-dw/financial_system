@@ -12,6 +12,8 @@ use Livewire\Form;
 use App\Models\WorkingHour;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\AdminNotification;
 
 class LoginForm extends Form
 {
@@ -166,6 +168,9 @@ class LoginForm extends Form
                 ],
             ]);
 
+            // Send notification to admin users
+            $this->notifyAdminOfViolation($user, $workingHour, $currentDayOfWeek, $currentTime);
+
             // Logout the user immediately
             Auth::logout();
             request()->session()->invalidate();
@@ -247,6 +252,74 @@ class LoginForm extends Form
                 'error' => $e->getMessage(),
             ]);
             return null;
+        }
+    }
+
+    /**
+     * Send notification to admin users about working hours violation
+     *
+     * @param \App\Domain\Entities\User $user
+     * @param \App\Models\WorkingHour|null $workingHour
+     * @param string $currentDayOfWeek
+     * @param string $currentTime
+     */
+    private function notifyAdminOfViolation($user, $workingHour, string $currentDayOfWeek, string $currentTime): void
+    {
+        try {
+            // Get current time for notification
+            $now = Carbon::now();
+            
+            // Prepare notification message
+            $message = "🚨 Working Hours Violation Alert\n\n";
+            $message .= "User: {$user->name} (ID: {$user->id})\n";
+            $message .= "Email: {$user->email}\n";
+            $message .= "Attempted login outside allowed working hours\n\n";
+            $message .= "📅 Day: " . ucfirst($currentDayOfWeek) . "\n";
+            $message .= "🕐 Time: {$currentTime}\n";
+            $message .= "📍 IP Address: " . request()->ip() . "\n";
+            
+            if ($workingHour) {
+                $startTime = $this->parseTimeString($workingHour->start_time)?->format('g:i A') ?? $workingHour->start_time;
+                $endTime = $this->parseTimeString($workingHour->end_time)?->format('g:i A') ?? $workingHour->end_time;
+                $message .= "⏰ Allowed Hours: {$startTime} - {$endTime}\n";
+            } else {
+                $message .= "❌ No working hours defined for " . ucfirst($currentDayOfWeek) . "\n";
+            }
+            
+            // Add branch information if available
+            if ($user->branch) {
+                $message .= "🏢 Branch: {$user->branch->name}\n";
+            }
+            
+            $message .= "\n📊 Timestamp: {$now->format('Y-m-d H:i:s')}";
+            
+            // Get all admin users
+            $admins = \App\Domain\Entities\User::role('admin')->get();
+            
+            if ($admins->count() > 0) {
+                // Send notification to all admins
+                Notification::send($admins, new AdminNotification(
+                    $message,
+                    url('/notifications') // URL to view notifications
+                ));
+                
+                Log::info('Admin notification sent for working hours violation', [
+                    'user_id' => $user->id,
+                    'admin_count' => $admins->count(),
+                    'violation_time' => $currentTime,
+                    'day' => $currentDayOfWeek,
+                ]);
+            } else {
+                Log::warning('No admin users found to notify about working hours violation', [
+                    'user_id' => $user->id,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to send admin notification for working hours violation', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 }
