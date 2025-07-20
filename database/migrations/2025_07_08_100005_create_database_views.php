@@ -15,6 +15,7 @@ return new class extends Migration
         // Create views for common queries to improve performance
 
         // Create view for active transactions with user and branch information
+        DB::statement("DROP VIEW IF EXISTS v_active_transactions");
         DB::statement("
             CREATE VIEW v_active_transactions AS
             SELECT 
@@ -43,6 +44,7 @@ return new class extends Migration
         ");
 
         // Create view for branch performance summary
+        DB::statement("DROP VIEW IF EXISTS v_branch_performance");
         DB::statement("
             CREATE VIEW v_branch_performance AS
             SELECT 
@@ -67,6 +69,7 @@ return new class extends Migration
         ");
 
         // Create view for agent performance summary
+        DB::statement("DROP VIEW IF EXISTS v_agent_performance");
         DB::statement("
             CREATE VIEW v_agent_performance AS
             SELECT 
@@ -91,6 +94,7 @@ return new class extends Migration
         ");
 
         // Create view for customer transaction summary
+        DB::statement("DROP VIEW IF EXISTS v_customer_summary");
         DB::statement("
             CREATE VIEW v_customer_summary AS
             SELECT 
@@ -114,6 +118,7 @@ return new class extends Migration
         ");
 
         // Create view for daily transaction summary
+        DB::statement("DROP VIEW IF EXISTS v_daily_transaction_summary");
         DB::statement("
             CREATE VIEW v_daily_transaction_summary AS
             SELECT 
@@ -138,6 +143,7 @@ return new class extends Migration
         ");
 
         // Create view for line utilization
+        DB::statement("DROP VIEW IF EXISTS v_line_utilization");
         DB::statement("
             CREATE VIEW v_line_utilization AS
             SELECT 
