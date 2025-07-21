@@ -65,6 +65,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('transactions/{transactionId}/details', \App\Livewire\Transactions\Details::class)->name('transactions.details');
     Route::get('cash-transactions/{cashTransaction}/receipt', [\App\Http\Controllers\TransactionController::class, 'cashReceipt'])->name('cash-transactions.receipt');
     Route::get('cash-transactions/{cashTransactionId}/details', \App\Livewire\Transactions\Details::class)->name('cash-transactions.details');
+    Route::get('cash-transactions/{cashTransactionId}/edit', \App\Livewire\Transactions\EditCash::class)
+        ->name('cash-transactions.edit');
 
     // Line Management Routes
     Route::get('lines', \App\Livewire\Lines\Index::class)
@@ -95,6 +97,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('branches.create');
     Route::get('branches/{branchId}/edit', \App\Livewire\Branches\Edit::class)
         ->name('branches.edit');
+    Route::get('branches/{branchId}/show', \App\Livewire\Branches\Show::class)->name('branches.show');
 
     // User Management Routes
     Route::get('users', \App\Livewire\Users\Index::class)

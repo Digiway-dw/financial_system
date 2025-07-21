@@ -81,7 +81,7 @@
                                                         </svg>
                                                         View
                                                     </a>
-                                                    <a href="{{ route('cash-transactions.receipt', $tx->id) }}" target="_blank" class="inline-block text-green-600 hover:text-green-800 mr-2" title="Print Receipt">
+                                                    <a href="{{ route('cash-transactions.receipt', $tx->id) }}" class="inline-block text-green-600 hover:text-green-800 mr-2" title="Print Receipt">
                                                         <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-6 0v4m0 0h4m-4 0H8" />
                                                         </svg>

@@ -289,6 +289,14 @@
                                                 Edit
                                             </a>
                                         @endcan
+                                        <a href="{{ route('branches.show', $branch['id']) }}"
+                                            class="inline-flex items-center px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-xs font-medium rounded-md transition-colors duration-150">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            View
+                                        </a>
                                         @can('delete-branches')
                                             <button type="button"
                                                 onclick="window.dispatchEvent(new CustomEvent('confirm-delete-branch', { detail: { branchId: '{{ $branch['id'] }}' } }))"
@@ -335,6 +343,64 @@
             </div>
         </div>
     </div>
+
+    {{-- Branch Details and Transactions Section --}}
+    @isset($selectedBranch)
+        <div class="max-w-7xl mx-auto mt-12 bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Branch Details</h2>
+            <div class="mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <span class="font-semibold text-gray-700">Name:</span> {{ $selectedBranch['name'] }}
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Location:</span> {{ $selectedBranch['location'] ?? 'N/A' }}
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Description:</span> {{ $selectedBranch['description'] ?? 'N/A' }}
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Safe Balance:</span> {{ isset($selectedBranch['safe']) ? number_format((int) $selectedBranch['safe']['current_balance']) . ' EGP' : 'N/A' }}
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Created At:</span> {{ \Carbon\Carbon::parse($selectedBranch['created_at'])->format('M d, Y H:i') }}
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Status:</span> {{ isset($selectedBranch['is_active']) && $selectedBranch['is_active'] ? 'Active' : 'Inactive' }}
+                    </div>
+                </div>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Transactions for this Branch</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead>
+                        <tr>
+                            <th class="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer Name</th>
+                            <th class="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
+                            <th class="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
+                            <th class="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                            <th class="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($branchTransactions as $tx)
+                            <tr>
+                                <td class="px-3 py-2 whitespace-nowrap">{{ $tx['customer_name'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap">{{ number_format($tx['amount'], 2) }} EGP</td>
+                                <td class="px-3 py-2 whitespace-nowrap">{{ $tx['transaction_type'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap">{{ \Carbon\Carbon::parse($tx['created_at'])->format('Y-m-d h:i A') }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap">{{ $tx['status'] }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-3 py-2 text-center text-gray-500">No transactions found for this branch.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endisset
 
     <!-- Delete Confirmation Modal -->
     <div x-data="{ show: false, branchId: null }" x-on:confirm-delete-branch.window="show = true; branchId = $event.detail.branchId"

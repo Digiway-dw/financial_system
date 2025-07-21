@@ -15,6 +15,9 @@ class Index extends Component
     public $sortField = 'name';
     public $sortDirection = 'asc';
 
+    public $selectedBranch = null;
+    public $branchTransactions = [];
+
     private ListBranches $listBranchesUseCase;
     private DeleteBranch $deleteBranchUseCase;
 
@@ -62,10 +65,29 @@ class Index extends Component
         }
     }
 
+    public function viewBranch($branchId)
+    {
+        $branch = $this->branches->firstWhere('id', $branchId);
+        $this->selectedBranch = $branch ? $branch->toArray() : null;
+        if ($this->selectedBranch) {
+            // Load all transactions for this branch (ordinary + cash)
+            $transactions = \App\Models\Domain\Entities\Transaction::where('branch_id', $branchId)->get()->toArray();
+            $cashTransactions = \App\Models\Domain\Entities\CashTransaction::where('destination_branch_id', $branchId)
+                ->orWhereHas('safe', function($q) use ($branchId) {
+                    $q->where('branch_id', $branchId);
+                })->get()->toArray();
+            $this->branchTransactions = array_merge($transactions, $cashTransactions);
+        } else {
+            $this->branchTransactions = [];
+        }
+    }
+
     public function render()
     {
         return view('livewire.branches.index', [
             'branches' => $this->branches->toArray(),
+            'selectedBranch' => $this->selectedBranch,
+            'branchTransactions' => $this->branchTransactions,
         ]);
     }
 } 

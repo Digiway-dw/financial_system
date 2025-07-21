@@ -223,6 +223,19 @@ class Pending extends Component
                 $cashTransaction->rejected_by = $user->id;
                 $cashTransaction->rejected_at = now();
                 $cashTransaction->rejection_reason = 'Rejected by ' . $user->name;
+                // Ensure reference_number is set
+                if (empty($cashTransaction->reference_number)) {
+                    $branchName = null;
+                    if ($cashTransaction->safe && $cashTransaction->safe->branch) {
+                        $branchName = $cashTransaction->safe->branch->name;
+                    } elseif ($cashTransaction->destination_branch_id) {
+                        $branch = \App\Models\Domain\Entities\Branch::find($cashTransaction->destination_branch_id);
+                        $branchName = $branch ? $branch->name : 'BR';
+                    } else {
+                        $branchName = 'BR';
+                    }
+                    $cashTransaction->reference_number = generate_reference_number($branchName);
+                }
                 $cashTransaction->save();
                 session()->flash('message', 'Cash withdrawal rejected successfully.');
                 $this->loadPendingTransactions();
