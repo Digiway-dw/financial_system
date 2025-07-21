@@ -25,18 +25,14 @@ class Deposit extends Create
     public $clientSearch = '';
     public $clientSuggestions = [];
     public $clientName = '';
+    #[Validate('nullable|digits:11')]
     public $clientMobile = '';
     public $clientBalance = 0;
     public $clientId = null;
     public $depositorNationalId = '';
+    #[Validate('nullable|digits:11')]
     public $depositorMobileNumber = '';
     public $branches = [];
-
-    #[Validate('nullable|digits:11')]
-    public $clientMobile = '';
-
-    #[Validate('nullable|digits:11')]
-    public $depositorMobileNumber = '';
 
     private CreateTransaction $createTransactionUseCase;
     private CustomerRepository $customerRepository;
