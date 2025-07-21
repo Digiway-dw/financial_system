@@ -200,9 +200,12 @@
                                     <div class="flex gap-3 items-center">
                                         <div class="flex-1">
                                             <input type="text" wire:model="mobileNumbers.{{ $i }}"
-                                                required
+                                                required maxlength="11" minlength="11" pattern="\d{11}"
                                                 class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                                                placeholder="Enter mobile number">
+                                                placeholder="Enter mobile number"
+                                                oninput="this.value = this.value.replace(/[^\d]/g, '').slice(0,11);">
+                                            <p class="mt-1 text-xs text-gray-500">Mobile number must be exactly 11
+                                                digits.</p>
                                             @error('mobileNumbers.' . $i)
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -277,7 +280,8 @@
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-3">Wallet Status</label>
                             <div class="flex items-center space-x-3">
-                                <input type="checkbox" wire:model="is_client" id="is_client" class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500 focus:ring-2">
+                                <input type="checkbox" wire:model="is_client" id="is_client"
+                                    class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500 focus:ring-2">
                                 <span class="text-sm font-medium text-slate-700">Activate Wallet</span>
                                 <span class="ml-2 text-xs text-gray-500">(Leave unchecked for no wallet)</span>
                             </div>
