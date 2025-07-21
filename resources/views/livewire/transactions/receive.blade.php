@@ -313,41 +313,37 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Amount Received</p>
-                                <p class="text-lg font-bold text-blue-700">{{ number_format((float) $amount, 2) }} EGP
+                                <p class="text-lg font-bold text-blue-700">{{ (int) $amount }} EGP
                                 </p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Commission</p>
                                 <p class="text-lg font-bold text-green-700">
-                                    {{ number_format((float) $commission, 2) }}
-                                    EGP</p>
+                                    {{ (int) $commission }} EGP</p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Discount</p>
-                                <p class="text-lg font-bold text-red-700">{{ number_format((float) $discount, 2) }}
-                                    EGP
+                                <p class="text-lg font-bold text-red-700">{{ (int) $discount }} EGP
                                 </p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">From Safe</p>
                                 <p class="text-lg font-bold text-purple-700">
-                                    {{ number_format((float) $amount - ((float) $commission - abs((float) $discount)), 2) }}
-                                    EGP
+                                    {{ (int) ($amount - ($commission - abs($discount))) }} EGP
                                 </p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Total</p>
                                 <p class="text-lg font-bold text-purple-700">
-                                    {{ number_format((float) $amount - ((float) $commission - abs((float) $discount)), 2) }}
-                                    EGP
+                                    {{ (int) ($amount - ($commission - abs($discount))) }} EGP
                                 </p>
                             </div>
                         </div>
                         <div class="mt-4 text-xs text-gray-600">
-                            <p>• Line balance will increase by {{ number_format((float) $amount, 2) }} EGP</p>
+                            <p>• Line balance will increase by {{ (int) $amount }} EGP</p>
                             <p>• Safe balance will decrease by
-                                {{ number_format((float) $amount - (float) $commission, 2) }} EGP</p>
-                            <p>• Commission earnings: {{ number_format((float) $commission, 2) }} EGP</p>
+                                {{ (int) ($amount - $commission) }} EGP</p>
+                            <p>• Commission earnings: {{ (int) $commission }} EGP</p>
                         </div>
                     </div>
                 @endif

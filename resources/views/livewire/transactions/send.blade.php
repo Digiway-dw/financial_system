@@ -444,24 +444,24 @@
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-blue-600">{{ number_format((float) $amount, 2) }}
+                                <div class="text-2xl font-bold text-blue-600">{{ (int) $amount }}
                                 </div>
                                 <div class="text-sm text-gray-600">Amount</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-green-600">
-                                    {{ number_format((float) $commission, 2) }}
+                                    {{ (int) $commission }}
                                 </div>
                                 <div class="text-sm text-gray-600">Commission</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-red-600">{{ number_format((float) $discount, 2) }}
+                                <div class="text-2xl font-bold text-red-600">{{ (int) $discount }}
                                 </div>
                                 <div class="text-sm text-gray-600">Discount</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-purple-600">
-                                    {{ number_format((float) $amount + (float) $commission - abs((float) $discount), 2) }}
+                                    {{ (int) ($amount + $commission - abs($discount)) }}
                                 </div>
                                 <div class="text-sm text-gray-600">Total</div>
                             </div>
