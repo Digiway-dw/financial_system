@@ -102,13 +102,12 @@
                             @endif
                         </label>
                         <div class="relative">
-                            <span
-                                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">EGP</span>
+                            <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">EGP</span>
                             @if(Auth::user()->hasRole('admin'))
-                                <input type="number" wire:model="balance" id="balance" name="balance" step="1"
-                                    min="0" required
+                                <input type="number" wire:model="balance" id="balance" name="balance" step="1" min="0" required
                                     class="w-full pl-14 pr-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                                    placeholder="Enter balance (whole numbers only)">
+                                    placeholder="Enter balance (whole numbers only)" @if(!$is_client) disabled @endif
+                                    oninput="this.value = this.value.replace(/[^\d]/g, '');">
                             @else
                                 <input type="text" value="{{ number_format($balance) }}" readonly
                                     class="w-full pl-14 pr-4 py-3 bg-gray-100 border border-gray-300 rounded-xl text-gray-600 cursor-not-allowed"
