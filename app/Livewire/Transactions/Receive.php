@@ -40,7 +40,7 @@ class Receive extends Component
     public $commission = null;
 
     #[Validate('nullable|numeric|min:0')]
-    public $discount = null;
+    public $discount = 0.0;
 
     #[Validate('required_if:discount,>0')]
     public $discountNotes = '';
