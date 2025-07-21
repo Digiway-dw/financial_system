@@ -34,6 +34,7 @@ class Withdrawal extends Create
     public $expenseItems = [];
     public $selectedExpenseItem = null;
     public $customExpenseItem = '';
+    public $showExpenseWithdrawal = false;
 
     protected $casts = [
         'safeId' => 'integer',
@@ -54,8 +55,9 @@ class Withdrawal extends Create
         parent::mount();
         $this->transactionType = 'Withdrawal';
         $this->withdrawalType = 'direct';
-        $this->branchUsers = User::where('branch_id', Auth::user()->branch_id ?? null)->get();
-        $this->branches = \App\Models\Domain\Entities\Branch::all()->map(function ($branch) {
+        $this->branchUsers = User::all(); // Show all users, not just branch users
+        $user = Auth::user();
+        $this->branches = \App\Models\Domain\Entities\Branch::where('id', '!=', $user->branch_id)->get()->map(function ($branch) {
             return [
                 'id' => $branch->id,
                 'name' => $branch->name,
@@ -96,6 +98,8 @@ class Withdrawal extends Create
         if (count($this->safes) > 0) {
             $this->safeId = $this->safes[0]['id'];
         }
+        // Only show expense withdrawal type for admin and supervisor
+        $this->showExpenseWithdrawal = $user->hasRole('admin') || $user->hasRole('general_supervisor');
     }
 
     public function updatedClientSearch()
@@ -335,9 +339,11 @@ class Withdrawal extends Create
                     'reference_number' => $referenceNumber,
                 ]);
                 // Send notification to all admins
-                $admins = \App\Domain\Entities\User::role('admin')->get();
-                $message = "User withdrawal request: User: $customerName, Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $agent->name . ".";
-                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                if ($status === 'completed') {
+                    $admins = \App\Domain\Entities\User::role('admin')->get();
+                    $message = "User withdrawal request: User: $customerName, Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $agent->name . ".";
+                    \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
                 if ($isAdmin) {
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
@@ -395,9 +401,11 @@ class Withdrawal extends Create
                     'reference_number' => $referenceNumber,
                 ]);
                 // Send notification to all admins
-                $admins = \App\Domain\Entities\User::role('admin')->get();
-                $message = "Client wallet withdrawal request: Client: $customerName, Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $user->name . ".";
-                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                if ($status === 'completed') {
+                    $admins = \App\Domain\Entities\User::role('admin')->get();
+                    $message = "Client wallet withdrawal request: Client: $customerName, Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $user->name . ".";
+                    \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
                 if ($isAdmin) {
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
@@ -425,9 +433,11 @@ class Withdrawal extends Create
                     'reference_number' => $referenceNumber,
                 ]);
                 // Send notification to all admins
-                $admins = \App\Domain\Entities\User::role('admin')->get();
-                $message = "Direct withdrawal request: Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $user->name . ".";
-                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                if ($status === 'completed') {
+                    $admins = \App\Domain\Entities\User::role('admin')->get();
+                    $message = "Direct withdrawal request: Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $user->name . ".";
+                    \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
                 if ($isAdmin) {
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
@@ -456,9 +466,11 @@ class Withdrawal extends Create
                     'reference_number' => $referenceNumber,
                 ]);
                 // Send notification to all admins
-                $admins = \App\Domain\Entities\User::role('admin')->get();
-                $message = "Admin withdrawal request: Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $user->name . ".";
-                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                if ($status === 'completed') {
+                    $admins = \App\Domain\Entities\User::role('admin')->get();
+                    $message = "Admin withdrawal request: Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $user->name . ".";
+                    \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
                 if ($isAdmin) {
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
@@ -472,7 +484,13 @@ class Withdrawal extends Create
                 $user = Auth::user();
                 $branch = collect($this->branches)->firstWhere('id', $this->selectedBranchId);
                 $branchName = $branch['name'] ?? 'Unknown Branch';
+                $branchCode = $branch['branch_code'] ?? '';
+                $userBranch = $user->branch;
+                $userBranchName = $userBranch->name ?? 'Unknown';
+                $userBranchCode = $userBranch->branch_code ?? '';
+                // Always set destination_safe_id for the selected branch
                 $destinationSafe = \App\Models\Domain\Entities\Safe::where('branch_id', $this->selectedBranchId)->first();
+                $destinationSafeId = $destinationSafe ? $destinationSafe->id : null;
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
                     'customer_name' => 'Branch Transfer to: ' . $branchName,
                     'amount' => abs($this->amount),
@@ -483,13 +501,13 @@ class Withdrawal extends Create
                     'transaction_date_time' => now(),
                     'agent_id' => $user->id,
                     'destination_branch_id' => $this->selectedBranchId,
-                    'destination_safe_id' => $destinationSafe ? $destinationSafe->id : null,
+                    'destination_safe_id' => $destinationSafeId,
                 ]);
                 // Send notification to all admins
                 $admins = \App\Domain\Entities\User::role('admin')->get();
                 $message = "Branch withdrawal request: " .
-                    "From branch: $branchName (ID: {$this->selectedBranchId}), " .
-                    "To branch: " . ($user->branch->name ?? 'Unknown') . ", " .
+                    "From branch: $branchName ($userBranchCode), " .
+                    "To branch: $branchName ($branchCode), " .
                     "Amount: " . number_format($this->amount, 2) . " EGP, " .
                     "By: " . $user->name . ".";
                 \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, url()->current()));

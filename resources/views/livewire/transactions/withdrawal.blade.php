@@ -161,20 +161,22 @@
                             </div>
                         </button>
 
+                        @if($showExpenseWithdrawal)
                         <button wire:click="$set('withdrawalType', 'expense')"
-                            class="group relative overflow-hidden rounded-xl border-2 transition-all duration-300 {{ $withdrawalType === 'expense' ? 'border-red-500 bg-red-50 shadow-lg shadow-red-100' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-md' }}">
+                            class="group relative overflow-hidden rounded-xl border-2 transition-all duration-300 {{ $withdrawalType === 'expense' ? 'border-amber-500 bg-amber-50 shadow-lg shadow-amber-100' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-md' }}">
                             <div class="p-4 text-center">
                                 <div
-                                    class="mx-auto w-10 h-10 rounded-lg flex items-center justify-center mb-2 {{ $withdrawalType === 'expense' ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200' }}">
+                                    class="mx-auto w-10 h-10 rounded-lg flex items-center justify-center mb-2 {{ $withdrawalType === 'expense' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200' }}">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 4h6a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                 </div>
                                 <span
-                                    class="text-sm font-medium {{ $withdrawalType === 'expense' ? 'text-red-700' : 'text-slate-700' }}">Expense</span>
+                                    class="text-sm font-medium {{ $withdrawalType === 'expense' ? 'text-amber-700' : 'text-slate-700' }}">Expense</span>
                             </div>
                         </button>
+                        @endif
                     </div>
                 </div>
 

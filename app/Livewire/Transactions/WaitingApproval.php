@@ -92,11 +92,8 @@ class WaitingApproval extends Component
 
     public function goToTransactions()
     {
-        if ($this->transactionType === 'transaction') {
-            return redirect()->route('transactions.index');
-        } else {
-            return redirect()->route('transactions.cash.index');
-        }
+        // Always redirect to the cash transactions page
+        return redirect()->route('transactions.cash');
     }
 
     public function render()

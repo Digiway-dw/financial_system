@@ -25,14 +25,14 @@ class Deposit extends Create
     public $clientSearch = '';
     public $clientSuggestions = [];
     public $clientName = '';
-    #[Validate('nullable|digits:11')]
     public $clientMobile = '';
     public $clientBalance = 0;
     public $clientId = null;
     public $depositorNationalId = '';
+    public $branches = [];
+
     #[Validate('nullable|digits:11')]
     public $depositorMobileNumber = '';
-    public $branches = [];
 
     private CreateTransaction $createTransactionUseCase;
     private CustomerRepository $customerRepository;
@@ -267,6 +267,14 @@ class Deposit extends Create
         } catch (\Exception $e) {
             session()->flash('error', 'Deposit failed: ' . $e->getMessage());
         }
+    }
+
+    public function rules()
+    {
+        return [
+            'depositorMobileNumber' => 'nullable|digits:11',
+            // Add other rules as needed
+        ];
     }
 
     /**
