@@ -575,14 +575,13 @@ class Withdrawal extends Create
         if ($this->withdrawalType === 'direct') {
             $rules['customerName'] = 'required|string';
             $rules['nationalId'] = 'required|string|digits:14';
-        }
-        if ($this->withdrawalType === 'user') {
-            $rules['userId'] = 'required|integer|exists:users,id';
+            $rules['clientMobile'] = 'required|digits:11';
         }
         if ($this->withdrawalType === 'client_wallet') {
             $rules['clientSearch'] = 'required|string|min:3';
             $rules['withdrawalToName'] = 'required|string';
             $rules['withdrawalNationalId'] = 'required|string|digits:14';
+            $rules['clientMobile'] = 'required|digits:11';
         }
         return $rules;
     }

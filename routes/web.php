@@ -130,9 +130,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('work-sessions.index')
         ->middleware('can:view-work-sessions');
 
-    // Notifications Routes
-    Route::get('notifications', \App\Livewire\AdminNotificationsBox::class)->name('notifications.index');
-    Route::get('notifications/{notificationId}', \App\Livewire\Notifications\Details::class)->name('notifications.show');
+    // Notifications Routes (restricted to admin and supervisor)
+    Route::middleware('role:admin|general_supervisor')->group(function () {
+        Route::get('notifications', \App\Livewire\AdminNotificationsBox::class)->name('notifications.index');
+        Route::get('notifications/{notificationId}', \App\Livewire\Notifications\Details::class)->name('notifications.show');
+    });
 });
 
 Route::middleware(['auth'])->group(function () {

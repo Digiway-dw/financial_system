@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Gate;
 
 class Create extends Component
 {
-    #[Validate('required|string|max:20|unique:lines,mobile_number')]
+    #[Validate('required|digits:11|unique:lines,mobile_number')]
     public $mobileNumber = '';
 
     #[Validate('required|numeric|min:0')]

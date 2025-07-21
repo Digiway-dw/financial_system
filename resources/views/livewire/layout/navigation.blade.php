@@ -94,7 +94,10 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 gap-4">
-                <livewire:notification-bell />
+                <!-- Notification Bell Icon (only for admin and supervisor) -->
+                @if(auth()->user() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('general_supervisor')))
+                    <livewire:notification-bell />
+                @endif
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button

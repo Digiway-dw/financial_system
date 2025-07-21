@@ -52,7 +52,7 @@ class Edit extends Component
         return [
             'name' => 'required|string|max:255',
             'mobileNumbers' => 'required|array|min:1',
-            'mobileNumbers.*' => 'required|string|max:20|distinct',
+            'mobileNumbers.*' => 'required|digits:11|distinct',
             'customerCode' => 'nullable|string|max:255',
             'gender' => 'required|in:male,female',
             'balance' => 'required|numeric|min:0',

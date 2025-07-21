@@ -4,6 +4,8 @@ namespace App\Listeners;
 
 use App\Application\Services\WorkSessionService;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\AdminNotification;
 
 class LogSuccessfulLogin
 {
@@ -18,5 +20,11 @@ class LogSuccessfulLogin
     public function handle(Login $event): void
     {
         $this->workSessionService->startSession($event->user, request());
+
+        // Notify all admins and supervisors
+        $adminsAndSupervisors = \App\Domain\Entities\User::role(['admin', 'general_supervisor'])->get();
+        $user = $event->user;
+        $message = "User {$user->name} ({$user->email}) has logged in.";
+        Notification::send($adminsAndSupervisors, new AdminNotification($message));
     }
 }

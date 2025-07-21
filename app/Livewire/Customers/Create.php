@@ -84,7 +84,7 @@ class Create extends Component
         return [
             'name' => 'required|string|max:255',
             'mobileNumbers' => 'required|array|min:1',
-            'mobileNumbers.*' => 'required|string|max:20|distinct',
+            'mobileNumbers.*' => 'required|digits:11|distinct',
             'gender' => 'required|in:male,female',
             'balance' => $this->useInitialBalance ? 'required|numeric|min:0' : 'nullable|numeric|min:0',
             'is_client' => 'required|boolean',

@@ -16,7 +16,7 @@ use App\Notifications\AdminNotification;
 class Receive extends Component
 {
     // Client Information
-    #[Validate('required|string|max:20')]
+    #[Validate('required|digits:11')]
     public $clientMobile = '';
 
     #[Validate('required|string|max:255')]
@@ -30,7 +30,7 @@ class Receive extends Component
     public $clientBalance = null;
 
     // Sender Information
-    #[Validate('required|string|max:20')]
+    #[Validate('required|digits:11')]
     public $senderMobile = '';
 
     // Transaction Details

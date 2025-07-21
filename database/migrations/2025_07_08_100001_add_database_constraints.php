@@ -59,7 +59,7 @@ return new class extends Migration
         DB::statement('ALTER TABLE `lines` ADD CONSTRAINT chk_line_usage_within_limits CHECK (daily_usage <= daily_limit AND monthly_usage <= monthly_limit)');
 
         // Add constraint for network values
-        DB::statement("ALTER TABLE `lines` ADD CONSTRAINT chk_line_network CHECK (network IN ('orange', 'vodafone', 'etisalat', 'we'))");
+        DB::statement("ALTER TABLE `lines` ADD CONSTRAINT chk_line_network CHECK (network IN ('orange', 'vodafone', 'etisalat', 'we', 'Fawry'))");
 
         // Add constraint for status values
         DB::statement("ALTER TABLE `lines` ADD CONSTRAINT chk_line_status CHECK (status IN ('active', 'inactive', 'suspended', 'maintenance'))");

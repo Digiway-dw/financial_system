@@ -101,9 +101,12 @@ return new class extends Migration
         }
 
         // Add constraint for network values
-        if (!$checkConstraintExists('lines', 'chk_line_network')) {
-            DB::statement("ALTER TABLE `lines` ADD CONSTRAINT chk_line_network CHECK (network IN ('orange', 'vodafone', 'etisalat', 'we'))");
+        // First drop the existing constraint if it exists
+        if ($checkConstraintExists('lines', 'chk_line_network')) {
+            DB::statement('ALTER TABLE `lines` DROP CONSTRAINT chk_line_network');
         }
+        // Add the updated constraint with 'Fawry' included
+        DB::statement("ALTER TABLE `lines` ADD CONSTRAINT chk_line_network CHECK (network IN ('orange', 'vodafone', 'etisalat', 'we', 'Fawry'))");
 
         // Add constraint for status values
         if (!$checkConstraintExists('lines', 'chk_line_status')) {

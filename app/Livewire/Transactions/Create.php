@@ -19,10 +19,10 @@ class Create extends Component
     #[Validate('required|string|max:255')]
     public $customerName = '';
 
-    #[Validate('required|string|max:20')]
+    #[Validate('required|digits:11')]
     public $customerMobileNumber = '';
 
-    #[Validate('required|string|max:20')]
+    #[Validate('required|digits:11')]
     public $lineMobileNumber = '';
 
     #[Validate('nullable|string|max:255')]

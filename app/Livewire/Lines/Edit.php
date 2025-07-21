@@ -34,8 +34,7 @@ class Edit extends Component
         return [
             'mobileNumber' => [
                 'required',
-                'string',
-                'max:20',
+                'digits:11',
                 Rule::unique('lines', 'mobile_number')->ignore($this->lineId),
             ],
             'currentBalance' => 'required|numeric|min:0',

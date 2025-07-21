@@ -12,6 +12,7 @@ use App\Models\Domain\Entities\CashTransaction;
 use App\Helpers\helpers;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\AdminNotification;
+use Illuminate\Validation\Rules\Validate;
 
 class Deposit extends Create
 {
@@ -30,6 +31,12 @@ class Deposit extends Create
     public $depositorNationalId = '';
     public $depositorMobileNumber = '';
     public $branches = [];
+
+    #[Validate('nullable|digits:11')]
+    public $clientMobile = '';
+
+    #[Validate('nullable|digits:11')]
+    public $depositorMobileNumber = '';
 
     private CreateTransaction $createTransactionUseCase;
     private CustomerRepository $customerRepository;
