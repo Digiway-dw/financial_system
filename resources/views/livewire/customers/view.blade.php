@@ -114,7 +114,7 @@
                 <div class="space-y-4">
                     <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
                         <div class="text-sm font-medium text-green-700 mb-1">Current Balance</div>
-                        <div class="text-2xl font-bold text-green-800">{{ number_format($customer->balance, 2) }} EGP
+                        <div class="text-2xl font-bold text-green-800">{{ number_format((int) $customer->balance) }} EGP
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-200">
@@ -123,12 +123,12 @@
                     </div>
                     <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl border border-purple-200">
                         <div class="text-sm font-medium text-purple-700 mb-1">Total Transferred</div>
-                        <div class="text-lg font-bold text-purple-800">{{ number_format($totalTransferred, 2) }} EGP
+                        <div class="text-lg font-bold text-purple-800">{{ number_format((int) $totalTransferred) }} EGP
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-xl border border-yellow-200">
                         <div class="text-sm font-medium text-yellow-700 mb-1">Total Commission</div>
-                        <div class="text-lg font-bold text-yellow-800">{{ number_format($totalCommission, 2) }} EGP
+                        <div class="text-lg font-bold text-yellow-800">{{ number_format((int) $totalCommission) }} EGP
                         </div>
                     </div>
                 </div>
@@ -176,9 +176,9 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-sm font-mono text-slate-900">
-                                    {{ number_format($transaction->amount, 2) }} EGP</td>
+                                    {{ number_format((int) $transaction->amount) }} EGP</td>
                                 <td class="px-6 py-4 text-sm font-mono text-slate-700">
-                                    {{ number_format($transaction->commission, 2) }} EGP</td>
+                                    {{ number_format((int) $transaction->commission) }} EGP</td>
                                 <td class="px-6 py-4 text-sm text-slate-700">
                                     {{ $transaction->line->mobile_number ?? '-' }}</td>
                                 <td class="px-6 py-4">
@@ -192,19 +192,27 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if($transaction instanceof \App\Models\Domain\Entities\CashTransaction)
-                                        <a href="{{ route('cash-transactions.details', $transaction->id) }}" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors duration-150">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    @if ($transaction instanceof \App\Models\Domain\Entities\CashTransaction)
+                                        <a href="{{ route('cash-transactions.details', $transaction->id) }}"
+                                            class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors duration-150">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
                                             View
                                         </a>
                                     @else
-                                        <a href="{{ route('transactions.details', $transaction->id) }}" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors duration-150">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        <a href="{{ route('transactions.details', $transaction->id) }}"
+                                            class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors duration-150">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
                                             View
                                         </a>
