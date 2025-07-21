@@ -95,18 +95,39 @@
                 <div class="space-y-6">
                     <!-- Balance -->
                     <div>
-                        <label for="balance" class="block text-sm font-semibold text-slate-700 mb-2">Balance</label>
+                        <label for="balance" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Balance
+                            @if(!Auth::user()->hasRole('admin'))
+                                <span class="text-xs text-red-500 font-medium">(Admin Only)</span>
+                            @endif
+                        </label>
                         <div class="relative">
                             <span
                                 class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">EGP</span>
-                            <input type="number" wire:model="balance" id="balance" name="balance" step="0.01"
-                                required
-                                class="w-full pl-14 pr-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                                placeholder="0.00">
+                            @if(Auth::user()->hasRole('admin'))
+                                <input type="number" wire:model="balance" id="balance" name="balance" step="1"
+                                    min="0" required
+                                    class="w-full pl-14 pr-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
+                                    placeholder="Enter balance (whole numbers only)">
+                            @else
+                                <input type="text" value="{{ number_format($balance) }}" readonly
+                                    class="w-full pl-14 pr-4 py-3 bg-gray-100 border border-gray-300 rounded-xl text-gray-600 cursor-not-allowed"
+                                    placeholder="Admin access required">
+                                <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                </div>
+                            @endif
                         </div>
-                        @error('balance')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                        @if(Auth::user()->hasRole('admin'))
+                            <p class="mt-1 text-xs text-gray-500">Balance must be a whole number (no decimals allowed)</p>
+                            @error('balance')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        @else
+                            <p class="mt-1 text-xs text-red-500">⚠️ Only administrators can edit customer wallet balances</p>
+                        @endif
                     </div>
 
                     <!-- Is Client -->

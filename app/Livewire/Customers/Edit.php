@@ -49,17 +49,23 @@ class Edit extends Component
 
     protected function rules(): array
     {
-        return [
+        $rules = [
             'name' => 'required|string|max:255',
             'mobileNumbers' => 'required|array|min:1',
             'mobileNumbers.*' => 'required|digits:11|distinct',
             'customerCode' => 'nullable|string|max:255',
             'gender' => 'required|in:male,female',
-            'balance' => 'required|numeric|min:0',
             'is_client' => 'boolean',
             'agent_id' => 'nullable|exists:users,id',
             'branch_id' => 'required|exists:branches,id',
         ];
+
+        // Only admins can edit balance
+        if (auth()->user() && auth()->user()->hasRole('admin')) {
+            $rules['balance'] = 'required|integer|min:0';
+        }
+
+        return $rules;
     }
 
     protected function validationAttributes(): array
@@ -128,13 +134,17 @@ class Edit extends Component
         try {
             // Use the first mobile number as the primary
             $primaryMobile = $this->mobileNumbers[0];
+            
+            // Only admins can modify balance - preserve existing balance for non-admins
+            $balanceToUpdate = $user->hasRole('admin') ? $this->balance : $this->customer->balance;
+            
             $this->updateCustomerUseCase->execute(
                 $this->customerId,
                 $this->name,
                 $primaryMobile,
                 $this->customerCode,
                 $this->gender,
-                $this->balance,
+                $balanceToUpdate,
                 $this->is_client,
                 $this->agent_id,
                 $this->branch_id
