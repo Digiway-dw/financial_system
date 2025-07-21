@@ -62,34 +62,29 @@ class EloquentTransactionRepository implements TransactionRepository
 
     public function filter(array $filters = []): array
     {
+        // Ordinary transactions
         $query = EloquentTransaction::query();
-
-        if (isset($filters['start_date'])) {
-            $query->whereDate('created_at', '>=', $filters['start_date']);
-        }
-
-        if (isset($filters['end_date'])) {
-            $query->whereDate('created_at', '<=', $filters['end_date']);
-        }
-
+        // Date filters temporarily removed for debugging
+        // if (isset($filters['start_date'])) {
+        //     $query->whereDate('transaction_date_time', '>=', $filters['start_date']);
+        // }
+        // if (isset($filters['end_date'])) {
+        //     $query->whereDate('transaction_date_time', '<=', $filters['end_date']);
+        // }
         if (isset($filters['agent_id'])) {
             $query->where('agent_id', $filters['agent_id']);
         }
-
         if (isset($filters['branch_id'])) {
             $query->whereHas('agent', function ($q) use ($filters) {
                 $q->where('branch_id', $filters['branch_id']);
             });
         }
-
         if (isset($filters['customer_name'])) {
             $query->where('customer_name', 'like', '%' . $filters['customer_name'] . '%');
         }
-
         if (isset($filters['transaction_type'])) {
             $query->where('transaction_type', $filters['transaction_type']);
         }
-
         if (isset($filters['customer_code']) && $filters['customer_code']) {
             $query->where('customer_code', 'like', '%' . $filters['customer_code'] . '%');
         }
@@ -113,21 +108,89 @@ class EloquentTransactionRepository implements TransactionRepository
                 $q->whereIn('branch_id', $filters['branch_ids']);
             });
         }
-
-        $transactions = $query->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
+        $ordinaryTxs = $query->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
             $transactionArray['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
+            $transactionArray['commission'] = $transaction->commission ?? 0;
+            $transactionArray['deduction'] = $transaction->deduction ?? 0;
+            $transactionArray['source_table'] = 'transactions';
             return $transactionArray;
         });
 
-        $totalTransferred = $transactions->sum('amount');
-        $totalCommission = $transactions->sum('commission');
-        $totalDeductions = $transactions->sum('deduction');
+        // Cash transactions
+        $cash = CashTransaction::query();
+        // Date filters temporarily removed for debugging
+        // if (isset($filters['start_date'])) {
+        //     $cash->whereDate('transaction_date_time', '>=', $filters['start_date']);
+        // }
+        // if (isset($filters['end_date'])) {
+        //     $cash->whereDate('transaction_date_time', '<=', $filters['end_date']);
+        // }
+        if (isset($filters['customer_name'])) {
+            $cash->where('customer_name', 'like', '%' . $filters['customer_name'] . '%');
+        }
+        if (isset($filters['transaction_type'])) {
+            $cash->where('transaction_type', $filters['transaction_type']);
+        }
+        if (isset($filters['amount']) && $filters['amount']) {
+            $cash->where('amount', $filters['amount']);
+        }
+        if (isset($filters['agent_id'])) {
+            $cash->where('agent_id', $filters['agent_id']);
+        }
+        if (isset($filters['employee_ids']) && is_array($filters['employee_ids']) && count($filters['employee_ids']) > 0) {
+            $cash->whereIn('agent_id', $filters['employee_ids']);
+        }
+        if (isset($filters['branch_id'])) {
+            $cash->whereHas('safe', function ($q) use ($filters) {
+                $q->where('branch_id', $filters['branch_id']);
+            });
+        }
+        $cashTxs = $cash->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
+            return [
+                'id' => $transaction->id,
+                'customer_name' => $transaction->customer_name,
+                'customer_mobile_number' => null,
+                'receiver_mobile_number' => null,
+                'customer_code' => $transaction->customer_code ?? null,
+                'amount' => $transaction->amount,
+                'commission' => 0,
+                'deduction' => 0,
+                'discount_notes' => null,
+                'notes' => $transaction->notes,
+                'transaction_type' => $transaction->transaction_type,
+                'agent_id' => $transaction->agent_id,
+                'agent_name' => $transaction->agent ? $transaction->agent->name : 'N/A',
+                'branch_name' => $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A',
+                'status' => $transaction->status,
+                'transaction_date_time' => $transaction->transaction_date_time,
+                'line_id' => null,
+                'safe_id' => $transaction->safe_id,
+                'is_absolute_withdrawal' => null,
+                'payment_method' => null,
+                'reference_number' => $transaction->reference_number, // Use actual reference_number
+                'created_at' => $transaction->created_at,
+                'updated_at' => $transaction->updated_at,
+                'source_table' => 'cash_transactions',
+            ];
+        });
+
+        // Merge and sort
+        $all = collect(array_merge($ordinaryTxs->toArray(), $cashTxs->toArray()));
+        $sortField = $filters['sortField'] ?? 'transaction_date_time';
+        $sortDirection = $filters['sortDirection'] ?? 'desc';
+        $all = $all->sortBy(function($tx) use ($sortField) {
+            return $tx[$sortField] ?? $tx['transaction_date_time'] ?? $tx['created_at'] ?? null;
+        }, SORT_REGULAR, $sortDirection === 'desc');
+
+        $totalTransferred = $all->sum('amount');
+        $totalCommission = $all->sum('commission');
+        $totalDeductions = $all->sum('deduction');
         $netProfit = $totalCommission - $totalDeductions;
 
         return [
-            'transactions' => $transactions->toArray(),
+            'transactions' => $all->values()->all(),
             'totals' => [
                 'total_transferred' => $totalTransferred,
                 'total_commission' => $totalCommission,

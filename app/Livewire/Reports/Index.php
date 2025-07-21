@@ -2,19 +2,13 @@
 
 namespace App\Livewire\Reports;
 
-use App\Application\UseCases\ListFilteredTransactions;
+use Livewire\Component;
+use App\Models\Domain\Entities\Transaction;
+use App\Models\Domain\Entities\CashTransaction;
+use App\Domain\Entities\User;
 use App\Models\Domain\Entities\Branch;
 use App\Models\Domain\Entities\Customer;
-use App\Domain\Entities\User;
-use App\Domain\Interfaces\SafeRepository;
-use App\Domain\Interfaces\LineRepository;
-use Livewire\Component;
-use Livewire\Attributes\Layout;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\TransactionsExport;
-use Barryvdh\DomPDF\Facade\Pdf;
 
-#[Layout('components.layouts.app')]
 class Index extends Component
 {
     public $startDate;
@@ -23,81 +17,140 @@ class Index extends Component
     public $selectedBranch;
     public $selectedCustomer;
     public $selectedTransactionType = '';
-
+    public $sortField = 'transaction_date_time';
+    public $sortDirection = 'desc';
     public $transactions = [];
-    public $totalTransferred = 0;
-    public $totalCommission = 0;
-    public $totalDeductions = 0;
-    public $netProfits = 0;
+    public $users = [];
+    public $branches = [];
+    public $customers = [];
+    public $transactionTypes = ['Transfer', 'Withdrawal', 'Deposit', 'Adjustment'];
+    public $selectedCustomerCode;
+    public $financialSummary = [];
     public $safeBalances = [];
     public $lineBalances = [];
-
-    public $users;
-    public $branches;
-    public $customers;
-    public $transactionTypes = ['Transfer', 'Withdrawal', 'Deposit', 'Adjustment'];
-
-    public $sortField = 'created_at';
-    public $sortDirection = 'desc';
-
-    private ListFilteredTransactions $listFilteredTransactionsUseCase;
-    private SafeRepository $safeRepository;
-    private LineRepository $lineRepository;
-
-    public function boot(
-        ListFilteredTransactions $listFilteredTransactionsUseCase,
-        SafeRepository $safeRepository,
-        LineRepository $lineRepository
-    )
-    {
-        $this->listFilteredTransactionsUseCase = $listFilteredTransactionsUseCase;
-        $this->safeRepository = $safeRepository;
-        $this->lineRepository = $lineRepository;
-    }
+    public $customerBalances = [];
 
     public function mount()
     {
-        $this->authorize('view-reports');
-
-        $this->startDate = now()->startOfMonth()->toDateString();
-        $this->endDate = now()->endOfMonth()->toDateString();
+        $this->startDate = '2020-01-01';
+        $this->endDate = '2030-01-01';
         $this->users = User::all();
         $this->branches = Branch::all();
-        $this->customers = Customer::with('agent')->get();
+        $this->customers = Customer::all();
         $this->generateReport();
     }
 
     public function generateReport()
     {
-        $filters = [
-            'start_date' => $this->startDate,
-            'end_date' => $this->endDate,
-            'agent_id' => $this->selectedUser,
-            'branch_id' => $this->selectedBranch,
-            'customer_name' => $this->selectedCustomer,
-            'transaction_type' => $this->selectedTransactionType,
-            'sortField' => $this->sortField,
-            'sortDirection' => $this->sortDirection,
+        $ordinary = Transaction::query();
+        $cash = CashTransaction::query();
+
+        // Date filter
+        if ($this->startDate) {
+            $ordinary->whereDate('transaction_date_time', '>=', $this->startDate);
+            $cash->whereDate('transaction_date_time', '>=', $this->startDate);
+        }
+        if ($this->endDate) {
+            $ordinary->whereDate('transaction_date_time', '<=', $this->endDate);
+            $cash->whereDate('transaction_date_time', '<=', $this->endDate);
+        }
+        // Agent filter
+        if ($this->selectedUser) {
+            $ordinary->where('agent_id', $this->selectedUser);
+            $cash->where('agent_id', $this->selectedUser);
+        }
+        // Branch filter
+        if ($this->selectedBranch) {
+            $ordinary->where('branch_id', $this->selectedBranch);
+            $cash->whereHas('safe', function($q) { $q->where('branch_id', $this->selectedBranch); });
+        }
+        // Customer name filter
+        if ($this->selectedCustomer) {
+            $ordinary->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
+            $cash->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
+        }
+        // Customer code filter
+        if ($this->selectedCustomerCode) {
+            $ordinary->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
+            $cash->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
+        }
+        // Type filter
+        if ($this->selectedTransactionType) {
+            $ordinary->where('transaction_type', $this->selectedTransactionType);
+            $cash->where('transaction_type', $this->selectedTransactionType);
+        }
+
+        $ordinaryTxs = $ordinary->with(['agent', 'branch'])->get()->map(function ($tx) {
+            return [
+                'id' => $tx->id,
+                'customer_name' => $tx->customer_name,
+                'customer_code' => $tx->customer_code,
+                'amount' => $tx->amount,
+                'commission' => $tx->commission ?? 0,
+                'deduction' => $tx->deduction ?? 0,
+                'transaction_type' => $tx->transaction_type,
+                'agent_name' => $tx->agent ? $tx->agent->name : '-',
+                'status' => $tx->status,
+                'transaction_date_time' => $tx->transaction_date_time,
+                'reference_number' => $tx->reference_number,
+                'branch_name' => $tx->branch ? $tx->branch->name : 'N/A',
+                'source' => 'ordinary',
+            ];
+        });
+        $cashTxs = $cash->with(['agent', 'safe.branch'])->get()->map(function ($tx) {
+            return [
+                'id' => $tx->id,
+                'customer_name' => $tx->customer_name,
+                'customer_code' => $tx->customer_code,
+                'amount' => $tx->amount,
+                'commission' => 0,
+                'deduction' => 0,
+                'transaction_type' => $tx->transaction_type,
+                'agent_name' => $tx->agent ? $tx->agent->name : '-',
+                'status' => $tx->status,
+                'transaction_date_time' => $tx->transaction_date_time,
+                'reference_number' => $tx->reference_number,
+                'branch_name' => ($tx->safe && $tx->safe->branch) ? $tx->safe->branch->name : 'N/A',
+                'source' => 'cash',
+            ];
+        });
+        $all = collect($ordinaryTxs)->merge($cashTxs);
+        $all = $all->sortBy(function($tx) {
+            return $tx[$this->sortField] ?? null;
+        }, SORT_REGULAR, $this->sortDirection === 'desc');
+        $this->transactions = $all->values()->all();
+
+        // Financial summary
+        $this->financialSummary = [
+            'total_transfer' => $all->sum('amount'),
+            'commission_earned' => $all->sum('commission'),
+            'total_discounts' => $all->sum('deduction'),
+            'net_profit' => $all->sum('commission') - $all->sum('deduction'),
         ];
 
-        $result = $this->listFilteredTransactionsUseCase->execute($filters);
-        $this->transactions = $result['transactions'];
-        $this->totalTransferred = $result['totals']['total_transferred'];
-        $this->totalCommission = $result['totals']['total_commission'];
-        $this->totalDeductions = $result['totals']['total_deductions'];
-        $this->netProfits = $result['totals']['net_profit'];
+        // Safe balances by branch
+        $this->safeBalances = \App\Models\Domain\Entities\Safe::with('branch')->get()->groupBy('branch_id')->map(function($safes) {
+            return [
+                'branch' => $safes->first()->branch->name ?? '-',
+                'balance' => $safes->sum('current_balance'),
+            ];
+        })->values()->all();
 
-        $safes = $this->safeRepository->all();
-        $this->safeBalances = collect($safes)->groupBy('branch.name')
-                                             ->mapWithKeys(function ($group, $branchName) {
-                                                 return [$branchName => $group->sum('current_balance')];
-                                             })->toArray();
+        // Line balances by branch
+        $this->lineBalances = \App\Models\Domain\Entities\Line::with('branch')->get()->groupBy('branch_id')->map(function($lines) {
+            return [
+                'branch' => $lines->first()->branch->name ?? '-',
+                'balance' => $lines->sum('current_balance'),
+            ];
+        })->values()->all();
 
-        $lines = $this->lineRepository->all();
-        $this->lineBalances = collect($lines)->groupBy('user.name')
-                                             ->mapWithKeys(function ($group, $userName) {
-                                                 return [$userName => $group->sum('current_balance')];
-                                             })->toArray();
+        // Customer balances
+        $this->customerBalances = \App\Models\Domain\Entities\Customer::all()->map(function($customer) {
+            return [
+                'customer' => $customer->name,
+                'balance' => $customer->balance,
+            ];
+        })->all();
     }
 
     public function sortBy($field)
@@ -111,77 +164,48 @@ class Index extends Component
         $this->generateReport();
     }
 
-    public function exportToExcel()
-    {
-        $this->authorize('view-reports');
-
-        $filters = [
-            'start_date' => $this->startDate,
-            'end_date' => $this->endDate,
-            'agent_id' => $this->selectedUser,
-            'branch_id' => $this->selectedBranch,
-            'customer_name' => $this->selectedCustomer,
-            'transaction_type' => $this->selectedTransactionType,
-        ];
-
-        $result = $this->listFilteredTransactionsUseCase->execute($filters);
-        $transactionsToExport = collect($result['transactions']);
-
-        return Excel::download(new TransactionsExport($transactionsToExport), 'transactions_report.xlsx');
-    }
-
-    public function exportToPdf()
-    {
-        $this->authorize('view-reports');
-
-        $filters = [
-            'start_date' => $this->startDate,
-            'end_date' => $this->endDate,
-            'agent_id' => $this->selectedUser,
-            'branch_id' => $this->selectedBranch,
-            'customer_name' => $this->selectedCustomer,
-            'transaction_type' => $this->selectedTransactionType,
-        ];
-
-        $result = $this->listFilteredTransactionsUseCase->execute($filters);
-        $transactionsToExport = collect($result['transactions']);
-
-        $data = [
-            'transactions' => $transactionsToExport,
-            'startDate' => $this->startDate,
-            'endDate' => $this->endDate,
-            'totalTransferred' => $this->totalTransferred,
-            'totalCommission' => $this->totalCommission,
-            'totalDeductions' => $this->totalDeductions,
-            'netProfits' => $this->netProfits,
-        ];
-
-        $pdf = Pdf::loadView('reports.transactions_pdf', $data);
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->output();
-        }, 'transactions_report.pdf');
-    }
-
     public function render()
     {
-        $this->users = User::all();
-        $this->branches = Branch::all();
-        $this->customers = Customer::with('agent')->get();
-
         return view('livewire.reports.index', [
             'transactions' => $this->transactions,
-            'totalTransferred' => $this->totalTransferred,
-            'totalCommission' => $this->totalCommission,
-            'totalDeductions' => $this->totalDeductions,
-            'netProfits' => $this->netProfits,
-            'safeBalances' => $this->safeBalances,
-            'lineBalances' => $this->lineBalances,
             'users' => $this->users,
             'branches' => $this->branches,
             'customers' => $this->customers,
             'transactionTypes' => $this->transactionTypes,
             'sortField' => $this->sortField,
             'sortDirection' => $this->sortDirection,
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+            'selectedUser' => $this->selectedUser,
+            'selectedBranch' => $this->selectedBranch,
+            'selectedCustomer' => $this->selectedCustomer,
+            'selectedTransactionType' => $this->selectedTransactionType,
         ]);
+    }
+
+    public function exportExcel()
+    {
+        $export = new \App\Exports\TransactionsExport(collect($this->transactions));
+        return \Maatwebsite\Excel\Facades\Excel::download($export, 'transactions_report.xlsx');
+    }
+
+    public function exportPdf()
+    {
+        $summary = [
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+            'totalTransferred' => $this->financialSummary['total_transfer'] ?? 0,
+            'totalCommission' => $this->financialSummary['commission_earned'] ?? 0,
+            'totalDeductions' => $this->financialSummary['total_discounts'] ?? 0,
+            'netProfits' => $this->financialSummary['net_profit'] ?? 0,
+        ];
+        $html = view('reports.transactions_pdf', array_merge([
+            'transactions' => $this->transactions
+        ], $summary))->render();
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4', 'default_font' => 'dejavusans']);
+        $mpdf->WriteHTML($html);
+        return response()->streamDownload(function () use ($mpdf) {
+            echo $mpdf->Output('', 'S');
+        }, 'transactions_report.pdf');
     }
 }
