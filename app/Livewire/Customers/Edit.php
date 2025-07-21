@@ -134,10 +134,10 @@ class Edit extends Component
         try {
             // Use the first mobile number as the primary
             $primaryMobile = $this->mobileNumbers[0];
-            
             // Only admins can modify balance - preserve existing balance for non-admins
+            $oldBalance = $this->customer->balance;
             $balanceToUpdate = $user->hasRole('admin') ? $this->balance : $this->customer->balance;
-            
+
             $this->updateCustomerUseCase->execute(
                 $this->customerId,
                 $this->name,
@@ -153,6 +153,24 @@ class Edit extends Component
             $this->customer->mobileNumbers()->delete();
             foreach ($this->mobileNumbers as $number) {
                 $this->customer->mobileNumbers()->create(['mobile_number' => $number]);
+            }
+            // If admin changed balance, record a transaction
+            if ($user->hasRole('admin') && $oldBalance != $this->balance) {
+                \App\Models\Domain\Entities\Transaction::create([
+                    'customer_name' => $this->customer->name,
+                    'customer_mobile_number' => $this->customer->mobile_number,
+                    'customer_code' => $this->customer->customer_code,
+                    'amount' => abs($this->balance - $oldBalance),
+                    'commission' => 0,
+                    'deduction' => 0,
+                    'transaction_type' => 'Adjustment',
+                    'agent_id' => $user->id,
+                    'transaction_date_time' => now(),
+                    'status' => 'completed',
+                    'branch_id' => $this->customer->branch_id,
+                    'reference_number' => uniqid('BAL-'),
+                    'notes' => 'Admin balance adjustment',
+                ]);
             }
             session()->flash('message', 'Customer updated successfully.');
             return redirect()->route('customers.index');
