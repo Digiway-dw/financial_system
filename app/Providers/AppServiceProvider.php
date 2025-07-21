@@ -396,9 +396,9 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        // String macro for money formatting
+        // String macro for money formatting (integer-only, no decimals)
         Str::macro('money', function ($amount, $currency = 'SDG') {
-            return number_format($amount, 2) . ' ' . $currency;
+            return number_format($amount) . ' ' . $currency;
         });
     }
 
