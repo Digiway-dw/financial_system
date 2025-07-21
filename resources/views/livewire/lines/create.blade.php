@@ -55,7 +55,14 @@
                         </div>
                         <x-text-input wire:model="mobileNumber" id="mobileNumber" name="mobileNumber" type="text"
                             class="block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
-                            placeholder="Enter mobile number (e.g., +201234567890)" required autofocus />
+                            placeholder="Enter mobile number (11 digits)" maxlength="11" minlength="11" pattern="\d{11}"
+                            required autofocus
+                            x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '').slice(0,11)" />
+                        <div class="text-xs text-gray-500 mt-1">Mobile number must be exactly 11 digits.</div>
+                        @if (strlen($mobileNumber ?? '') > 0 && strlen($mobileNumber ?? '') != 11)
+                            <div class="text-sm text-red-600 mt-1">Please enter all 11 digits of the mobile number.
+                            </div>
+                        @endif
                         <x-input-error class="mt-2" :messages="$errors->get('mobileNumber')" />
                     </div>
 
@@ -72,9 +79,9 @@
                         </div>
                         <div class="relative">
                             <x-text-input wire:model="currentBalance" id="currentBalance" name="currentBalance"
-                                type="number" step="0.01"
+                                type="number" step="1" min="0"
                                 class="block w-full pl-14 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
-                                required />
+                                required x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 text-sm">EGP</span>
                             </div>
@@ -95,9 +102,9 @@
                         </div>
                         <div class="relative">
                             <x-text-input wire:model="dailyLimit" id="dailyLimit" name="dailyLimit" type="number"
-                                step="0.01"
+                                step="1" min="0"
                                 class="block w-full pl-14 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
-                                required />
+                                required x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 text-sm">EGP</span>
                             </div>
@@ -118,9 +125,9 @@
                         </div>
                         <div class="relative">
                             <x-text-input wire:model="monthlyLimit" id="monthlyLimit" name="monthlyLimit"
-                                type="number" step="0.01"
+                                type="number" step="1" min="0"
                                 class="block w-full pl-14 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
-                                required />
+                                required x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 text-sm">EGP</span>
                             </div>
