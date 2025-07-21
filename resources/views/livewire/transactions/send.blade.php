@@ -276,14 +276,16 @@
                             <label for="receiverMobile" class="block text-sm font-medium text-gray-700 mb-2">
                                 Receiver Mobile Number <span class="text-red-500">*</span>
                             </label>
-                            <input wire:model="receiverMobile" id="receiverMobile" type="text" maxlength="11" minlength="11"
+                            <input wire:model="receiverMobile" id="receiverMobile" type="text" maxlength="11"
+                                minlength="11"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 @error('receiverMobile') border-red-500 @enderror"
-                                placeholder="Enter receiver mobile number (11 digits)" pattern="\d{11}" autocomplete="off"
-                                oninput="this.value = this.value.replace(/[^\d]/g, '').slice(0,11);"
-                                onblur="">
+                                placeholder="Enter receiver mobile number (11 digits)" pattern="\d{11}"
+                                autocomplete="off"
+                                oninput="this.value = this.value.replace(/[^\d]/g, '').slice(0,11);" onblur="">
                             <p class="mt-1 text-xs text-gray-500">Receiver mobile number must be exactly 11 digits.</p>
-                            @if(strlen($receiverMobile) > 0 && strlen($receiverMobile) < 11)
-                                <p class="mt-1 text-sm text-red-600">Please enter all 11 digits of the mobile number.</p>
+                            @if (strlen($receiverMobile) > 0 && strlen($receiverMobile) < 11)
+                                <p class="mt-1 text-sm text-red-600">Please enter all 11 digits of the mobile number.
+                                </p>
                             @endif
                             @error('receiverMobile')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -295,11 +297,13 @@
                             <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
                                 Amount (EGP) <span class="text-red-500">*</span>
                             </label>
-                            <input wire:model.live="amount" id="amount" type="number" step="1" min="1"
+                            <input wire:model.live="amount" id="amount" type="number" step="1"
+                                min="1"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 @error('amount') border-red-500 @enderror"
                                 placeholder="Enter amount (whole numbers only)" autocomplete="off"
                                 oninput="this.value = this.value.replace(/[^\d]/g, '');">
-                            <p class="mt-1 text-xs text-gray-500">Amount must be a whole number (no decimals allowed)</p>
+                            <p class="mt-1 text-xs text-gray-500">Amount must be a whole number (no decimals allowed)
+                            </p>
                             @error('amount')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -312,8 +316,7 @@
                             </label>
                             <input wire:model="commission" id="commission" type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('commission') border-red-500 @enderror"
-                                placeholder="0.00" autocomplete="off"
-                                value="{{ old('commission', '') }}"
+                                placeholder="0.00" autocomplete="off" value="{{ old('commission', '') }}"
                                 readonly />
                             <span class="text-xs text-gray-500">5 EGP per 500 EGP (no fractions)</span>
                             @error('commission')
@@ -325,12 +328,14 @@
                             <label for="discount" class="block text-sm font-medium text-gray-700 mb-2">
                                 Discount (Optional)
                             </label>
-                            <input wire:model.live="discount" id="discount" type="number" step="1" min="0"
+                            <input wire:model.live="discount" id="discount" type="number" step="1"
+                                min="0"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('discount') border-red-500 @enderror"
                                 placeholder="Enter discount (whole numbers only)" autocomplete="off"
                                 value="{{ old('discount', '') }}"
                                 onfocus="if(this.value=='0'||this.value=='0.00'){this.value='';}" />
-                            <p class="mt-1 text-xs text-gray-500">Discount must be a whole number (no decimals allowed)</p>
+                            <p class="mt-1 text-xs text-gray-500">Discount must be a whole number (no decimals allowed)
+                            </p>
                             @error('discount')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror

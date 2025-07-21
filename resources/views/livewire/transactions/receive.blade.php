@@ -169,16 +169,21 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Sender Mobile Number -->
-                        <div>
+                        <div class="relative">
                             <label for="senderMobile" class="block text-sm font-medium text-gray-700 mb-2">
                                 Sender Mobile Number <span class="text-red-500">*</span>
                             </label>
-                            <input wire:model="senderMobile" id="senderMobile" type="text"
+                            <input wire:model.live.debounce.300ms="senderMobile" id="senderMobile" type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('senderMobile') border-red-500 @enderror"
-                                placeholder="Enter sender mobile number">
+                                placeholder="Enter sender mobile number" maxlength="11" minlength="11"
+                                pattern="\d{11}" autocomplete="off"
+                                oninput="this.value=this.value.replace(/[^\d]/g,'').slice(0,11)">
                             @error('senderMobile')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
+                            @if (strlen($senderMobile ?? '') > 0 && strlen($senderMobile ?? '') != 11)
+                                <p class="mt-1 text-sm text-red-600">Mobile number must be exactly 11 digits.</p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -201,10 +206,10 @@
                             <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
                                 Amount (EGP) <span class="text-red-500">*</span>
                             </label>
-                            <input wire:model.live="amount" id="amount" type="number" step="any"
-                                min="0.01"
+                            <input wire:model.live="amount" id="amount" type="number" step="1"
+                                min="1"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('amount') border-red-500 @enderror"
-                                placeholder="Enter amount">
+                                placeholder="Enter amount" oninput="this.value=this.value.replace(/[^\d]/g,'')">
                             @error('amount')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -226,10 +231,11 @@
                             <label for="discount" class="block text-sm font-medium text-gray-700 mb-2">
                                 Discount (EGP)
                             </label>
-                            <input wire:model.live="discount" id="discount" type="number" step="0.01"
+                            <input wire:model.live="discount" id="discount" type="number" step="1"
                                 min="0"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('discount') border-red-500 @enderror"
-                                placeholder="Enter discount amount">
+                                placeholder="Enter discount amount"
+                                oninput="this.value=this.value.replace(/[^\d]/g,'')">
                             @error('discount')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -325,13 +331,15 @@
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">From Safe</p>
                                 <p class="text-lg font-bold text-purple-700">
-                                    {{ number_format((float) $amount - ((float) $commission - abs((float) $discount)), 2) }} EGP
+                                    {{ number_format((float) $amount - ((float) $commission - abs((float) $discount)), 2) }}
+                                    EGP
                                 </p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Total</p>
                                 <p class="text-lg font-bold text-purple-700">
-                                    {{ number_format((float) $amount - ((float) $commission - abs((float) $discount)), 2) }} EGP
+                                    {{ number_format((float) $amount - ((float) $commission - abs((float) $discount)), 2) }}
+                                    EGP
                                 </p>
                             </div>
                         </div>
