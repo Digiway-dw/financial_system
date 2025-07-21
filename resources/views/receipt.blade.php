@@ -91,8 +91,14 @@
         <div class="row"><span
                 class="value">{{ $transaction->agent->name ?? ($transaction->agent_id ?? 'N/A') }}</span><span
                 class="label-en">User</span></div>
-        <div class="row"><span class="value">{{ $transaction->customer_name ?? 'N/A' }}</span><span
-                class="label-en">Customer</span></div>
+        <div class="row">
+            <span class="value">{{ $transaction->customer_name ?? 'N/A' }}</span>
+            <span class="label-en">Customer</span>
+        </div>
+        <div class="row">
+            <span class="value">{{ $transaction->customer_code ?? 'N/A' }}</span>
+            <span class="label-en">Customer Code</span>
+        </div>
         @if (strtolower($transaction->transaction_type) === 'receive' && !empty($transaction->sender_mobile_number))
             <div class="row">
                 <span class="value">{{ $transaction->sender_mobile_number }}</span>
@@ -125,7 +131,9 @@
             $deduction = abs($transaction->deduction ?? 0);
             $finalTotal = $isReceive
                 ? $amount - ($commission - $deduction)
-                : ($isWithdrawal ? $amount - $commission : $amount + $commission - $deduction);
+                : ($isWithdrawal
+                    ? $amount - $commission
+                    : $amount + $commission - $deduction);
         @endphp
         <div class="row"><span class="value branch-bold">{{ number_format($finalTotal, 2) }}</span><span
                 class="label-ar branch-bold">Total</span></div>
