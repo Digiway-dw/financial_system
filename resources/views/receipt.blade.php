@@ -115,20 +115,20 @@
             </span>
             <span class="label-en">Mobile</span>
         </div>
-        <div class="row"><span class="value">{{ number_format((int)$transaction->amount) }}</span><span
+        <div class="row"><span class="value">{{ number_format((int) $transaction->amount) }}</span><span
                 class="label-en">Amount</span></div>
-        <div class="row"><span class="value">{{ number_format((int)$transaction->commission) }}</span><span
+        <div class="row"><span class="value">{{ number_format((int) $transaction->commission) }}</span><span
                 class="label-en">Commission</span></div>
         @if ($transaction->deduction > 0)
-            <div class="row"><span class="value">{{ number_format((int)abs($transaction->deduction)) }}</span><span
+            <div class="row"><span class="value">{{ number_format((int) abs($transaction->deduction)) }}</span><span
                     class="label-en">Discount</span></div>
         @endif
         @php
             $isReceive = strtolower($transaction->transaction_type) === 'receive';
             $isWithdrawal = strtolower($transaction->transaction_type) === 'withdrawal';
-            $amount = (int)$transaction->amount;
-            $commission = (int)$transaction->commission;
-            $deduction = (int)abs($transaction->deduction ?? 0);
+            $amount = (int) $transaction->amount;
+            $commission = (int) $transaction->commission;
+            $deduction = (int) abs($transaction->deduction ?? 0);
             $finalTotal = $isReceive
                 ? $amount - ($commission - $deduction)
                 : ($isWithdrawal

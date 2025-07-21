@@ -21,7 +21,7 @@ class Edit extends Component
     public $mobileNumbers = [];
     public $customerCode = '';
     public $gender = '';
-    public $balance = 0.00;
+    public $balance = 0;
     public $is_client = false;
     public $agent_id = null;
     public $branch_id = '';
@@ -39,8 +39,7 @@ class Edit extends Component
         UpdateCustomer $updateCustomerUseCase,
         UserRepository $userRepository,
         BranchRepository $branchRepository
-    )
-    {
+    ) {
         $this->customerRepository = $customerRepository;
         $this->updateCustomerUseCase = $updateCustomerUseCase;
         $this->userRepository = $userRepository;
@@ -100,7 +99,7 @@ class Edit extends Component
             }
             $this->customerCode = $this->customer->customer_code;
             $this->gender = $this->customer->gender;
-            $this->balance = $this->customer->balance;
+            $this->balance = (int) $this->customer->balance;
             $this->is_client = $this->customer->is_client;
             $this->agent_id = $this->customer->agent_id;
             $this->branch_id = $this->customer->branch_id;
@@ -135,8 +134,8 @@ class Edit extends Component
             // Use the first mobile number as the primary
             $primaryMobile = $this->mobileNumbers[0];
             // Only admins can modify balance - preserve existing balance for non-admins
-            $oldBalance = $this->customer->balance;
-            $balanceToUpdate = $user->hasRole('admin') ? $this->balance : $this->customer->balance;
+            $oldBalance = (int) $this->customer->balance;
+            $balanceToUpdate = $user->hasRole('admin') ? (int) $this->balance : (int) $this->customer->balance;
 
             $this->updateCustomerUseCase->execute(
                 $this->customerId,
