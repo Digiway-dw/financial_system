@@ -348,6 +348,65 @@
                     </div>
                 @endif
 
+                <!-- Inline Validation Warnings -->
+                @if ($safeBalanceWarning)
+                    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-red-800 font-medium">Transaction cannot be processed</p>
+                            <p class="text-red-700 text-sm">{{ $safeBalanceWarning }}</p>
+                        </div>
+                    </div>
+                @endif
+
+                @if ($errorMessage)
+                    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-red-800 font-medium">Transaction Error</p>
+                            <p class="text-red-700 text-sm">{{ $errorMessage }}</p>
+                        </div>
+                    </div>
+                @endif
+
+                @if (session()->has('error'))
+                    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-red-800 font-medium">Transaction Rejected</p>
+                            <p class="text-red-700 text-sm">{{ session('error') }}</p>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Auto-Generated Customer Code Display -->
+                @if (isset($generatedCustomerCode) && $generatedCustomerCode)
+                    <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-green-800 font-medium">New Customer Created</p>
+                            <p class="text-green-700 text-sm">Customer Code: <span class="font-mono font-bold">{{ $generatedCustomerCode }}</span></p>
+                            <p class="text-green-600 text-xs">Please inform the customer of this code for future transactions.</p>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Submit Button -->
                 <div class="flex justify-between items-center">
                     <a href="{{ route('transactions.index') }}"
