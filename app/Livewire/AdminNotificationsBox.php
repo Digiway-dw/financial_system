@@ -118,6 +118,16 @@ class AdminNotificationsBox extends Component
         }
         
         $type = $notification->data['type'] ?? null;
+        // Remove withdrawal approval logic
+        if ($type === 'withdrawal') {
+            session()->flash('error', 'Please use the Pending Transactions screen to approve or reject withdrawals.');
+            $notification->markAsRead();
+            $this->loadNotifications();
+            $this->dispatch('$refresh');
+            $this->js('window.location.reload();');
+            return;
+        }
+        
         $transactionId = $notification->data['transaction_id'] ?? null;
         
         // Debug logging
@@ -131,26 +141,22 @@ class AdminNotificationsBox extends Component
         
         if ($type === 'withdrawal' && $transactionId) {
             $cashTransaction = \App\Models\Domain\Entities\CashTransaction::find($transactionId);
-            
             if (!$cashTransaction) {
                 session()->flash('error', 'Cash transaction not found for ID: ' . $transactionId);
                 return;
             }
-            
             if ($cashTransaction->status !== 'pending') {
                 session()->flash('error', 'Transaction is not pending. Current status: ' . $cashTransaction->status);
                 return;
             }
-            
             if ($cashTransaction->transaction_type !== 'Withdrawal') {
                 session()->flash('error', 'Transaction is not a withdrawal. Type: ' . $cashTransaction->transaction_type);
                 return;
             }
-            
             $safe = \App\Models\Domain\Entities\Safe::find($cashTransaction->safe_id);
             $amount = abs($cashTransaction->amount);
 
-            // Branch withdrawal logic
+            // Branch withdrawal logic (full safe balance update)
             if ($cashTransaction->destination_branch_id && $cashTransaction->destination_safe_id) {
                 // Deduct from selected branch's safe (destination_safe_id)
                 $sourceSafe = \App\Models\Domain\Entities\Safe::find($cashTransaction->destination_safe_id);
@@ -168,15 +174,13 @@ class AdminNotificationsBox extends Component
                     $destSafe->current_balance += $amount;
                     $destSafe->save();
                 }
-            } else {
-                // Regular withdrawal logic
-                // Check if this is a client wallet withdrawal (identified by the notes)
+            }
+            // (Other withdrawal types: keep existing logic)
+            // Regular withdrawal logic
+            if (!($cashTransaction->destination_branch_id && $cashTransaction->destination_safe_id)) {
                 if (str_contains($cashTransaction->notes, 'CLIENT_WALLET_WITHDRAWAL')) {
                     // For client wallet withdrawals, the customer balance was already deducted
-                    // when the transaction was created, so no safe balance deduction needed
-                    // Just update the status to completed
                 } elseif ($cashTransaction->customer_code) {
-                    // For non-client wallet withdrawals, deduct from client wallet if applicable
                     $client = \App\Models\Domain\Entities\Customer::where('customer_code', $cashTransaction->customer_code)->first();
                     if ($client) {
                         if (($client->balance - $amount) < 0) {
@@ -186,28 +190,6 @@ class AdminNotificationsBox extends Component
                         $client->balance -= $amount;
                         $client->save();
                     }
-
-                    // Also deduct from safe for regular customer withdrawals
-                    if ($safe) {
-                        if (($safe->current_balance - $amount) < 0) {
-                            session()->flash('error', 'Insufficient safe balance. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
-                            return;
-                        }
-                        $safe->current_balance -= $amount;
-                        $safe->save();
-                    }
-                } elseif ($cashTransaction->destination_branch_id && !$cashTransaction->customer_code && str_contains($cashTransaction->customer_name, 'Expense:')) {
-                    // Expense withdrawal
-                    if ($safe) {
-                        if (($safe->current_balance - $amount) < 0) {
-                            session()->flash('error', 'Insufficient safe balance for expense withdrawal. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
-                            return;
-                        }
-                        $safe->current_balance -= $amount;
-                        $safe->save();
-                    }
-                } else {
-                    // Deduct from safe for other types of withdrawals (direct, user, admin)
                     if ($safe) {
                         if (($safe->current_balance - $amount) < 0) {
                             session()->flash('error', 'Insufficient safe balance. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
@@ -225,6 +207,7 @@ class AdminNotificationsBox extends Component
             $notification->markAsRead();
             $this->loadNotifications();
             $this->dispatch('$refresh');
+            $this->js('window.location.reload();');
             return;
         }
         session()->flash('error', 'Failed to approve transaction: Invalid notification type or missing transaction ID.');
@@ -241,6 +224,16 @@ class AdminNotificationsBox extends Component
         }
         
         $type = $notification->data['type'] ?? null;
+        // Remove withdrawal rejection logic
+        if ($type === 'withdrawal') {
+            session()->flash('error', 'Please use the Pending Transactions screen to approve or reject withdrawals.');
+            $notification->markAsRead();
+            $this->loadNotifications();
+            $this->dispatch('$refresh');
+            $this->js('window.location.reload();');
+            return;
+        }
+        
         $transactionId = $notification->data['transaction_id'] ?? null;
         
         // Debug logging
@@ -284,6 +277,8 @@ class AdminNotificationsBox extends Component
             $notification->markAsRead();
             $this->loadNotifications();
             $this->dispatch('$refresh');
+            // Force a full page reload to update the UI
+            $this->js('window.location.reload();');
             return;
         }
         session()->flash('error', 'Failed to reject transaction: Invalid notification type or missing transaction ID.');

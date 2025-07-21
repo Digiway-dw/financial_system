@@ -335,8 +335,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 font-medium mb-2">Depositor Mobile Number</label>
-                                    <input type="text" wire:model.defer="depositorMobileNumber" minlength="11"
-                                        maxlength="15" pattern="[0-9]+"
+                                    <input type="text" wire:model.defer="depositorMobileNumber" minlength="11" maxlength="11" pattern="[0-9]{11}" inputmode="numeric"
                                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                                         placeholder="Mobile number" required />
                                     @error('depositorMobileNumber')
