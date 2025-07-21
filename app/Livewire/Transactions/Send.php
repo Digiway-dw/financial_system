@@ -40,7 +40,7 @@ class Send extends Component
 
     public $commission = null;
 
-    #[Validate('nullable|numeric|min:0')]
+    #[Validate('nullable|integer|min:0')]
     public $discount = null;
 
     #[Validate('required_if:discount,>0|string|min:3')]
