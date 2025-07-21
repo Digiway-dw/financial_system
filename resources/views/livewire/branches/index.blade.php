@@ -67,8 +67,7 @@
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900">Total Safe Balance</h3>
                         <p class="text-3xl font-bold text-blue-600">
-                            {{ number_format(collect($branches)->sum(function ($branch) {return $branch['safe']['current_balance'] ?? 0;}),2) }}
-                            EGP
+                            {{ number_format((int) collect($branches)->sum(function ($branch) {return $branch['safe']['current_balance'] ?? 0;})) }} EGP
                         </p>
                     </div>
                 </div>
@@ -236,7 +235,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if (isset($branch['safe']))
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{ number_format($branch['safe']['current_balance'], 2) }}</div>
+                                            {{ number_format((int) $branch['safe']['current_balance']) }}</div>
                                         <div class="text-xs text-gray-500">EGP</div>
                                     @else
                                         <span
