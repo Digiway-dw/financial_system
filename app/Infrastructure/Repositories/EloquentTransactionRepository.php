@@ -64,13 +64,16 @@ class EloquentTransactionRepository implements TransactionRepository
     {
         // Ordinary transactions
         $query = EloquentTransaction::query();
-        // Date filters temporarily removed for debugging
-        // if (isset($filters['start_date'])) {
-        //     $query->whereDate('transaction_date_time', '>=', $filters['start_date']);
-        // }
-        // if (isset($filters['end_date'])) {
-        //     $query->whereDate('transaction_date_time', '<=', $filters['end_date']);
-        // }
+        // Flag to skip cash transactions if filtering by transfer line
+        $skipCashTransactions = false;
+        
+        // Date filters re-enabled
+        if (isset($filters['start_date']) && $filters['start_date']) {
+            $query->whereDate('created_at', '>=', $filters['start_date']);
+        }
+        if (isset($filters['end_date']) && $filters['end_date']) {
+            $query->whereDate('created_at', '<=', $filters['end_date']);
+        }
         if (isset($filters['agent_id'])) {
             $query->where('agent_id', $filters['agent_id']);
         }
@@ -85,17 +88,40 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['transaction_type'])) {
             $query->where('transaction_type', $filters['transaction_type']);
         }
+        // Regular transactions - customer code search
         if (isset($filters['customer_code']) && $filters['customer_code']) {
-            $query->where('customer_code', 'like', '%' . $filters['customer_code'] . '%');
+            // Standardize the customer code format - remove spaces and make case-insensitive
+            $customerCode = trim($filters['customer_code']);
+            $query->where(function($q) use ($customerCode) {
+                $q->whereRaw('LOWER(customer_code) LIKE ?', ['%' . strtolower($customerCode) . '%']);
+            });
         }
-        if (isset($filters['receiver_mobile']) && $filters['receiver_mobile']) {
-            $query->where('receiver_mobile', 'like', '%' . $filters['receiver_mobile'] . '%');
+        if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
+            // Clean the mobile number to ensure it only contains digits
+            $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
+            $query->where(function($q) use ($mobileNumber) {
+                $q->whereRaw("REPLACE(REPLACE(REPLACE(receiver_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
+            });
         }
-        if (isset($filters['transfer_line']) && $filters['transfer_line']) {
-            $query->where('line_number', 'like', '%' . $filters['transfer_line'] . '%');
+        
+        // When filtering by transfer_line, we should exclude cash transactions since they don't have line_id
+        if (isset($filters['transfer_line']) && $filters['transfer_line'] && !empty($filters['transfer_line'])) {
+            // Set flag to skip cash transactions
+            $skipCashTransactions = true;
+            
+            // For regular transactions, search by joining with lines table
+            $transferLine = trim($filters['transfer_line']);
+            $query->whereHas('line', function($q) use ($transferLine) {
+                $q->where('mobile_number', 'like', '%' . $transferLine . '%');
+            });
         }
-        if (isset($filters['amount']) && $filters['amount']) {
-            $query->where('amount', $filters['amount']);
+        
+        // Handle amount range filtering
+        if (isset($filters['amount_from']) && $filters['amount_from'] !== '') {
+            $query->where('amount', '>=', $filters['amount_from']);
+        }
+        if (isset($filters['amount_to']) && $filters['amount_to'] !== '') {
+            $query->where('amount', '<=', $filters['amount_to']);
         }
         if (isset($filters['commission']) && $filters['commission']) {
             $query->where('commission', $filters['commission']);
@@ -108,6 +134,14 @@ class EloquentTransactionRepository implements TransactionRepository
                 $q->whereIn('branch_id', $filters['branch_ids']);
             });
         }
+        // Add reference_number filter for regular transactions
+        if (isset($filters['reference_number']) && $filters['reference_number']) {
+            // Standardize the reference number format - remove spaces and make case-insensitive
+            $refNumber = trim($filters['reference_number']);
+            $query->where(function($q) use ($refNumber) {
+                $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
+            });
+        }
         $ordinaryTxs = $query->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
@@ -118,63 +152,94 @@ class EloquentTransactionRepository implements TransactionRepository
             return $transactionArray;
         });
 
-        // Cash transactions
-        $cash = CashTransaction::query();
-        // Date filters temporarily removed for debugging
-        // if (isset($filters['start_date'])) {
-        //     $cash->whereDate('transaction_date_time', '>=', $filters['start_date']);
-        // }
-        // if (isset($filters['end_date'])) {
-        //     $cash->whereDate('transaction_date_time', '<=', $filters['end_date']);
-        // }
-        if (isset($filters['customer_name'])) {
-            $cash->where('customer_name', 'like', '%' . $filters['customer_name'] . '%');
-        }
-        if (isset($filters['transaction_type'])) {
-            $cash->where('transaction_type', $filters['transaction_type']);
-        }
-        if (isset($filters['amount']) && $filters['amount']) {
-            $cash->where('amount', $filters['amount']);
-        }
-        if (isset($filters['agent_id'])) {
-            $cash->where('agent_id', $filters['agent_id']);
-        }
-        if (isset($filters['employee_ids']) && is_array($filters['employee_ids']) && count($filters['employee_ids']) > 0) {
-            $cash->whereIn('agent_id', $filters['employee_ids']);
-        }
-        if (isset($filters['branch_id'])) {
-            $cash->whereHas('safe', function ($q) use ($filters) {
-                $q->where('branch_id', $filters['branch_id']);
+        // Cash transactions - skip if filtering by transfer line
+        $cashTxs = collect();
+        if (!$skipCashTransactions) {
+            $cash = CashTransaction::query();
+            // Date filters re-enabled
+            if (isset($filters['start_date']) && $filters['start_date']) {
+                $cash->whereDate('created_at', '>=', $filters['start_date']);
+            }
+            if (isset($filters['end_date']) && $filters['end_date']) {
+                $cash->whereDate('created_at', '<=', $filters['end_date']);
+            }
+            if (isset($filters['customer_name'])) {
+                $cash->where('customer_name', 'like', '%' . $filters['customer_name'] . '%');
+            }
+            if (isset($filters['transaction_type'])) {
+                $cash->where('transaction_type', $filters['transaction_type']);
+            }
+            // Cash transactions - customer code search
+            if (isset($filters['customer_code']) && $filters['customer_code']) {
+                // Standardize the customer code format - remove spaces and make case-insensitive
+                $customerCode = trim($filters['customer_code']);
+                $cash->where(function($q) use ($customerCode) {
+                    $q->whereRaw('LOWER(customer_code) LIKE ?', ['%' . strtolower($customerCode) . '%']);
+                });
+            }
+            // Handle amount range filtering for cash transactions
+            if (isset($filters['amount_from']) && $filters['amount_from'] !== '') {
+                $cash->where('amount', '>=', $filters['amount_from']);
+            }
+            if (isset($filters['amount_to']) && $filters['amount_to'] !== '') {
+                $cash->where('amount', '<=', $filters['amount_to']);
+            }
+            if (isset($filters['agent_id'])) {
+                $cash->where('agent_id', $filters['agent_id']);
+            }
+            if (isset($filters['employee_ids']) && is_array($filters['employee_ids']) && count($filters['employee_ids']) > 0) {
+                $cash->whereIn('agent_id', $filters['employee_ids']);
+            }
+            if (isset($filters['branch_id'])) {
+                $cash->whereHas('safe', function ($q) use ($filters) {
+                    $q->where('branch_id', $filters['branch_id']);
+                });
+            }
+            // Add filter for receiver_mobile_number (using depositor_mobile_number)
+            if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
+                // Clean the mobile number to ensure it only contains digits
+                $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
+                $cash->where(function($q) use ($mobileNumber) {
+                    $q->whereRaw("REPLACE(REPLACE(REPLACE(depositor_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
+                });
+            }
+            // Add reference_number filter for cash transactions
+            if (isset($filters['reference_number']) && $filters['reference_number']) {
+                // Standardize the reference number format - remove spaces and make case-insensitive
+                $refNumber = trim($filters['reference_number']);
+                $cash->where(function($q) use ($refNumber) {
+                    $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
+                });
+            }
+            $cashTxs = $cash->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'customer_name' => $transaction->customer_name,
+                    'customer_mobile_number' => null,
+                    'receiver_mobile_number' => $transaction->depositor_mobile_number ?? null,
+                    'customer_code' => $transaction->customer_code ?? null,
+                    'amount' => $transaction->amount,
+                    'commission' => 0,
+                    'deduction' => 0,
+                    'discount_notes' => null,
+                    'notes' => $transaction->notes,
+                    'transaction_type' => $transaction->transaction_type,
+                    'agent_id' => $transaction->agent_id,
+                    'agent_name' => $transaction->agent ? $transaction->agent->name : 'N/A',
+                    'branch_name' => $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A',
+                    'status' => $transaction->status,
+                    'transaction_date_time' => $transaction->transaction_date_time,
+                    'line_id' => null,
+                    'safe_id' => $transaction->safe_id,
+                    'is_absolute_withdrawal' => null,
+                    'payment_method' => null,
+                    'reference_number' => $transaction->reference_number, // Use actual reference_number
+                    'created_at' => $transaction->created_at,
+                    'updated_at' => $transaction->updated_at,
+                    'source_table' => 'cash_transactions',
+                ];
             });
         }
-        $cashTxs = $cash->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
-            return [
-                'id' => $transaction->id,
-                'customer_name' => $transaction->customer_name,
-                'customer_mobile_number' => null,
-                'receiver_mobile_number' => null,
-                'customer_code' => $transaction->customer_code ?? null,
-                'amount' => $transaction->amount,
-                'commission' => 0,
-                'deduction' => 0,
-                'discount_notes' => null,
-                'notes' => $transaction->notes,
-                'transaction_type' => $transaction->transaction_type,
-                'agent_id' => $transaction->agent_id,
-                'agent_name' => $transaction->agent ? $transaction->agent->name : 'N/A',
-                'branch_name' => $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A',
-                'status' => $transaction->status,
-                'transaction_date_time' => $transaction->transaction_date_time,
-                'line_id' => null,
-                'safe_id' => $transaction->safe_id,
-                'is_absolute_withdrawal' => null,
-                'payment_method' => null,
-                'reference_number' => $transaction->reference_number, // Use actual reference_number
-                'created_at' => $transaction->created_at,
-                'updated_at' => $transaction->updated_at,
-                'source_table' => 'cash_transactions',
-            ];
-        });
 
         // Merge and sort
         $all = collect(array_merge($ordinaryTxs->toArray(), $cashTxs->toArray()));
@@ -234,13 +299,16 @@ class EloquentTransactionRepository implements TransactionRepository
      */
     public function allUnified(array $filters = []): array
     {
+        // Flag to skip cash transactions if filtering by transfer line
+        $skipCashTransactions = false;
+        
         // Fetch ordinary transactions
         $ordinary = EloquentTransaction::query();
         // Apply filters as in filter() method (copy relevant filter logic)
-        if (isset($filters['start_date'])) {
+        if (isset($filters['start_date']) && $filters['start_date']) {
             $ordinary->whereDate('created_at', '>=', $filters['start_date']);
         }
-        if (isset($filters['end_date'])) {
+        if (isset($filters['end_date']) && $filters['end_date']) {
             $ordinary->whereDate('created_at', '<=', $filters['end_date']);
         }
         if (isset($filters['agent_id'])) {
@@ -257,17 +325,40 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['transaction_type'])) {
             $ordinary->where('transaction_type', $filters['transaction_type']);
         }
+        // allUnified method - regular transactions customer code search
         if (isset($filters['customer_code']) && $filters['customer_code']) {
-            $ordinary->where('customer_code', 'like', '%' . $filters['customer_code'] . '%');
+            // Standardize the customer code format - remove spaces and make case-insensitive
+            $customerCode = trim($filters['customer_code']);
+            $ordinary->where(function($q) use ($customerCode) {
+                $q->whereRaw('LOWER(customer_code) LIKE ?', ['%' . strtolower($customerCode) . '%']);
+            });
         }
-        if (isset($filters['receiver_mobile']) && $filters['receiver_mobile']) {
-            $ordinary->where('receiver_mobile', 'like', '%' . $filters['receiver_mobile'] . '%');
+        if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
+            // Clean the mobile number to ensure it only contains digits
+            $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
+            $ordinary->where(function($q) use ($mobileNumber) {
+                $q->whereRaw("REPLACE(REPLACE(REPLACE(receiver_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
+            });
         }
-        if (isset($filters['transfer_line']) && $filters['transfer_line']) {
-            $ordinary->where('line_number', 'like', '%' . $filters['transfer_line'] . '%');
+        
+        // When filtering by transfer_line, exclude cash transactions since they don't have line_id
+        if (isset($filters['transfer_line']) && $filters['transfer_line'] && !empty($filters['transfer_line'])) {
+            // Set flag to skip cash transactions
+            $skipCashTransactions = true;
+            
+            // For regular transactions, search by joining with lines table
+            $transferLine = trim($filters['transfer_line']);
+            $ordinary->whereHas('line', function($q) use ($transferLine) {
+                $q->where('mobile_number', 'like', '%' . $transferLine . '%');
+            });
         }
-        if (isset($filters['amount']) && $filters['amount']) {
-            $ordinary->where('amount', $filters['amount']);
+        
+        // Handle amount range filtering
+        if (isset($filters['amount_from']) && $filters['amount_from'] !== '') {
+            $ordinary->where('amount', '>=', $filters['amount_from']);
+        }
+        if (isset($filters['amount_to']) && $filters['amount_to'] !== '') {
+            $ordinary->where('amount', '<=', $filters['amount_to']);
         }
         if (isset($filters['commission']) && $filters['commission']) {
             $ordinary->where('commission', $filters['commission']);
@@ -281,7 +372,11 @@ class EloquentTransactionRepository implements TransactionRepository
             });
         }
         if (isset($filters['reference_number']) && $filters['reference_number']) {
-            $ordinary->where('reference_number', 'like', '%' . $filters['reference_number'] . '%');
+            // Standardize the reference number format - remove spaces and make case-insensitive
+            $refNumber = trim($filters['reference_number']);
+            $ordinary->where(function($q) use ($refNumber) {
+                $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
+            });
         }
         $ordinaryTxs = $ordinary->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
             $arr = $transaction->toArray();
@@ -293,61 +388,88 @@ class EloquentTransactionRepository implements TransactionRepository
             return $arr;
         });
 
-        // Fetch cash transactions
-        $cash = CashTransaction::query();
-        if (isset($filters['start_date'])) {
-            $cash->whereDate('created_at', '>=', $filters['start_date']);
+        // Fetch cash transactions - skip if filtering by transfer line
+        $cashTxs = collect();
+        if (!$skipCashTransactions) {
+            $cash = CashTransaction::query();
+            if (isset($filters['start_date']) && $filters['start_date']) {
+                $cash->whereDate('created_at', '>=', $filters['start_date']);
+            }
+            if (isset($filters['end_date']) && $filters['end_date']) {
+                $cash->whereDate('created_at', '<=', $filters['end_date']);
+            }
+            if (isset($filters['customer_name'])) {
+                $cash->where('customer_name', 'like', '%' . $filters['customer_name'] . '%');
+            }
+            if (isset($filters['transaction_type'])) {
+                $cash->where('transaction_type', $filters['transaction_type']);
+            }
+            // allUnified method - cash transactions customer code search
+            if (isset($filters['customer_code']) && $filters['customer_code']) {
+                // Standardize the customer code format - remove spaces and make case-insensitive
+                $customerCode = trim($filters['customer_code']);
+                $cash->where(function($q) use ($customerCode) {
+                    $q->whereRaw('LOWER(customer_code) LIKE ?', ['%' . strtolower($customerCode) . '%']);
+                });
+            }
+            // Handle amount range filtering for cash transactions
+            if (isset($filters['amount_from']) && $filters['amount_from'] !== '') {
+                $cash->where('amount', '>=', $filters['amount_from']);
+            }
+            if (isset($filters['amount_to']) && $filters['amount_to'] !== '') {
+                $cash->where('amount', '<=', $filters['amount_to']);
+            }
+            // Add agent_id and employee_ids filter for cash transactions
+            if (isset($filters['agent_id'])) {
+                $cash->where('agent_id', $filters['agent_id']);
+            }
+            if (isset($filters['employee_ids']) && is_array($filters['employee_ids']) && count($filters['employee_ids']) > 0) {
+                $cash->whereIn('agent_id', $filters['employee_ids']);
+            }
+            if (isset($filters['reference_number']) && $filters['reference_number']) {
+                // Standardize the reference number format - remove spaces and make case-insensitive
+                $refNumber = trim($filters['reference_number']);
+                $cash->where(function($q) use ($refNumber) {
+                    $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
+                });
+            }
+            // Add filter for receiver_mobile_number (using depositor_mobile_number)
+            if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
+                // Clean the mobile number to ensure it only contains digits
+                $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
+                $cash->where(function($q) use ($mobileNumber) {
+                    $q->whereRaw("REPLACE(REPLACE(REPLACE(depositor_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
+                });
+            }
+            $cashTxs = $cash->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'customer_name' => $transaction->customer_name,
+                    'customer_mobile_number' => null,
+                    'receiver_mobile_number' => $transaction->depositor_mobile_number ?? null,
+                    'customer_code' => $transaction->customer_code ?? null,
+                    'amount' => $transaction->amount,
+                    'commission' => 0,
+                    'deduction' => 0,
+                    'discount_notes' => null,
+                    'notes' => $transaction->notes,
+                    'transaction_type' => $transaction->transaction_type,
+                    'agent_id' => $transaction->agent_id,
+                    'agent_name' => $transaction->agent ? $transaction->agent->name : 'N/A',
+                    'branch_name' => $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A',
+                    'status' => $transaction->status,
+                    'transaction_date_time' => $transaction->transaction_date_time,
+                    'line_id' => null,
+                    'safe_id' => $transaction->safe_id,
+                    'is_absolute_withdrawal' => null,
+                    'payment_method' => null,
+                    'reference_number' => $transaction->reference_number, // Use actual reference_number
+                    'created_at' => $transaction->created_at,
+                    'updated_at' => $transaction->updated_at,
+                    'source_table' => 'cash_transactions',
+                ];
+            });
         }
-        if (isset($filters['end_date'])) {
-            $cash->whereDate('created_at', '<=', $filters['end_date']);
-        }
-        if (isset($filters['customer_name'])) {
-            $cash->where('customer_name', 'like', '%' . $filters['customer_name'] . '%');
-        }
-        if (isset($filters['transaction_type'])) {
-            $cash->where('transaction_type', $filters['transaction_type']);
-        }
-        if (isset($filters['amount']) && $filters['amount']) {
-            $cash->where('amount', $filters['amount']);
-        }
-        // Add agent_id and employee_ids filter for cash transactions
-        if (isset($filters['agent_id'])) {
-            $cash->where('agent_id', $filters['agent_id']);
-        }
-        if (isset($filters['employee_ids']) && is_array($filters['employee_ids']) && count($filters['employee_ids']) > 0) {
-            $cash->whereIn('agent_id', $filters['employee_ids']);
-        }
-        if (isset($filters['reference_number']) && $filters['reference_number']) {
-            $cash->where('reference_number', 'like', '%' . $filters['reference_number'] . '%');
-        }
-        $cashTxs = $cash->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
-            return [
-                'id' => $transaction->id,
-                'customer_name' => $transaction->customer_name,
-                'customer_mobile_number' => null,
-                'receiver_mobile_number' => null,
-                'customer_code' => $transaction->customer_code ?? null,
-                'amount' => $transaction->amount,
-                'commission' => 0,
-                'deduction' => 0,
-                'discount_notes' => null,
-                'notes' => $transaction->notes,
-                'transaction_type' => $transaction->transaction_type,
-                'agent_id' => $transaction->agent_id,
-                'agent_name' => $transaction->agent ? $transaction->agent->name : 'N/A',
-                'branch_name' => $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A',
-                'status' => $transaction->status,
-                'transaction_date_time' => $transaction->transaction_date_time,
-                'line_id' => null,
-                'safe_id' => $transaction->safe_id,
-                'is_absolute_withdrawal' => null,
-                'payment_method' => null,
-                'reference_number' => $transaction->reference_number, // Use actual reference_number
-                'created_at' => $transaction->created_at,
-                'updated_at' => $transaction->updated_at,
-                'source_table' => 'cash_transactions',
-            ];
-        });
 
         $ordinaryTxsArr = $ordinaryTxs->toArray();
         $cashTxsArr = $cashTxs->toArray();

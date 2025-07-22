@@ -182,9 +182,9 @@
                 </div>
                 <!-- Receiver Mobile -->
                 <div class="space-y-2">
-                    <label for="receiver_mobile" class="block text-sm font-medium text-gray-700">Receiver
+                    <label for="receiver_mobile_number" class="block text-sm font-medium text-gray-700">Receiver
                         Mobile</label>
-                    <input wire:model.defer="receiver_mobile" id="receiver_mobile" type="text"
+                    <input wire:model.defer="receiver_mobile_number" id="receiver_mobile_number" type="text"
                         placeholder="Enter mobile number..."
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
@@ -197,12 +197,21 @@
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
-                <!-- Amount -->
+                <!-- Amount Range -->
                 <div class="space-y-2">
-                    <label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>
-                    <input wire:model.defer="amount" id="amount" type="number" step="0.01"
-                        placeholder="0.00"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
+                    <label class="block text-sm font-medium text-gray-700">Amount Range</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <input wire:model.defer="amount_from" id="amount_from" type="number" step="0.01"
+                                placeholder="From"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
+                        </div>
+                        <div>
+                            <input wire:model.defer="amount_to" id="amount_to" type="number" step="0.01"
+                                placeholder="To"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Commission -->
@@ -290,7 +299,7 @@
                 <!-- Filter Actions -->
                 <div class="space-y-2 flex flex-col justify-end lg:col-span-2">
                     <div class="flex space-x-3">
-                        <button wire:click="filter"
+                        <button wire:click="filter" type="button"
                             class="flex-1 px-4 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -343,6 +352,7 @@
                                 @endif
                             </div>
                         </th>
+                        <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px]">Receiver Mobile</th>
                         <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px] sortable-header" wire:click="sortBy('amount')">
                             <div class="flex items-center space-x-1">
                                 <span>Amount</span>
@@ -399,6 +409,7 @@
                             <tr class="hover:bg-gray-50 transition-colors @if(strtolower($transaction['status']) === 'pending') bg-yellow-100 @endif">
                                 <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-900">{{ $transaction['customer_name'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['customer_mobile_number'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['receiver_mobile_number'] ?? '' }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ number_format($transaction['amount'], 2) }} EGP</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ number_format($transaction['commission'], 2) }} EGP</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
