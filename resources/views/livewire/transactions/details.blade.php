@@ -57,15 +57,15 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Amount:</span>
-                                    <span class="text-sm font-bold text-gray-900">{{ number_format($transaction->amount, 2) }} EGP</span>
+                                    <span class="text-sm font-bold text-gray-900">{{ format_int($transaction->amount) }} EGP</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Commission:</span>
-                                    <span class="text-sm text-gray-900">{{ number_format($transaction->commission, 2) }} EGP</span>
+                                    <span class="text-sm text-gray-900">{{ format_int($transaction->commission) }} EGP</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Deduction:</span>
-                                    <span class="text-sm text-gray-900">{{ number_format($transaction->deduction ?? 0, 2) }} EGP</span>
+                                    <span class="text-sm text-gray-900">{{ format_int($transaction->deduction ?? 0) }} EGP</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Payment Method:</span>
@@ -245,7 +245,7 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Amount:</span>
-                                    <span class="text-sm font-bold text-gray-900">{{ number_format($cashTransaction->amount, 2) }} EGP</span>
+                                    <span class="text-sm font-bold text-gray-900">{{ format_int($cashTransaction->amount) }} EGP</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Customer Code:</span>

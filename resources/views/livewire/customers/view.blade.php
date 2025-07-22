@@ -114,21 +114,21 @@
                 <div class="space-y-4">
                     <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
                         <div class="text-sm font-medium text-green-700 mb-1">Current Balance</div>
-                        <div class="text-2xl font-bold text-green-800">{{ number_format((int) $customer->balance) }} EGP
+                        <div class="text-2xl font-bold text-green-800">{{ format_int($customer->balance) }} EGP
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-200">
                         <div class="text-sm font-medium text-blue-700 mb-1">Total Transactions</div>
-                        <div class="text-xl font-bold text-blue-800">{{ number_format($totalTransactions) }}</div>
+                        <div class="text-xl font-bold text-blue-800">{{ format_int($totalTransactions) }}</div>
                     </div>
                     <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl border border-purple-200">
                         <div class="text-sm font-medium text-purple-700 mb-1">Total Transferred</div>
-                        <div class="text-lg font-bold text-purple-800">{{ number_format((int) $totalTransferred) }} EGP
+                        <div class="text-lg font-bold text-purple-800">{{ format_int($totalTransferred) }} EGP
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-xl border border-yellow-200">
                         <div class="text-sm font-medium text-yellow-700 mb-1">Total Commission</div>
-                        <div class="text-lg font-bold text-yellow-800">{{ number_format((int) $totalCommission) }} EGP
+                        <div class="text-lg font-bold text-yellow-800">{{ format_int($totalCommission) }} EGP
                         </div>
                     </div>
                 </div>
@@ -176,9 +176,9 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-sm font-mono text-slate-900">
-                                    {{ number_format((int) $transaction->amount) }} EGP</td>
+                                    {{ format_int($transaction->amount) }} EGP</td>
                                 <td class="px-6 py-4 text-sm font-mono text-slate-700">
-                                    {{ number_format((int) $transaction->commission) }} EGP</td>
+                                    {{ format_int($transaction->commission) }} EGP</td>
                                 <td class="px-6 py-4 text-sm text-slate-700">
                                     {{ $transaction->line->mobile_number ?? '-' }}</td>
                                 <td class="px-6 py-4">

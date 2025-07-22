@@ -296,19 +296,19 @@
                         <div class="flex justify-between">
                             <span class="font-medium text-gray-600">المبلغ:</span>
                             <span
-                                class="text-gray-900 font-bold">{{ number_format($completedTransaction->amount, 2) }}
+                                class="text-gray-900 font-bold">{{ format_int($completedTransaction->amount) }}
                                 ج.م</span>
                         </div>
                     </div>
                     <div class="space-y-3">
                         <div class="flex justify-between">
                             <span class="font-medium text-gray-600">العمولة:</span>
-                            <span class="text-gray-900">{{ number_format($completedTransaction->commission, 2) }}
+                            <span class="text-gray-900">{{ format_int($completedTransaction->commission) }}
                                 ج.م</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="font-medium text-gray-600">الخصم:</span>
-                            <span class="text-gray-900">{{ number_format($completedTransaction->deduction, 2) }}
+                            <span class="text-gray-900">{{ format_int($completedTransaction->deduction) }}
                                 ج.م</span>
                         </div>
                         <div class="flex justify-between">

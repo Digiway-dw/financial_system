@@ -46,7 +46,7 @@
                         <div>
                             <p class="text-sm font-medium text-gray-600">المبلغ المعلق</p>
                             <p class="text-2xl font-bold text-orange-700">
-                                {{ number_format(array_sum(array_column($pendingTransactions, 'amount')), 2) }} ج.م
+                                {{ format_int(array_sum(array_column($pendingTransactions, 'amount'))) }} ج.م
                             </p>
                         </div>
                         <div class="p-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl">
@@ -116,7 +116,7 @@
                                         {{ $transaction['customer_name'] }}</td>
                                     <td class="px-6 py-4 text-sm">
                                         <span
-                                            class="font-semibold text-amber-700">{{ number_format($transaction['amount'], 2) }}</span>
+                                            class="font-semibold text-amber-700">{{ format_int($transaction['amount']) }}</span>
                                         <span class="text-gray-600 text-xs">ج.م</span>
                                     </td>
                                     <td class="px-6 py-4 text-sm">

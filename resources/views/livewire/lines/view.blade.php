@@ -13,7 +13,7 @@
                 </div>
                 <div>
                     <div class="text-sm text-gray-500">Current Balance</div>
-                    <div class="text-lg font-semibold text-blue-700">{{ number_format($line->current_balance, 2) }} EGP</div>
+                    <div class="text-lg font-semibold text-blue-700">{{ format_int($line->current_balance) }} EGP</div>
                 </div>
                 <div>
                     <div class="text-sm text-gray-500">Branch</div>
@@ -21,11 +21,11 @@
                 </div>
                 <div>
                     <div class="text-sm text-gray-500">Daily Limit</div>
-                    <div class="text-lg font-semibold text-gray-900">{{ number_format($line->daily_limit, 2) }} EGP</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ format_int($line->daily_limit) }} EGP</div>
                 </div>
                 <div>
                     <div class="text-sm text-gray-500">Monthly Limit</div>
-                    <div class="text-lg font-semibold text-gray-900">{{ number_format($line->monthly_limit, 2) }} EGP</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ format_int($line->monthly_limit) }} EGP</div>
                 </div>
                 <div>
                     <div class="text-sm text-gray-500">Status</div>
@@ -53,7 +53,7 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('Y-m-d H:i') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $tx->transaction_type }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-700">{{ number_format($tx->amount, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-700">{{ format_int($tx->amount) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold {{ $tx->status === 'completed' ? 'text-green-700' : ($tx->status === 'pending' ? 'text-yellow-700' : 'text-red-700') }}">{{ ucfirst($tx->status) }}</td>
                             </tr>
                         @empty

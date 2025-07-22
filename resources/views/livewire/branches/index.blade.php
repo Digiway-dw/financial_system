@@ -69,7 +69,7 @@
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900">Total Safe Balance</h3>
                         <p class="text-3xl font-bold text-blue-600">
-                            {{ number_format((int) collect($branches)->sum(function ($branch) {return $branch['safe']['current_balance'] ?? 0;})) }}
+                            {{ format_int((int) collect($branches)->sum(function ($branch) {return $branch['safe']['current_balance'] ?? 0;})) }}
                             EGP
                         </p>
                     </div>
@@ -233,7 +233,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if (isset($branch['safe']))
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{ number_format((int) $branch['safe']['current_balance']) }}</div>
+                                            {{ format_int((int) $branch['safe']['current_balance']) }}</div>
                                         <div class="text-xs text-gray-500">EGP</div>
                                     @else
                                         <span
@@ -360,7 +360,7 @@
                         <span class="font-semibold text-gray-700">Description:</span> {{ $selectedBranch['description'] ?? 'N/A' }}
                     </div>
                     <div>
-                        <span class="font-semibold text-gray-700">Safe Balance:</span> {{ isset($selectedBranch['safe']) ? number_format((int) $selectedBranch['safe']['current_balance']) . ' EGP' : 'N/A' }}
+                        <span class="font-semibold text-gray-700">Safe Balance:</span> {{ isset($selectedBranch['safe']) ? format_int((int) $selectedBranch['safe']['current_balance']) . ' EGP' : 'N/A' }}
                     </div>
                     <div>
                         <span class="font-semibold text-gray-700">Created At:</span> {{ \Carbon\Carbon::parse($selectedBranch['created_at'])->format('M d, Y H:i') }}
@@ -386,7 +386,7 @@
                         @forelse($branchTransactions as $tx)
                             <tr>
                                 <td class="px-3 py-2 whitespace-nowrap">{{ $tx['customer_name'] }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap">{{ number_format($tx['amount'], 2) }} EGP</td>
+                                <td class="px-3 py-2 whitespace-nowrap">{{ format_int($tx['amount']) }} EGP</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{ $tx['transaction_type'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{ \Carbon\Carbon::parse($tx['created_at'])->format('Y-m-d h:i A') }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{ $tx['status'] }}</td>

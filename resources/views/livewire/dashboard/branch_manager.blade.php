@@ -29,9 +29,9 @@
         </thead>
         <tbody>
             <tr class="text-center">
-                <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($startupSafeBalance, 2) }}</td>
+                <td class="px-4 py-2 border text-blue-700 font-bold">{{ format_int($startupSafeBalance) }}</td>
                 <td class="px-4 py-2 border text-purple-700 font-bold">{{ $totalTransactionsCount }}</td>
-                <td class="px-4 py-2 border font-bold">{{ number_format($safesBalance, 2) }}</td>
+                <td class="px-4 py-2 border font-bold">{{ format_int($safesBalance) }}</td>
             </tr>
         </tbody>
     </table>
@@ -95,7 +95,7 @@
         <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">
             <div class="mb-4">
                 <span class="text-lg font-semibold text-gray-700">Total Lines Balance: </span>
-                <span class="text-2xl font-bold text-blue-700">{{ number_format($branchLinesTotalBalance ?? 0, 2) }} EGP</span>
+                <span class="text-2xl font-bold text-blue-700">{{ format_int($branchLinesTotalBalance ?? 0) }} EGP</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
@@ -143,9 +143,9 @@
                         @foreach($branchLines as $line)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->mobile_number }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->current_balance, 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->daily_limit, 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->monthly_limit, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->current_balance) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->daily_limit) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->monthly_limit) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($line->status) }}</td>
                             </tr>

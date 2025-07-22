@@ -112,7 +112,7 @@
                                     @if (!$is_client) disabled @endif
                                     oninput="this.value = this.value.replace(/[^\d]/g, '');">
                             @else
-                                <input type="text" value="{{ number_format($balance) }}" readonly
+                                <input type="text" value="{{ format_int($balance) }}" readonly
                                     class="w-full pl-14 pr-4 py-3 bg-gray-100 border border-gray-300 rounded-xl text-gray-600 cursor-not-allowed"
                                     placeholder="Admin access required">
                                 <div class="absolute right-4 top-1/2 transform -translate-y-1/2">

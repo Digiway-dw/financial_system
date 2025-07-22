@@ -195,7 +195,7 @@
                 </div>
                 <div>
                     <p class="text-gray-600 text-lg font-medium">Total Amount Transferred</p>
-                    <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ number_format($totalTransferred, 2) }}
+                    <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ format_int($totalTransferred) }}
                         EGP
                     </p>
                 </div>
@@ -211,7 +211,7 @@
                 </div>
                 <div>
                     <p class="text-gray-600 text-lg font-medium">Net Profits</p>
-                    <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ number_format($netProfits, 2) }} EGP</p>
+                    <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ format_int($netProfits) }} EGP</p>
                 </div>
             </div>
         </div>

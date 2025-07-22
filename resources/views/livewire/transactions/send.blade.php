@@ -135,7 +135,7 @@
                                                 <div class="text-right">
                                                     <div
                                                         class="text-sm font-semibold {{ $suggestion['balance'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                                                        {{ number_format($suggestion['balance'], 2) }} EGP
+                                                        {{ format_int($suggestion['balance']) }} EGP
                                                     </div>
                                                     <div class="text-xs text-gray-500">Balance</div>
                                                 </div>
@@ -176,7 +176,7 @@
                                             <span class="font-medium text-gray-600">Balance:</span>
                                             <div
                                                 class="font-semibold {{ $clientBalance >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                                                {{ number_format($clientBalance, 2) }} EGP
+                                                {{ format_int($clientBalance) }} EGP
                                             </div>
                                         </div>
                                         <div>
@@ -246,7 +246,7 @@
                                     </path>
                                 </svg>
                                 <span class="text-sm font-medium text-blue-900">
-                                    Client Balance: {{ number_format((float) $clientBalance, 2) }} EGP
+                                    Client Balance: {{ format_int((float) $clientBalance) }} EGP
                                 </span>
                                 <span class="ml-2 text-xs text-blue-700">
                                     (Available for both Safe and Wallet payment methods)
@@ -442,24 +442,24 @@
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-blue-600">{{ (int) $amount }}
+                                <div class="text-2xl font-bold text-blue-600">{{ format_int($amount) }}
                                 </div>
                                 <div class="text-sm text-gray-600">Amount</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-green-600">
-                                    {{ (int) $commission }}
+                                    {{ format_int($commission) }}
                                 </div>
                                 <div class="text-sm text-gray-600">Commission</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-red-600">{{ (int) $discount }}
+                                <div class="text-2xl font-bold text-red-600">{{ format_int($discount) }}
                                 </div>
                                 <div class="text-sm text-gray-600">Discount</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-purple-600">
-                                    {{ (int) ($amount + $commission - abs($discount)) }}
+                                    {{ format_int($amount + $commission - abs($discount)) }}
                                 </div>
                                 <div class="text-sm text-gray-600">Total</div>
                             </div>

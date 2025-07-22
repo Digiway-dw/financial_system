@@ -99,7 +99,7 @@
                                             <div class="text-sm text-gray-500">{{ $suggestion['mobile_number'] }} •
                                                 Code: {{ $suggestion['customer_code'] ?? 'N/A' }}</div>
                                             <div class="text-sm text-gray-500">Balance:
-                                                {{ number_format((float) $suggestion['balance'], 2) }} EGP</div>
+                                                {{ format_int((float) $suggestion['balance']) }} EGP</div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -313,37 +313,37 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Amount Received</p>
-                                <p class="text-lg font-bold text-blue-700">{{ (int) $amount }} EGP
+                                <p class="text-lg font-bold text-blue-700">{{ format_int($amount) }} EGP
                                 </p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Commission</p>
                                 <p class="text-lg font-bold text-green-700">
-                                    {{ (int) $commission }} EGP</p>
+                                    {{ format_int($commission) }} EGP</p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Discount</p>
-                                <p class="text-lg font-bold text-red-700">{{ (int) $discount }} EGP
+                                <p class="text-lg font-bold text-red-700">{{ format_int($discount) }} EGP
                                 </p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">From Safe</p>
                                 <p class="text-lg font-bold text-purple-700">
-                                    {{ (int) ($amount - ($commission - abs($discount))) }} EGP
+                                    {{ format_int($amount - ($commission - abs($discount))) }} EGP
                                 </p>
                             </div>
                             <div class="bg-white rounded-lg p-3">
                                 <p class="text-gray-600">Total</p>
                                 <p class="text-lg font-bold text-purple-700">
-                                    {{ (int) ($amount - ($commission - abs($discount))) }} EGP
+                                    {{ format_int($amount - ($commission - abs($discount))) }} EGP
                                 </p>
                             </div>
                         </div>
                         <div class="mt-4 text-xs text-gray-600">
-                            <p>• Line balance will increase by {{ (int) $amount }} EGP</p>
+                            <p>• Line balance will increase by {{ format_int($amount) }} EGP</p>
                             <p>• Safe balance will decrease by
-                                {{ (int) ($amount - $commission) }} EGP</p>
-                            <p>• Commission earnings: {{ (int) $commission }} EGP</p>
+                                {{ format_int($amount - $commission) }} EGP</p>
+                            <p>• Commission earnings: {{ format_int($commission) }} EGP</p>
                         </div>
                     </div>
                 @endif

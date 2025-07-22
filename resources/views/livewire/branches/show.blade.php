@@ -12,7 +12,7 @@
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">Branch: {{ $branch['name'] }}</h1>
-                        <p class="text-sm text-gray-500">Location: {{ $branch['location'] ?? 'N/A' }} | Safe Balance: {{ isset($branch['safe']) ? number_format((int) $branch['safe']['current_balance']) . ' EGP' : 'N/A' }}</p>
+                        <p class="text-sm text-gray-500">Location: {{ $branch['location'] ?? 'N/A' }} | Safe Balance: {{ isset($branch['safe']) ? format_int((int) $branch['safe']['current_balance']) . ' EGP' : 'N/A' }}</p>
                     </div>
                 </div>
             </div>
@@ -103,8 +103,8 @@
                                 <tr class="hover:bg-gray-50 transition-colors @if(strtolower($transaction['status']) === 'pending') bg-yellow-100 @endif">
                                     <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-900">{{ $transaction['customer_name'] }}</td>
                                     <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['customer_mobile_number'] ?? '-' }}</td>
-                                    <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ number_format($transaction['amount'], 2) }} EGP</td>
-                                    <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ isset($transaction['commission']) ? number_format($transaction['commission'], 2) : '0.00' }} EGP</td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ format_int($transaction['amount']) }} EGP</td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ isset($transaction['commission']) ? format_int($transaction['commission']) : '0' }} EGP</td>
                                     <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
                                     <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] ?? '-' }}</td>
                                     <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d h:i A') }}</td>

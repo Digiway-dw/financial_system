@@ -208,7 +208,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M5 13l4 4L19 7" />
                                         </svg>
-                                        {{ number_format($customer['balance'] ?? 0, 2) }} EGP
+                                        {{ format_int($customer['balance'] ?? 0) }} EGP
                                     </span>
                                 @else
                                     <span

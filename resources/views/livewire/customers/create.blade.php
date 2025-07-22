@@ -64,7 +64,7 @@
                                         <div class="flex justify-between">
                                             <span class="text-slate-600">Balance:</span>
                                             <span
-                                                class="font-medium text-slate-800">${{ number_format($createdCustomer->balance, 2) }}</span>
+                                                class="font-medium text-slate-800">${{ format_int($createdCustomer->balance) }}</span>
                                         </div>
 
                                         <div class="flex justify-between">

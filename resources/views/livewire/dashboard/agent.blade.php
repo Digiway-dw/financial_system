@@ -59,7 +59,7 @@
                     <h4 class="font-bold text-blue-800 mb-2">Transaction Details</h4>
                     <div class="text-sm text-gray-700">
                         <div><span class="font-semibold">Reference:</span> {{ $searchedTransaction->reference_number }}</div>
-                        <div><span class="font-semibold">Amount:</span> {{ number_format($searchedTransaction->amount, 2) }}</div>
+                        <div><span class="font-semibold">Amount:</span> {{ format_int($searchedTransaction->amount) }}</div>
                         <div><span class="font-semibold">Status:</span> {{ $searchedTransaction->status }}</div>
                         <div><span class="font-semibold">Date:</span> {{ $searchedTransaction->created_at }}</div>
                     </div>
@@ -93,7 +93,7 @@
             @forelse ($branchSafes as $safe)
                 <tr class="text-center">
                     <td class="px-4 py-2 border font-semibold">{{ $safe['name'] }}</td>
-                    <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($safe['current_balance'], 2) }}</td>
+                    <td class="px-4 py-2 border text-blue-700 font-bold">{{ format_int($safe['current_balance']) }}</td>
                     <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}</td>
                 </tr>
             @empty
@@ -187,7 +187,7 @@
             <h4 class="text-xl font-bold text-gray-900 mb-4">All Lines in Your Branch</h4>
             <div class="mb-4">
                 <span class="text-lg font-semibold text-gray-700">Total Lines Balance: </span>
-                <span class="text-2xl font-bold text-blue-700">{{ number_format($agentLinesTotalBalance ?? 0, 2) }}
+                <span class="text-2xl font-bold text-blue-700">{{ format_int($agentLinesTotalBalance ?? 0) }}
                     EGP</span>
             </div>
             <div class="overflow-x-auto">
@@ -281,13 +281,13 @@
                                         <div class="text-sm font-medium text-gray-900">{{ $line->mobile_number }}</div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($line->current_balance, 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($dailyRemaining, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->current_balance) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyRemaining) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ number_format($dailyUsage, 2) }} EGP
+                                    {{ format_int($dailyUsage) }} EGP
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($monthlyRemaining, 2) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($monthlyUsage, 2) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyRemaining) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyUsage) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($line->status) }}</td>
                             </tr>

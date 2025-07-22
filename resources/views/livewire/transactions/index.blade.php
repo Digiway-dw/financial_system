@@ -119,7 +119,7 @@
                     </div>
                     <div>
                         <h3 class="text-sm font-medium text-gray-500">Total Volume</h3>
-                        <p class="text-2xl font-bold text-gray-900">{{ number_format(array_sum(array_column($transactions, 'amount')), 2) }} EGP</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ format_int(array_sum(array_column($transactions, 'amount'))) }} EGP</p>
                         @if (auth()->user()->hasRole('agent'))
                             <p class="text-xs text-gray-400">Your volume only</p>
                         @endif
@@ -152,7 +152,7 @@
                         </div>
                         <div>
                             <h3 class="text-sm font-medium text-gray-500">Commission</h3>
-                            <p class="text-2xl font-bold text-gray-900">{{ number_format(array_sum(array_column($transactions, 'commission')), 2) }} EGP</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ format_int(array_sum(array_column($transactions, 'commission'))) }} EGP</p>
                             @if (auth()->user()->hasRole('agent'))
                                 <p class="text-xs text-gray-400">Your commissions only</p>
                             @endif
@@ -410,8 +410,8 @@
                                 <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-900">{{ $transaction['customer_name'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['customer_mobile_number'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['receiver_mobile_number'] ?? '' }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ number_format($transaction['amount'], 2) }} EGP</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ number_format($transaction['commission'], 2) }} EGP</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ format_int($transaction['amount']) }} EGP</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ format_int($transaction['commission']) }} EGP</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d h:i A') }}</td>

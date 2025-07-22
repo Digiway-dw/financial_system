@@ -90,7 +90,7 @@
                     <div>
                         <h3 class="text-sm font-medium text-gray-600">Total Balance</h3>
                         <p class="text-2xl font-bold text-blue-600">
-                            {{ number_format(collect($safes)->sum('current_balance'), 2) }} EGP</p>
+                            {{ format_int(collect($safes)->sum('current_balance')) }} EGP</p>
                     </div>
                 </div>
             </div>
@@ -123,7 +123,7 @@
                     <div>
                         <h3 class="text-sm font-medium text-gray-600">Wallet Balance</h3>
                         <p class="text-2xl font-bold text-amber-600">
-                            {{ number_format(collect($clients)->sum('balance'), 2) }} EGP</p>
+                            {{ format_int(collect($clients)->sum('balance')) }} EGP</p>
                     </div>
                 </div>
             </div>
@@ -268,7 +268,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <span
-                                            class="text-2xl font-bold text-emerald-600">{{ number_format($safe['current_balance'], 2) }}</span>
+                                            class="text-2xl font-bold text-emerald-600">{{ format_int($safe['current_balance']) }}</span>
                                         <span class="text-sm text-gray-500 ml-1">EGP</span>
                                     </div>
                                 </td>
@@ -412,7 +412,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <span
-                                            class="text-2xl font-bold text-purple-600">{{ number_format($client['balance'], 2) }}</span>
+                                            class="text-2xl font-bold text-purple-600">{{ format_int($client['balance']) }}</span>
                                         <span class="text-sm text-gray-500 ml-1">EGP</span>
                                     </div>
                                 </td>

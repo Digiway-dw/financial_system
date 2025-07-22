@@ -49,7 +49,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Amount</p>
-                        <p class="text-lg font-bold text-gray-900">{{ number_format($transaction->amount, 2) }} EGP</p>
+                        <p class="text-lg font-bold text-gray-900">{{ format_int($transaction->amount) }} EGP</p>
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Customer</p>
@@ -62,7 +62,7 @@
                     @if($transaction->deduction > 0)
                         <div>
                             <p class="text-sm font-medium text-gray-500">Discount Applied</p>
-                            <p class="text-lg text-green-600 font-bold">{{ number_format($transaction->deduction, 2) }} EGP</p>
+                            <p class="text-lg text-green-600 font-bold">{{ format_int($transaction->deduction) }} EGP</p>
                         </div>
                     @endif
                 </div>
@@ -74,7 +74,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Amount</p>
-                        <p class="text-lg font-bold text-gray-900">{{ number_format($cashTransaction->amount, 2) }} EGP</p>
+                        <p class="text-lg font-bold text-gray-900">{{ format_int($cashTransaction->amount) }} EGP</p>
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Customer</p>

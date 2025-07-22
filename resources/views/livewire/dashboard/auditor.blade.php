@@ -33,7 +33,7 @@
             @forelse ($branchSafes as $safe)
                 <tr class="text-center">
                     <td class="px-4 py-2 border font-semibold">{{ $safe['name'] }}</td>
-                    <td class="px-4 py-2 border text-blue-700 font-bold">{{ number_format($safe['current_balance'], 2) }}</td>
+                    <td class="px-4 py-2 border text-blue-700 font-bold">{{ format_int($safe['current_balance']) }}</td>
                     <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}</td>
                 </tr>
             @empty

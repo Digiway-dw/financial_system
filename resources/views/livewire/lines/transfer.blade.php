@@ -5,7 +5,7 @@
         <!-- Current Line Details -->
         <div class="mb-4">
             <p class="text-sm text-gray-600 dark:text-gray-400"><strong>Current User:</strong> {{ $line->user->name ?? 'N/A' }}</p>
-            <p class="text-sm text-gray-600 dark:text-gray-400"><strong>Current Balance:</strong> {{ number_format($line->current_balance, 2) }} EGP</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400"><strong>Current Balance:</strong> {{ format_int($line->current_balance) }} EGP</p>
             <p class="text-sm text-gray-600 dark:text-gray-400"><strong>Network:</strong> {{ $line->network ?? 'N/A' }}</p>
         </div>
 

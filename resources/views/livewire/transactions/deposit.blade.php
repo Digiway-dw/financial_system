@@ -260,7 +260,7 @@
                                                         <div class="text-right">
                                                             <div
                                                                 class="text-sm font-semibold {{ $suggestion['balance'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                                                                {{ number_format($suggestion['balance'], 2) }} EGP
+                                                                {{ format_int($suggestion['balance']) }} EGP
                                                             </div>
                                                             <div class="text-xs text-gray-500">Balance</div>
                                                         </div>
@@ -313,7 +313,7 @@
                                                 <span class="font-medium text-gray-600">Balance:</span>
                                                 <div
                                                     class="font-semibold {{ $clientBalance >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                                                    {{ number_format($clientBalance, 2) }} EGP
+                                                    {{ format_int($clientBalance) }} EGP
                                                 </div>
                                             </div>
                                         </div>

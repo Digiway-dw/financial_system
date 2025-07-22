@@ -200,7 +200,7 @@
                                     class="w-full rounded-lg border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 bg-white text-slate-900">
                                     @foreach ($this->safes ?? [] as $safe)
                                         <option value="{{ $safe['id'] }}">{{ $safe['name'] }} - الرصيد:
-                                            {{ number_format($safe['current_balance'], 2) }} ج.م</option>
+                                            {{ format_int($safe['current_balance']) }} ج.م</option>
                                     @endforeach
                                 </select>
                                 @error('safeId')
@@ -386,7 +386,7 @@
                                                         </div>
                                                         <div class="text-right">
                                                             <div class="text-sm font-bold text-emerald-600">
-                                                                {{ number_format($suggestion['balance'], 2) }} ج.م
+                                                                {{ format_int($suggestion['balance']) }} ج.م
                                                             </div>
                                                             <div class="text-xs text-slate-500">الرصيد المتاح</div>
                                                         </div>
@@ -448,7 +448,7 @@
                                                 class="flex items-center justify-between py-2 px-3 bg-emerald-50 rounded-lg border border-emerald-200">
                                                 <span class="text-emerald-700 font-medium">الرصيد المتاح:</span>
                                                 <span
-                                                    class="font-bold text-emerald-600 text-lg">{{ number_format($clientBalance, 2) }}
+                                                    class="font-bold text-emerald-600 text-lg">{{ format_int($clientBalance) }}
                                                     ج.م</span>
                                             </div>
                                         </div>

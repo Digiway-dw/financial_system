@@ -106,7 +106,7 @@
                                 <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md text-sm">
                                     <span class="font-medium text-gray-700">Current Balance:</span>
                                     <span
-                                        class="font-bold text-blue-600">{{ number_format($sourceSafe['current_balance'], 2) }}
+                                        class="font-bold text-blue-600">{{ format_int($sourceSafe['current_balance']) }}
                                         EGP</span>
                                 </div>
                             @endif
@@ -135,7 +135,7 @@
                                 <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md text-sm">
                                     <span class="font-medium text-gray-700">Current Balance:</span>
                                     <span
-                                        class="font-bold text-green-600">{{ number_format($destinationSafe['current_balance'], 2) }}
+                                        class="font-bold text-green-600">{{ format_int($destinationSafe['current_balance']) }}
                                         EGP</span>
                                 </div>
                             @endif

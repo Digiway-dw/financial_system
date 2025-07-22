@@ -15,3 +15,9 @@ if (!function_exists('generate_reference_number')) {
         return $branch . '-' . $unique;
     }
 } 
+
+if (!function_exists('format_int')) {
+    function format_int($value) {
+        return number_format(round($value), 0, '', ',');
+    }
+} 

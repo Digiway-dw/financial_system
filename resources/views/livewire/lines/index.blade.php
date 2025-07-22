@@ -194,26 +194,26 @@
                                 </td>
                                 <td class="px-3 py-2 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">
-                                        {{ number_format($line['current_balance'], 2) }}</div>
+                                        {{ format_int($line['current_balance']) }}</div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
                                 <td class="px-3 py-2 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ number_format($line['daily_limit'], 2) }}
+                                    <div class="text-sm text-gray-900">{{ format_int($line['daily_limit']) }}
                                     </div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
                                 <td class="px-3 py-2 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ number_format($line['monthly_limit'], 2) }}
+                                    <div class="text-sm text-gray-900">{{ format_int($line['monthly_limit']) }}
                                     </div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
                                 <td class="px-3 py-2 whitespace-nowrap {{ $line['daily_usage_class'] }}">
-                                    <div class="text-sm text-gray-900">{{ number_format($line['daily_usage'], 2) }}
+                                    <div class="text-sm text-gray-900">{{ format_int($line['daily_usage']) }}
                                     </div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>
                                 <td class="px-3 py-2 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ number_format($line['monthly_usage'], 2) }}
+                                    <div class="text-sm text-gray-900">{{ format_int($line['monthly_usage']) }}
                                     </div>
                                     <div class="text-xs text-gray-500">EGP</div>
                                 </td>

@@ -69,7 +69,7 @@
                                             <tr>
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->reference_number ?? 'N/A' }}</td>
                                                 <td class="px-4 py-2 font-medium text-gray-900">{{ $tx->customer_name }}</td>
-                                                <td class="px-4 py-2 text-gray-700">{{ number_format($tx->amount, 2) }} EGP</td>
+                                                <td class="px-4 py-2 text-gray-700">{{ format_int($tx->amount) }} EGP</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->transaction_type }}</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->status }}</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('Y-m-d h:i A') }}</td>
