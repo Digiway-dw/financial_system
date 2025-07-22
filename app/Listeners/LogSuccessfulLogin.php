@@ -19,11 +19,21 @@ class LogSuccessfulLogin
      */
     public function handle(Login $event): void
     {
-        $this->workSessionService->startSession($event->user, request());
+        if (\App\Helpers\NotificationSuppression::$suppressLoginLogout) {
+            return;
+        }
+        $user = $event->user;
+        $userId = $user->id;
+        $cacheKey = "login_notification_sent_{$userId}";
+        if (cache()->has($cacheKey)) {
+            return; // Already sent recently
+        }
+        cache()->put($cacheKey, true, 10); // 10 seconds debounce
+
+        $this->workSessionService->startSession($user, request());
 
         // Notify all admins and supervisors
         $adminsAndSupervisors = \App\Domain\Entities\User::role(['admin', 'general_supervisor'])->get();
-        $user = $event->user;
         $message = "User {$user->name} ({$user->email}) has logged in.";
         Notification::send($adminsAndSupervisors, new AdminNotification($message));
     }

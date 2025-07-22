@@ -27,6 +27,10 @@ class Line extends Model
         'daily_starting_balance',
         'status',
         'branch_id',
+        'daily_usage',
+        'monthly_usage',
+        'daily_remaining',
+        'monthly_remaining',
     ];
 
     protected $casts = [

@@ -141,13 +141,27 @@ class CreateTransaction
             throw new \Exception('Line not found.');
         }
 
+        // Prevent Receive transaction if amount exceeds daily or monthly remaining
+        if ($transactionType === 'Receive') {
+            if ($amount > ($line->daily_remaining ?? 0)) {
+                throw new \Exception('Transaction amount exceeds daily remaining for this line.');
+            }
+            if ($amount > ($line->monthly_remaining ?? 0)) {
+                throw new \Exception('Transaction amount exceeds monthly remaining for this line.');
+            }
+        }
+
         // --- Monthly Starting Balance Logic ---
         $now = now();
         $currentMonth = $now->format('Y-m');
         $lastSetMonth = $line->updated_at ? $line->updated_at->format('Y-m') : null;
         if ($lastSetMonth !== $currentMonth) {
             // Set starting_balance to the current balance at the start of the month
-            $this->lineRepository->update($lineId, ['starting_balance' => $line->current_balance]);
+            $this->lineRepository->update($lineId, [
+                'starting_balance' => $line->current_balance,
+                'monthly_usage' => 0,
+                'monthly_remaining' => ($line->monthly_limit ?? 0) - $line->current_balance,
+            ]);
             $line->refresh();
         }
         // --- End Monthly Starting Balance Logic ---
@@ -157,7 +171,11 @@ class CreateTransaction
         $lastSetDay = $line->updated_at ? $line->updated_at->format('Y-m-d') : null;
         if ($lastSetDay !== $today) {
             // Set daily_starting_balance to the current balance at the start of the day
-            $this->lineRepository->update($lineId, ['daily_starting_balance' => $line->current_balance]);
+            $this->lineRepository->update($lineId, [
+                'daily_starting_balance' => $line->current_balance,
+                'daily_usage' => 0,
+                'daily_remaining' => ($line->daily_limit ?? 0) - $line->current_balance,
+            ]);
             $line->refresh();
         }
         // --- End Daily Starting Balance Logic ---
@@ -289,29 +307,30 @@ class CreateTransaction
             $customer->refresh();
         }
 
-        if ($shouldApplyBalances && in_array($transactionType, ['Deposit', 'Receive'])) {
+        // Only update usage and remaining for Receive transactions
+        if ($shouldApplyBalances && $transactionType === 'Receive') {
             $this->lineRepository->update($lineId, [
                 'current_balance' => $line->current_balance + $amount,
                 'daily_usage' => ($line->daily_usage ?? 0) + $amount,
                 'monthly_usage' => ($line->monthly_usage ?? 0) + $amount,
+                'daily_remaining' => ($line->daily_remaining ?? (($line->daily_limit ?? 0) - ($line->current_balance ?? 0))) - $amount,
+                'monthly_remaining' => ($line->monthly_remaining ?? (($line->monthly_limit ?? 0) - ($line->current_balance ?? 0))) - $amount,
             ]);
             $line->refresh();
 
             // For Receive transactions, safe balance decreases by (Amount - Commission)
-            if ($transactionType === 'Receive') {
-                $safeDeduction = $amount - $finalCommission;
-                if (($safe->current_balance - $safeDeduction) < 0) {
-                    throw new \Exception('Insufficient balance in safe for this receive transaction. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($safeDeduction, 2) . ' EGP');
-                }
-                $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $safeDeduction]);
-                $safe->refresh();
+            $safeDeduction = $amount - $finalCommission;
+            if (($safe->current_balance - $safeDeduction) < 0) {
+                throw new \Exception('Insufficient balance in safe for this receive transaction. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($safeDeduction, 2) . ' EGP');
+            }
+            $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $safeDeduction]);
+            $safe->refresh();
 
-                // Check for low safe balance warning
-                if ($safe->current_balance < 500) {
-                    $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
-                    $admins = \App\Domain\Entities\User::role('admin')->get();
-                    Notification::send($admins, new AdminNotification($notificationMessage, route('safes.index')));
-                }
+            // Check for low safe balance warning
+            if ($safe->current_balance < 500) {
+                $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
+                $admins = \App\Domain\Entities\User::role('admin')->get();
+                Notification::send($admins, new AdminNotification($notificationMessage, route('safes.index')));
             }
         }
 

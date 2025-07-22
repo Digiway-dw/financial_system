@@ -19,12 +19,22 @@ class LogSuccessfulLogout
      */
     public function handle(Logout $event): void
     {
+        if (\App\Helpers\NotificationSuppression::$suppressLoginLogout) {
+            return;
+        }
         if ($event->user) {
-            $this->workSessionService->endSession($event->user);
+            $user = $event->user;
+            $userId = $user->id;
+            $cacheKey = "logout_notification_sent_{$userId}";
+            if (cache()->has($cacheKey)) {
+                return; // Already sent recently
+            }
+            cache()->put($cacheKey, true, 10); // 10 seconds debounce
+
+            $this->workSessionService->endSession($user);
 
             // Notify all admins and supervisors
             $adminsAndSupervisors = \App\Domain\Entities\User::role(['admin', 'general_supervisor'])->get();
-            $user = $event->user;
             $message = "User {$user->name} ({$user->email}) has logged out.";
             Notification::send($adminsAndSupervisors, new AdminNotification($message));
         }

@@ -124,7 +124,7 @@
                             <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px] sortable-header"
                                 wire:click="sortBy('daily_usage')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Daily Usage</span>
+                                    <span>Daily Receive</span>
                                     @if ($sortField === 'daily_usage')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -133,7 +133,7 @@
                             <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header"
                                 wire:click="sortBy('monthly_usage')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Monthly Usage</span>
+                                    <span>Monthly Receive</span>
                                     @if ($sortField === 'monthly_usage')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif

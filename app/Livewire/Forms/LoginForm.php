@@ -171,6 +171,9 @@ class LoginForm extends Form
             // Send notification to admin users
             $this->notifyAdminOfViolation($user, $workingHour, $currentDayOfWeek, $currentTime);
 
+            // Set static flag to suppress login/logout notifications
+            \App\Helpers\NotificationSuppression::$suppressLoginLogout = true;
+
             // Logout the user immediately
             Auth::logout();
             request()->session()->invalidate();
@@ -265,10 +268,15 @@ class LoginForm extends Form
      */
     private function notifyAdminOfViolation($user, $workingHour, string $currentDayOfWeek, string $currentTime): void
     {
+        $userId = $user->id;
+        $cacheKey = "workhours_violation_notification_sent_{$userId}_{$currentDayOfWeek}";
+        if (cache()->has($cacheKey)) {
+            return; // Already sent recently
+        }
+        cache()->put($cacheKey, true, 10); // 10 seconds debounce
         try {
             // Get current time for notification
             $now = Carbon::now();
-            
             // Prepare notification message
             $message = "🚨 Working Hours Violation Alert\n\n";
             $message .= "User: {$user->name} (ID: {$user->id})\n";
@@ -277,7 +285,6 @@ class LoginForm extends Form
             $message .= "📅 Day: " . ucfirst($currentDayOfWeek) . "\n";
             $message .= "🕐 Time: {$currentTime}\n";
             $message .= "📍 IP Address: " . request()->ip() . "\n";
-            
             if ($workingHour) {
                 $startTime = $this->parseTimeString($workingHour->start_time)?->format('g:i A') ?? $workingHour->start_time;
                 $endTime = $this->parseTimeString($workingHour->end_time)?->format('g:i A') ?? $workingHour->end_time;
@@ -285,24 +292,19 @@ class LoginForm extends Form
             } else {
                 $message .= "❌ No working hours defined for " . ucfirst($currentDayOfWeek) . "\n";
             }
-            
             // Add branch information if available
             if ($user->branch) {
                 $message .= "🏢 Branch: {$user->branch->name}\n";
             }
-            
             $message .= "\n📊 Timestamp: {$now->format('Y-m-d H:i:s')}";
-            
             // Get all admin users
             $admins = \App\Domain\Entities\User::role('admin')->get();
-            
             if ($admins->count() > 0) {
                 // Send notification to all admins
                 Notification::send($admins, new AdminNotification(
                     $message,
                     url('/notifications') // URL to view notifications
                 ));
-                
                 Log::info('Admin notification sent for working hours violation', [
                     'user_id' => $user->id,
                     'admin_count' => $admins->count(),
