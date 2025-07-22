@@ -593,7 +593,7 @@
                                     <svg class="w-4 h-4 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
-                                    اختر الفرع
+                                    اختر الفرع (المصدر)
                                 </label>
                                 <select id="selectedBranchId" wire:model="selectedBranchId" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 bg-white text-slate-900">
                                     <option value="">اختر الفرع</option>
@@ -605,6 +605,25 @@
                                     <p class="text-red-600 text-sm mt-1 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p>
                                 @enderror
                             </div>
+                            @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('general_supervisor'))
+                            <div class="space-y-2">
+                                <label for="destinationBranchId" class="flex items-center text-sm font-semibold text-slate-700">
+                                    <svg class="w-4 h-4 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    اختر الفرع (الوجهة)
+                                </label>
+                                <select id="destinationBranchId" wire:model="destinationBranchId" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 bg-white text-slate-900">
+                                    <option value="">اختر الفرع الوجهة</option>
+                                    @foreach ($destinationBranches as $branch)
+                                        <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
+                                    @endforeach
+                                </select>
+                                @error('destinationBranchId')
+                                    <p class="text-red-600 text-sm mt-1 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p>
+                                @enderror
+                            </div>
+                            @endif
                             <div class="space-y-2">
                                 <label for="amount" class="flex items-center text-sm font-semibold text-slate-700">
                                     <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

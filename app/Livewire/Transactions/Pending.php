@@ -110,8 +110,9 @@ class Pending extends Component
 
             // Branch withdrawal logic
             if ($cashTransaction->destination_branch_id && $cashTransaction->destination_safe_id) {
-                // Deduct from selected branch's safe (destination_safe_id)
-                $sourceSafe = \App\Models\Domain\Entities\Safe::find($cashTransaction->destination_safe_id);
+                // Deduct from source safe (safe_id), add to destination safe (destination_safe_id)
+                $sourceSafe = \App\Models\Domain\Entities\Safe::find($cashTransaction->safe_id);
+                $destSafe = \App\Models\Domain\Entities\Safe::find($cashTransaction->destination_safe_id);
                 if ($sourceSafe) {
                     if (($sourceSafe->current_balance - $amount) < 0) {
                         session()->flash('error', 'Insufficient balance in source branch safe. Available: ' . number_format($sourceSafe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
@@ -120,8 +121,6 @@ class Pending extends Component
                     $sourceSafe->current_balance -= $amount;
                     $sourceSafe->save();
                 }
-                // Add to agent's branch safe (safe_id)
-                $destSafe = \App\Models\Domain\Entities\Safe::find($cashTransaction->safe_id);
                 if ($destSafe) {
                     $destSafe->current_balance += $amount;
                     $destSafe->save();

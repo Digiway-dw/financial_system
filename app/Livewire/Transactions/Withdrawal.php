@@ -35,6 +35,8 @@ class Withdrawal extends Create
     public $selectedExpenseItem = null;
     public $customExpenseItem = '';
     public $showExpenseWithdrawal = false;
+    public $destinationBranchId = null;
+    public $destinationBranches = [];
 
     protected $casts = [
         'safeId' => 'integer',
@@ -47,6 +49,25 @@ class Withdrawal extends Create
     {
         $this->createTransactionUseCase = $createTransactionUseCase;
         $this->customerRepository = $customerRepository;
+    }
+
+    public function updatedSelectedBranchId($value)
+    {
+        // When the source branch changes (for branch withdrawal), update safes dropdown to only show safes from that branch
+        if ($this->withdrawalType === 'branch') {
+            $this->safes = \App\Models\Domain\Entities\Safe::where('branch_id', $value)->get()->map(function ($safe) {
+                return [
+                    'id' => $safe->id,
+                    'name' => $safe->name,
+                    'current_balance' => $safe->current_balance,
+                ];
+            })->toArray();
+            if (count($this->safes) > 0) {
+                $this->safeId = $this->safes[0]['id'];
+            } else {
+                $this->safeId = null;
+            }
+        }
     }
 
     public function mount()
@@ -64,6 +85,14 @@ class Withdrawal extends Create
                 'branch_code' => $branch->branch_code,
             ];
         })->toArray();
+        if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
+            $this->destinationBranches = \App\Models\Domain\Entities\Branch::all()->map(function ($branch) {
+                return [
+                    'id' => $branch->id,
+                    'name' => $branch->name,
+                ];
+            })->toArray();
+        }
 
         // Load expense items
         $this->expenseItems = [
@@ -78,7 +107,16 @@ class Withdrawal extends Create
         ];
 
         $user = Auth::user();
-        if ($user->hasRole('admin') || $user->hasRole('supervisor') || $user->hasRole('branch_manager')) {
+        // Fix: Only admins/supervisors see all safes, others see only their branch's safes
+        if ($this->withdrawalType === 'branch' && $this->selectedBranchId) {
+            $this->safes = \App\Models\Domain\Entities\Safe::where('branch_id', $this->selectedBranchId)->get()->map(function ($safe) {
+                return [
+                    'id' => $safe->id,
+                    'name' => $safe->name,
+                    'current_balance' => $safe->current_balance,
+                ];
+            })->toArray();
+        } else if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
             $this->safes = \App\Models\Domain\Entities\Safe::all()->map(function ($safe) {
                 return [
                     'id' => $safe->id,
@@ -87,7 +125,7 @@ class Withdrawal extends Create
                 ];
             })->toArray();
         } else {
-            $this->safes = \App\Models\Domain\Entities\Safe::where('branch_id', $user->branch_id ?? null)->get()->map(function ($safe) {
+            $this->safes = \App\Models\Domain\Entities\Safe::where('branch_id', $user->branch_id)->get()->map(function ($safe) {
                 return [
                     'id' => $safe->id,
                     'name' => $safe->name,
@@ -505,41 +543,60 @@ class Withdrawal extends Create
 
             if ($this->withdrawalType === 'branch') {
                 $user = Auth::user();
-                // Set status based on admin/supervisor role
-                $branch = collect($this->branches)->firstWhere('id', $this->selectedBranchId);
-                $branchName = $branch['name'] ?? 'Unknown Branch';
-                $referenceNumber = generate_reference_number($branchName);
+                // Always use the safe from the selected source branch for deduction
+                $sourceSafe = \App\Models\Domain\Entities\Safe::where('branch_id', $this->selectedBranchId)->first();
+                if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
+                    $destinationBranch = \App\Models\Domain\Entities\Branch::find($this->destinationBranchId);
+                    $destinationSafe = $destinationBranch ? $destinationBranch->safe : null;
+                } else {
+                    $destinationBranch = $user->branch;
+                    $destinationSafe = $destinationBranch ? $destinationBranch->safe : null;
+                }
+                $destinationSafeId = $destinationSafe ? $destinationSafe->id : null;
+                $destinationBranchName = $destinationBranch ? $destinationBranch->name : 'Unknown Branch';
+                $referenceNumber = generate_reference_number($destinationBranchName);
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
-                    'customer_name' => 'Branch Transfer: ' . $branchName,
+                    'customer_name' => 'Branch Transfer: ' . $destinationBranchName,
                     'amount' => abs($this->amount),
                     'notes' => $this->notes,
-                    'safe_id' => $this->safeId,
-                    'transaction_type' => 'Withdrawal',
+                    'safe_id' => $sourceSafe ? $sourceSafe->id : null, // Use correct source safe
+                    'transaction_type' => $transactionType,
                     'status' => $status, // Use the determined status
                     'transaction_date_time' => now(),
                     'agent_id' => $user->id,
-                    'destination_branch_id' => $this->selectedBranchId,
-                    'destination_safe_id' => null, // Will be set on approval
+                    'destination_branch_id' => $destinationBranch ? $destinationBranch->id : null,
+                    'destination_safe_id' => $destinationSafeId,
                     'reference_number' => $referenceNumber,
                 ]);
 
-                // Send notification to all admins
+                // If auto-approved, update balances immediately
+                if ($status === 'completed' && $destinationSafe && $sourceSafe) {
+                    if ($sourceSafe->current_balance >= $this->amount) {
+                        $sourceSafe->current_balance -= $this->amount;
+                        $sourceSafe->save();
+                        $destinationSafe->current_balance += $this->amount;
+                        $destinationSafe->save();
+                    }
+                }
+
+                // Define $admins before sending notifications
                 $admins = \App\Domain\Entities\User::role('admin')->get();
-                $message = "Branch withdrawal request: From Branch: " . ($safe->branch->name ?? 'Unknown') . " To Branch: " . $branchName . ", Amount: " . number_format($this->amount, 2) . " EGP, By: " . $user->name . ".";
+                $sourceBranchName = $sourceSafe && $sourceSafe->branch ? $sourceSafe->branch->name : 'Unknown';
+                $message = "Branch withdrawal request: From Branch: " . $sourceBranchName . " To Branch: " . $destinationBranchName . ", Amount: " . number_format($this->amount, 2) . " EGP, By: " . $user->name . ".";
                 \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, url()->current()));
                 
                 if ($isAdminOrSupervisor) {
                     // For admin/supervisor, redirect to receipt
                     session()->flash('message', 'Branch withdrawal created successfully!');
-                    $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
+                    $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId', 'destinationBranchId']);
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 } else {
                     // For regular users, show waiting approval screen
                     session()->flash('message', 'Branch withdrawal submitted for admin approval!');
-                    $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
+                    $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId', 'destinationBranchId']);
                     return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
                 }
-                return;
+                return; // Prevent double deduction/addition
             }
 
             if ($this->withdrawalType === 'expense') {
