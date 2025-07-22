@@ -99,6 +99,12 @@ class Index extends Component
 
     public function deleteTransaction(string $transactionId)
     {
+        // Find the transaction in the list to determine its source
+        $transaction = collect($this->transactions)->firstWhere('id', $transactionId);
+        if (isset($transaction['source_table']) && $transaction['source_table'] === 'cash_transactions') {
+            $this->deleteCashTransaction($transactionId);
+            return;
+        }
         Gate::authorize('edit-all-data'); // Only admin can delete transactions
         try {
             $this->deleteTransactionUseCase->execute($transactionId);
@@ -107,6 +113,12 @@ class Index extends Component
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to delete transaction: ' . $e->getMessage());
         }
+    }
+
+    public function deleteCashTransaction(string $cashTransactionId)
+    {
+        \App\Models\Domain\Entities\CashTransaction::find($cashTransactionId)?->delete();
+        $this->loadTransactions();
     }
 
     public function render()
