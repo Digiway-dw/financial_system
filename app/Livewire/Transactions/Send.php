@@ -308,10 +308,12 @@ class Send extends Component
                     // Use selected branch if available, otherwise use user's branch
                     $branchId = $this->canSelectBranch && $this->selectedBranchId ? $this->selectedBranchId : Auth::user()->branch_id;
 
+                    // Always generate a customer code if not set
+                    $code = $this->clientCode ?: $this->generateClientCode();
                     $client = Customer::create([
                         'name' => $this->clientName,
                         'mobile_number' => $this->clientMobile,
-                        'customer_code' => $this->clientCode ?: $this->generateClientCode(),
+                        'customer_code' => $code,
                         'gender' => $this->clientGender ?: 'male',
                         'balance' => 0,
                         'is_client' => true,
@@ -319,8 +321,15 @@ class Send extends Component
                         'branch_id' => $branchId,
                     ]);
                     $this->clientId = $client->id;
+                    $this->clientCode = $client->customer_code; // Always set clientCode from DB
                 } else {
-                    // Update existing client
+                    // Update existing client; if no code, generate and update
+                    $client = Customer::find($this->clientId);
+                    if ($client && empty($client->customer_code)) {
+                        $client->customer_code = $this->generateClientCode();
+                        $client->save();
+                    }
+                    $this->clientCode = $client ? $client->customer_code : $this->clientCode;
                     Customer::where('id', $this->clientId)->update([
                         'name' => $this->clientName,
                         'gender' => $this->clientGender,
