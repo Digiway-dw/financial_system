@@ -21,7 +21,7 @@
             <div class="bg-white rounded-2xl shadow border border-gray-200 p-8 mb-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div><span class="font-semibold text-gray-700">Description:</span> {{ $branch['description'] ?? 'N/A' }}</div>
-                    <div><span class="font-semibold text-gray-700">Created At:</span> {{ \Carbon\Carbon::parse($branch['created_at'])->format('M d, Y H:i') }}</div>
+                    <div><span class="font-semibold text-gray-700">Created At:</span> {{ \Carbon\Carbon::parse($branch['created_at'])->format('d/m/y h:i A') }}</div>
                     <div><span class="font-semibold text-gray-700">Status:</span> {{ isset($branch['is_active']) && $branch['is_active'] ? 'Active' : 'Inactive' }}</div>
                 </div>
             </div>
@@ -107,7 +107,7 @@
                                     <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ isset($transaction['commission']) ? format_int($transaction['commission']) : '0' }} EGP</td>
                                     <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
                                     <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] ?? '-' }}</td>
-                                    <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d h:i A') }}</td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('d/m/y h:i A') }}</td>
                                     <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['reference_number'] ?? '' }}</td>
                                     <td class="px-3 py-2 whitespace-nowrap text-right text-sm font-medium">{{ $transaction['status'] }}</td>
                                 </tr>

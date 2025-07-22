@@ -95,7 +95,7 @@
                 <td>{{ $transaction['status'] }}</td>
                 <td>{{ $transaction['agent_name'] ?? '' }}</td>
                 <td>{{ $transaction['branch_name'] ?? 'N/A' }}</td>
-                <td>{{ \Carbon\Carbon::parse($transaction['transaction_date_time'])->format('Y-m-d H:i') }}</td>
+                <td>{{ \Carbon\Carbon::parse($transaction['transaction_date_time'])->format('d/m/y h:i A') }}</td>
             </tr>
             @endforeach
         </tbody>

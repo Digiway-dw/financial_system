@@ -85,7 +85,7 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-500 mb-1">Date Added</label>
                         <p class="text-slate-800">
-                            {{ $customer->created_at ? $customer->created_at->format('M d, Y') : 'N/A' }}</p>
+                            {{ $customer->created_at ? $customer->created_at->format('d/m/y') : 'N/A' }}</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-500 mb-1">Created by</label>
@@ -163,7 +163,7 @@
                         @forelse($customer->transactions as $transaction)
                             <tr class="hover:bg-slate-50/50 transition-colors duration-150">
                                 <td class="px-6 py-4 text-sm text-slate-700">
-                                    {{ $transaction->transaction_date_time ? \Carbon\Carbon::parse($transaction->transaction_date_time)->format('M d, Y H:i') : \Carbon\Carbon::parse($transaction->created_at)->format('M d, Y H:i') }}
+                                    {{ $transaction->transaction_date_time ? \Carbon\Carbon::parse($transaction->transaction_date_time)->format('d/m/y h:i A') : \Carbon\Carbon::parse($transaction->created_at)->format('d/m/y h:i A') }}
                                 </td>
                                 <td class="px-6 py-4">
                                     <span

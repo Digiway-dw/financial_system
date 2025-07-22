@@ -435,18 +435,18 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm text-gray-900">
-                                                    {{ $session->login_at->format('M d, Y') }}</div>
+                                                    {{ $session->login_at->format('d/m/y') }}</div>
                                                 <div class="text-xs text-gray-500">
-                                                    {{ $session->login_at->format('h:i:s A') }}</div>
+                                                    {{ $session->login_at->format('h:i A') }}</div>
                                                 <div class="text-xs text-gray-400">
                                                     {{ $session->login_at->diffForHumans() }}</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if ($session->logout_at)
                                                     <div class="text-sm text-gray-900">
-                                                        {{ $session->logout_at->format('M d, Y') }}</div>
+                                                        {{ $session->logout_at->format('d/m/y') }}</div>
                                                     <div class="text-xs text-gray-500">
-                                                        {{ $session->logout_at->format('h:i:s A') }}</div>
+                                                        {{ $session->logout_at->format('h:i A') }}</div>
                                                     <div class="text-xs text-gray-400">
                                                         {{ $session->logout_at->diffForHumans() }}</div>
                                                 @else
@@ -590,7 +590,7 @@
                                             <div class="absolute h-8 top-4 rounded-md {{ $session->logout_at ? 'bg-blue-500' : 'bg-green-500' }}"
                                                 style="left: {{ $positionPercent }}%; width: {{ $widthPercent }}%; min-width: 10px;">
                                                 <div class="absolute bottom-full mb-1 text-xs whitespace-nowrap">
-                                                    {{ $session->login_at->format('M d, h:i A') }}
+                                                    {{ $session->login_at->format('d/m/y h:i A') }}
                                                 </div>
                                                 <div class="text-white text-xs px-1 truncate">
                                                     {{ $session->duration_minutes ?? '?' }}m
@@ -601,9 +601,9 @@
 
                                     <!-- Timeline dates -->
                                     <div class="flex justify-between mt-2 text-xs text-gray-500">
-                                        <div>{{ $minDate ? $minDate->format('M d, Y') : now()->format('M d, Y') }}
+                                        <div>{{ $minDate ? $minDate->format('d/m/y') : now()->format('d/m/y') }}
                                         </div>
-                                        <div>{{ now()->format('M d, Y') }}</div>
+                                        <div>{{ now()->format('d/m/y') }}</div>
                                     </div>
                                 </div>
                             </div>

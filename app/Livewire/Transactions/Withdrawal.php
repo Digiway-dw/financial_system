@@ -396,6 +396,12 @@ class Withdrawal extends Create
                 $client->balance -= $this->amount;
                 $client->save();
 
+                // Deduct from safe balance immediately
+                if ($safe) {
+                    $safe->current_balance -= $this->amount;
+                    $safe->save();
+                }
+
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
                     'customer_name' => $customerName,
                     'customer_code' => $customerCode,

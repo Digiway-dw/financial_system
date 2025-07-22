@@ -230,10 +230,10 @@
                                     {{ ucfirst($workingHour->day_of_week) }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ \Carbon\Carbon::parse($workingHour->start_time)->format('H:i') }}
+                                    {{ \Carbon\Carbon::parse($workingHour->start_time)->format('h:i A') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ \Carbon\Carbon::parse($workingHour->end_time)->format('H:i') }}
+                                    {{ \Carbon\Carbon::parse($workingHour->end_time)->format('h:i A') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     @if ($workingHour->is_enabled)
@@ -325,7 +325,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ $transaction->created_at ? $transaction->created_at->format('Y-m-d H:i') : '-' }}
+                                    {{ $transaction->created_at ? $transaction->created_at->format('d/m/y h:i A') : '-' }}
                                 </td>
                             </tr>
                         @empty
@@ -372,10 +372,10 @@
                         @forelse ($loginHistories as $history)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ $history->login_at ? \Carbon\Carbon::parse($history->login_at)->format('Y-m-d H:i') : '-' }}
+                                    {{ $history->login_at ? \Carbon\Carbon::parse($history->login_at)->format('d/m/y h:i A') : '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ $history->logout_at ? \Carbon\Carbon::parse($history->logout_at)->format('Y-m-d H:i') : '-' }}
+                                    {{ $history->logout_at ? \Carbon\Carbon::parse($history->logout_at)->format('d/m/y h:i A') : '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                     @if ($history->session_duration)

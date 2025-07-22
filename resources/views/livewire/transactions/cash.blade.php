@@ -72,7 +72,7 @@
                                                 <td class="px-4 py-2 text-gray-700">{{ format_int($tx->amount) }} EGP</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->transaction_type }}</td>
                                                 <td class="px-4 py-2 text-gray-700">{{ $tx->status }}</td>
-                                                <td class="px-4 py-2 text-gray-700">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('Y-m-d h:i A') }}</td>
+                                                <td class="px-4 py-2 text-gray-700">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('d/m/y h:i A') }}</td>
                                                 <td class="px-4 py-2 text-right">
                                                     <a href="{{ route('cash-transactions.details', $tx->id) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-200 transition-colors duration-150 mr-2">
                                                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

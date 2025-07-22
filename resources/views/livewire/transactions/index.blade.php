@@ -414,7 +414,7 @@
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ format_int($transaction['commission']) }} EGP</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d h:i A') }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('d/m/y h:i A') }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['reference_number'] ?? '' }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{ route('transactions.details', $transaction['id']) }}"
@@ -451,7 +451,7 @@
                                             </a>
                                         @endif
                                     @endcan
-                                    <a href="{{ route('transactions.receipt', $transaction['id']) }}" target="_blank" class="inline-block text-green-600 hover:text-green-800 mr-3" title="Print Receipt">
+                                    <a href="{{ route('transactions.receipt', $transaction['id']) }}" class="inline-block text-green-600 hover:text-green-800 mr-3" title="Print Receipt">
                                         <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-6 0v4m0 0h4m-4 0H8" />
                                         </svg>

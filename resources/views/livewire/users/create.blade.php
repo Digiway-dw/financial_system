@@ -443,10 +443,10 @@
                                                 {{ ucfirst($workingHour['day_of_week']) }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ \Carbon\Carbon::parse($workingHour['start_time'])->format('g:i A') }}
+                                                {{ \Carbon\Carbon::parse($workingHour['start_time'])->format('h:i A') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ \Carbon\Carbon::parse($workingHour['end_time'])->format('g:i A') }}
+                                                {{ \Carbon\Carbon::parse($workingHour['end_time'])->format('h:i A') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 @if ($workingHour['is_enabled'])

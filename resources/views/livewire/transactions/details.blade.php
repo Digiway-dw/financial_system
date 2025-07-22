@@ -25,7 +25,7 @@
                     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h2 class="text-xl font-bold text-gray-900">Transaction #{{ $transaction->id }}</h2>
+                                <h2 class="text-xl font-bold text-gray-900">Reference: {{ $transaction->reference_number ?? ('Transaction #' . $transaction->id) }}</h2>
                                 <p class="text-sm text-gray-600 mt-1">Reference: {{ $transaction->reference_number ?? 'N/A' }}</p>
                             </div>
                             <div class="text-right">
@@ -141,16 +141,16 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Created At:</span>
-                                    <span class="text-sm text-gray-900">{{ $transaction->created_at->format('Y-m-d H:i:s') }}</span>
+                                    <span class="text-sm text-gray-900">{{ $transaction->created_at->format('d/m/y h:i A') }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Updated At:</span>
-                                    <span class="text-sm text-gray-900">{{ $transaction->updated_at->format('Y-m-d H:i:s') }}</span>
+                                    <span class="text-sm text-gray-900">{{ $transaction->updated_at->format('d/m/y h:i A') }}</span>
                                 </div>
                                 @if($transaction->transaction_date_time)
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Transaction Date:</span>
-                                    <span class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($transaction->transaction_date_time)->format('Y-m-d H:i:s') }}</span>
+                                    <span class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($transaction->transaction_date_time)->format('d/m/y h:i A') }}</span>
                                 </div>
                                 @endif
                             </div>
@@ -186,7 +186,7 @@
                     <!-- Action Buttons -->
                     <div class="flex items-center justify-between pt-6 border-t border-gray-200">
                         <div class="flex space-x-3">
-                            <a href="{{ route('transactions.receipt', $transaction->id) }}" target="_blank" 
+                            <a href="{{ route('transactions.receipt', $transaction->id) }}" 
                                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-6 0v4m0 0h4m-4 0H8"></path>
@@ -213,7 +213,7 @@
                     <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h2 class="text-xl font-bold text-gray-900">Cash Transaction #{{ $cashTransaction->id }}</h2>
+                                <h2 class="text-xl font-bold text-gray-900">Reference: {{ $cashTransaction->reference_number ?? ('Cash Transaction #' . $cashTransaction->id) }}</h2>
                                 <p class="text-sm text-gray-600 mt-1">Type: {{ ucfirst($cashTransaction->transaction_type) }}</p>
                             </div>
                             <div class="text-right">
@@ -293,11 +293,11 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Created At:</span>
-                                    <span class="text-sm text-gray-900">{{ $cashTransaction->created_at->format('Y-m-d H:i:s') }}</span>
+                                    <span class="text-sm text-gray-900">{{ $cashTransaction->created_at->format('d/m/y h:i A') }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Updated At:</span>
-                                    <span class="text-sm text-gray-900">{{ $cashTransaction->updated_at->format('Y-m-d H:i:s') }}</span>
+                                    <span class="text-sm text-gray-900">{{ $cashTransaction->updated_at->format('d/m/y h:i A') }}</span>
                                 </div>
                             </div>
                         </div>

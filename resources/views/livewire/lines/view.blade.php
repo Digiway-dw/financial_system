@@ -51,7 +51,7 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($transactions as $tx)
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('Y-m-d H:i') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('d/m/y h:i A') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $tx->transaction_type }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-700">{{ format_int($tx->amount) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold {{ $tx->status === 'completed' ? 'text-green-700' : ($tx->status === 'pending' ? 'text-yellow-700' : 'text-red-700') }}">{{ ucfirst($tx->status) }}</td>

@@ -54,7 +54,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                        {{ $notification->created_at->format('Y-m-d H:i') }}
+                                        {{ $notification->created_at->format('d/m/y h:i A') }}
                                     </span>
                                     @if ($notification->read_at)
                                         <span class="flex items-center text-green-600">
@@ -92,7 +92,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        {{ $notification->created_at->format('Y-m-d H:i') }}
+                        {{ $notification->created_at->format('d/m/y h:i A') }}
                     </span>
                     @if ($notification->read_at)
                         <span class="flex items-center text-green-600">

@@ -336,10 +336,10 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex flex-col">
                                         <span class="text-sm font-medium text-gray-900">
-                                            {{ \Carbon\Carbon::parse($activity->created_at)->format('M d, Y') }}
+                                            {{ \Carbon\Carbon::parse($activity->created_at)->format('d/m/y') }}
                                         </span>
                                         <span class="text-xs text-gray-500">
-                                            {{ \Carbon\Carbon::parse($activity->created_at)->format('H:i:s') }}
+                                            {{ \Carbon\Carbon::parse($activity->created_at)->format('h:i A') }}
                                         </span>
                                     </div>
                                 </td>

@@ -249,9 +249,9 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">
-                                        {{ \Carbon\Carbon::parse($branch['created_at'])->format('M d, Y') }}</div>
+                                        {{ \Carbon\Carbon::parse($branch['created_at'])->format('d/m/y') }}</div>
                                     <div class="text-xs text-gray-500">
-                                        {{ \Carbon\Carbon::parse($branch['created_at'])->format('H:i') }}</div>
+                                        {{ \Carbon\Carbon::parse($branch['created_at'])->format('h:i A') }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if (isset($branch['is_active']) && $branch['is_active'])
@@ -363,7 +363,7 @@
                         <span class="font-semibold text-gray-700">Safe Balance:</span> {{ isset($selectedBranch['safe']) ? format_int((int) $selectedBranch['safe']['current_balance']) . ' EGP' : 'N/A' }}
                     </div>
                     <div>
-                        <span class="font-semibold text-gray-700">Created At:</span> {{ \Carbon\Carbon::parse($selectedBranch['created_at'])->format('M d, Y H:i') }}
+                        <span class="font-semibold text-gray-700">Created At:</span> {{ \Carbon\Carbon::parse($selectedBranch['created_at'])->format('d/m/y h:i A') }}
                     </div>
                     <div>
                         <span class="font-semibold text-gray-700">Status:</span> {{ isset($selectedBranch['is_active']) && $selectedBranch['is_active'] ? 'Active' : 'Inactive' }}
@@ -388,7 +388,7 @@
                                 <td class="px-3 py-2 whitespace-nowrap">{{ $tx['customer_name'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{ format_int($tx['amount']) }} EGP</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{ $tx['transaction_type'] }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap">{{ \Carbon\Carbon::parse($tx['created_at'])->format('Y-m-d h:i A') }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap">{{ \Carbon\Carbon::parse($tx['created_at'])->format('d/m/y h:i A') }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{ $tx['status'] }}</td>
                             </tr>
                         @empty
