@@ -39,6 +39,7 @@ class AgentDashboard extends Component
     public $agentLines = [];
     public $agentLinesTotalBalance = 0;
     public $branchSafes = [];
+    public $totalSafesBalance = 0;
     public $searchedTransaction = null;
 
     // Sorting properties
@@ -89,6 +90,18 @@ class AgentDashboard extends Component
 
     public function updatedSelectedBranches()
     {
+        // Check if "all" is selected
+        if (in_array('all', $this->selectedBranches)) {
+            $this->selectAllBranches();
+            return;
+        }
+        
+        $this->loadAgentData();
+    }
+    
+    public function selectAllBranches()
+    {
+        $this->selectedBranches = $this->branches->pluck('id')->toArray();
         $this->loadAgentData();
     }
 
@@ -165,11 +178,17 @@ class AgentDashboard extends Component
         $this->branchSafes = $safes->map(function ($safe) use ($today) {
             $safeId = $safe['id'] ?? $safe->id;
             $branchId = $safe['branch_id'] ?? $safe->branch_id;
+            $currentUserId = Auth::id();
             
+            // Filter cash transactions by current agent
             $cashTransactions = CashTransaction::where('safe_id', $safeId)
+                ->where('agent_id', $currentUserId)
                 ->whereDate('created_at', $today)
                 ->count();
+                
+            // Filter regular transactions by current agent
             $regularTransactions = Transaction::where('branch_id', $branchId)
+                ->where('agent_id', $currentUserId)
                 ->whereDate('created_at', $today)
                 ->count();
             
@@ -181,6 +200,9 @@ class AgentDashboard extends Component
                 'todays_transactions' => $todaysTransactions,
             ];
         });
+        
+        // Calculate total safes balance
+        $this->totalSafesBalance = collect($this->branchSafes)->sum('current_balance');
     }
 
     public function render()
@@ -192,6 +214,7 @@ class AgentDashboard extends Component
             'agentLines' => $this->agentLines,
             'agentLinesTotalBalance' => $this->agentLinesTotalBalance,
             'branchSafes' => $this->branchSafes,
+            'totalSafesBalance' => $this->totalSafesBalance,
             'searchedTransaction' => $this->searchedTransaction,
             'sortField' => $this->sortField,
             'sortDirection' => $this->sortDirection,

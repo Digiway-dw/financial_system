@@ -86,7 +86,7 @@
             <tr class="bg-gray-100 text-center">
                 <th class="px-4 py-2 border">Safe Name</th>
                 <th class="px-4 py-2 border">Safe Balance</th>
-                <th class="px-4 py-2 border">Today's Transactions</th>
+                <th class="px-4 py-2 border">My Today's Transactions</th>
             </tr>
         </thead>
         <tbody>
@@ -248,11 +248,22 @@
                         @foreach ($agentLines as $line)
                             @php
                                 $dailyLimit = $line->daily_limit ?? 0;
-                                $dailyUsage = $line->daily_usage ?? 0;
                                 $monthlyLimit = $line->monthly_limit ?? 0;
-                                $monthlyUsage = $line->monthly_usage ?? 0;
-                                $dailyRemaining = $dailyLimit - $dailyUsage;
-                                $monthlyRemaining = $monthlyLimit - $monthlyUsage;
+                                $currentBalance = $line->current_balance ?? 0;
+                                $dailyStartingBalance = $line->daily_starting_balance ?? 0;
+                                $monthlyStartingBalance = $line->starting_balance ?? 0;
+                                
+                                // Calculate daily and monthly remaining
+                                // Daily remaining = daily limit - current balance
+                                $dailyRemaining = max(0, $dailyLimit - $currentBalance);
+                                
+                                // Monthly remaining = monthly limit - current balance
+                                $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
+                                
+                                // Calculate daily and monthly usage based on the difference from starting balances
+                                $dailyUsage = max(0, $currentBalance - $dailyStartingBalance);
+                                $monthlyUsage = max(0, $currentBalance - $monthlyStartingBalance);
+                                
                                 $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
                                 $circleColor = 'bg-green-400';
                                 if ($usagePercent >= 98) {

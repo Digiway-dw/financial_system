@@ -314,6 +314,13 @@ class Withdrawal extends Create
             $transactionType = 'Withdrawal';
             $notes = $this->notes;
 
+            // Check if user has admin or supervisor privileges - automatic approval for them
+            $currentUser = Auth::user();
+            $isAdminOrSupervisor = $currentUser && ($currentUser->hasRole('admin') || $currentUser->hasRole('general_supervisor'));
+
+            // Use this status value for all withdrawal types
+            $status = $isAdminOrSupervisor ? 'completed' : 'pending';
+
             if ($this->withdrawalType === 'user') {
                 $user = User::find($this->userId);
                 if (!$user) {
@@ -323,7 +330,7 @@ class Withdrawal extends Create
                 $customerName = $user->name;
                 $agent = Auth::user();
                 $isAdmin = ($agent->role ?? null) === 'admin';
-                $status = $isAdmin ? 'completed' : 'pending';
+                $status = $isAdminOrSupervisor ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
@@ -345,9 +352,12 @@ class Withdrawal extends Create
                     \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
                 }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                if ($isAdmin) {
+                
+                if ($isAdminOrSupervisor) {
+                    // For admin/supervisor, redirect to receipt
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 } else {
+                    // For regular users, show waiting approval screen
                     return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
                 }
                 return;
@@ -377,7 +387,7 @@ class Withdrawal extends Create
                 $notes = $this->notes . ' | Withdrawal to: ' . $this->withdrawalToName;
                 $user = $agent;
                 $isAdmin = ($user->role ?? null) === 'admin';
-                $status = $isAdmin ? 'completed' : 'pending';
+                $status = $isAdminOrSupervisor ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
@@ -407,9 +417,12 @@ class Withdrawal extends Create
                     \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
                 }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                if ($isAdmin) {
+                
+                if ($isAdminOrSupervisor) {
+                    // For admin/supervisor, redirect to receipt
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 } else {
+                    // For regular users, show waiting approval screen
                     return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
                 }
                 return;
@@ -417,7 +430,7 @@ class Withdrawal extends Create
             if ($this->withdrawalType === 'direct') {
                 $user = Auth::user();
                 $isAdmin = ($user->role ?? null) === 'admin';
-                $status = $isAdmin ? 'completed' : 'pending';
+                $status = $isAdminOrSupervisor ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
@@ -439,9 +452,11 @@ class Withdrawal extends Create
                     \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
                 }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                if ($isAdmin) {
+                if ($isAdminOrSupervisor) {
+                    // For admin/supervisor, redirect to receipt
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 } else {
+                    // For regular users, show waiting approval screen
                     return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
                 }
                 return;
@@ -450,7 +465,7 @@ class Withdrawal extends Create
             if ($this->withdrawalType === 'admin') {
                 $user = Auth::user();
                 $isAdmin = ($user->role ?? null) === 'admin';
-                $status = $isAdmin ? 'completed' : 'pending';
+                $status = $isAdminOrSupervisor ? 'completed' : 'pending';
                 $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
@@ -472,9 +487,11 @@ class Withdrawal extends Create
                     \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
                 }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                if ($isAdmin) {
+                if ($isAdminOrSupervisor) {
+                    // For admin/supervisor, redirect to receipt
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
                 } else {
+                    // For regular users, show waiting approval screen
                     return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
                 }
                 return;
@@ -482,38 +499,41 @@ class Withdrawal extends Create
 
             if ($this->withdrawalType === 'branch') {
                 $user = Auth::user();
+                // Set status based on admin/supervisor role
                 $branch = collect($this->branches)->firstWhere('id', $this->selectedBranchId);
                 $branchName = $branch['name'] ?? 'Unknown Branch';
-                $branchCode = $branch['branch_code'] ?? '';
-                $userBranch = $user->branch;
-                $userBranchName = $userBranch->name ?? 'Unknown';
-                $userBranchCode = $userBranch->branch_code ?? '';
-                // Always set destination_safe_id for the selected branch
-                $destinationSafe = \App\Models\Domain\Entities\Safe::where('branch_id', $this->selectedBranchId)->first();
-                $destinationSafeId = $destinationSafe ? $destinationSafe->id : null;
+                $referenceNumber = generate_reference_number($branchName);
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::create([
-                    'customer_name' => 'Branch Transfer to: ' . $branchName,
+                    'customer_name' => 'Branch Transfer: ' . $branchName,
                     'amount' => abs($this->amount),
                     'notes' => $this->notes,
-                    'safe_id' => $this->safeId, // agent's branch safe (destination)
+                    'safe_id' => $this->safeId,
                     'transaction_type' => 'Withdrawal',
-                    'status' => 'pending',
+                    'status' => $status, // Use the determined status
                     'transaction_date_time' => now(),
                     'agent_id' => $user->id,
                     'destination_branch_id' => $this->selectedBranchId,
-                    'destination_safe_id' => $destinationSafeId,
+                    'destination_safe_id' => null, // Will be set on approval
+                    'reference_number' => $referenceNumber,
                 ]);
+
                 // Send notification to all admins
                 $admins = \App\Domain\Entities\User::role('admin')->get();
-                $message = "Branch withdrawal request: " .
-                    "From branch: $branchName ($userBranchCode), " .
-                    "To branch: $branchName ($branchCode), " .
-                    "Amount: " . number_format($this->amount, 2) . " EGP, " .
-                    "By: " . $user->name . ".";
+                $message = "Branch withdrawal request: From Branch: " . ($safe->branch->name ?? 'Unknown') . " To Branch: " . $branchName . ", Amount: " . number_format($this->amount, 2) . " EGP, By: " . $user->name . ".";
                 \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, url()->current()));
-                session()->flash('message', 'Branch withdrawal submitted for admin approval!');
-                $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
+                
+                if ($isAdminOrSupervisor) {
+                    // For admin/supervisor, redirect to receipt
+                    session()->flash('message', 'Branch withdrawal created successfully!');
+                    $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                } else {
+                    // For regular users, show waiting approval screen
+                    session()->flash('message', 'Branch withdrawal submitted for admin approval!');
+                    $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
+                    return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
+                }
+                return;
             }
 
             if ($this->withdrawalType === 'expense') {
@@ -536,7 +556,7 @@ class Withdrawal extends Create
                     'notes' => $this->notes,
                     'safe_id' => $this->safeId,
                     'transaction_type' => 'Withdrawal',
-                    'status' => 'pending',
+                    'status' => $status, // Use the determined status
                     'transaction_date_time' => now(),
                     'agent_id' => $user->id,
                     'destination_branch_id' => $this->selectedBranchId,
@@ -554,9 +574,18 @@ class Withdrawal extends Create
                     ));
                 }
 
-                session()->flash('message', 'Expense withdrawal request submitted for admin approval!');
-                $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId', 'selectedExpenseItem', 'customExpenseItem']);
-                return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
+                if ($isAdminOrSupervisor) {
+                    // For admin/supervisor, redirect to receipt
+                    session()->flash('message', 'Expense withdrawal created successfully!');
+                    $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId', 'selectedExpenseItem', 'customExpenseItem']);
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                } else {
+                    // For regular users, show waiting approval screen
+                    session()->flash('message', 'Expense withdrawal request submitted for admin approval!');
+                    $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId', 'selectedExpenseItem', 'customExpenseItem']);
+                    return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
+                }
+                return;
             }
 
             $this->createTransactionUseCase->execute(

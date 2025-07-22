@@ -18,7 +18,11 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command('working-hours:check')->everyMinute();
         $schedule->command('sessions:check-inactive')->everyMinute();
-        $schedule->command('unfreeze-lines-and-reset-daily-balance')->dailyAt('00:00');
+        $schedule->command('app:unfreeze-lines-and-reset-daily-balance')
+            ->dailyAt('00:00')
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/daily-reset.log'));
 
         // Session timing commands have been removed - no auto-logout functionality
 

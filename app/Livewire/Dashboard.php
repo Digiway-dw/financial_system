@@ -403,14 +403,18 @@ class Dashboard extends Component
 
             // Safes for agent's branch (list)
             $branchSafes = collect($this->safeRepository->allWithBranch())->where('branch_id', $branchId)->values();
-            $data['branchSafes'] = $branchSafes->map(function ($safe) use ($branchStartupBalance, $today, $branchId) {
+            $data['branchSafes'] = $branchSafes->map(function ($safe) use ($branchStartupBalance, $today, $branchId, $user) {
                 // Count BOTH CashTransaction and regular Transaction records for this branch
                 $safeId = $safe['id'] ?? $safe->id;
+                $currentUserId = $user->id;
                 
+                // Only count transactions created by this agent
                 $cashTransactions = \App\Models\Domain\Entities\CashTransaction::where('safe_id', $safeId)
+                    ->where('agent_id', $currentUserId)
                     ->whereDate('created_at', $today)
                     ->count();
                 $regularTransactions = \App\Models\Domain\Entities\Transaction::where('branch_id', $branchId)
+                    ->where('agent_id', $currentUserId)
                     ->whereDate('created_at', $today)
                     ->count();
                 

@@ -65,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('transactions/{transactionId}/details', \App\Livewire\Transactions\Details::class)->name('transactions.details');
     Route::get('cash-transactions/{cashTransaction}/receipt', [\App\Http\Controllers\TransactionController::class, 'cashReceipt'])->name('cash-transactions.receipt');
     Route::get('cash-transactions/{cashTransactionId}/details', \App\Livewire\Transactions\Details::class)->name('cash-transactions.details');
+    Route::get('transactions/cash/{cashTransactionId}/details', \App\Livewire\Transactions\Details::class)->name('transactions.cash.details');
     Route::get('cash-transactions/{cashTransactionId}/edit', \App\Livewire\Transactions\EditCash::class)
         ->name('cash-transactions.edit');
 

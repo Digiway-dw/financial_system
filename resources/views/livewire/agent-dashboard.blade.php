@@ -47,6 +47,12 @@
                                 </svg>
                                 Print
                             </a>
+                            <a href="{{ $searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? route('transactions.details', $searchedTransaction->id) : route('transactions.cash.details', $searchedTransaction->id) }}" target="_blank" class="ml-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0A9 9 0 11 3 12a9 9 0 0118 0z" />
+                                </svg>
+                                View
+                            </a>
                         </div>
                     </div>
                 @else
@@ -62,12 +68,17 @@
             <label for="branches" class="font-semibold text-gray-700">Select Branches:</label>
             <select wire:model.live="selectedBranches" id="branches" multiple
                 class="border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200">
+                <option value="all" wire:click="selectAllBranches">All Branches</option>
                 @foreach ($branches as $branch)
                     <option value="{{ $branch->id }}" @if (in_array($branch->id, $selectedBranches)) selected @endif>
                         {{ $branch->name }}
                     </option>
                 @endforeach
             </select>
+            <button type="button" wire:click="selectAllBranches" 
+                class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-xs">
+                Select All
+            </button>
         </div>
         <a href="{{ route('dashboard') }}"
             class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 transition">
@@ -104,6 +115,12 @@
                             </svg>
                             Print
                         </a>
+                        <a href="{{ $searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? route('transactions.details', $searchedTransaction->id) : route('transactions.cash.details', $searchedTransaction->id) }}" target="_blank" class="ml-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0A9 9 0 11 3 12a9 9 0 0118 0z" />
+                            </svg>
+                            View
+                        </a>
                     </div>
                 </div>
             @elseif(request('reference_number'))
@@ -132,6 +149,13 @@
                 <tr><td colspan="4" class="px-4 py-2 border text-center text-gray-500">No safes found for selected branches.</td></tr>
             @endforelse
         </tbody>
+        <tfoot>
+            <tr class="bg-gray-50 text-center font-bold">
+                <td class="px-4 py-2 border">Total</td>
+                <td class="px-4 py-2 border text-blue-700">{{ number_format($totalSafesBalance, 2) }}</td>
+                <td class="px-4 py-2 border"></td>
+            </tr>
+        </tfoot>
     </table>
 
     <!-- Quick Actions -->
@@ -281,11 +305,22 @@
                         @foreach ($agentLines as $line)
                             @php
                                 $dailyLimit = $line->daily_limit ?? 0;
-                                $dailyUsage = $line->daily_usage ?? 0;
                                 $monthlyLimit = $line->monthly_limit ?? 0;
-                                $monthlyUsage = $line->monthly_usage ?? 0;
-                                $dailyRemaining = $dailyLimit - $dailyUsage;
-                                $monthlyRemaining = $monthlyLimit - $monthlyUsage;
+                                $currentBalance = $line->current_balance ?? 0;
+                                $dailyStartingBalance = $line->daily_starting_balance ?? 0;
+                                $monthlyStartingBalance = $line->starting_balance ?? 0;
+                                
+                                // Calculate daily and monthly remaining
+                                // Daily remaining = daily limit - current balance
+                                $dailyRemaining = max(0, $dailyLimit - $currentBalance);
+                                
+                                // Monthly remaining = monthly limit - current balance
+                                $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
+                                
+                                // Calculate daily and monthly usage based on the difference from starting balances
+                                $dailyUsage = max(0, $currentBalance - $dailyStartingBalance);
+                                $monthlyUsage = max(0, $currentBalance - $monthlyStartingBalance);
+                                
                                 $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
                                 $circleColor = 'bg-green-400';
                                 if ($usagePercent >= 98) {

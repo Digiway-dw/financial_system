@@ -154,12 +154,14 @@ return new class extends Migration
                 l.current_balance,
                 l.daily_limit,
                 l.monthly_limit,
-                l.daily_usage,
-                l.monthly_usage,
-                ROUND((l.daily_usage / l.daily_limit) * 100, 2) as daily_utilization_percent,
-                ROUND((l.monthly_usage / l.monthly_limit) * 100, 2) as monthly_utilization_percent,
-                (l.daily_limit - l.daily_usage) as daily_remaining,
-                (l.monthly_limit - l.monthly_usage) as monthly_remaining,
+                l.daily_starting_balance,
+                l.starting_balance,
+                GREATEST(0, l.current_balance - l.daily_starting_balance) as daily_usage,
+                GREATEST(0, l.current_balance - l.starting_balance) as monthly_usage,
+                ROUND((GREATEST(0, l.current_balance - l.daily_starting_balance) / NULLIF(l.daily_limit, 0)) * 100, 2) as daily_utilization_percent,
+                ROUND((GREATEST(0, l.current_balance - l.starting_balance) / NULLIF(l.monthly_limit, 0)) * 100, 2) as monthly_utilization_percent,
+                GREATEST(0, l.daily_limit - l.current_balance) as daily_remaining,
+                GREATEST(0, l.monthly_limit - l.current_balance) as monthly_remaining,
                 b.name as branch_name,
                 COUNT(t.id) as total_transactions,
                 COALESCE(SUM(CASE WHEN t.status = 'completed' THEN t.amount ELSE 0 END), 0) as total_transaction_amount
@@ -167,7 +169,7 @@ return new class extends Migration
             LEFT JOIN branches b ON l.branch_id = b.id
             LEFT JOIN transactions t ON l.id = t.line_id
             GROUP BY l.id, l.mobile_number, l.network, l.status, l.current_balance, 
-                     l.daily_limit, l.monthly_limit, l.daily_usage, l.monthly_usage, b.name
+                     l.daily_limit, l.monthly_limit, l.daily_starting_balance, l.starting_balance, b.name
         ");
     }
 
