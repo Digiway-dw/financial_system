@@ -416,7 +416,7 @@
                                                 <div class="flex flex-wrap gap-2">
                                                     @can('update', $user)
                                                         <button wire:click="editRole({{ $user->id }})" type="button"
-                                                        class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-indigo-400 via-indigo-500 to-indigo-600 border-2 border-indigo-300 rounded-xl font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-indigo-500 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 transition-all duration-200">
+                                                            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-indigo-400 via-indigo-500 to-indigo-600 border-2 border-indigo-300 rounded-xl font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-indigo-500 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 transition-all duration-200">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                 viewBox="0 0 24 24" stroke-width="1.5"
                                                                 stroke="currentColor" class="w-4 h-4 mr-1.5">
@@ -428,7 +428,7 @@
                                                     @endcan
 
                                                     <a href="{{ route('users.view', $user->id) }}"
-                                                    class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 border-2 border-blue-300 rounded-xl font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-blue-500 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200">
+                                                        class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 border-2 border-blue-300 rounded-xl font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-blue-500 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                             viewBox="0 0 24 24" stroke-width="1.5"
                                                             stroke="currentColor" class="w-4 h-4 mr-1.5">
@@ -442,7 +442,7 @@
 
                                                     @can('update', $user)
                                                         <a href="{{ route('users.edit', $user->id) }}"
-                                                        class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border-2 border-yellow-300 rounded-xl font-semibold text-xs text-gray-900 tracking-wide shadow-md hover:scale-105 hover:from-yellow-500 hover:to-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 transition-all duration-200">
+                                                            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border-2 border-yellow-300 rounded-xl font-semibold text-xs text-gray-900 tracking-wide shadow-md hover:scale-105 hover:from-yellow-500 hover:to-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 transition-all duration-200">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                 viewBox="0 0 24 24" stroke-width="1.5"
                                                                 stroke="currentColor" class="w-4 h-4 mr-1.5">
@@ -456,7 +456,7 @@
                                                     @can('delete', $user)
                                                         <button wire:click="confirmUserDeletion({{ $user->id }})"
                                                             type="button"
-                                                        class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-400 via-red-500 to-red-600 border-2 border-red-300 rounded-xl font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-red-500 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition-all duration-200">
+                                                            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-400 via-red-500 to-red-600 border-2 border-red-300 rounded-xl font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-red-500 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition-all duration-200">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                 viewBox="0 0 24 24" stroke-width="1.5"
                                                                 stroke="currentColor" class="w-4 h-4 mr-1.5">
