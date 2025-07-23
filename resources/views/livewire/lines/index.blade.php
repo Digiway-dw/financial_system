@@ -60,13 +60,10 @@
                             class="mt-1 block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                             placeholder="ابحث برقم الخط..." />
                     </div>
-                    <div>
+                    <div class="pt-4 md:pt-5">
                         <x-primary-button wire:click="filter"
                             class="w-full bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 rounded-lg py-2.5 font-medium shadow-sm hover:shadow-md transition-all duration-200">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+                           
                             تطبيق التصفية
                         </x-primary-button>
                     </div>
