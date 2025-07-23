@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50" dir="rtl" style="direction: rtl;">
     <style>
         .sortable-header {
             cursor: pointer;
@@ -19,8 +19,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Create New Branch</h1>
-                    <p class="mt-2 text-sm text-gray-600">Add a new branch to expand your financial network</p>
+                    <h1 class="text-3xl font-bold text-gray-900">إنشاء فرع جديد</h1>
+                    <p class="mt-2 text-sm text-gray-600">أضف فرعًا جديدًا لتوسيع شبكتك المالية</p>
                 </div>
                 <div class="mt-4 sm:mt-0">
                     <a href="{{ route('branches.index') }}"
@@ -29,7 +29,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        Back to Branches
+                        العودة لقائمة الفروع
                     </a>
                 </div>
             </div>
@@ -51,21 +51,21 @@
                                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            Basic Information
+                            المعلومات الأساسية
                         </h2>
-                        <p class="text-sm text-gray-600 mt-1">Enter the essential details for the new branch</p>
+                        <p class="text-sm text-gray-600 mt-1">أدخل البيانات الأساسية للفرع الجديد</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Branch Name -->
                         <div class="space-y-2">
                             <label for="name" class="block text-sm font-medium text-gray-700">
-                                Branch Name <span class="text-red-500">*</span>
+                                اسم الفرع <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
                                 <input wire:model="name" id="name" name="name" type="text" required autofocus
                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                                    placeholder="Enter branch name" />
+                                    placeholder="ادخل اسم الفرع" />
                             </div>
                             @if ($errors->has('name'))
                                 <p class="text-sm text-red-600 flex items-center mt-1">
@@ -82,17 +82,17 @@
                         <!-- Branch Code -->
                         <div class="space-y-2">
                             <label for="branch_code" class="block text-sm font-medium text-gray-700">
-                                Branch Code <span class="text-red-500">*</span>
-                                <span class="text-xs text-gray-500">(Format: 2 letters + 3 digits, e.g., AB123)</span>
+                                كود الفرع <span class="text-red-500">*</span>
+                                <span class="text-xs text-gray-500">(مثال: حرفان ثم ٣ أرقام، مثل AB123)</span>
                             </label>
                             <div class="relative flex">
                                 <input wire:model="branch_code" id="branch_code" name="branch_code" type="text"
                                     required
                                     class="flex-1 px-4 py-3 border border-gray-300 rounded-l-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                                    placeholder="e.g., AB123" pattern="[A-Z]{2}[0-9]{3}" maxlength="5" />
+                                    placeholder="مثال: AB123" pattern="[A-Z]{2}[0-9]{3}" maxlength="5" />
                                 <button type="button" wire:click="regenerateBranchCode"
                                     class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-r-xl border border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-200 flex items-center"
-                                    title="Generate new code">
+                                    title="توليد كود جديد">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
@@ -100,8 +100,8 @@
                                     </svg>
                                 </button>
                             </div>
-                            <p class="text-xs text-gray-500">Code auto-generated. Click refresh to generate a new one.
-                            </p>
+                            <p class="text-xs text-gray-500">الكود يتم توليده تلقائيًا. اضغط على زر التحديث لتوليد كود
+                                جديد.</p>
                             @if ($errors->has('branch_code'))
                                 <p class="text-sm text-red-600 flex items-center mt-1">
                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -118,7 +118,7 @@
                     <!-- Location -->
                     <div class="space-y-2">
                         <label for="location" class="block text-sm font-medium text-gray-700">
-                            Location <span class="text-red-500">*</span>
+                            الموقع <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -133,7 +133,7 @@
                             </div>
                             <input wire:model="location" id="location" name="location" type="text" required
                                 class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                                placeholder="Enter branch location" />
+                                placeholder="ادخل موقع الفرع" />
                         </div>
                         @if ($errors->has('location'))
                             <p class="text-sm text-red-600 flex items-center mt-1">
@@ -150,11 +150,11 @@
                     <!-- Description -->
                     <div class="space-y-2">
                         <label for="description" class="block text-sm font-medium text-gray-700">
-                            Description
+                            الوصف
                         </label>
                         <textarea wire:model="description" id="description" name="description" rows="3"
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm resize-none"
-                            placeholder="Optional description for the branch"></textarea>
+                            placeholder="وصف اختياري للفرع"></textarea>
                         @if ($errors->has('description'))
                             <p class="text-sm text-red-600 flex items-center mt-1">
                                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -180,24 +180,24 @@
                                     </path>
                                 </svg>
                             </div>
-                            Safe Configuration
+                            إعدادات الخزينة
                         </h2>
-                        <p class="text-sm text-gray-600 mt-1">Set up the initial safe balance and description</p>
+                        <p class="text-sm text-gray-600 mt-1">قم بتحديد رصيد الخزينة والوصف</p>
                     </div>
 
                     <!-- Safe Initial Balance -->
                     <div class="space-y-2">
                         <label for="safe_initial_balance" class="block text-sm font-medium text-gray-700">
-                            Safe Initial Balance (EGP) <span class="text-red-500">*</span>
+                            رصيد الخزينة الابتدائي <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 text-sm">EGP</span>
+                                <span class="text-gray-500 text-sm">ج.م</span>
                             </div>
                             <input wire:model="safe_initial_balance" id="safe_initial_balance"
                                 name="safe_initial_balance" type="number" step="1" min="0" required
                                 class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                                placeholder="0" oninput="this.value=this.value.replace(/[^\d]/g,'')" />
+                                placeholder="٠" oninput="this.value=this.value.replace(/[^ -9]/g,'')" />
                         </div>
                         @if ($errors->has('safe_initial_balance'))
                             <p class="text-sm text-red-600 flex items-center mt-1">
@@ -214,11 +214,11 @@
                     <!-- Safe Description -->
                     <div class="space-y-2">
                         <label for="safe_description" class="block text-sm font-medium text-gray-700">
-                            Safe Description
+                            وصف الخزينة
                         </label>
                         <textarea wire:model="safe_description" id="safe_description" name="safe_description" rows="3"
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm resize-none"
-                            placeholder="Optional description for the safe"></textarea>
+                            placeholder="وصف اختياري للخزينة"></textarea>
                         @if ($errors->has('safe_description'))
                             <p class="text-sm text-red-600 flex items-center mt-1">
                                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -275,7 +275,7 @@
                     <div class="flex space-x-3">
                         <a href="{{ route('branches.index') }}"
                             class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-                            Cancel
+                            إلغاء
                         </a>
                         <button type="submit"
                             class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
@@ -283,7 +283,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
-                            Create Branch
+                            إنشاء الفرع
                         </button>
                     </div>
                 </div>
