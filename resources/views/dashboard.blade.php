@@ -10,7 +10,7 @@
                     <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
-                    Search Transactions by Reference Number
+                    ابحث عن المعاملة بالرقم المرجعي
                 </h2>
                 <form method="GET" action="{{ url()->current() }}" class="w-full max-w-md flex flex-col gap-4">
                     <div class="flex gap-2">
@@ -33,11 +33,11 @@
                         <div class="mt-6 w-full max-w-md bg-blue-50 border border-blue-200 rounded-lg p-4">
                             <h4 class="font-bold text-blue-800 mb-2">Transaction Details</h4>
                             <div class="text-sm text-gray-700">
-                                <div><span class="font-semibold">Reference:</span> {{ $searchedTransaction->reference_number }}</div>
-                                <div><span class="font-semibold">Commission:</span> {{ number_format($searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? ($searchedTransaction->commission ?? 0) : 0, 2) }}</div>
-                                <div><span class="font-semibold">Total:</span> {{ number_format($searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? ($searchedTransaction->amount + ($searchedTransaction->commission ?? 0)) : $searchedTransaction->amount, 2) }}</div>
-                                <div><span class="font-semibold">Status:</span> {{ $searchedTransaction->status }}</div>
-                                <div><span class="font-semibold">Date:</span> {{ $searchedTransaction->created_at }}</div>
+                                <div><span class="font-semibold">الرقم المرجعي:</span> {{ $searchedTransaction->reference_number }}</div>
+                                <div><span class="font-semibold">العمولة:</span> {{ number_format($searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? ($searchedTransaction->commission ?? 0) : 0, 2) }}</div>
+                                <div><span class="font-semibold">المبلغ:</span> {{ number_format($searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? ($searchedTransaction->amount + ($searchedTransaction->commission ?? 0)) : $searchedTransaction->amount, 2) }}</div>
+                                <div><span class="font-semibold">الحالة:</span> {{ $searchedTransaction->status }}</div>
+                                <div><span class="font-semibold">تاريخ الإنشاء:</span> {{ $searchedTransaction->created_at }}</div>
                             </div>
                             <div class="mt-4 text-right flex gap-2 justify-end">
                                 <a href="{{ route('transactions.print', $searchedTransaction->id) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
@@ -57,7 +57,7 @@
                             </div>
                         </div>
                     @else
-                        <div class="mt-4 text-red-600 font-semibold">No transaction found with this reference number.</div>
+                        <div class="mt-4 text-red-600 font-semibold">لا يوجد معاملة بهذا الرقم المرجعي.</div>
                     @endif
                 @endif
             </div>

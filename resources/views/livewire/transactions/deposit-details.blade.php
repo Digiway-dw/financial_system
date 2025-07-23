@@ -4,12 +4,12 @@
         <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Deposit</h1>
-                    <p class="text-gray-600">Create a new deposit operation</p>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">ايداع الاموال</h1>
+                    <p class="text-gray-600">إنشاء عملية إيداع جديدة</p>
                 </div>
                 <div class="text-right">
-                    <p class="text-sm text-gray-500">Agent: {{ Auth::user()->name }}</p>
-                    <p class="text-sm text-gray-500">Branch: {{ Auth::user()->branch->name ?? 'N/A' }}</p>
+                    <p class="text-sm text-gray-500">الموظف: {{ Auth::user()->name }}</p>
+                    <p class="text-sm text-gray-500">الفرع: {{ Auth::user()->branch->name ?? 'N/A' }}</p>
                 </div>
             </div>
         </div>
@@ -19,19 +19,19 @@
             <div class="mb-6 flex space-x-4">
                 <button type="button" class="px-4 py-2 rounded-xl font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                     :class="depositType === 'direct' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'" @click="depositType = 'direct'">
-                    Direct Deposit
+                    ايداع مباشر
                 </button>
                 <button type="button" class="px-4 py-2 rounded-xl font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                     :class="depositType === 'user' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'" @click="depositType = 'user'">
-                    User Deposit
+                    ايداع من الموظف
                 </button>
                 <button type="button" class="px-4 py-2 rounded-xl font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                     :class="depositType === 'client' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'" @click="depositType = 'client'">
-                    Client Wallet Deposit
+                    ايداع محفظة العميل
                 </button>
                 <button type="button" class="px-4 py-2 rounded-xl font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                     :class="depositType === 'admin' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'" @click="depositType = 'admin'">
-                    Admin Deposit
+                    ايداع الادمن
                 </button>
             </div>
 
@@ -63,17 +63,17 @@
                 @endif
                 <form class="space-y-6" wire:submit.prevent="submitDirectDeposit">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">الاسم</label>
                         <input type="text" wire:model.defer="direct_name" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter name">
                         @error('direct_name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">المبلغ</label>
                         <input type="number" step="0.01" wire:model.defer="direct_amount" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter amount">
                         @error('direct_amount') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Note</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
                         <textarea wire:model.defer="direct_note" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter note"></textarea>
                         @error('direct_note') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
@@ -87,17 +87,17 @@
             <div x-show="depositType === 'user'">
                 <form class="space-y-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">User</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">المستخدم</label>
                         <select class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
-                            <option>Select user</option>
+                            <option>اختر المستخدم</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">المبلغ</label>
                         <input type="number" step="0.01" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter amount">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Note</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
                         <textarea class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter note"></textarea>
                     </div>
                 </form>
@@ -108,28 +108,28 @@
                 <form class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Customer Code</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">كود العميل</label>
                             <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter customer code">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Customer Mobile Number</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">رقم هاتف العميل</label>
                             <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter mobile number">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Customer Name</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">اسم العميل</label>
                             <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter customer name">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">National ID</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">الرقم القومي</label>
                             <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" minlength="14" maxlength="14" pattern="[0-9]{14}" required placeholder="Enter national ID (14 digits)">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">المبلغ</label>
                         <input type="number" step="0.01" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter amount">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Note</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
                         <textarea class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter note"></textarea>
                     </div>
                 </form>
@@ -139,11 +139,11 @@
             <div x-show="depositType === 'admin'">
                 <form class="space-y-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">المبلغ</label>
                         <input type="number" step="0.01" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter amount">
                     </div>
 <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Note</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
                         <textarea class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter note"></textarea>
                     </div>
                 </form>

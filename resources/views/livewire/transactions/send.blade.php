@@ -4,12 +4,12 @@
         <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Send Transaction</h1>
-                    <p class="text-gray-600">Create a new transfer operation for agents</p>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">إرسال</h1>
+                    <p class="text-gray-600"> معاملة إرسال جديدة</p>
                 </div>
                 <div class="text-right">
-                    <p class="text-sm text-gray-500">Agent: {{ Auth::user()->name }}</p>
-                    <p class="text-sm text-gray-500">Branch: {{ Auth::user()->branch->name ?? 'N/A' }}</p>
+                    <p class="text-sm text-gray-500">الموظف: {{ Auth::user()->name }}</p>
+                    <p class="text-sm text-gray-500">الفرع: {{ Auth::user()->branch->name ?? 'N/A' }}</p>
                 </div>
             </div>
         </div>
@@ -70,20 +70,20 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
-                        Client Information
+                        معلومات العميل
                     </h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Client Mobile Number -->
                         <div class="relative">
                             <label for="clientMobile" class="block text-sm font-medium text-gray-700 mb-2">
-                                Client Mobile Number <span class="text-red-500">*</span>
+                                رقم الموبايل <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
                                 <input wire:model="clientMobile" wire:input="searchClient" id="clientMobile"
                                     type="text"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('clientMobile') border-red-500 @enderror"
-                                    placeholder="Enter mobile number, name, or customer code" autocomplete="off">
+                                    placeholder="ادخل رقم الموبايل، اسم العميل، أو رمز العميل" autocomplete="off">
                                 @if ($clientId)
                                     <button type="button" wire:click="clearClientSelection"
                                         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors">
@@ -160,7 +160,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                            Selected Client
+                                            العميل المختار
                                         </h5>
                                         <button type="button" wire:click="clearClientSelection"
                                             class="text-gray-400 hover:text-red-500 transition-colors">
@@ -173,14 +173,14 @@
                                     </div>
                                     <div class="grid grid-cols-2 gap-2 text-xs">
                                         <div>
-                                            <span class="font-medium text-gray-600">Balance:</span>
+                                            <span class="font-medium text-gray-600">الرصيد:</span>
                                             <div
                                                 class="font-semibold {{ $clientBalance >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
                                                 {{ format_int($clientBalance) }} EGP
                                             </div>
                                         </div>
                                         <div>
-                                            <span class="font-medium text-gray-600">Code:</span>
+                                            <span class="font-medium text-gray-600">الكود:</span>
                                             <div class="text-gray-900">{{ $clientCode }}</div>
                                         </div>
                                     </div>
@@ -191,8 +191,8 @@
                         <!-- Client Code -->
                         <div>
                             <label for="clientCode" class="block text-sm font-medium text-gray-700 mb-2">
-                                Client Code
-                                <span class="text-gray-500 text-xs">(Auto-generated if new client)</span>
+                                الكود
+                                <span class="text-gray-500 text-xs">(مولد تلقائي إذا كان عميل جديد)</span>
                             </label>
                             <input wire:model="clientCode" id="clientCode" type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-700"
@@ -203,11 +203,11 @@
                         <!-- Client Name -->
                         <div>
                             <label for="clientName" class="block text-sm font-medium text-gray-700 mb-2">
-                                Client Name <span class="text-red-500">*</span>
+                                اسم العميل <span class="text-red-500">*</span>
                             </label>
                             <input wire:model="clientName" id="clientName" type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('clientName') border-red-500 @enderror"
-                                placeholder="Enter client name" @if ($clientId) disabled @endif>
+                                placeholder="ادخل اسم العميل" @if ($clientId) disabled @endif>
                             @error('clientName')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -216,20 +216,20 @@
                         <!-- Client Gender -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Client Gender <span class="text-gray-500 text-xs">(Optional)</span>
+                                جنس العميل <span class="text-gray-500 text-xs">(اختياري)</span>
                             </label>
                             <div class="flex space-x-4">
                                 <label class="flex items-center">
                                     <input wire:model="clientGender" type="radio" value="male"
                                         class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                                         @if ($clientId) disabled @endif>
-                                    <span class="ml-2 text-sm text-gray-700">Male</span>
+                                    <span class="ml-2 text-sm text-gray-700">ذكر</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input wire:model="clientGender" type="radio" value="female"
                                         class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                                         @if ($clientId) disabled @endif>
-                                    <span class="ml-2 text-sm text-gray-700">Female</span>
+                                    <span class="ml-2 text-sm text-gray-700">أنثى</span>
                                 </label>
                             </div>
                         </div>
@@ -246,10 +246,10 @@
                                     </path>
                                 </svg>
                                 <span class="text-sm font-medium text-blue-900">
-                                    Client Balance: {{ format_int((float) $clientBalance) }} EGP
+                                    الرصيد: {{ format_int((float) $clientBalance) }} EGP
                                 </span>
                                 <span class="ml-2 text-xs text-blue-700">
-                                    (Available for both Safe and Wallet payment methods)
+                                    (متاح لكل من الأمان والمحفظة)
                                 </span>
                             </div>
                         </div>
@@ -272,17 +272,17 @@
                         <!-- Receiver Mobile -->
                         <div>
                             <label for="receiverMobile" class="block text-sm font-medium text-gray-700 mb-2">
-                                Receiver Mobile Number <span class="text-red-500">*</span>
+                                رقم الموبايل المستلم <span class="text-red-500">*</span>
                             </label>
                             <input wire:model="receiverMobile" id="receiverMobile" type="text" maxlength="11"
                                 minlength="11"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 @error('receiverMobile') border-red-500 @enderror"
-                                placeholder="Enter receiver mobile number (11 digits)" pattern="\d{11}"
+                                placeholder="ادخل رقم الموبايل المستلم (11 رقم)" pattern="\d{11}"
                                 autocomplete="off"
                                 oninput="this.value = this.value.replace(/[^\d]/g, '').slice(0,11);" onblur="">
-                            <p class="mt-1 text-xs text-gray-500">Receiver mobile number must be exactly 11 digits.</p>
+                            <p class="mt-1 text-xs text-gray-500">يجب أن يكون رقم الموبايل المستلم 11 رقم.</p>
                             @if (strlen($receiverMobile) > 0 && strlen($receiverMobile) < 11)
-                                <p class="mt-1 text-sm text-red-600">Please enter all 11 digits of the mobile number.
+                                <p class="mt-1 text-sm text-red-600">يجب أن يكون رقم الموبايل المستلم 11 رقم.
                                 </p>
                             @endif
                             @error('receiverMobile')
@@ -293,14 +293,14 @@
                         <!-- Amount -->
                         <div>
                             <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
-                                Amount (EGP) <span class="text-red-500">*</span>
+                                المبلغ (EGP) <span class="text-red-500">*</span>
                             </label>
                             <input wire:model.live="amount" id="amount" type="number" step="1"
                                 min="1"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 @error('amount') border-red-500 @enderror"
-                                placeholder="Enter amount (whole numbers only)" autocomplete="off"
+                                placeholder="ادخل المبلغ (أرقام فقط)" autocomplete="off"
                                 oninput="this.value = this.value.replace(/[^\d]/g, '');">
-                            <p class="mt-1 text-xs text-gray-500">Amount must be a whole number (no decimals allowed)
+                            <p class="mt-1 text-xs text-gray-500">يجب أن يكون المبلغ عدد صحيح (لا يسمح بالكسور)
                             </p>
                             @error('amount')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -310,13 +310,13 @@
                         <!-- Commission (Auto-calculated) -->
                         <div>
                             <label for="commission" class="block text-sm font-medium text-gray-700 mb-2">
-                                Commission (Auto-calculated)
+                                العمولة (محسوب تلقائيا)
                             </label>
                             <input wire:model="commission" id="commission" type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('commission') border-red-500 @enderror"
                                 placeholder="0.00" autocomplete="off" value="{{ old('commission', '') }}"
                                 readonly />
-                            <span class="text-xs text-gray-500">5 EGP per 500 EGP (no fractions)</span>
+                            <span class="text-xs text-gray-500">5 EGP لكل 500 EGP (لا يسمح بالكسور)</span>
                             @error('commission')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -324,15 +324,15 @@
                         <!-- Discount (Optional) -->
                         <div>
                             <label for="discount" class="block text-sm font-medium text-gray-700 mb-2">
-                                Discount (Optional)
+                                الخصم (اختياري)
                             </label>
                             <input wire:model.live="discount" id="discount" type="number" step="1"
                                 min="0"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('discount') border-red-500 @enderror"
-                                placeholder="Enter discount (whole numbers only)" autocomplete="off"
+                                placeholder="ادخل الخصم (أرقام فقط)" autocomplete="off"
                                 value="{{ old('discount', '') }}"
                                 onfocus="if(this.value=='0'||this.value=='0.00'){this.value='';}" />
-                            <p class="mt-1 text-xs text-gray-500">Discount must be a whole number (no decimals allowed)
+                            <p class="mt-1 text-xs text-gray-500">يجب أن يكون الخصم عدد صحيح (لا يسمح بالكسور)
                             </p>
                             @error('discount')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -344,7 +344,7 @@
                     @if ($discount > 0)
                         <div class="mt-6">
                             <label for="discountNotes" class="block text-sm font-medium text-gray-700 mb-2">
-                                Discount Notes <span class="text-red-500">*</span>
+                                ملاحظات الخصم <span class="text-red-500">*</span>
                             </label>
                             <textarea wire:model="discountNotes" id="discountNotes" rows="3"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('discountNotes') border-red-500 @enderror"
@@ -365,23 +365,23 @@
                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                             </path>
                         </svg>
-                        Line Selection & Payment
+                        اختيار الخط والدفع
                     </h2>
 
                     <!-- Branch Selection (for admin/supervisor only) -->
                     @if ($canSelectBranch)
                         <div class="mb-6">
                             <label for="selectedBranchId" class="block text-sm font-medium text-gray-700 mb-2">
-                                Select Branch <span class="text-red-500">*</span>
+                                اختيار الفرع <span class="text-red-500">*</span>
                             </label>
                             <select wire:model.live="selectedBranchId" id="selectedBranchId"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200">
-                                <option value="">Select a branch...</option>
+                                <option value="">اختر فرع...</option>
                                 @foreach ($availableBranches as $branch)
                                     <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
                                 @endforeach
                             </select>
-                            <p class="mt-1 text-sm text-gray-500">Select the branch from which this transaction will be
+                            <p class="mt-1 text-sm text-gray-500">اختر الفرع من الذي سيتم إجراء هذه المعاملة.
                                 performed.</p>
                         </div>
                     @endif
@@ -390,11 +390,11 @@
                         <!-- Available Lines -->
                         <div>
                             <label for="selectedLineId" class="block text-sm font-medium text-gray-700 mb-2">
-                                Available Lines <span class="text-red-500">*</span>
+                                الخطوط المتاحة <span class="text-red-500">*</span>
                             </label>
                             <select wire:model.live="selectedLineId" id="selectedLineId"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 @error('selectedLineId') border-red-500 @enderror">
-                                <option value="">Select a line...</option>
+                                <option value="">اختر خط...</option>
                                 @foreach ($availableLines as $line)
                                     <option value="{{ $line['id'] }}">{{ $line['display'] }}</option>
                                 @endforeach
@@ -406,7 +406,7 @@
 
                         <!-- Payment Options -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Payment Options</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">خيارات الدفع</label>
 
                             <div class="space-y-3">
                                 <!-- Collect From Customer Wallet -->
@@ -416,7 +416,7 @@
                                         <input wire:model.live="collectFromCustomerWallet" type="checkbox"
                                             class="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
                                         <span class="ml-3 text-sm font-medium text-purple-900">
-                                            Collect from Customer Wallet + Line Balance
+                                            تحصيل من محفظة العميل + رصيد الخط
                                         </span>
                                     </label>
                                 @endif
@@ -428,7 +428,7 @@
                                         class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                                         {{ $deductFromLineOnly ? 'checked' : '' }} disabled>
                                     <span class="ml-3 text-sm font-medium text-green-900">
-                                        Deduct from Line Balance Only {{ $clientBalance > 0 ? '(Default)' : '' }}
+                                        تحصيل من رصيد الخط فقط {{ $clientBalance > 0 ? '(افتراضي)' : '' }}
                                     </span>
                                 </label>
                             </div>
@@ -439,29 +439,29 @@
                 <!-- Transaction Summary -->
                 @if ($amount > 0)
                     <div class="mb-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">ملخص المعاملة</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-blue-600">{{ format_int($amount) }}
                                 </div>
-                                <div class="text-sm text-gray-600">Amount</div>
+                                <div class="text-sm text-gray-600">المبلغ</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-green-600">
                                     {{ format_int($commission) }}
                                 </div>
-                                <div class="text-sm text-gray-600">Commission</div>
+                                <div class="text-sm text-gray-600">العمولة</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-red-600">{{ format_int($discount) }}
                                 </div>
-                                <div class="text-sm text-gray-600">Discount</div>
+                                <div class="text-sm text-gray-600">الخصم</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-purple-600">
                                     {{ format_int($amount + $commission - abs($discount)) }}
                                 </div>
-                                <div class="text-sm text-gray-600">Total</div>
+                                <div class="text-sm text-gray-600">المجموع</div>
                             </div>
                         </div>
                     </div>
@@ -478,7 +478,7 @@
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <p class="text-red-800 font-medium">Transaction cannot be processed</p>
+                            <p class="text-red-800 font-medium">لا يمكن معالجة المعاملة</p>
                             <p class="text-red-700 text-sm">{{ $lowBalanceWarning }}</p>
                         </div>
                     </div>
@@ -493,7 +493,7 @@
                                     clip-rule="evenodd" />
                         </div>
                         <div class="ml-3">
-                            <p class="text-red-800 font-medium">Transaction Error</p>
+                            <p class="text-red-800 font-medium">خطأ في المعاملة</p>
                             <p class="text-red-700 text-sm">{{ $errorMessage }}</p>
                         </div>
                     </div>
@@ -508,7 +508,7 @@
                                     clip-rule="evenodd" />
                         </div>
                         <div class="ml-3">
-                            <p class="text-red-800 font-medium">Transaction Rejected</p>
+                            <p class="text-red-800 font-medium">تم رفض المعاملة</p>
                             <p class="text-red-700 text-sm">{{ session('error') }}</p>
                         </div>
                     </div>
@@ -525,11 +525,10 @@
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <p class="text-green-800 font-medium">New Customer Created</p>
-                            <p class="text-green-700 text-sm">Customer Code: <span
+                            <p class="text-green-800 font-medium">تم إنشاء عميل جديد</p>
+                            <p class="text-green-700 text-sm">كود العميل: <span
                                     class="font-mono font-bold">{{ $generatedCustomerCode }}</span></p>
-                            <p class="text-green-600 text-xs">Please inform the customer of this code for future
-                                transactions.</p>
+                            <p class="text-green-600 text-xs">يرجى إبرام عملية الدفع للعميل للمرة القادمة.</p>
                         </div>
                     </div>
                 @endif
@@ -569,12 +568,12 @@
                     <div class="flex justify-end space-x-4 w-full">
                         <button type="button" wire:click="resetTransactionForm"
                             class="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-300 transition-colors duration-200">
-                            Reset Form
+                            إعادة تعيين النموذج
                         </button>
                         <button type="submit"
                             class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                             {{ $lowBalanceWarning ? 'disabled' : '' }}>
-                            <span wire:loading.remove>Create Transaction</span>
+                            <span wire:loading.remove>إنشاء المعاملة</span>
                             <span wire:loading class="flex items-center">
                                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

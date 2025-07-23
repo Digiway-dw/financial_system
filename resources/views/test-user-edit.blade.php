@@ -15,25 +15,25 @@
                 <h1>Test User Edit</h1>
             </div>
             <div class="card-body">
-                <h2>User Details</h2>
+                <h2>User التفاصيل</h2>
                 <p><strong>ID:</strong> {{ $user->id }}</p>
-                <p><strong>Name:</strong> {{ $user->name }}</p>
-                <p><strong>Email:</strong> {{ $user->email }}</p>
+                <p><strong>الاسم:</strong> {{ $user->name }}</p>
+                <p><strong>البريد الإلكتروني:</strong> {{ $user->email }}</p>
 
-                <h2>Edit User</h2>
+                <h2>تعديل المستخدم</h2>
                 <form method="POST" action="/test-user-update/{{ $user->id }}">
                     @csrf
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
+                        <label for="name" class="form-label">الاسم</label>
                         <input type="text" class="form-control" id="name" name="name"
                             value="{{ $user->name }}">
                     </div>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
+                        <label for="email" class="form-label">الايميل</label>
                         <input type="email" class="form-control" id="email" name="email"
                             value="{{ $user->email }}">
                     </div>
-                    <button type="submit" class="btn btn-primary">Update User</button>
+                    <button type="submit" class="btn btn-primary">تعديل</button>
                 </form>
             </div>
         </div>

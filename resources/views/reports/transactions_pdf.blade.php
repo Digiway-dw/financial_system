@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Transactions Report</title>
+    <title>تقرير المعاملات</title>
     <style>
         body {
             font-family: 'DejaVu Sans', 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
@@ -52,33 +52,33 @@
     </style>
 </head>
 <body>
-    <h1>Financial Transactions Report</h1>
+    <h1>تقرير المعاملات المالية</h1>
 
     <div class="summary">
-        <h2>Report Summary</h2>
-        <p><strong>Start Date:</strong> {{ $startDate }}</p>
-        <p><strong>End Date:</strong> {{ $endDate }}</p>
-        <p><strong>Total Transferred:</strong> {{ number_format($totalTransferred, 2) }} EGP</p>
-        <p><strong>Total Commission:</strong> {{ number_format($totalCommission, 2) }} EGP</p>
-        <p><strong>Total Deductions:</strong> {{ number_format($totalDeductions, 2) }} EGP</p>
-        <p><strong>Net Profits:</strong> {{ number_format($netProfits, 2) }} EGP</p>
+        <h2>ملخص التقرير</h2>
+        <p><strong>تاريخ البداية:</strong> {{ $startDate }}</p>
+        <p><strong>تاريخ النهاية:</strong> {{ $endDate }}</p>
+        <p><strong>المبلغ المحول:</strong> {{ number_format($totalTransferred, 2) }} EGP</p>
+        <p><strong>العمولة:</strong> {{ number_format($totalCommission, 2) }} EGP</p>
+        <p><strong>الخصم:</strong> {{ number_format($totalDeductions, 2) }} EGP</p>
+        <p><strong>الأرباح:</strong> {{ number_format($netProfits, 2) }} EGP</p>
     </div>
 
-    <h2>Transactions Details</h2>
+    <h2>تفاصيل المعاملات</h2>
     <div class="table-container">
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Customer Name</th>
-                <th>Amount</th>
-                <th>Commission</th>
-                <th>Deduction</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Agent</th>
-                <th>Branch</th>
-                <th>Date/Time</th>
+                <th>اسم العميل</th>
+                <th>المبلغ</th>
+                <th>العمولة</th>
+                <th>الخصم</th>
+                <th>النوع</th>
+                <th>الحالة</th>
+                <th>المسؤول</th>
+                <th>الفرع</th>
+                <th>التاريخ والوقت</th>
             </tr>
         </thead>
         <tbody>

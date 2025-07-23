@@ -15,8 +15,8 @@
                         </div>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">Edit Safe</h1>
-                        <p class="text-sm text-gray-600">Update safe information and settings</p>
+                        <h1 class="text-2xl font-bold text-gray-900">تعديل الخزينة</h1>
+                        <p class="text-sm text-gray-600">تعديل معلومات الخزينة والإعدادات</p>
                     </div>
                 </div>
                 <a href="{{ route('safes.index') }}"
@@ -25,7 +25,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    Back to Safes
+                    العودة للخزائن
                 </a>
             </div>
         </div>
@@ -47,21 +47,21 @@
                                     </path>
                                 </svg>
                             </div>
-                            Safe Details
+                            تفاصيل الخزينة
                         </h2>
-                        <p class="text-sm text-gray-600 mt-1">Update the safe information below</p>
+                        <p class="text-sm text-gray-600 mt-1">تعديل معلومات الخزينة والإعدادات</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Safe Name -->
                         <div class="space-y-2">
                             <label for="name" class="block text-sm font-medium text-gray-700">
-                                Safe Name <span class="text-red-500">*</span>
+                                اسم الخزينة <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
                                 <input wire:model="name" id="name" name="name" type="text" required autofocus
                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                                    placeholder="Enter safe name" />
+                                    placeholder="ادخل اسم الخزينة" />
                             </div>
                             @if ($errors->has('name'))
                                 <p class="text-sm text-red-600 flex items-center mt-1">
@@ -78,7 +78,7 @@
                         <!-- Current Balance -->
                         <div class="space-y-2">
                             <label for="currentBalance" class="block text-sm font-medium text-gray-700">
-                                Current Balance (EGP) <span class="text-red-500">*</span>
+                                الرصيد الحالي (EGP) <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -105,7 +105,7 @@
                     <!-- Branch Information (Read-only) -->
                     <div class="space-y-2">
                         <label for="branchName" class="block text-sm font-medium text-gray-700">
-                            Associated Branch
+                            الفرع المرتبط
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -125,18 +125,18 @@
                                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            Branch cannot be changed. Each branch has exactly one safe.
+                            لا يمكن تعديل الفرع. يوجد فرع واحد فقط لكل خزينة.
                         </p>
                     </div>
 
                     <!-- Description -->
                     <div class="space-y-2">
                         <label for="description" class="block text-sm font-medium text-gray-700">
-                            Description
+                            الوصف
                         </label>
                         <textarea wire:model="description" id="description" name="description" rows="4"
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-white/50 backdrop-blur-sm resize-none"
-                            placeholder="Optional description for the safe"></textarea>
+                            placeholder="وصف اختياري للخزينة"></textarea>
                         @if ($errors->has('description'))
                             <p class="text-sm text-red-600 flex items-center mt-1">
                                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -193,7 +193,7 @@
                     <div class="flex space-x-3">
                         <a href="{{ route('safes.index') }}"
                             class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200">
-                            Cancel
+                        الإلغاء
                         </a>
                         <button type="submit"
                             class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-all duration-200 transform hover:scale-105">
@@ -201,7 +201,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                             </svg>
-                            Update Safe
+                            تعديل الخزينة
                         </button>
                     </div>
                 </div>

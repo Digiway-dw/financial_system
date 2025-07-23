@@ -10,8 +10,8 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Reports</h1>
-                    <p class="text-sm text-gray-500">All transactions (ordinary & cash) with full filtering and sorting</p>
+                    <h1 class="text-2xl font-bold text-gray-900">التقارير</h1>
+                    <p class="text-sm text-gray-500">جميع المعاملات (عادية ونقدية) مع فلترة وترتيب كامل</p>
                 </div>
             </div>
         </div>
@@ -21,80 +21,80 @@
         <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-8">
             <form wire:submit.prevent="generateReport" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Start Date</label>
+                    <label class="block text-sm font-medium text-gray-700">التاريخ البدء</label>
                     <input wire:model="startDate" type="date" class="w-full px-4 py-3 border border-gray-300 rounded-xl" />
                     </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">End Date</label>
+                    <label class="block text-sm font-medium text-gray-700">التاريخ النهاية</label>
                     <input wire:model="endDate" type="date" class="w-full px-4 py-3 border border-gray-300 rounded-xl" />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Agent</label>
+                    <label class="block text-sm font-medium text-gray-700">الموظف</label>
                     <select wire:model="selectedUser" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
-                        <option value="">All</option>
+                        <option value="">جميع</option>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                 @endforeach
                             </select>
                             </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Branch</label>
+                    <label class="block text-sm font-medium text-gray-700">الفرع</label>
                     <select wire:model="selectedBranch" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
-                        <option value="">All</option>
+                        <option value="">جميع</option>
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                                 @endforeach
                             </select>
                             </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Customer Name</label>
-                    <input wire:model="selectedCustomer" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="Enter customer name" />
+                    <label class="block text-sm font-medium text-gray-700">اسم العميل</label>
+                    <input wire:model="selectedCustomer" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="ادخل اسم العميل" />
                         </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Customer Code</label>
-                    <input wire:model="selectedCustomerCode" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="Enter customer code" />
+                    <label class="block text-sm font-medium text-gray-700">كود العميل</label>
+                    <input wire:model="selectedCustomerCode" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="ادخل كود العميل" />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Transaction Type</label>
+                    <label class="block text-sm font-medium text-gray-700">نوع المعاملة</label>
                     <select wire:model="selectedTransactionType" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
-                        <option value="">All</option>
+                        <option value="">جميع</option>
                                 @foreach ($transactionTypes as $type)
                                     <option value="{{ $type }}">{{ $type }}</option>
                                 @endforeach
                             </select>
                 </div>
                 <div class="flex items-end gap-2">
-                    <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">Generate Report</button>
-                    <button type="button" wire:click="exportExcel" class="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition">Export Excel</button>
-                    <button type="button" wire:click="exportPdf" class="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition">Export PDF</button>
+                    <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">توليد التقرير</button>
+                    <button type="button" wire:click="exportExcel" class="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition">تصدير الـ Excel</button>
+                    <button type="button" wire:click="exportPdf" class="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition">تصدير الـ PDF</button>
                 </div>
             </form>
         </div>
         <!-- Financial Summary Section -->
         <div class="bg-white rounded-2xl shadow border border-gray-200 mb-8 p-6">
-            <h3 class="text-lg font-semibold mb-4">Financial Summary</h3>
+            <h3 class="text-lg font-semibold mb-4">ملخص مالي</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="p-4 bg-blue-50 rounded-xl">
-                    <div class="text-xs text-gray-500">Total Transfer</div>
+                    <div class="text-xs text-gray-500">المبلغ المستلم</div>
                     <div class="text-lg font-bold">{{ number_format($financialSummary['total_transfer'] ?? 0, 2) }} EGP</div>
                 </div>
                 <div class="p-4 bg-green-50 rounded-xl">
-                    <div class="text-xs text-gray-500">Commission Earned</div>
+                    <div class="text-xs text-gray-500">العمولة</div>
                     <div class="text-lg font-bold">{{ number_format($financialSummary['commission_earned'] ?? 0, 2) }} EGP</div>
                 </div>
                 <div class="p-4 bg-yellow-50 rounded-xl">
-                    <div class="text-xs text-gray-500">Total Discounts</div>
+                    <div class="text-xs text-gray-500">الخصم</div>
                     <div class="text-lg font-bold">{{ number_format($financialSummary['total_discounts'] ?? 0, 2) }} EGP</div>
                 </div>
                 <div class="p-4 bg-purple-50 rounded-xl">
-                    <div class="text-xs text-gray-500">Net Profit</div>
+                    <div class="text-xs text-gray-500">الربح الصافي</div>
                     <div class="text-lg font-bold">{{ number_format($financialSummary['net_profit'] ?? 0, 2) }} EGP</div>
                 </div>
             </div>
         </div>
         <!-- Safe Balances Section -->
         <div class="bg-white rounded-2xl shadow border border-gray-200 mb-8 p-6">
-            <h3 class="text-lg font-semibold mb-4">Safe Balances by Branch</h3>
+            <h3 class="text-lg font-semibold mb-4">الرصيد الخزني بالفروع</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($safeBalances as $safe)
                     <div class="p-4 bg-gray-50 rounded-xl flex justify-between">
@@ -106,7 +106,7 @@
         </div>
         <!-- Line Balances Section -->
         <div class="bg-white rounded-2xl shadow border border-gray-200 mb-8 p-6">
-            <h3 class="text-lg font-semibold mb-4">Line Balances by Branch</h3>
+            <h3 class="text-lg font-semibold mb-4">الرصيد الخطي بالفروع</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($lineBalances as $line)
                     <div class="p-4 bg-gray-50 rounded-xl flex justify-between">
@@ -118,7 +118,7 @@
         </div>
         <!-- Customer Balances Section -->
         <div class="bg-white rounded-2xl shadow border border-gray-200 mb-8 p-6">
-            <h3 class="text-lg font-semibold mb-4">Customer Wallet Balances</h3>
+            <h3 class="text-lg font-semibold mb-4">الرصيد المحفظة العميل</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($customerBalances as $customer)
                     <div class="p-4 bg-gray-50 rounded-xl flex justify-between">
@@ -130,14 +130,14 @@
         </div>
         <!-- Transactions Table -->
         <div class="bg-white rounded-2xl shadow border border-gray-200">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4 px-8 pt-8">All Transactions</h3>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 px-8 pt-8">جميع المعاملات</h3>
             <div class="overflow-x-auto px-8 pb-8">
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
                     <thead>
                         <tr>
                             <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header" wire:click="sortBy('customer_name')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Customer</span>
+                                    <span>العميل</span
                                 @if ($sortField === 'customer_name')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
@@ -210,7 +210,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-4 text-gray-500 text-center">No transactions found.</td>
+                                <td colspan="8" class="px-6 py-4 text-gray-500 text-center">لا يوجد معاملات</td>
                             </tr>
                         @endforelse
                     </tbody>

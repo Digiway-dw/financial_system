@@ -14,8 +14,8 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Notifications Center</h1>
-                    <p class="text-sm text-gray-600">Stay updated with system alerts and important messages</p>
+                    <h1 class="text-2xl font-bold text-gray-900">مركز الإشعارات</h1>
+                    <p class="text-sm text-gray-600">ابق على اطلاع بالإشعارات والرسائل المهمة</p>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-600">Unread</h3>
+                        <h3 class="text-sm font-medium text-gray-600">غير مقروء</h3>
                         <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->unreadNotifications()->count() }}
                         </p>
                     </div>
@@ -51,7 +51,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-600">Read</h3>
+                        <h3 class="text-sm font-medium text-gray-600">مقروء</h3>
                         <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->readNotifications()->count() }}
                         </p>
                     </div>
@@ -68,7 +68,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-600">Total</h3>
+                        <h3 class="text-sm font-medium text-gray-600">الكل</h3>
                         <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->notifications()->count() }}</p>
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-600">Today</h3>
+                        <h3 class="text-sm font-medium text-gray-600">اليوم</h3>
                         <p class="text-2xl font-bold text-gray-900">
                             {{ auth()->user()->notifications()->whereDate('created_at', today())->count() }}</p>
                     </div>
@@ -107,7 +107,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900">Message Center</h3>
+                            <h3 class="text-lg font-semibold text-gray-900">مركز الرسائل</h3>
                             <p class="text-sm text-gray-600">{{ $notifications->count() }} notifications displayed</p>
                         </div>
                     </div>
@@ -117,11 +117,11 @@
                         <div class="flex space-x-1 bg-gray-100 rounded-xl p-1">
                             <button wire:click="setTab('all')"
                                 class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 {{ $tab === 'all' ? 'bg-white text-amber-700 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
-                                All
+                                الكل
                             </button>
                             <button wire:click="setTab('unread')"
                                 class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center {{ $tab === 'unread' ? 'bg-white text-amber-700 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
-                                Unread
+                                غير مقروء
                                 @if (auth()->user()->unreadNotifications()->count() > 0)
                                     <span class="ml-2 px-2 py-0.5 text-xs bg-red-100 text-red-800 rounded-full">
                                         {{ auth()->user()->unreadNotifications()->count() }}
@@ -130,7 +130,7 @@
                             </button>
                             <button wire:click="setTab('read')"
                                 class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 {{ $tab === 'read' ? 'bg-white text-amber-700 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
-                                Read
+                                مقروء
                             </button>
                         </div>
 
@@ -141,30 +141,30 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5 13l4 4L19 7"></path>
                             </svg>
-                            Mark All Read
+                            تحديث الكل
                         </button>
                         <button wire:click="clearAllRead"
                             class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center ml-2">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
-                            Clear All Read
+                            مسح الكل
                         </button>
                     </div>
                 </div>
 
                 <!-- Custom Filters: Type and Date -->
                 <div class="mt-4 flex flex-wrap gap-2 items-center">
-                    <span class="font-semibold text-gray-700 mr-2">Type:</span>
+                    <span class="font-semibold text-gray-700 mr-2">النوع:</span>
                     <button wire:click="setTypeFilter('all')" class="px-3 py-1 rounded-lg text-sm font-medium border {{ $typeFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300' }}">All</button>
                     <button wire:click="setTypeFilter('send')" class="px-3 py-1 rounded-lg text-sm font-medium border {{ $typeFilter === 'send' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300' }}">Send</button>
                     <button wire:click="setTypeFilter('receive')" class="px-3 py-1 rounded-lg text-sm font-medium border {{ $typeFilter === 'receive' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300' }}">Receive</button>
                     <button wire:click="setTypeFilter('cash')" class="px-3 py-1 rounded-lg text-sm font-medium border {{ $typeFilter === 'cash' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300' }}">Cash</button>
                     <button wire:click="setTypeFilter('others')" class="px-3 py-1 rounded-lg text-sm font-medium border {{ $typeFilter === 'others' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300' }}">Others</button>
 
-                    <span class="ml-6 font-semibold text-gray-700">From:</span>
+                    <span class="ml-6 font-semibold text-gray-700">من:</span>
                     <input type="date" wire:model.lazy="fromDate" wire:change="setFromDate($event.target.value)" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
-                    <span class="font-semibold text-gray-700">To:</span>
+                    <span class="font-semibold text-gray-700">الي:</span>
                     <input type="date" wire:model.lazy="toDate" wire:change="setToDate($event.target.value)" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
                 </div>
             </div>
@@ -181,7 +181,7 @@
                                 </path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">No notifications found</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">لا يوجد إشعارات</h3>
                         <p class="text-sm text-gray-500">
                             @if ($tab === 'unread')
                                 You're all caught up! No unread notifications.
@@ -287,14 +287,14 @@
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                                         </svg>
-                                                        Accept Withdrawal
+                                                        قبول السحب
                                                     </button>
                                                     <button wire:click="rejectNotification('{{ $notification->id }}')"
                                                         class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg shadow transition-colors duration-200">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                                         </svg>
-                                                        Reject Withdrawal
+                                                        رفض السحب
                                                     </button>
                                                     <a href="{{ route('transactions.cash.waiting-approval', ['cashTransaction' => $notification->data['transaction_id'] ?? 0]) }}"
                                                         wire:click.prevent="viewNotification('{{ $notification->id }}')"
@@ -302,7 +302,7 @@
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                         </svg>
-                                                        View
+                                                        عرض
                                                     </a>
                                                 </div>
                                             @elseif (($notification->data['type'] ?? null) === 'pending_transaction')
@@ -313,7 +313,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2" d="M5 13l4 4L19 7"></path>
                                                     </svg>
-                                                    Approve
+                                                    قبول
                                                 </button>
                                                 <button wire:click="rejectNotification('{{ $notification->id }}')"
                                                     class="inline-flex items-center px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium rounded-lg transition-colors duration-200">
@@ -322,7 +322,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                     </svg>
-                                                    Reject
+                                                    رفض
                                                 </button>
                                             @else
                                                 <a href="{{ route('notifications.show', $notification->id) }}"
@@ -334,7 +334,7 @@
                                                             d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
                                                         </path>
                                                     </svg>
-                                                    View
+                                                    عرض
                                                 </a>
                                             @endif
                                             @if ($notification->read_at === null && !in_array(($notification->data['type'] ?? null), ['pending_transaction', 'withdrawal']))
@@ -345,7 +345,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2" d="M5 13l4 4L19 7"></path>
                                                     </svg>
-                                                    Mark Read
+                                                    تمييز كمقروء
                                                 </button>
                                             @endif
                                         </div>
@@ -360,7 +360,7 @@
             <!-- Footer with Auto-refresh Info -->
             <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
                 <div class="flex items-center justify-between text-sm text-gray-600">
-                    <span>Auto-refreshes every 10 seconds</span>
+                    <span>تحديثات حية كل 10 ثواني</span>
                     <span class="flex items-center">
                         <svg class="w-4 h-4 mr-1 animate-spin" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -368,7 +368,7 @@
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                             </path>
                         </svg>
-                        Live updates
+                        تحديثات حية
                     </span>
                 </div>
             </div>
