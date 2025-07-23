@@ -1,45 +1,42 @@
-<!-- Edit Transaction Page with Modern Light Theme -->
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+<div class="min-h-screen bg-gray-50" dir="rtl" style="direction: rtl; text-align: right;">
     <!-- Header Section -->
-    <div class="bg-white/70 backdrop-blur-sm border-b border-indigo-200/20 shadow-sm">
-        <div class="p-6">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-6">
+            <div class="flex items-center gap-3 flex-row-reverse" style="direction: rtl;">
+                <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                 </div>
-                <div>
-                    <h3
-                        class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                        تعديل المعاملة</h3>
-                    <p class="text-gray-600 text-sm">تعديل بيانات المعاملة المالية</p>
+                <div class="text-right">
+                    <h3 class="text-2xl font-bold text-gray-900">تعديل المعاملة</h3>
+                    <p class="text-gray-500 text-sm">تعديل بيانات المعاملة المالية</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Form Container -->
-    <div class="p-6">
+    <div class="px-4 py-8">
         <div class="max-w-4xl mx-auto">
-            <div class="bg-white/60 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+            <div class="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden" style="direction: rtl;">
                 <div class="p-8 space-y-8">
                     <form wire:submit.prevent="updateTransaction">
                         <!-- Customer Information Section -->
-                        <div class="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg">
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                        <div class="bg-white rounded-xl p-6 border border-gray-100 shadow mb-6" style="direction: rtl;">
+                            <div class="flex items-center gap-2 mb-6 flex-row-reverse" style="direction: rtl;">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-gray-900">معلومات العميل</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 text-right">معلومات العميل</h3>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" style="direction: rtl;">
                                 <!-- Customer Name -->
                                 <div>
                                     <label for="customerName" class="block text-sm font-medium text-gray-700 mb-2">اسم
@@ -67,7 +64,7 @@
                                 <!-- Customer Code -->
                                 <div>
                                     <label for="customerCode" class="block text-sm font-medium text-gray-700 mb-2">كود
-                                        العميل (اختياري)</label>
+                                        العميل </label>
                                     <input wire:model="customerCode" id="customerCode" name="customerCode"
                                         type="text"
                                         class="w-full px-4 py-3 bg-white/70 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500" />
@@ -77,19 +74,19 @@
                         </div>
 
                         <!-- Transaction Details Section -->
-                        <div class="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg">
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="p-2 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                        <div class="bg-white rounded-xl p-6 border border-gray-100 shadow mb-6" style="direction: rtl;">
+                            <div class="flex items-center gap-2 mb-6 flex-row-reverse" style="direction: rtl;">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-gray-900">تفاصيل المعاملة</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 text-right">تفاصيل المعاملة</h3>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="direction: rtl;">
                                 <!-- Amount -->
                                 <div>
                                     <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">المبلغ
@@ -164,19 +161,20 @@
                         </div>
 
                         <!-- Location & Configuration Section -->
-                        <div class="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg">
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                        <div class="bg-white rounded-xl p-6 border border-gray-100 shadow mb-6"
+                            style="direction: rtl;">
+                            <div class="flex items-center gap-2 mb-6 flex-row-reverse" style="direction: rtl;">
+                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-gray-900">الموقع والإعدادات</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 text-right">الموقع والإعدادات</h3>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" style="direction: rtl;">
                                 <!-- Branch -->
                                 <div>
                                     <label for="branchId"
@@ -227,10 +225,11 @@
                         </div>
 
                         <!-- Submit Button -->
-                        <div class="flex justify-end pt-6 border-t border-gray-200/30">
+                        <div class="flex flex-row-reverse justify-start pt-6 border-t border-gray-200 mt-4"
+                            style="direction: rtl;">
                             <button type="submit"
-                                class="px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:from-indigo-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200">
-                                <div class="flex items-center gap-2">
+                                class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-bold rounded-xl shadow transition-all duration-200 text-right">
+                                <div class="flex flex-row-reverse items-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M5 13l4 4L19 7" />
@@ -274,9 +273,10 @@
                         @endif
                     </form>
                     <!-- Print Receipt Button -->
-                    <div class="mt-6 text-right">
-                        <a href="{{ route('transactions.receipt', $transaction->id) }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">
-                            {{ __('Print Receipt') }}
+                    <div class="mt-6 text-right" style="direction: rtl;">
+                        <a href="{{ route('transactions.receipt', $transaction->id) }}"
+                            class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded-xl shadow transition text-base">
+                            طباعة الإيصال
                         </a>
                     </div>
                 </div>
