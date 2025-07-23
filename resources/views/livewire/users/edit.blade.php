@@ -562,11 +562,6 @@
                                                         class="text-blue-600 hover:text-blue-900">
                                                         Edit
                                                     </button>
-                                                    <!-- Primary Delete Button with Glass Dialog -->
-                                                    <button wire:click="editWorkingHour({{ $workingHour->id }})"
-                                                        class="text-blue-600 hover:text-blue-900">
-                                                        Edit
-                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
