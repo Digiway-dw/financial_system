@@ -55,52 +55,7 @@
                 transform: translateY(0);
             }
         </style>
-        <!-- Header Section -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-500 w-full md:w-auto">
-                <h1 class="text-2xl font-bold text-gray-900 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-500" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    User Management
-                </h1>
-                <p class="mt-1 text-sm text-gray-600">Manage system users and their permissions</p>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-3">
-                <div class="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg flex items-center text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>Total Users: <span class="font-bold">{{ $users->total() }}</span></span>
-                </div>
-
-                @can('create', App\Domain\Entities\User::class)
-                    <a href="{{ route('users.create') }}"
-                        class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-medium text-sm text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-0.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Add New User
-                    </a>
-                @endcan
-            </div>
-        </div>
-
-        @if (session('message'))
-            <div class="p-4 mb-6 text-sm text-green-700 bg-green-100 border-l-4 border-green-500 rounded-lg"
-                role="alert">
-                <div class="flex items-center">
-                    <x-heroicon-o-check-circle class="w-5 h-5 mr-2" />
-                    <span>{{ session('message') }}</span>
-                </div>
-            </div>
-        @endif
+       
 
         <!-- Filters Panel -->
         <div class="bg-white overflow-visible shadow-md rounded-2xl mb-8 border border-gray-200/60">
