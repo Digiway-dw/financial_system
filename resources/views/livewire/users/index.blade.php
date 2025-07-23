@@ -55,7 +55,7 @@
                 transform: translateY(0);
             }
         </style>
-       
+
 
         <!-- Filters Panel -->
         <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 mb-8">
