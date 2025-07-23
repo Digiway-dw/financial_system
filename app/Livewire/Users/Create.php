@@ -57,7 +57,10 @@ class Create extends Component
 
     public function mount()
     {
-        $this->roles = Role::pluck('name')->toArray();
+        $this->roles = array_filter(
+            Role::pluck('name')->toArray(),
+            fn($role) => $role !== 'Branch Manager' && $role !== 'Supervisor'
+        );
         $this->selectedRole = 'agent'; // Default role
         $this->branches = \App\Models\Domain\Entities\Branch::all();
     }

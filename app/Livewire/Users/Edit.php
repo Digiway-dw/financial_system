@@ -70,7 +70,10 @@ class Edit extends Component
         $this->notes = $user->notes;
         $this->branchId = $user->branch_id;
         $this->selectedRole = $user->getRoleNames()->first();
-        $this->roles = Role::pluck('name')->toArray();
+        $this->roles = array_filter(
+            Role::pluck('name')->toArray(),
+            fn($role) => $role !== 'Branch Manager' && $role !== 'Supervisor'
+        );
         $this->branches = Branch::all();
 
         // Load working hours

@@ -66,7 +66,7 @@ class Index extends Component
         // Assign admin role
         $admin->assignRole('admin');
 
-        $this->roles = Role::all();
+        $this->roles = Role::whereNotIn('name', ['Branch Manager', 'Supervisor'])->get();
         $this->branches = Branch::orderBy('name')->get();
     }
 
