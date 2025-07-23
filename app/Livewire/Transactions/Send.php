@@ -316,7 +316,7 @@ class Send extends Component
                         'customer_code' => $code,
                         'gender' => $this->clientGender ?: 'male',
                         'balance' => 0,
-                        'is_client' => true,
+                        'is_client' => false,
                         'agent_id' => Auth::id(),
                         'branch_id' => $branchId,
                     ]);
@@ -367,7 +367,7 @@ class Send extends Component
                     isAbsoluteWithdrawal: false,
                     paymentMethod: $this->getPaymentMethod(),
                     gender: $this->clientGender ?: 'male',
-                    isClient: true,
+                    isClient: false,
                     receiverMobileNumber: $this->receiverMobile,
                     discountNotes: $this->discountNotes,
                     notes: null
