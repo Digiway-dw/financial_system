@@ -276,7 +276,12 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $safe['description'] ?? 'لا يوجد وصف' }}
+                                    <div class="text-sm text-gray-900">
+                                        @if(isset($safe['description']) && trim($safe['description']) !== '')
+                                            {{ $safe['description'] }}
+                                        @else
+                                            <span class="text-gray-400">لا يوجد وصف</span>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
