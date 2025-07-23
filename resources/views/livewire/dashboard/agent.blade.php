@@ -4,10 +4,12 @@
             cursor: pointer;
             transition: all 0.2s ease-in-out;
         }
+
         .sortable-header:hover {
             background-color: #f3f4f6 !important;
             transform: translateY(-1px);
         }
+
         .sortable-header:active {
             transform: translateY(0);
         }
@@ -35,8 +37,8 @@
             </form>
             <a href="{{ route('dashboard') }}"
                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 transition">
-                @if(auth()->user()->hasRole('admin'))
-                    الانتقال للواجهة الرئيسية للادمن 
+                @if (auth()->user()->hasRole('admin'))
+                    الانتقال للواجهة الرئيسية للادمن
                 @else
                     الانتقال للواجهة الرئيسية للمشرف
                 @endif
@@ -44,33 +46,45 @@
         </div>
     @endif
 
-    @if(request()->query('search_transaction'))
+    @if (request()->query('search_transaction'))
         <div class="mb-6 bg-white rounded-xl shadow p-6 flex flex-col items-center">
             <form method="GET" action="{{ route('dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
                 <input type="hidden" name="search_transaction" value="1">
-                <label for="reference_number" class="block text-sm font-medium text-gray-700">بحث المعاملة برقم المرجع</label>
+                <label for="reference_number" class="block text-sm font-medium text-gray-700">بحث المعاملة برقم
+                    المرجع</label>
                 <div class="flex gap-2">
-                    <input type="text" name="reference_number" id="reference_number" value="{{ request('reference_number') }}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200" placeholder="Enter reference number...">
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Search</button>
+                    <input type="text" name="reference_number" id="reference_number"
+                        value="{{ request('reference_number') }}"
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200"
+                        placeholder="Enter reference number...">
+                    <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Search</button>
                 </div>
             </form>
-            @if(isset($searchedTransaction))
+            @if (isset($searchedTransaction))
                 <div class="mt-6 w-full max-w-md bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <h4 class="font-bold text-blue-800 mb-2">تفاصيل المعاملة</h4>
                     <div class="text-sm text-gray-700">
-                        <div><span class="font-semibold">الرقم المرجعي:</span> {{ $searchedTransaction->reference_number }}</div>
-                        <div><span class="font-semibold">المبلغ:</span> {{ format_int($searchedTransaction->amount) }}</div>
+                        <div><span class="font-semibold">الرقم المرجعي:</span>
+                            {{ $searchedTransaction->reference_number }}</div>
+                        <div><span class="font-semibold">المبلغ:</span> {{ format_int($searchedTransaction->amount) }}
+                        </div>
                         <div><span class="font-semibold">الحالة:</span> {{ $searchedTransaction->status }}</div>
-                        @if(isset($searchedTransaction->transaction_date_time) && $searchedTransaction->transaction_date_time)
-                            <div><span class="font-semibold">تاريخ و وقت المعاملة:</span> {{ \Carbon\Carbon::parse($searchedTransaction->transaction_date_time)->format('d/m/y h:i A') }}</div>
+                        @if (isset($searchedTransaction->transaction_date_time) && $searchedTransaction->transaction_date_time)
+                            <div><span class="font-semibold">تاريخ و وقت المعاملة:</span>
+                                {{ \Carbon\Carbon::parse($searchedTransaction->transaction_date_time)->format('d/m/y h:i A') }}
+                            </div>
                         @endif
-                        <div><span class="font-semibold">تاريخ الانشاء:</span> {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
+                        <div><span class="font-semibold">تاريخ الانشاء:</span>
+                            {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
                     </div>
                     <div class="mt-4 text-right">
-                        <a href="{{ route('transactions.print', $searchedTransaction->id) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        <a href="{{ route('transactions.print', $searchedTransaction->id) }}"
+                            class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
                                 <rect width="12" height="8" x="6" y="14" rx="2" />
                             </svg>
                             طباعة
@@ -96,11 +110,14 @@
             @forelse ($branchSafes as $safe)
                 <tr class="text-center">
                     <td class="px-4 py-2 border font-semibold">{{ $safe['name'] }}</td>
-                    <td class="px-4 py-2 border text-blue-700 font-bold">{{ format_int($safe['current_balance']) }}</td>
+                    <td class="px-4 py-2 border text-blue-700 font-bold">{{ format_int($safe['current_balance']) }}
+                    </td>
                     <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}</td>
                 </tr>
             @empty
-                <tr><td colspan="4" class="px-4 py-2 border text-center text-gray-500">لا يوجد خزنات لهذا الفرع.</td></tr>
+                <tr>
+                    <td colspan="4" class="px-4 py-2 border text-center text-gray-500">لا يوجد خزنات لهذا الفرع.</td>
+                </tr>
             @endforelse
         </tbody>
     </table>
@@ -166,20 +183,20 @@
                 </a>
             @endcan
             @can('manage-customers')
-            <a href="{{ route('customers.create') }}"
-                class="group flex items-center p-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 rounded-xl transition-all duration-200">
-                <div
-                    class="w-12 h-12 bg-indigo-100 group-hover:bg-indigo-200 rounded-lg flex items-center justify-center mr-4">
-                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-indigo-900">اضافة عميل</h3>
-                    <p class="text-sm text-indigo-700">اضافة عميل جديد</p>
-                </div>
-            </a>
+                <a href="{{ route('customers.create') }}"
+                    class="group flex items-center p-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 rounded-xl transition-all duration-200">
+                    <div
+                        class="w-12 h-12 bg-indigo-100 group-hover:bg-indigo-200 rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-indigo-900">اضافة عميل</h3>
+                        <p class="text-sm text-indigo-700">اضافة عميل جديد</p>
+                    </div>
+                </a>
             @endcan
         </div>
     </div>
@@ -197,49 +214,60 @@
                 <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('mobile_number')" style="cursor: pointer;">
+                            <th class="px-2 py-3 text-center">
+                                <input type="checkbox" id="select-all-lines" onclick="toggleAllAgentLines(this)" />
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('mobile_number')" style="cursor: pointer;">
                                 رقم الهاتف
                                 @if ($sortField === 'mobile_number')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('current_balance')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('current_balance')" style="cursor: pointer;">
                                 الرصيد
                                 @if ($sortField === 'current_balance')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('daily_limit')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('daily_limit')" style="cursor: pointer;">
                                 المتبقي اليومي
                                 @if ($sortField === 'daily_limit')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('daily_usage')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('daily_usage')" style="cursor: pointer;">
                                 المستلم اليومي
                                 @if ($sortField === 'daily_usage')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('monthly_limit')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('monthly_limit')" style="cursor: pointer;">
                                 المتبقي الشهري
                                 @if ($sortField === 'monthly_limit')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('monthly_usage')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('monthly_usage')" style="cursor: pointer;">
                                 المستلم الشهري
                                 @if ($sortField === 'monthly_usage')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('network')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('network')" style="cursor: pointer;">
                                 الشبكة
                                 @if ($sortField === 'network')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('status')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('status')" style="cursor: pointer;">
                                 الحالة
                                 @if ($sortField === 'status')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -255,18 +283,11 @@
                                 $currentBalance = $line->current_balance ?? 0;
                                 $dailyStartingBalance = $line->daily_starting_balance ?? 0;
                                 $monthlyStartingBalance = $line->starting_balance ?? 0;
-                                
                                 // Calculate daily and monthly remaining
-                                // Daily remaining = daily limit - current balance
                                 $dailyRemaining = max(0, $dailyLimit - $currentBalance);
-                                
-                                // Monthly remaining = monthly limit - current balance
                                 $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
-                                
-                                // Calculate daily and monthly usage based on the difference from starting balances
                                 $dailyUsage = max(0, $currentBalance - $dailyStartingBalance);
                                 $monthlyUsage = max(0, $currentBalance - $monthlyStartingBalance);
-                                
                                 $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
                                 $circleColor = 'bg-green-400';
                                 if ($usagePercent >= 98) {
@@ -276,27 +297,89 @@
                                 }
                             @endphp
                             <tr>
+                                <td class="px-2 py-4 text-center">
+                                    <input type="checkbox" class="agent-line-checkbox" value="{{ $line->id }}"
+                                        onclick="updateAgentLinesSum()" />
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                        <div
+                                            class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-3">
                                             <div class="w-1.5 h-1.5 rounded-full {{ $circleColor }}"></div>
                                         </div>
-                                        <div class="text-sm font-medium text-gray-900">{{ $line->mobile_number }}</div>
+                                        <div class="text-sm font-medium text-gray-900">{{ $line->mobile_number }}
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->current_balance) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyRemaining) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ format_int($line->current_balance) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ format_int($dailyRemaining) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ format_int($dailyUsage) }} EGP
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyRemaining) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyUsage) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($line->status) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ format_int($monthlyRemaining) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ format_int($monthlyUsage) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ ucfirst($line->status) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr class="bg-gray-50 font-bold">
+                            <td class="px-2 py-3 text-center" colspan="2">Selected Total</td>
+                            <td class="px-6 py-3 text-sm text-blue-700" id="selected-current-balance">0 EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700" id="selected-daily-remaining">0 EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700" id="selected-daily-usage">0 EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700" id="selected-monthly-remaining">0 EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700" id="selected-monthly-usage">0 EGP</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
                 </table>
+                <script>
+                    function parseEGP(str) {
+                        // Remove commas and EGP, then parse as int
+                        return parseInt((str || '').replace(/,/g, '').replace(/\s*EGP/, '')) || 0;
+                    }
+
+                    function updateAgentLinesSum() {
+                        let checkboxes = document.querySelectorAll('.agent-line-checkbox');
+                        let totalCurrent = 0,
+                            totalDailyRem = 0,
+                            totalDailyUsage = 0,
+                            totalMonthlyRem = 0,
+                            totalMonthlyUsage = 0;
+                        checkboxes.forEach(cb => {
+                            if (cb.checked) {
+                                let row = cb.closest('tr');
+                                let tds = row.querySelectorAll('td');
+                                totalCurrent += parseEGP(tds[2].innerText);
+                                totalDailyRem += parseEGP(tds[3].innerText);
+                                totalDailyUsage += parseEGP(tds[4].innerText);
+                                totalMonthlyRem += parseEGP(tds[5].innerText);
+                                totalMonthlyUsage += parseEGP(tds[6].innerText);
+                            }
+                        });
+                        document.getElementById('selected-current-balance').innerText = totalCurrent.toLocaleString() + ' EGP';
+                        document.getElementById('selected-daily-remaining').innerText = totalDailyRem.toLocaleString() + ' EGP';
+                        document.getElementById('selected-daily-usage').innerText = totalDailyUsage.toLocaleString() + ' EGP';
+                        document.getElementById('selected-monthly-remaining').innerText = totalMonthlyRem.toLocaleString() + ' EGP';
+                        document.getElementById('selected-monthly-usage').innerText = totalMonthlyUsage.toLocaleString() + ' EGP';
+                    }
+
+                    function toggleAllAgentLines(source) {
+                        let checkboxes = document.querySelectorAll('.agent-line-checkbox');
+                        checkboxes.forEach(cb => {
+                            cb.checked = source.checked;
+                        });
+                        updateAgentLinesSum();
+                    }
+                </script>
             </div>
         </div>
     @endif
