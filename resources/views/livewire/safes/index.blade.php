@@ -18,7 +18,7 @@
     <div class="bg-white/70 backdrop-blur-sm border-b border-gray-200/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div
                             class="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
@@ -29,7 +29,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div>
+                    <div class="ml-4">
                         <h1 class="text-2xl font-bold text-gray-900">إدارة الخزائن</h1>
                         <p class="text-sm text-gray-600">مراقبة وإدارة جميع الخزائن ومحافظ العملاء</p>
                     </div>
