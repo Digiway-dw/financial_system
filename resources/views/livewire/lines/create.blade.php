@@ -1,8 +1,8 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" dir="rtl" style="direction: rtl;">
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8" dir="rtl" style="direction: rtl;">
     <!-- Header Section -->
-    <div class="mb-8">
-        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
-            <div class="flex items-center space-x-4">
+    <div class="mb-10">
+        <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200 p-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <a href="{{ route('lines.index') }}"
                     class="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors duration-150">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -11,38 +11,36 @@
                     </svg>
                     العودة إلى الخطوط
                 </a>
-                <div class="border-l border-gray-300 h-6"></div>
+                <div class="hidden sm:block border-l border-gray-300 h-8 mx-4"></div>
                 <div>
-                    <h1
-                        class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                        إنشاء خط مالي جديد</h1>
-                    <p class="mt-1 text-sm text-slate-600">أضف خطًا ماليًا جديدًا للنظام</p>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-1">إنشاء خط مالي جديد</h1>
+                    <p class="text-base text-gray-600">أضف خطًا ماليًا جديدًا للنظام</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Content Container -->
-    <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
+    <div class="bg-white/90 backdrop-blur rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
         <!-- Form Header -->
-        <div class="px-8 py-6 border-b border-white/20 bg-white/60 backdrop-blur-sm">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="px-8 py-7 border-b border-gray-100 bg-white/80 rounded-t-2xl">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-xl font-semibold text-gray-900">معلومات الخط المالي</h2>
-                    <p class="text-sm text-gray-600 mt-1">يرجى تعبئة بيانات الخط المالي الجديد</p>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-1">معلومات الخط المالي</h2>
+                    <p class="text-base text-gray-600">يرجى تعبئة بيانات الخط المالي الجديد</p>
                 </div>
             </div>
         </div>
 
         <!-- Form Content -->
         <form wire:submit.prevent="createLine" class="p-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Mobile Number -->
                 <div class="md:col-span-2">
                     <div class="flex items-center mb-2">
@@ -54,9 +52,9 @@
                         <x-input-label for="mobileNumber" :value="'رقم الجوال'" class="text-sm font-medium text-gray-700" />
                     </div>
                     <x-text-input wire:model="mobileNumber" id="mobileNumber" name="mobileNumber" type="text"
-                        class="block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
-                        placeholder="Enter mobile number (11 digits)" maxlength="11" minlength="11" pattern="\d{11}"
-                        required autofocus
+                        class="block w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
+                        placeholder="أدخل رقم الجوال (11 رقمًا)" maxlength="11" minlength="11" pattern="\d{11}" required
+                        autofocus
                         x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '').slice(0,11)" />
                     <div class="text-xs text-gray-500 mt-1">يجب أن يكون رقم الجوال 11 رقمًا بالضبط.</div>
                     @if (strlen($mobileNumber ?? '') > 0 && strlen($mobileNumber ?? '') != 11)
@@ -80,10 +78,10 @@
                     <div class="relative">
                         <x-text-input wire:model="currentBalance" id="currentBalance" name="currentBalance"
                             type="number" step="1" min="0"
-                            class="block w-full pl-14 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                            class="block w-full pl-16 rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
                             required x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 text-sm">ج.م</span>
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-base">ج.م</span>
                         </div>
                     </div>
                     <x-input-error class="mt-2" :messages="$errors->get('currentBalance')" />
@@ -102,10 +100,10 @@
                     <div class="relative">
                         <x-text-input wire:model="dailyLimit" id="dailyLimit" name="dailyLimit" type="number"
                             step="1" min="0"
-                            class="block w-full pl-14 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                            class="block w-full pl-16 rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
                             required x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 text-sm">ج.م</span>
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-base">ج.م</span>
                         </div>
                     </div>
                     <x-input-error class="mt-2" :messages="$errors->get('dailyLimit')" />
@@ -125,10 +123,10 @@
                     <div class="relative">
                         <x-text-input wire:model="monthlyLimit" id="monthlyLimit" name="monthlyLimit" type="number"
                             step="1" min="0"
-                            class="block w-full pl-14 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                            class="block w-full pl-16 rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
                             required x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 text-sm">ج.م</span>
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-base">ج.م</span>
                         </div>
                     </div>
                     <x-input-error class="mt-2" :messages="$errors->get('monthlyLimit')" />
@@ -145,7 +143,7 @@
                         <x-input-label for="network" :value="'مزود الشبكة'" class="text-sm font-medium text-gray-700" />
                     </div>
                     <select wire:model="network" id="network" name="network"
-                        class="block w-full rounded-lg border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                        class="block w-full rounded-xl border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
                         required>
                         <option value="">اختر مزود الشبكة</option>
                         <option value="Vodafone">فودافون</option>
@@ -168,7 +166,7 @@
                         <x-input-label for="branchId" :value="'الفرع المخصص'" class="text-sm font-medium text-gray-700" />
                     </div>
                     <select wire:model="branchId" id="branchId" name="branchId"
-                        class="block w-full rounded-lg border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                        class="block w-full rounded-xl border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
                         required>
                         <option value="">اختر الفرع</option>
                         @foreach ($branches as $branch)
@@ -180,8 +178,9 @@
             </div>
 
             <!-- Form Actions -->
-            <div class="flex items-center justify-between pt-8 mt-8 border-t border-white/20">
-                <div class="flex space-x-4">
+            <div
+                class="flex flex-col md:flex-row items-center justify-between gap-4 pt-10 mt-10 border-t border-gray-100">
+                <div class="flex flex-col md:flex-row gap-4">
                     @if (session('message'))
                         <div x-data="{ show: true }" x-show="show"
                             x-transition:enter="transition ease-out duration-300"
@@ -219,17 +218,17 @@
                     @endif
                 </div>
 
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-col md:flex-row gap-4">
                     <a href="{{ route('lines.index') }}"
-                        class="inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
+                        class="inline-flex items-center px-8 py-3 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
                         إلغاء
                     </a>
                     <x-primary-button
-                        class="px-8 py-3 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="px-10 py-3 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                        {{-- <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
+                        </svg> --}}
                         إنشاء الخط
                     </x-primary-button>
                 </div>
