@@ -1,39 +1,49 @@
-<div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header Section -->
-        <div class="mb-8">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Edit User</h1>
-                        <p class="text-gray-600 mt-1">Update user information and settings</p>
-                    </div>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .sortable-header:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateY(-1px);
+        }
+
+        .sortable-header:active {
+            transform: translateY(0);
+        }
+    </style>
+    <!-- Header Section -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Edit User</h1>
+                    <p class="mt-2 text-sm text-gray-600">Update user information and settings</p>
                 </div>
-                <a href="{{ route('users.index') }}"
-                    class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Back to Users
-                </a>
+                <div class="mt-4 sm:mt-0">
+                    <a href="{{ route('users.index') }}"
+                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Back to Users
+                    </a>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Main Content Card -->
-        <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-            <div class="px-8 py-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+    <!-- Content Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 rounded-t-xl">
                 <h2 class="text-xl font-semibold text-gray-900">User Information</h2>
                 <p class="text-sm text-gray-600 mt-1">Please fill in all required fields marked with *</p>
             </div>
-
-            <form wire:submit.prevent="updateUser" class="p-8">
+            <form wire:submit.prevent="updateUser" class="p-6 md:p-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Personal Information Section -->
                     <div class="lg:col-span-2">
@@ -395,8 +405,8 @@
                 @if (session()->has('workingHourMessage'))
                     <div class="p-3 bg-green-100 border border-green-200 rounded-lg mb-6">
                         <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600 mr-2" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600 mr-2"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -418,249 +428,245 @@
                     </div>
                 @endif
 
-                    <!-- Working Hours Form -->
-                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-6">
-                        <h4 class="text-md font-medium text-gray-900 mb-4">
-                            {{ $editingWorkingHourId ? 'Edit Working Hours' : 'Add Working Hours' }}
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <!-- Day of Week -->
-                            <div>
-                                <x-input-label for="dayOfWeek" class="text-sm font-medium text-gray-700 mb-1">
-                                    Day of Week <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <select id="dayOfWeek" wire:model="dayOfWeek"
-                                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Select day --</option>
-                                    @foreach ($days as $value => $label)
-                                        <option value="{{ $value }}">{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                                <x-input-error class="mt-1 text-red-600 text-xs" :messages="$errors->get('dayOfWeek')" />
-                            </div>
-
-                            <!-- Start Time -->
-                            <div>
-                                <x-input-label for="startTime" class="text-sm font-medium text-gray-700 mb-1">
-                                    Start Time <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <input type="time" id="startTime" wire:model="startTime"
-                                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                <x-input-error class="mt-1 text-red-600 text-xs" :messages="$errors->get('startTime')" />
-                            </div>
-
-                            <!-- End Time -->
-                            <div>
-                                <x-input-label for="endTime" class="text-sm font-medium text-gray-700 mb-1">
-                                    End Time <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <input type="time" id="endTime" wire:model="endTime"
-                                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                <x-input-error class="mt-1 text-red-600 text-xs" :messages="$errors->get('endTime')" />
-                            </div>
-
-                            <!-- Enabled Status -->
-                            <div class="flex items-center mt-6">
-                                <input type="checkbox" id="isEnabled" wire:model="isEnabled"
-                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                                <label for="isEnabled" class="ml-2 text-sm text-gray-700">Enabled</label>
-                                <x-input-error class="mt-1 text-red-600 text-xs" :messages="$errors->get('isEnabled')" />
-                            </div>
+                <!-- Working Hours Form -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-6">
+                    <h4 class="text-md font-medium text-gray-900 mb-4">
+                        {{ $editingWorkingHourId ? 'Edit Working Hours' : 'Add Working Hours' }}
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- Day of Week -->
+                        <div>
+                            <x-input-label for="dayOfWeek" class="text-sm font-medium text-gray-700 mb-1">
+                                Day of Week <span class="text-red-500">*</span>
+                            </x-input-label>
+                            <select id="dayOfWeek" wire:model="dayOfWeek"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Select day --</option>
+                                @foreach ($days as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error class="mt-1 text-red-600 text-xs" :messages="$errors->get('dayOfWeek')" />
                         </div>
 
-                        <div class="flex justify-end mt-4 space-x-3">
-                            @if ($editingWorkingHourId)
-                                <button type="button" wire:click="resetWorkingHourForm"
-                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Cancel
-                                </button>
-                            @endif
-                            <button type="button" wire:click="saveWorkingHour"
-                                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                {{ $editingWorkingHourId ? 'Update' : 'Add' }} Working Hours
+                        <!-- Start Time -->
+                        <div>
+                            <x-input-label for="startTime" class="text-sm font-medium text-gray-700 mb-1">
+                                Start Time <span class="text-red-500">*</span>
+                            </x-input-label>
+                            <input type="time" id="startTime" wire:model="startTime"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <x-input-error class="mt-1 text-red-600 text-xs" :messages="$errors->get('startTime')" />
+                        </div>
+
+                        <!-- End Time -->
+                        <div>
+                            <x-input-label for="endTime" class="text-sm font-medium text-gray-700 mb-1">
+                                End Time <span class="text-red-500">*</span>
+                            </x-input-label>
+                            <input type="time" id="endTime" wire:model="endTime"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <x-input-error class="mt-1 text-red-600 text-xs" :messages="$errors->get('endTime')" />
+                        </div>
+
+                        <!-- Enabled Status -->
+                        <div class="flex items-center mt-6">
+                            <input type="checkbox" id="isEnabled" wire:model="isEnabled"
+                                class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <label for="isEnabled" class="ml-2 text-sm text-gray-700">Enabled</label>
+                            <x-input-error class="mt-1 text-red-600 text-xs" :messages="$errors->get('isEnabled')" />
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end mt-4 space-x-3">
+                        @if ($editingWorkingHourId)
+                            <button type="button" wire:click="resetWorkingHourForm"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Cancel
                             </button>
-                        </div>
-                    </div>
-
-                    <!-- Working Hours List -->
-                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                            <h4 class="text-md font-medium text-gray-900">Current Working Hours</h4>
-                        </div>
-
-                        @if (count($workingHours) > 0)
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th scope="col"
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Day
-                                            </th>
-                                            <th scope="col"
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Start Time
-                                            </th>
-                                            <th scope="col"
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                End Time
-                                            </th>
-                                            <th scope="col"
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Status
-                                            </th>
-                                            <th scope="col"
-                                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Actions
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @foreach ($workingHours as $workingHour)
-                                            <tr>
-                                                <td
-                                                    class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    {{ ucfirst($workingHour->day_of_week) }}
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {{ \Carbon\Carbon::parse($workingHour->start_time)->format('h:i A') }}
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {{ \Carbon\Carbon::parse($workingHour->end_time)->format('h:i A') }}
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    @if ($workingHour->is_enabled)
-                                                        <span
-                                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                            Enabled
-                                                        </span>
-                                                    @else
-                                                        <span
-                                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                            Disabled
-                                                        </span>
-                                                    @endif
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <div class="flex justify-end space-x-2">
-                                                        <button
-                                                            wire:click="toggleWorkingHourStatus({{ $workingHour->id }})"
-                                                            wire:loading.attr="disabled"
-                                                            class="text-indigo-600 hover:text-indigo-900">
-                                                            {{ $workingHour->is_enabled ? 'Disable' : 'Enable' }}
-                                                        </button>
-                                                        <button wire:click="editWorkingHour({{ $workingHour->id }})"
-                                                            class="text-blue-600 hover:text-blue-900">
-                                                            Edit
-                                                        </button>
-                                                        <!-- Primary Delete Button with Glass Dialog -->
-                                                        <button wire:click="confirmDelete({{ $workingHour->id }})"
-                                                            class="text-red-600 hover:text-red-900 transition-colors duration-200 mr-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded px-2 py-1"
-                                                            wire:loading.attr="disabled"
-                                                            wire:loading.class="opacity-50"
-                                                            title="Delete working hours for {{ ucfirst($workingHour->day_of_week) }}">
-                                                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                            </svg>
-                                                            <span wire:loading.remove="wire:click">Delete</span>
-                                                            <span wire:loading="wire:click">Loading...</span>
-                                                        </button>
-
-                                                        <!-- Test Debug Button -->
-                                                        <button wire:click="$set('deleteConfirmId', {{ $workingHour->id }})"
-                                                            class="text-blue-500 hover:text-blue-700 text-xs px-2 py-1 border border-blue-300 rounded mr-2"
-                                                            title="Test dialog trigger">
-                                                            Test Dialog
-                                                        </button>
-
-                                                        <!-- Backup Direct Delete Button -->
-                                                        <button wire:click="directDelete({{ $workingHour->id }})"
-                                                            wire:confirm="Are you sure you want to delete the working hours for {{ ucfirst($workingHour->day_of_week) }}? This action cannot be undone."
-                                                            class="text-red-500 hover:text-red-700 text-xs px-2 py-1 border border-red-300 rounded"
-                                                            wire:loading.attr="disabled">
-                                                            Direct Delete
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="p-6 text-center text-gray-500">
-                                No working hours defined for this user. Use the form above to add working hours.
-                            </div>
                         @endif
+                        <button type="button" wire:click="saveWorkingHour"
+                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            {{ $editingWorkingHourId ? 'Update' : 'Add' }} Working Hours
+                        </button>
                     </div>
+                </div>
+
+                <!-- Working Hours List -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h4 class="text-md font-medium text-gray-900">Current Working Hours</h4>
+                    </div>
+
+                    @if (count($workingHours) > 0)
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Day
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Start Time
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            End Time
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach ($workingHours as $workingHour)
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {{ ucfirst($workingHour->day_of_week) }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ \Carbon\Carbon::parse($workingHour->start_time)->format('h:i A') }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ \Carbon\Carbon::parse($workingHour->end_time)->format('h:i A') }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                @if ($workingHour->is_enabled)
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                        Enabled
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                        Disabled
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <div class="flex justify-end space-x-2">
+                                                    <button
+                                                        wire:click="toggleWorkingHourStatus({{ $workingHour->id }})"
+                                                        wire:loading.attr="disabled"
+                                                        class="text-indigo-600 hover:text-indigo-900">
+                                                        {{ $workingHour->is_enabled ? 'Disable' : 'Enable' }}
+                                                    </button>
+                                                    <button wire:click="editWorkingHour({{ $workingHour->id }})"
+                                                        class="text-blue-600 hover:text-blue-900">
+                                                        Edit
+                                                    </button>
+                                                    <!-- Primary Delete Button with Glass Dialog -->
+                                                    <button wire:click="confirmDelete({{ $workingHour->id }})"
+                                                        class="text-red-600 hover:text-red-900 transition-colors duration-200 mr-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded px-2 py-1"
+                                                        wire:loading.attr="disabled" wire:loading.class="opacity-50"
+                                                        title="Delete working hours for {{ ucfirst($workingHour->day_of_week) }}">
+                                                        <svg class="w-4 h-4 inline mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                            </path>
+                                                        </svg>
+                                                        <span wire:loading.remove="wire:click">Delete</span>
+                                                        <span wire:loading="wire:click">Loading...</span>
+                                                    </button>
+
+                                                    <!-- Test Debug Button -->
+                                                    <button
+                                                        wire:click="$set('deleteConfirmId', {{ $workingHour->id }})"
+                                                        class="text-blue-500 hover:text-blue-700 text-xs px-2 py-1 border border-blue-300 rounded mr-2"
+                                                        title="Test dialog trigger">
+                                                        Test Dialog
+                                                    </button>
+
+                                                    <!-- Backup Direct Delete Button -->
+                                                    <button wire:click="directDelete({{ $workingHour->id }})"
+                                                        wire:confirm="Are you sure you want to delete the working hours for {{ ucfirst($workingHour->day_of_week) }}? This action cannot be undone."
+                                                        class="text-red-500 hover:text-red-700 text-xs px-2 py-1 border border-red-300 rounded"
+                                                        wire:loading.attr="disabled">
+                                                        Direct Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="p-6 text-center text-gray-500">
+                            No working hours defined for this user. Use the form above to add working hours.
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Glassmorphism Delete Confirmation Dialog -->
-    @if($deleteConfirmId)
+<!-- Glassmorphism Delete Confirmation Dialog -->
+@if ($deleteConfirmId)
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
-         style="backdrop-filter: blur(10px); background: rgba(0, 0, 0, 0.3);"
-         wire:click.self="cancelDelete"
-         x-data="{ shown: false }"
-         x-init="shown = true; console.log('Delete dialog opened for ID:', {{ $deleteConfirmId }});"
-         x-show="shown"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 scale-95"
-         x-transition:enter-end="opacity-100 scale-100">
-        <div class="relative bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4"
-             style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1)); box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2);"
-             wire:click.stop>
-
-            <!-- Debug Info (remove in production) -->
-            <div class="text-xs text-gray-500 mb-2">Debug: deleteConfirmId = {{ $deleteConfirmId }}</div>
-
+        style="backdrop-filter: blur(10px); background: rgba(0, 0, 0, 0.3);" wire:click.self="cancelDelete"
+        x-data="{ shown: false }" x-init="shown = true;" x-show="shown"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100">
+        <div class="relative bg-white/30 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4"
+            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.15)); box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2);"
+            wire:click.stop>
             <!-- Close button -->
             <button wire:click="cancelDelete"
-                    class="absolute top-4 right-4 text-gray-600 hover:text-gray-800 transition-colors duration-200"
-                    wire:loading.attr="disabled">
+                class="absolute top-4 right-4 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                wire:loading.attr="disabled">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
                 </svg>
             </button>
-
             <!-- Icon -->
             <div class="flex justify-center mb-6">
                 <div class="w-16 h-16 bg-red-100/50 backdrop-blur-sm rounded-full flex items-center justify-center">
                     <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
             </div>
-
             <!-- Content -->
             <div class="text-center mb-8">
                 <h3 class="text-xl font-semibold text-gray-900 mb-3">Delete Working Hours</h3>
                 <p class="text-gray-700 leading-relaxed">
                     Are you sure you want to delete the working hours for
                     <span class="font-semibold text-gray-900">
-                        @if($deleteConfirmId)
+                        @if ($deleteConfirmId)
                             {{ ucfirst($workingHours->where('id', $deleteConfirmId)->first()?->day_of_week ?? 'this day') }}
                         @endif
                     </span>?
                     <br><span class="text-sm text-gray-600 mt-2 block">This action cannot be undone.</span>
                 </p>
             </div>
-
             <!-- Actions -->
             <div class="flex space-x-3">
                 <button wire:click="cancelDelete"
-                        class="flex-1 px-4 py-3 bg-white/30 backdrop-blur-sm border border-white/40 rounded-xl text-gray-700 font-medium hover:bg-white/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
-                        wire:loading.attr="disabled">
+                    class="flex-1 px-4 py-3 bg-white/40 backdrop-blur-sm border border-white/40 rounded-xl text-gray-700 font-medium hover:bg-white/60 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    wire:loading.attr="disabled">
                     Cancel
                 </button>
                 <button wire:click="confirmDeleteAction"
-                        class="flex-1 px-4 py-3 bg-red-500/80 backdrop-blur-sm border border-red-400/50 rounded-xl text-white font-medium hover:bg-red-600/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400/50 shadow-lg"
-                        wire:loading.attr="disabled"
-                        wire:loading.class="opacity-50">
-                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" wire:loading.remove>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    class="flex-1 px-4 py-3 bg-red-500/80 backdrop-blur-sm border border-red-400/50 rounded-xl text-white font-medium hover:bg-red-600/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400/50 shadow-lg"
+                    wire:loading.attr="disabled" wire:loading.class="opacity-50">
+                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        wire:loading.remove>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
                     </svg>
                     <span wire:loading.remove>Delete</span>
                     <span wire:loading>Deleting...</span>
@@ -668,5 +674,5 @@
             </div>
         </div>
     </div>
-    @endif
+@endif
 </div>
