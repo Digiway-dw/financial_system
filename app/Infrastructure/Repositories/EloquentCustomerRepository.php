@@ -46,7 +46,8 @@ class EloquentCustomerRepository implements CustomerRepository
             $query->where('mobile_number', 'like', '%' . $filters['phone'] . '%');
         }
         if (!empty($filters['code'])) {
-            $query->where('customer_code', 'like', '%' . $filters['code'] . '%');
+            $customerCode = trim($filters['code']);
+            $query->whereRaw('LOWER(customer_code) LIKE ?', ['%' . strtolower($customerCode) . '%']);
         }
         if (!empty($filters['region'])) {
             $query->where('region', $filters['region']);

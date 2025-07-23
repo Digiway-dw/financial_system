@@ -27,8 +27,8 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Audit Trail</h1>
-                    <p class="text-sm text-gray-600">Complete system activity monitoring and compliance tracking</p>
+                    <h1 class="text-2xl font-bold text-gray-900">تتبع النشاط</h1>
+                    <p class="text-sm text-gray-600">مراقبة نشاط النظام وتتبع الامتثال</p>
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-600">Total Activities</h3>
+                        <h3 class="text-sm font-medium text-gray-600">النشاطات الكلية</h3>
                         <p class="text-2xl font-bold text-gray-900">{{ $activities->total() }}</p>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-600">Today's Events</h3>
+                        <h3 class="text-sm font-medium text-gray-600">الأحداث اليومية</h3>
                         <p class="text-2xl font-bold text-gray-900">
                             {{ $activities->where('created_at', '>=', today())->count() }}</p>
                     </div>
@@ -80,7 +80,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-600">Unique Users</h3>
+                        <h3 class="text-sm font-medium text-gray-600">المستخدمون الفريدون</h3>
                         <p class="text-2xl font-bold text-gray-900">{{ $activities->groupBy('causer_id')->count() }}</p>
                     </div>
                 </div>
@@ -96,7 +96,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-600">Event Types</h3>
+                        <h3 class="text-sm font-medium text-gray-600">أنواع الأحداث</h3>
                         <p class="text-2xl font-bold text-gray-900">{{ $eventTypes->count() }}</p>
                     </div>
                 </div>
@@ -114,27 +114,26 @@
                             </path>
                         </svg>
                     </div>
-                    Advanced Filters
+                    المرشحات المتقدمة
                 </h2>
-                <p class="text-sm text-gray-600 mt-1">Filter audit trail records by various criteria for precise
-                    analysis</p>
+                <p class="text-sm text-gray-600 mt-1">تصفية السجلات التتبعية بمعايير مختلفة للتحليل الدقيق</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <!-- Search -->
                 <div class="space-y-2">
-                    <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+                    <label for="search" class="block text-sm font-medium text-gray-700">البحث</label>
                     <input wire:model.defer="search" id="search" type="text"
-                        placeholder="Search descriptions, events..."
+                        placeholder="البحث عن الوصفات، الأحداث..."
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
                 <!-- Log Name Filter -->
                 <div class="space-y-2">
-                    <label for="logName" class="block text-sm font-medium text-gray-700">Log Category</label>
+                    <label for="logName" class="block text-sm font-medium text-gray-700">فئة السجل</label>
                     <select wire:model.defer="logName" id="logName"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                        <option value="">All Categories</option>
+                        <option value="">جميع الفئات</option>
                         @foreach ($logNames as $log)
                             <option value="{{ $log }}">{{ ucfirst($log) }}</option>
                         @endforeach
@@ -143,10 +142,10 @@
 
                 <!-- Event Type Filter -->
                 <div class="space-y-2">
-                    <label for="eventType" class="block text-sm font-medium text-gray-700">Event Type</label>
+                    <label for="eventType" class="block text-sm font-medium text-gray-700">نوع الحدث</label>
                     <select wire:model.defer="eventType" id="eventType"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                        <option value="">All Events</option>
+                        <option value="">جميع الأحداث</option>
                         @foreach ($eventTypes as $event)
                             <option value="{{ $event }}">{{ ucfirst($event) }}</option>
                         @endforeach
@@ -155,10 +154,10 @@
 
                 <!-- User Type Filter -->
                 <div class="space-y-2">
-                    <label for="causerType" class="block text-sm font-medium text-gray-700">User Type</label>
+                    <label for="causerType" class="block text-sm font-medium text-gray-700">نوع المستخدم</label>
                     <select wire:model.defer="causerType" id="causerType"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                        <option value="">All User Types</option>
+                        <option value="">جميع أنواع المستخدمين</option>
                         @foreach ($causerTypes as $type)
                             <option value="{{ $type }}">{{ class_basename($type) }}</option>
                         @endforeach
@@ -167,24 +166,24 @@
 
                 <!-- Start Date -->
                 <div class="space-y-2">
-                    <label for="startDate" class="block text-sm font-medium text-gray-700">From Date</label>
+                    <label for="startDate" class="block text-sm font-medium text-gray-700">من تاريخ</label>
                     <input wire:model.defer="startDate" id="startDate" type="date"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
                 <!-- End Date -->
                 <div class="space-y-2">
-                    <label for="endDate" class="block text-sm font-medium text-gray-700">To Date</label>
+                    <label for="endDate" class="block text-sm font-medium text-gray-700">إلى تاريخ</label>
                     <input wire:model.defer="endDate" id="endDate" type="date"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
                 <!-- Subject Type Filter -->
                 <div class="space-y-2">
-                    <label for="subjectType" class="block text-sm font-medium text-gray-700">Subject Type</label>
+                    <label for="subjectType" class="block text-sm font-medium text-gray-700">نوع الموضوع</label>
                     <select wire:model.defer="subjectType" id="subjectType"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                        <option value="">All Subjects</option>
+                        <option value="">جميع الموضوعات</option>
                         @foreach ($subjectTypes as $type)
                             <option value="{{ $type }}">{{ class_basename($type) }}</option>
                         @endforeach
@@ -201,7 +200,7 @@
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z">
                                 </path>
                             </svg>
-                            Apply
+                            تطبيق
                         </button>
                         <button wire:click="resetFilters"
                             class="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all duration-200 transform hover:scale-105">
@@ -231,12 +230,12 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900">Activity Records</h3>
-                            <p class="text-sm text-gray-600">{{ $activities->total() }} total entries</p>
+                            <h3 class="text-lg font-semibold text-gray-900">سجلات النشاط</h3>
+                            <p class="text-sm text-gray-600">{{ $activities->total() }} إدخالات</p>
                         </div>
                     </div>
                     <div class="text-sm text-gray-500">
-                        Page {{ $activities->currentPage() }} of {{ $activities->lastPage() }}
+                        الصفحة {{ $activities->currentPage() }} من {{ $activities->lastPage() }}
                     </div>
                 </div>
             </div>
@@ -249,7 +248,7 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200 sortable-header"
                                 wire:click="sortBy('created_at')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Timestamp</span>
+                                    <span>الوقت</span>
                                     @if ($sortField === 'created_at')
                                         <div class="text-purple-600">
                                             @if ($sortDirection === 'asc')
@@ -272,7 +271,7 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200 sortable-header"
                                 wire:click="sortBy('log_name')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Category</span>
+                                    <span>الفئة</span>
                                     @if ($sortField === 'log_name')
                                         <div class="text-purple-600">
                                             @if ($sortDirection === 'asc')
@@ -295,7 +294,7 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200 sortable-header"
                                 wire:click="sortBy('event')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Event Type</span>
+                                    <span>نوع الحدث</span>
                                     @if ($sortField === 'event')
                                         <div class="text-purple-600">
                                             @if ($sortDirection === 'asc')
@@ -317,16 +316,16 @@
                             </th>
                             <th
                                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Description</th>
+                                الوصف</th>
                             <th
                                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                User</th>
+                                المستخدم</th>
                             <th
                                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Subject</th>
+                                الموضوع</th>
                             <th
                                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Properties</th>
+                                الخصائص</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -421,7 +420,7 @@
                                                     </path>
                                                 </svg>
                                             </div>
-                                            <span class="text-sm text-gray-500">System</span>
+                                            <span class="text-sm text-gray-500">النظام</span>
                                         </div>
                                     @endif
                                 </td>
@@ -435,7 +434,7 @@
                                             <div class="text-xs text-gray-500">ID: {{ $activity->subject_id }}</div>
                                         </div>
                                     @else
-                                        <span class="text-sm text-gray-500">N/A</span>
+                                        <span class="text-sm text-gray-500">غير متوفر</span>
                                     @endif
                                 </td>
 
@@ -453,10 +452,10 @@
                                                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
                                                 </path>
                                             </svg>
-                                            View Details
+                                            عرض التفاصيل
                                         </button>
                                     @else
-                                        <span class="text-sm text-gray-500">No data</span>
+                                        <span class="text-sm text-gray-500">لا يوجد بيانات</span>
                                     @endif
                                 </td>
                             </tr>
@@ -473,9 +472,9 @@
                                                 </path>
                                             </svg>
                                         </div>
-                                        <h3 class="text-lg font-medium text-gray-900 mb-2">No audit records found</h3>
-                                        <p class="text-sm text-gray-500">Try adjusting your filters or check back later
-                                            for new activity.</p>
+                                        <h3 class="text-lg font-medium text-gray-900 mb-2">لم يتم العثور على سجلات التدقيق</h3>
+                                        <p class="text-sm text-gray-500">حاول تعديل معايير البحث أو التحقق مرة أخرى لاحقًا
+                                            للنشاط الجديد.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -489,8 +488,8 @@
                 <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
                     <div class="flex items-center justify-between">
                         <div class="text-sm text-gray-600">
-                            Showing {{ $activities->firstItem() }} to {{ $activities->lastItem() }} of
-                            {{ $activities->total() }} results
+                            عرض {{ $activities->firstItem() }} إلى {{ $activities->lastItem() }} من
+                            {{ $activities->total() }} نتائج
                         </div>
                         <div>
                             {{ $activities->links() }}
@@ -520,7 +519,7 @@
                                     </path>
                                 </svg>
                             </div>
-                            <h3 class="text-lg font-semibold text-gray-900">Activity Properties</h3>
+                            <h3 class="text-lg font-semibold text-gray-900">خصائص النشاط</h3>
                         </div>
                         <button onclick="closePropertiesModal()"
                             class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
@@ -537,7 +536,7 @@
                 <div class="bg-gray-50 px-6 py-3">
                     <button onclick="closePropertiesModal()"
                         class="w-full inline-flex justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors duration-200">
-                        Close
+                        إغلاق
                     </button>
                 </div>
             </div>
