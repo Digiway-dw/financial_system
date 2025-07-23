@@ -385,7 +385,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    Restore User
+                                                    استعادة
                                                 </button>
                                             @endcan
                                         @else
@@ -643,13 +643,12 @@
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                             <h3 class="text-lg font-bold leading-6 text-gray-900">
-                                Restore User
+                                استعادة المستخدم
                             </h3>
 
                             <div class="mt-4 text-sm text-gray-600">
-                                <p class="mb-4">Are you sure you want to restore this user? They will regain access
-                                    to
-                                    the system.</p>
+                                <p class="mb-4">هل أنت متأكد أنك تريد استعادة هذا المستخدم؟ سيتمكن من الدخول للنظام
+                                    مرة أخرى.</p>
                                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
                                     <div class="flex items-center">
                                         @php
@@ -693,12 +692,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Restore User
+                            استعادة المستخدم
                         </button>
                         <button wire:click="$set('confirmingUserRestore', false)" type="button"
                             class="mt-3 sm:mt-0 w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 bg-white border border-gray-300 rounded-lg font-medium text-sm text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
                             wire:loading.attr="disabled">
-                            Cancel
+                            إلغاء
                         </button>
                     </div>
                 </div>
