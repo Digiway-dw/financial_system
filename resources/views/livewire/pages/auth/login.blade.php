@@ -140,15 +140,7 @@ new #[Layout('layouts.guest')] class extends Component {
             تسجيل الدخول
         </button>
 
-        <!-- Additional Options -->
-        <div class="mt-6 text-center">
-            <p class="text-sm text-slate-600">
-                هل تحتاج مساعدة؟
-                <a href="#" class="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-150">
-                    تواصل مع الدعم
-                </a>
-            </p>
-        </div>
+        
     </form>
 </div>
 
