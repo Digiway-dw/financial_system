@@ -1,36 +1,37 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-6">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-6" dir="rtl"
+    style="direction: rtl;">
     <!-- Header Section Container for Consistent Padding -->
     <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 mb-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div class="bg-transparent p-0 rounded-none shadow-none border-l-4 border-indigo-500 w-full md:w-auto">
                     <h1 class="text-2xl font-bold text-gray-900 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-500" fill="none"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2 text-indigo-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
-                        User Management
+                        إدارة المستخدمين
                     </h1>
-                    <p class="mt-1 text-sm text-gray-600">Manage system users and their permissions</p>
+                    <p class="mt-1 text-sm text-gray-600">إدارة مستخدمي النظام وصلاحياتهم</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
                     <div class="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg flex items-center text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span>Total Users: <span class="font-bold">{{ $users->total() }}</span></span>
+                        <span>إجمالي المستخدمين: <span class="font-bold">{{ $users->total() }}</span></span>
                     </div>
                     @can('create', App\Domain\Entities\User::class)
                         <a href="{{ route('users.create') }}"
                             class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-medium text-sm text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-0.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1.5" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
-                            Add New User
+                            إضافة مستخدم جديد
                         </a>
                     @endcan
                 </div>
@@ -57,25 +58,24 @@
         </style>
 
 
-        <!-- Filters Panel -->
+        <!-- لوحة الفلاتر -->
         <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 mb-8">
             <div class="p-6">
                 <div class="flex items-center mb-6 text-indigo-700 border-b border-gray-200 pb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
-                    <h3 class="font-semibold">Search & Filter Options</h3>
+                    <h3 class="font-semibold">خيارات البحث والتصفية</h3>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Search -->
+                    <!-- البحث -->
                     <div class="w-full">
-                        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search by
-                            Name</label>
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">البحث بالاسم</label>
                         <div class="relative rounded-md">
-                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-gray-500">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -83,17 +83,17 @@
                                 </svg>
                             </div>
                             <input wire:model.live.debounce.300ms="name" type="text" id="search"
-                                class="pl-10 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition-all duration-200"
-                                placeholder="Search by name...">
+                                class="pr-10 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition-all duration-200 text-right"
+                                placeholder="ابحث بالاسم...">
                         </div>
                     </div>
 
-                    <!-- Roles Filter -->
+                    <!-- تصفية الدور -->
                     <div class="w-full">
-                        <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Filter by
-                            Role</label>
+                        <label for="role" class="block text-sm font-medium text-gray-700 mb-1">تصفية حسب
+                            الدور</label>
                         <div class="relative">
-                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -101,21 +101,21 @@
                                 </svg>
                             </div>
                             <select wire:model.live="role" id="role"
-                                class="pl-10 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition-all duration-200">
-                                <option value="">All Roles</option>
+                                class="pr-10 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition-all duration-200 text-right">
+                                <option value="">كل الأدوار</option>
                                 @foreach ($roles as $role)
-                                    <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
+                                    <option value="{{ $role->name }}">{{ __($role->name) }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
 
-                    <!-- Branch Filter -->
+                    <!-- تصفية الفرع -->
                     <div class="w-full">
-                        <label for="branchId" class="block text-sm font-medium text-gray-700 mb-1">Filter by
-                            Branch</label>
+                        <label for="branchId" class="block text-sm font-medium text-gray-700 mb-1">تصفية حسب
+                            الفرع</label>
                         <div class="relative">
-                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -123,8 +123,8 @@
                                 </svg>
                             </div>
                             <select wire:model.live="branchId" id="branchId"
-                                class="pl-10 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition-all duration-200">
-                                <option value="">All Branches</option>
+                                class="pr-10 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition-all duration-200 text-right">
+                                <option value="">كل الفروع</option>
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                                 @endforeach
@@ -133,99 +133,99 @@
                     </div>
                 </div>
 
-                <!-- Toggle for Trashed Users & Reset Filters -->
+                <!-- تبديل عرض المحذوفين وإعادة تعيين الفلاتر -->
                 <div
                     class="flex flex-col sm:flex-row justify-between items-center mt-8 pt-6 border-t border-gray-100 gap-4">
                     <div class="flex items-center mb-4 sm:mb-0">
-                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                        <div class="relative inline-block w-10 ml-2 align-middle select-none">
                             <input wire:model.live="showTrashed" type="checkbox" id="showTrashed"
-                                class="checked:bg-indigo-500 outline-none focus:outline-none right-4 checked:right-0 duration-200 ease-in absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" />
+                                class="checked:bg-indigo-500 outline-none focus:outline-none left-4 checked:left-0 duration-200 ease-in absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" />
                             <label for="showTrashed"
                                 class="block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
                         </div>
                         <label for="showTrashed" class="text-sm font-medium text-gray-700 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-gray-500" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-gray-500" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
-                            Show Deleted Users
+                            عرض المستخدمين المحذوفين
                         </label>
                     </div>
 
                     <button wire:click="resetFilters" type="button"
                         class="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1.5">
+                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-1.5">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                         </svg>
-                        Reset Filters
+                        إعادة تعيين الفلاتر
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Users Table -->
+        <!-- جدول المستخدمين -->
         <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="min-w-full divide-y divide-gray-200 text-right">
                     <thead class="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
                         <tr>
                             <th scope="col"
-                                class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                class="px-8 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('name')">
-                                <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500"
+                                <div class="flex flex-row-reverse items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
-                                    User Information
+                                    بيانات المستخدم
                                     @if ($sortField === 'name')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
                             <th scope="col"
-                                class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                class="px-8 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('branch_id')">
-                                <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500"
+                                <div class="flex flex-row-reverse items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
-                                    Branch
+                                    الفرع
                                     @if ($sortField === 'branch_id')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
                             <th scope="col"
-                                class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                class="px-8 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('role')">
-                                <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500"
+                                <div class="flex flex-row-reverse items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                     </svg>
-                                    Role
+                                    الدور
                                     @if ($sortField === 'role')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
                             <th scope="col"
-                                class="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header">
-                                <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500"
+                                class="px-8 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header">
+                                <div class="flex flex-row-reverse items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                                     </svg>
-                                    Actions
+                                    الإجراءات
                                 </div>
                             </th>
                         </tr>
@@ -297,7 +297,7 @@
                                             </div>
                                             @if ($user->created_at)
                                                 <div class="text-xs text-gray-400 mt-1">
-                                                    Joined: {{ $user->created_at->format('M d, Y') }}
+                                                    تاريخ الانضمام: {{ $user->created_at->format('Y/m/d') }}
                                                 </div>
                                             @endif
                                         </div>
@@ -307,7 +307,7 @@
                                     @if (isset($user->branch) && $user->branch)
                                         <div class="text-sm text-gray-900">{{ $user->branch->name }}</div>
                                     @else
-                                        <div class="text-sm text-gray-500">N/A</div>
+                                        <div class="text-sm text-gray-500">غير متوفر</div>
                                     @endif
                                 </td>
                                 <td class="px-8 py-6 whitespace-nowrap align-middle">
