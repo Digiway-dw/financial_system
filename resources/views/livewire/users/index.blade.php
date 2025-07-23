@@ -1,9 +1,9 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-6">
     <!-- Header Section Container for Consistent Padding -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
+    <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 mb-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-500 w-full md:w-auto">
+                <div class="bg-transparent p-0 rounded-none shadow-none border-l-4 border-indigo-500 w-full md:w-auto">
                     <h1 class="text-2xl font-bold text-gray-900 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -58,7 +58,7 @@
        
 
         <!-- Filters Panel -->
-        <div class="bg-white overflow-visible shadow-md rounded-2xl mb-8 border border-gray-200/60">
+        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 mb-8">
             <div class="p-6">
                 <div class="flex items-center mb-6 text-indigo-700 border-b border-gray-200 pb-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
@@ -167,7 +167,7 @@
         </div>
 
         <!-- Users Table -->
-        <div class="bg-white overflow-visible shadow-md rounded-2xl border border-gray-200/60">
+        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">

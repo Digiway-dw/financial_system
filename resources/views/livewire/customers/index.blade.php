@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-6">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
     @php
         $forbiddenRoles = ['agent', 'trainee'];
     @endphp
@@ -10,114 +10,112 @@
             </div>
         </div>
     @else
-    <style>
-        .sortable-header {
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-        }
-        .sortable-header:hover {
-            background-color: #f3f4f6 !important;
-            transform: translateY(-1px);
-        }
-        .sortable-header:active {
-            transform: translateY(0);
-        }
-    </style>
-    <!-- Header Section -->
-    <div class="mb-8">
-        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                    <h1
-                        class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                        Customer Management
-                    </h1>
-                    <p class="text-slate-600 mt-2">Manage your customer base with comprehensive tools and insights</p>
-                </div>
-                @php
-                        $canAddCustomer = auth()->user()->hasRole('admin') || auth()->user()->hasRole('branch_manager') || auth()->user()->hasRole('general_supervisor');
-                @endphp
-                @if ($canAddCustomer)
-                    <div class="mt-4 lg:mt-0">
-                        <a href="{{ route('customers.create') }}"
-                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transform hover:-translate-y-0.5 transition-all duration-200 border border-blue-500/20">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Add New Customer
-                        </a>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <style>
+            .sortable-header {
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
+            }
+            .sortable-header:hover {
+                background-color: #f3f4f6 !important;
+                transform: translateY(-1px);
+            }
+            .sortable-header:active {
+                transform: translateY(0);
+            }
+        </style>
+        <!-- Header Section -->
+        <div class="bg-white shadow-sm border-b border-gray-200 mb-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Customer Management</h1>
+                        <p class="text-slate-600 mt-2">Manage your customer base with comprehensive tools and insights</p>
                     </div>
+                    @php
+                        $canAddCustomer = auth()->user()->hasRole('admin') || auth()->user()->hasRole('branch_manager') || auth()->user()->hasRole('general_supervisor');
+                    @endphp
+                    @if ($canAddCustomer)
+                        <div class="mt-4 lg:mt-0">
+                            <a href="{{ route('customers.create') }}"
+                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 border border-blue-500/20">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Add New Customer
+                            </a>
+                        </div>
                     @endif
-            </div>
-        </div>
-    </div>
-
-    <!-- Filters Section -->
-    <div class="mb-8">
-        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
-            <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                Filter Customers
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 items-end">
-                <div>
-                    <label for="name" class="block text-sm font-medium text-slate-700 mb-2">Name</label>
-                    <input type="text" id="name" wire:model.debounce.400ms="name"
-                        class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
-                        placeholder="Search by name...">
-                </div>
-                <div>
-                    <label for="phone" class="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
-                    <input type="text" id="phone" wire:model.defer="phone"
-                        class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
-                        placeholder="Search by phone...">
-                </div>
-                <div>
-                    <label for="code" class="block text-sm font-medium text-slate-700 mb-2">Customer Code</label>
-                    <input type="text" id="code" wire:model.defer="code"
-                        class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
-                        placeholder="Search by code...">
-                </div>
-                <div>
-                    <label for="region" class="block text-sm font-medium text-slate-700 mb-2">Region/Area</label>
-                    <input type="text" id="region" wire:model.defer="region"
-                        class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
-                        placeholder="Search by region...">
-                </div>
-                <div>
-                    <label for="date_added_start" class="block text-sm font-medium text-slate-700 mb-2">Date Added
-                        (Start)</label>
-                    <input type="date" id="date_added_start" wire:model.defer="date_added_start"
-                        class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm">
-                </div>
-                <div>
-                    <label for="date_added_end" class="block text-sm font-medium text-slate-700 mb-2">Date Added
-                        (End)</label>
-                    <input type="date" id="date_added_end" wire:model.defer="date_added_end"
-                        class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm">
-                </div>
-                <div class="md:col-span-2 lg:col-span-4 xl:col-span-6">
-                    <button wire:click="filter"
-                        class="w-full md:w-auto px-6 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:from-slate-700 hover:to-slate-800 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        Apply Filters
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Main Content -->
-    <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full">
+        <!-- Filters Section -->
+        <div class="mb-8">
+            <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Filter Customers
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 items-end">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-slate-700 mb-2">Name</label>
+                        <input type="text" id="name" wire:model.debounce.400ms="name"
+                            class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
+                            placeholder="Search by name...">
+                    </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
+                        <input type="text" id="phone" wire:model.defer="phone"
+                            class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
+                            placeholder="Search by phone...">
+                    </div>
+                    <div>
+                        <label for="code" class="block text-sm font-medium text-slate-700 mb-2">Customer Code</label>
+                        <input type="text" id="code" wire:model.defer="code"
+                            class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
+                            placeholder="Search by code...">
+                    </div>
+                    <div>
+                        <label for="region" class="block text-sm font-medium text-slate-700 mb-2">Region/Area</label>
+                        <input type="text" id="region" wire:model.defer="region"
+                            class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
+                            placeholder="Search by region...">
+                    </div>
+                    <div>
+                        <label for="date_added_start" class="block text-sm font-medium text-slate-700 mb-2">Date Added
+                            (Start)</label>
+                        <input type="date" id="date_added_start" wire:model.defer="date_added_start"
+                            class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm">
+                    </div>
+                    <div>
+                        <label for="date_added_end" class="block text-sm font-medium text-slate-700 mb-2">Date Added
+                            (End)</label>
+                        <input type="date" id="date_added_end" wire:model.defer="date_added_end"
+                            class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm">
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-4 xl:col-span-6">
+                        <button wire:click="filter"
+                            class="w-full md:w-auto px-6 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:from-slate-700 hover:to-slate-800 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
                 <thead>
                     <tr class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
                         <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700 sortable-header" wire:click="sortBy('name')">
