@@ -85,13 +85,13 @@
                                 كود الفرع <span class="text-red-500">*</span>
                                 <span class="text-xs text-gray-500">(مثال: حرفان ثم ٣ أرقام، مثل AB123)</span>
                             </label>
-                            <div class="relative flex">
+                            <div class="relative flex flex-row-reverse">
                                 <input wire:model="branch_code" id="branch_code" name="branch_code" type="text"
                                     required
-                                    class="flex-1 px-4 py-3 border border-gray-300 rounded-l-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                                    class="flex-1 px-4 py-3 border border-gray-300 rounded-r-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                                     placeholder="مثال: AB123" pattern="[A-Z]{2}[0-9]{3}" maxlength="5" />
                                 <button type="button" wire:click="regenerateBranchCode"
-                                    class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-r-xl border border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-200 flex items-center"
+                                    class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-l-xl border border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-200 flex items-center"
                                     title="توليد كود جديد">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -197,7 +197,7 @@
                             <input wire:model="safe_initial_balance" id="safe_initial_balance"
                                 name="safe_initial_balance" type="number" step="1" min="0" required
                                 class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                                placeholder="٠" oninput="this.value=this.value.replace(/[^ -9]/g,'')" />
+                                placeholder="٠" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
                         </div>
                         @if ($errors->has('safe_initial_balance'))
                             <p class="text-sm text-red-600 flex items-center mt-1">
