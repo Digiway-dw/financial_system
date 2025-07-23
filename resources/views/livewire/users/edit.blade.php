@@ -563,35 +563,9 @@
                                                         Edit
                                                     </button>
                                                     <!-- Primary Delete Button with Glass Dialog -->
-                                                    <button wire:click="confirmDelete({{ $workingHour->id }})"
-                                                        class="text-red-600 hover:text-red-900 transition-colors duration-200 mr-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded px-2 py-1"
-                                                        wire:loading.attr="disabled" wire:loading.class="opacity-50"
-                                                        title="Delete working hours for {{ ucfirst($workingHour->day_of_week) }}">
-                                                        <svg class="w-4 h-4 inline mr-1" fill="none"
-                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                            </path>
-                                                        </svg>
-                                                        <span wire:loading.remove="wire:click">Delete</span>
-                                                        <span wire:loading="wire:click">Loading...</span>
-                                                    </button>
-
-                                                    <!-- Test Debug Button -->
-                                                    <button
-                                                        wire:click="$set('deleteConfirmId', {{ $workingHour->id }})"
-                                                        class="text-blue-500 hover:text-blue-700 text-xs px-2 py-1 border border-blue-300 rounded mr-2"
-                                                        title="Test dialog trigger">
-                                                        Test Dialog
-                                                    </button>
-
-                                                    <!-- Backup Direct Delete Button -->
-                                                    <button wire:click="directDelete({{ $workingHour->id }})"
-                                                        wire:confirm="Are you sure you want to delete the working hours for {{ ucfirst($workingHour->day_of_week) }}? This action cannot be undone."
-                                                        class="text-red-500 hover:text-red-700 text-xs px-2 py-1 border border-red-300 rounded"
-                                                        wire:loading.attr="disabled">
-                                                        Direct Delete
+                                                    <button wire:click="editWorkingHour({{ $workingHour->id }})"
+                                                        class="text-blue-600 hover:text-blue-900">
+                                                        Edit
                                                     </button>
                                                 </div>
                                             </td>
