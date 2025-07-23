@@ -192,8 +192,8 @@
             @endcan
         </div>
         <!-- Advanced Filter Section -->
-        <div class="mb-10 bg-white rounded-2xl shadow border border-gray-200 p-10 md:p-12">
-            <div class="border-b border-gray-100 pb-4 mb-6">
+        <div class="mb-10 bg-white rounded-2xl shadow border-2 border-blue-200 p-6 md:p-8">
+            <div class="border-b-2 border-blue-100 pb-6 mb-8">
                 <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
                     <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
                         <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -371,22 +371,23 @@
         </div>
 
         <div class="mt-8 overflow-x-auto">
-            <div class="bg-white rounded-2xl shadow border border-gray-200 p-4 md:p-8">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <div class="bg-white rounded-2xl shadow-lg border-4 border-blue-500 p-0 md:p-0 transition-all duration-300"
+                style="box-shadow: 0 0 0 4px #e0e7ff;">
+                <table class="min-w-full divide-y divide-blue-100 text-base rtl text-right">
                     <thead>
                         <tr>
-                            <th class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px] sortable-header"
+                            <th class="px-4 py-4 bg-blue-50 text-right text-base font-bold text-blue-900 tracking-wider min-w-[120px] sortable-header border-b border-blue-200 rounded-tr-2xl"
                                 wire:click="sortBy('customer_name')">
-                                <div class="flex items-center space-x-1 justify-end">
+                                <div class="flex items-center gap-2 justify-end">
                                     <span>اسم العميل</span>
                                     @if ($sortField === 'customer_name')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px] sortable-header"
+                            <th class="px-4 py-4 bg-blue-50 text-right text-base font-bold text-blue-900 tracking-wider min-w-[120px] sortable-header border-b border-blue-200"
                                 wire:click="sortBy('customer_mobile_number')">
-                                <div class="flex items-center space-x-1 justify-end">
+                                <div class="flex items-center gap-2 justify-end">
                                     <span>رقم الجوال</span>
                                     @if ($sortField === 'customer_mobile_number')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -394,56 +395,57 @@
                                 </div>
                             </th>
                             <th
-                                class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px]">
-                                جوال المستلم</th>
-                            <th class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px] sortable-header"
+                                class="px-4 py-4 bg-blue-50 text-right text-base font-bold text-blue-900 tracking-wider min-w-[120px] border-b border-blue-200">
+                                جوال المستلم
+                            </th>
+                            <th class="px-4 py-4 bg-blue-50 text-right text-base font-bold text-blue-900 tracking-wider min-w-[100px] sortable-header border-b border-blue-200"
                                 wire:click="sortBy('amount')">
-                                <div class="flex items-center space-x-1 justify-end">
+                                <div class="flex items-center gap-2 justify-end">
                                     <span>المبلغ</span>
                                     @if ($sortField === 'amount')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px] sortable-header"
+                            <th class="px-4 py-4 bg-blue-50 text-right text-base font-bold text-blue-900 tracking-wider min-w-[100px] sortable-header border-b border-blue-200"
                                 wire:click="sortBy('commission')">
-                                <div class="flex items-center space-x-1 justify-end">
+                                <div class="flex items-center gap-2 justify-end">
                                     <span>العمولة</span>
                                     @if ($sortField === 'commission')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[70px] sortable-header"
+                            <th class="px-4 py-4 bg-blue-50 text-right text-base font-bold text-blue-900 tracking-wider min-w-[90px] sortable-header border-b border-blue-200"
                                 wire:click="sortBy('transaction_type')">
-                                <div class="flex items-center space-x-1 justify-end">
+                                <div class="flex items-center gap-2 justify-end">
                                     <span>النوع</span>
                                     @if ($sortField === 'transaction_type')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[90px] sortable-header"
+                            <th class="px-4 py-4 bg-blue-50 text-right text-base font-bold text-blue-900 tracking-wider min-w-[110px] sortable-header border-b border-blue-200"
                                 wire:click="sortBy('agent_name')">
-                                <div class="flex items-center space-x-1 justify-end">
+                                <div class="flex items-center gap-2 justify-end">
                                     <span>اسم الوكيل</span>
                                     @if ($sortField === 'agent_name')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[110px] sortable-header"
+                            <th class="px-4 py-4 bg-blue-50 text-right text-base font-bold text-blue-900 tracking-wider min-w-[120px] sortable-header border-b border-blue-200"
                                 wire:click="sortBy('created_at')">
-                                <div class="flex items-center space-x-1 justify-end">
+                                <div class="flex items-center gap-2 justify-end">
                                     <span>التاريخ</span>
                                     @if ($sortField === 'created_at')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[120px] sortable-header"
+                            <th class="px-4 py-4 bg-blue-50 text-right text-base font-bold text-blue-900 tracking-wider min-w-[120px] sortable-header border-b border-blue-200"
                                 wire:click="sortBy('reference_number')">
-                                <div class="flex items-center space-x-1 justify-end">
+                                <div class="flex items-center gap-2 justify-end">
                                     <span>رقم المرجع</span>
                                     @if ($sortField === 'reference_number')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -451,37 +453,38 @@
                                 </div>
                             </th>
                             <th
-                                class="px-3 py-2 bg-gray-50 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider min-w-[80px]">
-                                إجراءات</th>
+                                class="px-2 py-4 bg-blue-50 text-right text-base font-bold text-blue-900 tracking-wider w-1 border-b border-blue-200 rounded-tl-2xl whitespace-nowrap">
+                                إجراءات
+                            </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200 text-xs">
+                    <tbody class="bg-white divide-y divide-blue-50 text-base">
                         @forelse ($transactions as $transaction)
                             <tr
-                                class="hover:bg-gray-50 transition-colors @if (strtolower($transaction['status']) === 'pending') bg-yellow-100 @endif border-b-2 border-gray-100 last:border-b-0">
-                                <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">
+                                class="hover:bg-blue-50 transition-all duration-150 @if (strtolower($transaction['status']) === 'pending') bg-yellow-100 @endif border-b border-blue-100 last:border-b-0">
+                                <td class="px-4 py-4 whitespace-nowrap font-bold text-gray-900">
                                     {{ $transaction['customer_name'] }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-gray-700">
+                                <td class="px-4 py-4 whitespace-nowrap text-gray-700">
                                     {{ $transaction['customer_mobile_number'] }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-gray-700">
+                                <td class="px-4 py-4 whitespace-nowrap text-gray-700">
                                     {{ $transaction['receiver_mobile_number'] ?? '' }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-gray-700">
+                                <td class="px-4 py-4 whitespace-nowrap text-green-700 font-bold">
                                     {{ format_int($transaction['amount']) }} ج.م</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-gray-700">
+                                <td class="px-4 py-4 whitespace-nowrap text-purple-700 font-bold">
                                     {{ format_int($transaction['commission']) }} ج.م</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-gray-700">
+                                <td class="px-4 py-4 whitespace-nowrap text-blue-700 font-bold">
                                     {{ $transaction['transaction_type'] }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}
+                                <td class="px-4 py-4 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}
                                 </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-gray-700">
+                                <td class="px-4 py-4 whitespace-nowrap text-gray-700">
                                     {{ \Carbon\Carbon::parse($transaction['created_at'])->format('d/m/y h:i A') }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-gray-700">
+                                <td class="px-4 py-4 whitespace-nowrap text-gray-700">
                                     {{ $transaction['reference_number'] ?? '' }}</td>
                                 <td
-                                    class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium space-x-2 space-x-reverse">
+                                    class="px-2 py-4 whitespace-nowrap text-right text-base font-bold flex flex-row flex-nowrap gap-1 justify-end items-center">
                                     <a href="{{ route('transactions.details', $transaction['id']) }}"
-                                        class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-200 transition-colors duration-150 mr-2 mb-1">
-                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                        class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-200 transition-colors duration-150 mb-1">
+                                        <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -493,8 +496,8 @@
                                     @can('edit-all-transactions')
                                         @if (isset($transaction['source_table']) && $transaction['source_table'] === 'cash_transactions')
                                             <a href="{{ route('cash-transactions.edit', $transaction['id']) }}"
-                                                class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg hover:bg-indigo-200 transition-colors duration-150 mr-2 mb-1">
-                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-200 transition-colors duration-150 mb-1">
+                                                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M11 5h2m-1 0v14m-7-7h14" />
@@ -503,8 +506,8 @@
                                             </a>
                                         @elseif(empty($transaction['source_table']) || $transaction['source_table'] === 'transactions')
                                             <a href="{{ route('transactions.edit', $transaction['id']) }}"
-                                                class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg hover:bg-indigo-200 transition-colors duration-150 mr-2 mb-1">
-                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-200 transition-colors duration-150 mb-1">
+                                                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M11 5h2m-1 0v14m-7-7h14" />
@@ -514,9 +517,9 @@
                                         @endif
                                     @endcan
                                     <a href="{{ route('transactions.receipt', $transaction['id']) }}"
-                                        class="inline-block text-green-600 hover:text-green-800 mr-3 mb-1"
-                                        title="Print Receipt">
-                                        <svg class="w-5 h-5 inline" fill="none" stroke="currentColor"
+                                        class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 text-xs font-bold rounded-lg hover:bg-green-200 transition-colors duration-150 mb-1"
+                                        title="طباعة الإيصال">
+                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-6 0v4m0 0h4m-4 0H8" />
@@ -525,13 +528,14 @@
                                     </a>
                                     @can('delete-transactions')
                                         <button wire:click="deleteTransaction('{{ $transaction['id'] }}')"
-                                            class="text-red-600 hover:text-red-800 mb-1">حذف</button>
+                                            class="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 text-xs font-bold rounded-lg hover:bg-red-200 transition-colors duration-150 mb-1">حذف</button>
                                     @endcan
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-8 py-8 text-gray-500 text-center">لا توجد معاملات</td>
+                                <td colspan="10" class="px-8 py-12 text-blue-400 text-center text-lg font-bold">لا
+                                    توجد معاملات</td>
                             </tr>
                         @endforelse
                     </tbody>
