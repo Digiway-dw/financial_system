@@ -13,7 +13,7 @@
                             class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                             {{ $customer->name }}
                         </h1>
-                        <p class="text-slate-600 mt-1">Customer Profile & Transaction History</p>
+                        <p class="text-slate-600 mt-1">تفاصيل العميل وسجل المعاملات</p>
                     </div>
                 </div>
                 <div class="mt-4 lg:mt-0 flex space-x-3">
@@ -27,7 +27,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
-                            Edit Customer
+                            تعديل العميل
                         </a>
                     @endif
                     <a href="{{ route('customers.index') }}"
@@ -36,7 +36,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        Back to Customers
+                        العودة إلى العملاء
                     </a>
                 </div>
             </div>
@@ -53,19 +53,19 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    Personal Information
+                    المعلومات الشخصية
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-1">Full Name</label>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">الاسم الكامل</label>
                         <p class="text-slate-800 font-medium">{{ $customer->name }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-1">Customer Code</label>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">رمز العميل</label>
                         <p class="text-slate-800 font-mono">{{ $customer->customer_code }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-1">Mobile Numbers</label>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">رقم الهاتف</label>
                         <div class="space-y-1">
                             @forelse($customer->mobileNumbers as $mobile)
                                 <p class="text-slate-800 font-mono text-sm">{{ $mobile->mobile_number }}</p>
@@ -75,26 +75,26 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-1">Gender</label>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">الجنس</label>
                         <p class="text-slate-800 capitalize">{{ $customer->gender ?? 'N/A' }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-1">Region</label>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">المنطقة</label>
                         <p class="text-slate-800">{{ $customer->region ?? 'N/A' }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-1">Date Added</label>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">تاريخ الإضافة</label>
                         <p class="text-slate-800">
                             {{ $customer->created_at ? $customer->created_at->format('d/m/y') : 'N/A' }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-1">Created by</label>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">أنشئ بواسطة</label>
                         <div class="text-slate-800 font-semibold">
                             {{ $customer->createdBy ? $customer->createdBy->name : 'N/A' }}
                         </div>
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-slate-500 mb-1">Notes</label>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">الملاحظات</label>
                         <p class="text-slate-800">{{ $customer->notes ?? 'No notes available' }}</p>
                     </div>
                 </div>
@@ -109,25 +109,25 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
-                    Account Summary
+                    ملخص الحساب
                 </h2>
                 <div class="space-y-4">
                     <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
-                        <div class="text-sm font-medium text-green-700 mb-1">Current Balance</div>
+                        <div class="text-sm font-medium text-green-700 mb-1">الرصيد الحالي</div>
                         <div class="text-2xl font-bold text-green-800">{{ format_int($customer->balance) }} EGP
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-200">
-                        <div class="text-sm font-medium text-blue-700 mb-1">Total Transactions</div>
+                        <div class="text-sm font-medium text-blue-700 mb-1">إجمالي المعاملات</div>
                         <div class="text-xl font-bold text-blue-800">{{ format_int($totalTransactions) }}</div>
                     </div>
                     <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl border border-purple-200">
-                        <div class="text-sm font-medium text-purple-700 mb-1">Total Transferred</div>
+                        <div class="text-sm font-medium text-purple-700 mb-1">إجمالي المبالغ المنقولة</div>
                         <div class="text-lg font-bold text-purple-800">{{ format_int($totalTransferred) }} EGP
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-xl border border-yellow-200">
-                        <div class="text-sm font-medium text-yellow-700 mb-1">Total Commission</div>
+                        <div class="text-sm font-medium text-yellow-700 mb-1">إجمالي العمولة</div>
                         <div class="text-lg font-bold text-yellow-800">{{ format_int($totalCommission) }} EGP
                         </div>
                     </div>
@@ -144,19 +144,19 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                Transaction History
+                سجل المعاملات
             </h2>
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
                         <tr class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Date</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Type</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Amount</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Commission</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Line</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Status</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Actions</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">تاريخ</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">النوع</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">المبلغ</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">العمولة</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">الخط</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">الحالة</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -202,7 +202,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
-                                            View
+                                            عرض
                                         </a>
                                     @else
                                         <a href="{{ route('transactions.details', $transaction->id) }}"
@@ -214,7 +214,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
-                                            View
+                                            عرض
                                         </a>
                                     @endif
                                 </td>
@@ -228,9 +228,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                         </svg>
-                                        <h3 class="text-sm font-medium text-slate-900 mb-1">No transactions found</h3>
-                                        <p class="text-sm text-slate-500">This customer hasn't made any transactions
-                                            yet.</p>
+                                        <h3 class="text-sm font-medium text-slate-900 mb-1">لا يوجد معاملات</h3>
+                                        <p class="text-sm text-slate-500">هذا العميل لم يقم بإجراء أي معاملات بعد.</p>
                                     </div>
                                 </td>
                             </tr>

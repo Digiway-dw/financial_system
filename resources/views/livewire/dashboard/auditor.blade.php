@@ -24,9 +24,9 @@
     <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
         <thead>
             <tr class="bg-gray-100 text-center">
-                <th class="px-4 py-2 border">Safe Name</th>
-                <th class="px-4 py-2 border">Safe Balance</th>
-                <th class="px-4 py-2 border">Today's Transactions</th>
+                <th class="px-4 py-2 border">اسم الخزنة</th>
+                <th class="px-4 py-2 border">رصيد الخزنة</th>
+                <th class="px-4 py-2 border">المعاملات اليومية</th>
             </tr>
         </thead>
         <tbody>
@@ -37,7 +37,7 @@
                     <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}</td>
                 </tr>
             @empty
-                <tr><td colspan="3" class="px-4 py-2 border text-center text-gray-500">No safes found for this branch.</td></tr>
+                <tr><td colspan="3" class="px-4 py-2 border text-center text-gray-500">لا يوجد خزنات لهذا الفرع.</td></tr>
             @endforelse
         </tbody>
     </table>

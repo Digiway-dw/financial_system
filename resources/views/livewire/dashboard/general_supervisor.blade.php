@@ -17,9 +17,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
                     </div>
-                    Quick Actions
+                    الإجراءات السريعة
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">Create new transactions or access transaction tools</p>
+                <p class="text-sm text-gray-500 mt-1">إنشاء معاملات جديدة أو الوصول إلى أدوات المعاملات</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <a href="{{ route('transactions.send') }}" class="group flex items-center p-4 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-xl transition-all duration-200">
@@ -29,8 +29,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-blue-900">Send Money</h3>
-                        <p class="text-sm text-blue-700">Create outgoing transfer</p>
+                        <h3 class="font-semibold text-blue-900">إرسال المال</h3>
+                        <p class="text-sm text-blue-700">إنشاء معاملة ارسال</p>
                     </div>
                 </a>
                 <a href="{{ route('transactions.receive') }}" class="group flex items-center p-4 bg-green-50 hover:bg-green-100 border border-green-100 rounded-xl transition-all duration-200">
@@ -39,9 +39,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
                         </svg>
                     </div>
-                    <div>
-                        <h3 class="font-semibold text-green-900">Receive Money</h3>
-                        <p class="text-sm text-green-700">Process incoming transfer</p>
+                    <div>   
+                        <h3 class="font-semibold text-green-900">استلام المال</h3>
+                        <p class="text-sm text-green-700">معاملة استلام</p>
                     </div>
                 </a>
                 @can('create-cash-transactions')
@@ -52,8 +52,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-yellow-900">Cash Transaction</h3>
-                            <p class="text-sm text-yellow-700">Handle cash operations</p>
+                            <h3 class="font-semibold text-yellow-900">المعاملة النقدية</h3>
+                            <p class="text-sm text-yellow-700">التعامل مع المعاملات النقدية</p>
                         </div>
                     </a>
                 @endcan
@@ -68,8 +68,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-indigo-900">Add Customer</h3>
-                        <p class="text-sm text-indigo-700">Register a new customer</p>
+                        <h3 class="font-semibold text-indigo-900">اضافة عميل</h3>
+                        <p class="text-sm text-indigo-700">اضافة عميل جديد</p>
                         </div>
                     </a>
                 @endcan
@@ -87,7 +87,7 @@
                         <x-heroicon-o-users class="h-10 w-10 text-indigo-600" />
                     </div>
                     <div>
-                        <p class="text-gray-600 text-lg font-medium">Total Users</p>
+                        <p class="text-gray-600 text-lg font-medium">إجمالي المستخدمين</p>
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $totalUsers ?? '-' }}</p>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                         <x-heroicon-o-building-office-2 class="h-10 w-10 text-green-600" />
                     </div>
                     <div>
-                        <p class="text-gray-600 text-lg font-medium">Total Branches</p>
+                        <p class="text-gray-600 text-lg font-medium">إجمالي الفروع</p>
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $totalBranches ?? '-' }}</p>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                         <x-heroicon-o-banknotes class="h-10 w-10 text-red-600" />
                     </div>
                     <div>
-                        <p class="text-gray-600 text-lg font-medium">Total Safes</p>
+                        <p class="text-gray-600 text-lg font-medium">إجمالي الخزائن</p>
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $totalSafes ?? '-' }}</p>
                     </div>
                 </div>
@@ -128,8 +128,8 @@
                         <x-heroicon-o-clock class="h-10 w-10 text-teal-600" />
                     </div>
                     <div>
-                        <p class="text-gray-600 text-lg font-medium">Work Sessions</p>
-                        <p class="text-gray-900 text-4xl font-extrabold mt-1">View</p>
+                        <p class="text-gray-600 text-lg font-medium">جلسات العمل</p>
+                        <p class="text-gray-900 text-4xl font-extrabold mt-1">عرض</p>
                 </div>
             </div>
             </a>
@@ -141,7 +141,7 @@
                         <x-heroicon-o-phone class="h-10 w-10 text-yellow-600" />
                     </div>
                     <div>
-                        <p class="text-gray-600 text-lg font-medium">Total Lines</p>
+                        <p class="text-gray-600 text-lg font-medium">إجمالي الخطوط</p>
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $totalLines ?? '-' }}</p>
                     </div>
                 </div>
@@ -154,7 +154,7 @@
                         <x-heroicon-o-identification class="h-10 w-10 text-blue-600" />
                     </div>
                     <div>
-                        <p class="text-gray-600 text-lg font-medium">Total Customers</p>
+                        <p class="text-gray-600 text-lg font-medium">إجمالي العملاء</p>
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $totalCustomers ?? '-' }}</p>
                     </div>
                 </div>
@@ -167,7 +167,7 @@
                         <x-heroicon-o-receipt-percent class="h-10 w-10 text-purple-600" />
                     </div>
                     <div>
-                        <p class="text-gray-600 text-lg font-medium">Total Transactions</p>
+                        <p class="text-gray-600 text-lg font-medium">إجمالي المعاملات</p>
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $totalTransactions ?? '-' }}</p>
                     </div>
                 </div>
@@ -180,7 +180,7 @@
                         <x-heroicon-o-currency-dollar class="h-10 w-10 text-emerald-600" />
                     </div>
                     <div>
-                        <p class="text-gray-600 text-lg font-medium">Total Amount Transferred</p>
+                        <p class="text-gray-600 text-lg font-medium">إجمالي المبالغ المنقولة</p>
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ format_int($totalTransferred ?? 0) }} EGP</p>
                     </div>
                 </div>
@@ -194,7 +194,7 @@
                         <x-heroicon-o-chart-bar class="h-10 w-10 text-rose-600" />
                     </div>
                     <div>
-                        <p class="text-gray-600 text-lg font-medium">Net Profits</p>
+                        <p class="text-gray-600 text-lg font-medium">الأرباح الصافية</p>
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ format_int($netProfits ?? 0) }} EGP</p>
                     </div>
                 </div>
@@ -207,7 +207,7 @@
                         <x-heroicon-o-document-magnifying-glass class="h-10 w-10 text-amber-600" />
                     </div>
                     <div>
-                        <p class="text-gray-600 text-lg font-medium">Pending Transactions</p>
+                        <p class="text-gray-600 text-lg font-medium">المعاملات المعلقة</p>
                         <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ $pendingTransactionsCount ?? '-' }}</p>
                     </div>
                 </div>

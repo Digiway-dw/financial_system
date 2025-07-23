@@ -27,9 +27,9 @@ new #[Layout('layouts.guest')] class extends Component {
     <!-- Header -->
     <div class="text-center mb-8">
         <h2 class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-            Welcome Back
+        مرحبا بعودتك
         </h2>
-        <p class="text-slate-600 mt-2">Sign in to your account to continue</p>
+        <p class="text-slate-600 mt-2">تسجيل الدخول للمتابعة</p>
         
         <!-- Current Time Display -->
         <div class="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
@@ -37,9 +37,9 @@ new #[Layout('layouts.guest')] class extends Component {
                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <span class="text-blue-700 font-medium text-sm">Current Time:</span>
+                <span class="text-blue-700 font-medium text-sm">الوقت الحالي:</span>
                 <span id="current-time" class="text-blue-800 font-bold text-lg">--:--:--</span>
-                <span id="current-date" class="text-blue-600 text-sm">Loading...</span>
+                <span id="current-date" class="text-blue-600 text-sm">جاري التحميل...</span>
             </div>
         </div>
     </div>
@@ -61,7 +61,7 @@ new #[Layout('layouts.guest')] class extends Component {
         <!-- Email Address -->
         <div>
             <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">
-                Email Address
+                البريد الإلكتروني
             </label>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -73,7 +73,7 @@ new #[Layout('layouts.guest')] class extends Component {
                 <input wire:model="form.email" id="email" type="email" name="email" required autofocus
                     autocomplete="username"
                     class="w-full pl-12 pr-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                    placeholder="Enter your email address">
+                    placeholder="أدخل عنوان بريدك الإلكتروني">
             </div>
             @error('form.email')
                 <p class="mt-2 text-sm text-red-600 flex items-center">
@@ -89,7 +89,7 @@ new #[Layout('layouts.guest')] class extends Component {
         <!-- Password -->
         <div>
             <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">
-                Password
+                كلمة المرور
             </label>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -101,7 +101,7 @@ new #[Layout('layouts.guest')] class extends Component {
                 <input wire:model="form.password" id="password" type="password" name="password" required
                     autocomplete="current-password"
                     class="w-full pl-12 pr-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                    placeholder="Enter your password">
+                    placeholder="أدخل كلمة المرور">
             </div>
             @error('form.password')
                 <p class="mt-2 text-sm text-red-600 flex items-center">
@@ -119,13 +119,13 @@ new #[Layout('layouts.guest')] class extends Component {
             <label for="remember" class="flex items-center cursor-pointer">
                 <input wire:model="form.remember" id="remember" type="checkbox" name="remember"
                     class="w-4 h-4 text-blue-600 bg-white border-slate-300 rounded focus:ring-blue-500 focus:ring-2">
-                <span class="ml-3 text-sm text-slate-700">Remember me</span>
+                <span class="ml-3 text-sm text-slate-700">تذكرني</span>
             </label>
 
             @if (Route::has('password.request'))
                 <a href="{{ route('password.request') }}" wire:navigate
                     class="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-150">
-                    Forgot password?
+                    هل نسيت كلمة المرور؟
                 </a>
             @endif
         </div>
@@ -137,15 +137,15 @@ new #[Layout('layouts.guest')] class extends Component {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
             </svg>
-            Sign In
+            تسجيل الدخول
         </button>
 
         <!-- Additional Options -->
         <div class="mt-6 text-center">
             <p class="text-sm text-slate-600">
-                Need help?
+                هل تحتاج مساعدة؟
                 <a href="#" class="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-150">
-                    Contact Support
+                    تواصل مع الدعم
                 </a>
             </p>
         </div>

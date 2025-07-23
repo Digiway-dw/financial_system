@@ -6,14 +6,14 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" wire:navigate>
-                        <span class="text-2xl font-bold text-blue-700 tracking-wide font-fidodido">Fido Dido</span>
+                        <span class="text-2xl font-bold text-blue-700 tracking-wide font-fidodido">فيدو ديدو</span>
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
+                        {{ __('الرئيسية') }}
                     </x-nav-link>
 
                     @if (auth()->user() &&
@@ -21,7 +21,7 @@
                                 auth()->user()->hasRole('branch_manager') ||
                                 auth()->user()->hasRole('general_supervisor')))
                         <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
-                            {{ __('Customers') }}
+                            {{ __('العملاء') }}
                         </x-nav-link>
                     @endif
 
@@ -30,12 +30,12 @@
                             <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
                                 request()->routeIs('transactions.create') ||
                                 request()->routeIs('transactions.pending')" wire:navigate>
-                                {{ __('Transactions') }}
+                                {{ __('المعاملات') }}
                             </x-nav-link>
                         @endif
                     @else
                         <x-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
-                            {{ __('Search Transaction') }}
+                            {{ __('بحث المعاملة') }}
                         </x-nav-link>
                     @endcan
 
@@ -47,14 +47,14 @@
                             !auth()->user()->hasAnyRole(['agent', 'trainee']))
                         @can('view-lines')
                             <x-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
-                                {{ __('Lines') }}
+                                {{ __('الخطوط') }}
                             </x-nav-link>
                         @endcan
                     @endif
 
                     @can('view-safes')
                         <x-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') || request()->routeIs('safes.edit')" wire:navigate>
-                            {{ __('Safes') }}
+                            {{ __('الخزائن') }}
                         </x-nav-link>
                     @endcan
 
@@ -62,26 +62,26 @@
 
                     @can('view-branches')
                         <x-nav-link :href="route('branches.index')" :active="request()->routeIs('branches.*')" wire:navigate>
-                            {{ __('Branches') }}
+                            {{ __('الفروع') }}
                         </x-nav-link>
                     @endcan
 
                     @can('manage-users')
                         <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')" wire:navigate>
-                            {{ __('Users') }}
+                            {{ __('المستخدمين') }}
                         </x-nav-link>
                     @endcan
 
                     @can('view-all-reports')
                         <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" wire:navigate>
-                            {{ __('Reports') }}
+                            {{ __('التقارير') }}
                         </x-nav-link>
                     @endcan
 
                     @can('view-audit-log')
                         @if (!auth()->user() || !auth()->user()->hasRole(\App\Constants\Roles::AUDITOR))
                             <x-nav-link :href="route('audit-log.index')" :active="request()->routeIs('audit-log.*')" wire:navigate>
-                                {{ __('Audit Log') }}
+                                {{ __('سجل التدقيق') }}
                             </x-nav-link>
                         @endif
                     @endcan
@@ -167,7 +167,7 @@
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
-                {{ __('Dashboard') }}
+                {{ __('الرئيسية') }}
             </x-responsive-nav-link>
 
             @if (auth()->user() &&
@@ -175,7 +175,7 @@
                         auth()->user()->hasRole('branch_manager') ||
                         auth()->user()->hasRole('general_supervisor')))
                 <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
-                    {{ __('Customers') }}
+                    {{ __('العملاء') }}
                 </x-responsive-nav-link>
             @endif
 
@@ -184,12 +184,12 @@
                     <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index') ||
                         request()->routeIs('transactions.create') ||
                         request()->routeIs('transactions.pending')" wire:navigate>
-                        {{ __('Transactions') }}
+                        {{ __('المعاملات') }}
                     </x-responsive-nav-link>
                 @endif
             @else
                 <x-responsive-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
-                    {{ __('Search Transaction') }}
+                    {{ __('بحث المعاملة') }}
                 </x-responsive-nav-link>
             @endcan
 
@@ -201,14 +201,14 @@
                     !auth()->user()->hasAnyRole(['agent', 'trainee']))
                 @can('view-lines')
                     <x-responsive-nav-link :href="route('lines.index')" :active="request()->routeIs('lines.*')" wire:navigate>
-                        {{ __('Lines') }}
+                        {{ __('الخطوط') }}
                     </x-responsive-nav-link>
                 @endcan
             @endif
 
             @can('view-safes')
                 <x-responsive-nav-link :href="route('safes.index')" :active="request()->routeIs('safes.index') || request()->routeIs('safes.edit')" wire:navigate>
-                    {{ __('Safes') }}
+                    {{ __('الخزائن') }}
                 </x-responsive-nav-link>
             @endcan
 
@@ -216,26 +216,26 @@
 
             @can('view-branches')
                 <x-responsive-nav-link :href="route('branches.index')" :active="request()->routeIs('branches.*')" wire:navigate>
-                    {{ __('Branches') }}
+                    {{ __('الفروع') }}
                 </x-responsive-nav-link>
             @endcan
 
             @can('manage-users')
                 <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')" wire:navigate>
-                    {{ __('Users') }}
+                    {{ __('المستخدمين') }}
                 </x-responsive-nav-link>
             @endcan
 
             @can('view-all-reports')
                 <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" wire:navigate>
-                    {{ __('Reports') }}
+                    {{ __('التقارير') }}
                 </x-responsive-nav-link>
             @endcan
 
             @can('view-audit-log')
                 @if (!auth()->user() || !auth()->user()->hasRole(\App\Constants\Roles::AUDITOR))
                     <x-responsive-nav-link :href="route('audit-log.index')" :active="request()->routeIs('audit-log.*')" wire:navigate>
-                        {{ __('Audit Log') }}
+                        {{ __('سجل التدقيق') }}
                     </x-responsive-nav-link>
                 @endif
             @endcan
@@ -258,7 +258,7 @@
                     @csrf
                     <button type="submit" class="w-full text-start">
                         <x-responsive-nav-link>
-                            {{ __('Log Out') }}
+                            {{ __('تسجيل الخروج') }}
                         </x-responsive-nav-link>
                     </button>
                 </form>

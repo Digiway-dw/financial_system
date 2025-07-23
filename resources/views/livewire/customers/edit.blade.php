@@ -13,9 +13,9 @@
                 <div>
                     <h1
                         class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                        Edit Customer
+                        تعديل العميل
                     </h1>
-                    <p class="text-slate-600 mt-2">Update customer information and preferences</p>
+                    <p class="text-slate-600 mt-2">تعديل معلومات العميل وتفضيلاته</p>
                 </div>
             </div>
         </div>
@@ -29,11 +29,10 @@
                 <div class="space-y-6">
                     <!-- Name -->
                     <div>
-                        <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Customer
-                            Name</label>
+                        <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">الاسم</label>
                         <input type="text" wire:model="name" id="name" name="name" required autofocus
                             class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                            placeholder="Enter customer full name">
+                            placeholder="أدخل الاسم الكامل للعميل">
                         @error('name')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -41,14 +40,14 @@
 
                     <!-- Mobile Numbers -->
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-3">Mobile Numbers</label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-3">رقم الهاتف</label>
                         <div class="space-y-3">
                             @foreach ($mobileNumbers as $i => $number)
                                 <div class="flex gap-3 items-center">
                                     <div class="flex-1">
                                         <input type="text" wire:model="mobileNumbers.{{ $i }}" required
                                             class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                                            placeholder="Enter mobile number">
+                                            placeholder="أدخل رقم الهاتف">
                                         @error('mobileNumbers.' . $i)
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror
@@ -71,19 +70,19 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
-                                Add Number
+                                إضافة رقم
                             </button>
                         </div>
                     </div>
 
                     <!-- Gender -->
                     <div>
-                        <label for="gender" class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
+                        <label for="gender" class="block text-sm font-semibold text-slate-700 mb-2">الجنس</label>
                         <select wire:model="gender" id="gender" name="gender" required
                             class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200">
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
+                            <option value="">اختر الجنس</option>
+                            <option value="male">ذكر</option>
+                            <option value="female">أنثى</option>
                         </select>
                         @error('gender')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -96,9 +95,9 @@
                     <!-- Balance -->
                     <div>
                         <label for="balance" class="block text-sm font-semibold text-slate-700 mb-2">
-                            Balance
+                            الرصيد
                             @if (!Auth::user()->hasRole('admin'))
-                                <span class="text-xs text-red-500 font-medium">(Admin Only)</span>
+                                <span class="text-xs text-red-500 font-medium">(للمدير فقط)</span>
                             @endif
                         </label>
                         <div class="relative">
@@ -108,13 +107,13 @@
                                 <input type="number" wire:model="balance" id="balance" name="balance" step="1"
                                     min="0" required
                                     class="w-full pl-14 pr-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                                    placeholder="Enter balance (whole numbers only)"
+                                    placeholder="أدخل الرصيد (أرقام فقط)"
                                     @if (!$is_client) disabled @endif
                                     oninput="this.value = this.value.replace(/[^\d]/g, '');">
                             @else
                                 <input type="text" value="{{ format_int($balance) }}" readonly
                                     class="w-full pl-14 pr-4 py-3 bg-gray-100 border border-gray-300 rounded-xl text-gray-600 cursor-not-allowed"
-                                    placeholder="Admin access required">
+                                    placeholder="يتطلب الوصول للمدير">
                                 <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
                                     <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -126,50 +125,48 @@
                             @endif
                         </div>
                         @if (Auth::user()->hasRole('admin'))
-                            <p class="mt-1 text-xs text-gray-500">Balance must be a whole number (no decimals allowed)
+                            <p class="mt-1 text-xs text-gray-500">الرصيد يجب أن يكون رقما فقط (لا يسمح بالكسور)
                             </p>
                             @error('balance')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         @else
-                            <p class="mt-1 text-xs text-red-500">⚠️ Only administrators can edit customer wallet
-                                balances</p>
+                            <p class="mt-1 text-xs text-red-500">⚠️ يمكن للمديرين فقط تعديل رصيد المحفظة</p>
                         @endif
                     </div>
 
                     <!-- Is Client -->
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-3">Wallet Status</label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-3">حالة المحفظة</label>
                         @if ($is_client)
                             <div class="flex items-center space-x-3">
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                    Active Wallet
+                                    مفعل
                                 </span>
                                 <button type="button" wire:click="deactivateWallet"
                                     class="px-4 py-2 bg-red-100 text-red-700 rounded-xl hover:bg-red-200 transition-colors duration-150 text-xs font-medium">Deactivate
-                                    Wallet</button>
+                                    مفعل</button>
                             </div>
                         @else
                             <div class="flex items-center space-x-3">
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                                    No wallet
+                                    لا يوجد محفظة
                                 </span>
                                 <button type="button" wire:click="activateWallet"
                                     class="px-4 py-2 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors duration-150 text-xs font-medium">Activate
-                                    Wallet</button>
+                                    مفعل</button>
                             </div>
                         @endif
                     </div>
 
                     <!-- Agent ID -->
                     <div>
-                        <label for="agent_id" class="block text-sm font-semibold text-slate-700 mb-2">Assigned
-                            Agent</label>
+                        <label for="agent_id" class="block text-sm font-semibold text-slate-700 mb-2">موزع</label>
                         <select wire:model="agent_id" id="agent_id" name="agent_id"
                             class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200">
-                            <option value="">Select Agent (Optional)</option>
+                            <option value="">اختر موزع (اختياري)</option>
                             @foreach ($agents as $agent)
                                 <option value="{{ $agent->id }}">{{ $agent->name }}</option>
                             @endforeach
@@ -181,10 +178,10 @@
 
                     <!-- Branch ID -->
                     <div>
-                        <label for="branch_id" class="block text-sm font-semibold text-slate-700 mb-2">Branch</label>
+                        <label for="branch_id" class="block text-sm font-semibold text-slate-700 mb-2">الفرع</label>
                         <select wire:model="branch_id" id="branch_id" name="branch_id" required
                             class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200">
-                            <option value="">Select Branch</option>
+                            <option value="">اختر الفرع</option>
                             @foreach ($branches as $branch)
                                 <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                             @endforeach
@@ -205,11 +202,11 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M5 13l4 4L19 7" />
                         </svg>
-                        Update Customer
+                        تعديل العميل
                     </button>
                     <a href="{{ route('customers.index') }}"
                         class="px-6 py-3 bg-slate-200 text-slate-700 font-medium rounded-xl hover:bg-slate-300 transition-colors duration-150">
-                        Cancel
+                        إلغاء
                     </a>
                 </div>
 

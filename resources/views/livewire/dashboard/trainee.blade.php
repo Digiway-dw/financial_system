@@ -14,8 +14,8 @@
         </svg>
     </div>
     <div>
-        <h3 class="font-semibold text-indigo-900">Add Customer</h3>
-        <p class="text-sm text-indigo-700">Register a new customer</p>
+        <h3 class="font-semibold text-indigo-900">اضافة عميل</h3>
+        <p class="text-sm text-indigo-700">اضافة عميل جديد</p>
     </div>
 </a>
 @endcan
@@ -24,7 +24,7 @@
     <div class="mb-6 bg-white rounded-xl shadow p-6 flex flex-col items-center">
         <form method="GET" action="{{ route('dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
             <input type="hidden" name="search_transaction" value="1">
-            <label for="reference_number" class="block text-sm font-medium text-gray-700">Search Transaction by Reference Number</label>
+            <label for="reference_number" class="block text-sm font-medium text-gray-700">بحث المعاملة برقم المرجع</label>
             <div class="flex gap-2">
                 <input type="text" name="reference_number" id="reference_number" value="{{ request('reference_number') }}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200" placeholder="Enter reference number...">
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Search</button>
@@ -32,7 +32,7 @@
         </form>
         @if(isset($searchedTransaction))
             <div class="mt-6 w-full max-w-md bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 class="font-bold text-blue-800 mb-2">Transaction Details</h4>
+                <h4 class="font-bold text-blue-800 mb-2">تفاصيل المعاملة</h4>
                 <div class="text-sm text-gray-700">
                     <div><span class="font-semibold">Reference:</span> {{ $searchedTransaction->reference_number }}</div>
                     <div><span class="font-semibold">Amount:</span> {{ number_format($searchedTransaction->amount, 2) }}</div>
@@ -46,21 +46,21 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
                             <rect width="12" height="8" x="6" y="14" rx="2" />
                         </svg>
-                        Print
+                        طباعة
                     </a>
                 </div>
             </div>
         @elseif(request('reference_number'))
-            <div class="mt-4 text-red-600 font-semibold">No transaction found with this reference number.</div>
+            <div class="mt-4 text-red-600 font-semibold">لا يوجد معاملة بهذا الرقم المرجعي.</div>
         @endif
     </div>
 @endif
 @include('livewire.dashboard.agent', $data ?? [])
 @if(isset($traineeLines) && count($traineeLines))
     <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">
-        <h4 class="text-xl font-bold text-gray-900 mb-4">All Lines in Your Branch</h4>
+        <h4 class="text-xl font-bold text-gray-900 mb-4">جميع الخطوط في فرعك</h4>
         <div class="mb-4">
-            <span class="text-lg font-semibold text-gray-700">Total Lines Balance: </span>
+            <span class="text-lg font-semibold text-gray-700">إجمالي رصيد الخطوط: </span>
             <span class="text-2xl font-bold text-blue-700">{{ format_int($traineeLinesTotalBalance ?? 0) }} EGP</span>
         </div>
         <div class="overflow-x-auto">
@@ -70,14 +70,14 @@
                         <th class="px-2 py-3 text-center">
                             <input type="checkbox" wire:click="toggleSelectAllTraineeLines" @if(isset($selectedTraineeLineIds) && count($selectedTraineeLineIds) === count($traineeLines) && count($traineeLines) > 0) checked @endif />
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mobile Number</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Balance</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Daily Remaining</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Daily Receive</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly Remaining</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly Receive</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Network</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">رقم الهاتف</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">الرصيد</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">المتبقي اليومي</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">المستلم اليومي</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">المتبقي الشهري</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">المستلم الشهري</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">الشبكة</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">الحالة</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">

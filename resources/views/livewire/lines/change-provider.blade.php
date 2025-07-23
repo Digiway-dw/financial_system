@@ -1,10 +1,10 @@
 <div class="p-4">
-    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Change SIM Provider for: {{ $line->mobile_number }}</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">تغيير مزود الخط: {{ $line->mobile_number }}</h3>
 
     <form wire:submit.prevent="updateNetwork" class="mt-6 space-y-6">
         <!-- Current Network Details -->
         <div class="mb-4">
-            <p class="text-sm text-gray-600 dark:text-gray-400"><strong>Current Network:</strong> {{ $line->network ?? 'N/A' }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400"><strong>الشبكة الحالية:</strong> {{ $line->network ?? 'N/A' }}</p>
         </div>
 
         <!-- New Network Selection -->

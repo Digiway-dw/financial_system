@@ -16,7 +16,7 @@
         <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <form method="get" action="{{ route('dashboard') }}" class="flex items-center gap-2">
                 <input type="hidden" name="as_agent" value="1">
-                <label for="branches" class="font-semibold text-gray-700">Select Branches:</label>
+                <label for="branches" class="font-semibold text-gray-700">اختر الفروع:</label>
                 <select name="branches[]" id="branches" multiple
                     class="border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
                     onchange="
@@ -36,9 +36,9 @@
             <a href="{{ route('dashboard') }}"
                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 transition">
                 @if(auth()->user()->hasRole('admin'))
-                    Switch to Main Admin Dashboard
+                    الانتقال للواجهة الرئيسية للادمن 
                 @else
-                    Switch to Supervisor Dashboard
+                    الانتقال للواجهة الرئيسية للمشرف
                 @endif
             </a>
         </div>
@@ -48,7 +48,7 @@
         <div class="mb-6 bg-white rounded-xl shadow p-6 flex flex-col items-center">
             <form method="GET" action="{{ route('dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
                 <input type="hidden" name="search_transaction" value="1">
-                <label for="reference_number" class="block text-sm font-medium text-gray-700">Search Transaction by Reference Number</label>
+                <label for="reference_number" class="block text-sm font-medium text-gray-700">بحث المعاملة برقم المرجع</label>
                 <div class="flex gap-2">
                     <input type="text" name="reference_number" id="reference_number" value="{{ request('reference_number') }}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200" placeholder="Enter reference number...">
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Search</button>
@@ -56,15 +56,15 @@
             </form>
             @if(isset($searchedTransaction))
                 <div class="mt-6 w-full max-w-md bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 class="font-bold text-blue-800 mb-2">Transaction Details</h4>
+                    <h4 class="font-bold text-blue-800 mb-2">تفاصيل المعاملة</h4>
                     <div class="text-sm text-gray-700">
-                        <div><span class="font-semibold">Reference:</span> {{ $searchedTransaction->reference_number }}</div>
-                        <div><span class="font-semibold">Amount:</span> {{ format_int($searchedTransaction->amount) }}</div>
-                        <div><span class="font-semibold">Status:</span> {{ $searchedTransaction->status }}</div>
+                        <div><span class="font-semibold">الرقم المرجعي:</span> {{ $searchedTransaction->reference_number }}</div>
+                        <div><span class="font-semibold">المبلغ:</span> {{ format_int($searchedTransaction->amount) }}</div>
+                        <div><span class="font-semibold">الحالة:</span> {{ $searchedTransaction->status }}</div>
                         @if(isset($searchedTransaction->transaction_date_time) && $searchedTransaction->transaction_date_time)
-                            <div><span class="font-semibold">Transaction Date/Time:</span> {{ \Carbon\Carbon::parse($searchedTransaction->transaction_date_time)->format('d/m/y h:i A') }}</div>
+                            <div><span class="font-semibold">تاريخ و وقت المعاملة:</span> {{ \Carbon\Carbon::parse($searchedTransaction->transaction_date_time)->format('d/m/y h:i A') }}</div>
                         @endif
-                        <div><span class="font-semibold">Created At:</span> {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
+                        <div><span class="font-semibold">تاريخ الانشاء:</span> {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
                     </div>
                     <div class="mt-4 text-right">
                         <a href="{{ route('transactions.print', $searchedTransaction->id) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
@@ -73,12 +73,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
                                 <rect width="12" height="8" x="6" y="14" rx="2" />
                             </svg>
-                            Print
+                            طباعة
                         </a>
                     </div>
                 </div>
             @elseif(request('reference_number'))
-                <div class="mt-4 text-red-600 font-semibold">No transaction found with this reference number.</div>
+                <div class="mt-4 text-red-600 font-semibold">لا يوجد معاملة بهذا الرقم المرجعي.</div>
             @endif
         </div>
     @endif
@@ -87,9 +87,9 @@
     <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
         <thead>
             <tr class="bg-gray-100 text-center">
-                <th class="px-4 py-2 border">Safe Name</th>
-                <th class="px-4 py-2 border">Safe Balance</th>
-                <th class="px-4 py-2 border">My Today's Transactions</th>
+                <th class="px-4 py-2 border">اسم الخزنة</th>
+                <th class="px-4 py-2 border">رصيد الخزنة</th>
+                <th class="px-4 py-2 border">المعاملات اليومية</th>
             </tr>
         </thead>
         <tbody>
@@ -100,7 +100,7 @@
                     <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}</td>
                 </tr>
             @empty
-                <tr><td colspan="4" class="px-4 py-2 border text-center text-gray-500">No safes found for your branch.</td></tr>
+                <tr><td colspan="4" class="px-4 py-2 border text-center text-gray-500">لا يوجد خزنات لهذا الفرع.</td></tr>
             @endforelse
         </tbody>
     </table>
@@ -114,9 +114,9 @@
                             d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                 </div>
-                Quick Actions
+                الإجراءات السريعة
             </h2>
-            <p class="text-sm text-gray-500 mt-1">Create new transactions or access transaction tools</p>
+            <p class="text-sm text-gray-500 mt-1">إنشاء معاملات جديدة أو الوصول إلى أدوات المعاملات</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <a href="{{ route('transactions.send') }}"
@@ -129,8 +129,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-blue-900">Send Money</h3>
-                    <p class="text-sm text-blue-700">Create outgoing transfer</p>
+                    <h3 class="font-semibold text-blue-900">إرسال المال</h3>
+                    <p class="text-sm text-blue-700">إنشاء معاملة ارسال</p>
                 </div>
             </a>
             <a href="{{ route('transactions.receive') }}"
@@ -143,8 +143,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-green-900">Receive Money</h3>
-                    <p class="text-sm text-green-700">Process incoming transfer</p>
+                    <h3 class="font-semibold text-green-900">استلام المال</h3>
+                    <p class="text-sm text-green-700">معاملة استلام</p>
                 </div>
             </a>
 
@@ -160,8 +160,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-yellow-900">Cash Transaction</h3>
-                        <p class="text-sm text-yellow-700">Handle cash operations</p>
+                        <h3 class="font-semibold text-yellow-900">المعاملة النقدية</h3>
+                        <p class="text-sm text-yellow-700">التعامل مع المعاملات النقدية</p>
                     </div>
                 </a>
             @endcan
@@ -176,8 +176,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-indigo-900">Add Customer</h3>
-                    <p class="text-sm text-indigo-700">Register a new customer</p>
+                    <h3 class="font-semibold text-indigo-900">اضافة عميل</h3>
+                    <p class="text-sm text-indigo-700">اضافة عميل جديد</p>
                 </div>
             </a>
             @endcan
@@ -187,9 +187,9 @@
 
     @if (isset($agentLines) && $agentLines->count())
         <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">
-            <h4 class="text-xl font-bold text-gray-900 mb-4">All Lines in Your Branch</h4>
+            <h4 class="text-xl font-bold text-gray-900 mb-4">جميع الخطوط في فرعك</h4>
             <div class="mb-4">
-                <span class="text-lg font-semibold text-gray-700">Total Lines Balance: </span>
+                <span class="text-lg font-semibold text-gray-700">إجمالي رصيد الخطوط: </span>
                 <span class="text-2xl font-bold text-blue-700">{{ format_int($agentLinesTotalBalance ?? 0) }}
                     EGP</span>
             </div>
@@ -198,49 +198,49 @@
                     <thead class="bg-gray-100">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('mobile_number')" style="cursor: pointer;">
-                                Mobile Number
+                                رقم الهاتف
                                 @if ($sortField === 'mobile_number')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('current_balance')" style="cursor: pointer;">
-                                Balance
+                                الرصيد
                                 @if ($sortField === 'current_balance')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('daily_limit')" style="cursor: pointer;">
-                                Daily Remaining
+                                المتبقي اليومي
                                 @if ($sortField === 'daily_limit')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('daily_usage')" style="cursor: pointer;">
-                                Daily Receive
+                                المستلم اليومي
                                 @if ($sortField === 'daily_usage')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('monthly_limit')" style="cursor: pointer;">
-                                Monthly Remaining
+                                المتبقي الشهري
                                 @if ($sortField === 'monthly_limit')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('monthly_usage')" style="cursor: pointer;">
-                                Monthly Receive
+                                المستلم الشهري
                                 @if ($sortField === 'monthly_usage')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('network')" style="cursor: pointer;">
-                                Network
+                                الشبكة
                                 @if ($sortField === 'network')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('status')" style="cursor: pointer;">
-                                Status
+                                الحالة
                                 @if ($sortField === 'status')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif

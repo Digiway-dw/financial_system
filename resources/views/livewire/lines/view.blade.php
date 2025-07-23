@@ -1,34 +1,34 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-8 mb-8">
-            <h1 class="text-2xl font-bold text-blue-900 mb-2">Line Details</h1>
+            <h1 class="text-2xl font-bold text-blue-900 mb-2">تفاصيل الخط</h1>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <div class="text-sm text-gray-500">Mobile Number</div>
+                    <div class="text-sm text-gray-500">رقم الهاتف</div>
                     <div class="text-lg font-semibold text-gray-900">{{ $line->mobile_number }}</div>
                 </div>
                 <div>
-                    <div class="text-sm text-gray-500">Network</div>
+                    <div class="text-sm text-gray-500">الشبكة</div>
                     <div class="text-lg font-semibold text-gray-900">{{ $line->network }}</div>
                 </div>
                 <div>
-                    <div class="text-sm text-gray-500">Current Balance</div>
+                    <div class="text-sm text-gray-500">الرصيد الحالي</div>
                     <div class="text-lg font-semibold text-blue-700">{{ format_int($line->current_balance) }} EGP</div>
                 </div>
                 <div>
-                    <div class="text-sm text-gray-500">Branch</div>
+                    <div class="text-sm text-gray-500">الفرع</div>
                     <div class="text-lg font-semibold text-gray-900">{{ $line->branch->name ?? 'N/A' }}</div>
                 </div>
                 <div>
-                    <div class="text-sm text-gray-500">Daily Limit</div>
+                    <div class="text-sm text-gray-500">الحد اليومي</div>
                     <div class="text-lg font-semibold text-gray-900">{{ format_int($line->daily_limit) }} EGP</div>
                 </div>
                 <div>
-                    <div class="text-sm text-gray-500">Monthly Limit</div>
+                    <div class="text-sm text-gray-500">الحد الشهري</div>
                     <div class="text-lg font-semibold text-gray-900">{{ format_int($line->monthly_limit) }} EGP</div>
                 </div>
                 <div>
-                    <div class="text-sm text-gray-500">Status</div>
+                    <div class="text-sm text-gray-500">الحالة</div>
                     <div
                         class="text-lg font-semibold {{ $line->status === 'active' ? 'text-green-700' : 'text-red-700' }}">
                         {{ ucfirst($line->status) }}
@@ -38,23 +38,23 @@
         </div>
 
         <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-8">
-            <h2 class="text-xl font-bold text-blue-900 mb-4">Transaction History</h2>
+            <h2 class="text-xl font-bold text-blue-900 mb-4">سجل المعاملات</h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th
                                 class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Date</th>
+                                التاريخ</th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Type</th>
+                                النوع</th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Amount</th>
+                                المبلغ</th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Status</th>
+                                الحالة</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -72,8 +72,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-12 text-center text-gray-500">No transactions found
-                                    for this line.</td>
+                                <td colspan="4" class="px-6 py-12 text-center text-gray-500">لا يوجد معاملات لهذه الخطة</td>
                             </tr>
                         @endforelse
                     </tbody>

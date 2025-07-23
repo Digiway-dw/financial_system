@@ -46,9 +46,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                 </div>
-                Quick Actions
+                الإجراءات السريعة
             </h2>
-            <p class="text-sm text-gray-500 mt-1">Create new transactions or access transaction tools</p>
+            <p class="text-sm text-gray-500 mt-1">إنشاء معاملات جديدة أو الوصول إلى أدوات المعاملات</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <a href="{{ route('transactions.send') }}" class="group flex items-center p-4 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-xl transition-all duration-200">
@@ -58,8 +58,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-blue-900">Send Money</h3>
-                    <p class="text-sm text-blue-700">Create outgoing transfer</p>
+                    <h3 class="font-semibold text-blue-900">إرسال المال</h3>
+                    <p class="text-sm text-blue-700">إنشاء معاملة ارسال</p>
                 </div>
             </a>
             <a href="{{ route('transactions.receive') }}" class="group flex items-center p-4 bg-green-50 hover:bg-green-100 border border-green-100 rounded-xl transition-all duration-200">
@@ -69,8 +69,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-green-900">Receive Money</h3>
-                    <p class="text-sm text-green-700">Process incoming transfer</p>
+                    <h3 class="font-semibold text-green-900">استلام المال</h3>
+                    <p class="text-sm text-green-700">معاملة استلام</p>
                 </div>
             </a>
             @can('create-cash-transactions')
@@ -81,8 +81,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-yellow-900">Cash Transaction</h3>
-                        <p class="text-sm text-yellow-700">Handle cash operations</p>
+                        <h3 class="font-semibold text-yellow-900">المعاملة النقدية</h3>
+                        <p class="text-sm text-yellow-700">التعامل مع المعاملات النقدية</p>
                     </div>
                 </a>
             @endcan
@@ -94,7 +94,7 @@
     @if(isset($branchLines) && $branchLines->count())
         <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">
             <div class="mb-4">
-                <span class="text-lg font-semibold text-gray-700">Total Lines Balance: </span>
+                <span class="text-lg font-semibold text-gray-700">إجمالي رصيد الخطوط: </span>
                 <span class="text-2xl font-bold text-blue-700">{{ format_int($branchLinesTotalBalance ?? 0) }} EGP</span>
             </div>
             <div class="overflow-x-auto">
@@ -102,37 +102,37 @@
                     <thead class="bg-gray-100">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('mobile_number')" style="cursor: pointer;">
-                                Mobile Number
+                                رقم الهاتف
                                 @if ($sortField === 'mobile_number')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('current_balance')" style="cursor: pointer;">
-                                Balance
+                                الرصيد
                                 @if ($sortField === 'current_balance')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('daily_limit')" style="cursor: pointer;">
-                                Daily Limit
+                                المتبقي اليومي
                                 @if ($sortField === 'daily_limit')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('monthly_limit')" style="cursor: pointer;">
-                                Monthly Limit
+                                المتبقي الشهري
                                 @if ($sortField === 'monthly_limit')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('network')" style="cursor: pointer;">
-                                Network
+                                الشبكة
                                 @if ($sortField === 'network')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('status')" style="cursor: pointer;">
-                                Status
+                                الحالة
                                 @if ($sortField === 'status')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
