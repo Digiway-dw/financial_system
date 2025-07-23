@@ -13,8 +13,8 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Working Hours Management</h1>
-                    <p class="text-sm text-gray-600">Define when users are allowed to access the system</p>
+                    <h1 class="text-2xl font-bold text-gray-900">إدارة مواعيد العمل</h1>
+                    <p class="text-sm text-gray-600">تعريف مواعيد العمل المسموح بها للمستخدمين</p>
                 </div>
             </div>
         </div>
@@ -50,11 +50,11 @@
         <!-- User Selection -->
         <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 mb-8">
             <div class="p-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Select User</h2>
+                <h2 class="text-lg font-medium text-gray-900 mb-4">اختر المستخدم</h2>
                 <div class="w-full md:w-1/2">
                     <select wire:model="selectedUser"
                         class="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50">
-                        <option value="">-- Select a user --</option>
+                        <option value="">-- اختر مستخدم --</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
                         @endforeach
@@ -69,15 +69,15 @@
                 <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50">
                     <div class="p-6">
                         <h2 class="text-lg font-medium text-gray-900 mb-4">
-                            {{ $editingId ? 'Edit Working Hours' : 'Add Working Hours' }}
+                            {{ $editingId ? 'تعديل مواعيد العمل' : 'إضافة مواعيد العمل' }}
                         </h2>
                         <form wire:submit.prevent="save">
                             <div class="mb-4">
                                 <label for="dayOfWeek" class="block text-sm font-medium text-gray-700 mb-1">Day of
-                                    Week</label>
+                                    اليوم</label>
                                 <select id="dayOfWeek" wire:model="dayOfWeek"
                                     class="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50">
-                                    <option value="">-- Select day --</option>
+                                    <option value="">-- اختر اليوم --</option>
                                     @foreach ($days as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
                                     @endforeach
@@ -90,7 +90,7 @@
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label for="startTime" class="block text-sm font-medium text-gray-700 mb-1">Start
-                                        Time</label>
+                                        الوقت البدء</label>
                                     <input type="time" id="startTime" wire:model="startTime"
                                         class="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50">
                                     @error('startTime')
@@ -99,7 +99,7 @@
                                 </div>
                                 <div>
                                     <label for="endTime" class="block text-sm font-medium text-gray-700 mb-1">End
-                                        Time</label>
+                                        الوقت النهاية</label>
                                     <input type="time" id="endTime" wire:model="endTime"
                                         class="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50">
                                     @error('endTime')
@@ -112,7 +112,7 @@
                                 <label class="flex items-center">
                                     <input type="checkbox" wire:model="isEnabled"
                                         class="rounded border-gray-300 text-amber-600 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50">
-                                    <span class="ml-2 text-sm text-gray-700">Enabled</span>
+                                    <span class="ml-2 text-sm text-gray-700">مفعل</span>
                                 </label>
                                 @error('isEnabled')
                                     <span class="text-red-600 text-sm">{{ $message }}</span>
@@ -123,12 +123,12 @@
                                 @if ($editingId)
                                     <button type="button" wire:click="resetForm"
                                         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
-                                        Cancel
+                                        إلغاء
                                     </button>
                                 @endif
                                 <button type="submit"
                                     class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-amber-500 to-orange-600 border border-transparent rounded-lg hover:from-amber-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
-                                    {{ $editingId ? 'Update' : 'Save' }}
+                                    {{ $editingId ? 'تعديل' : 'حفظ' }}
                                 </button>
                             </div>
                         </form>
@@ -138,7 +138,7 @@
                 <!-- Working Hours List -->
                 <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 lg:col-span-2">
                     <div class="p-6">
-                        <h2 class="text-lg font-medium text-gray-900 mb-4">Current Working Hours</h2>
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">مواعيد العمل الحالية</h2>
 
                         @if (count($workingHours) > 0)
                             <div class="overflow-x-auto">
@@ -147,19 +147,19 @@
                                         <tr>
                                             <th
                                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Day</th>
+                                                اليوم</th>
                                             <th
                                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Start Time</th>
+                                                الوقت البدء</th>
                                             <th
                                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                End Time</th>
+                                                الوقت النهاية</th>
                                             <th
                                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Status</th>
+                                                الحالة</th>
                                             <th
                                                 class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Actions</th>
+                                                الإجراءات</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
@@ -179,12 +179,12 @@
                                                     @if ($workingHour->is_enabled)
                                                         <span
                                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                            Enabled
+                                                            مفعل
                                                         </span>
                                                     @else
                                                         <span
                                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                            Disabled
+                                                            معطل
                                                         </span>
                                                     @endif
                                                 </td>
@@ -192,16 +192,16 @@
                                                     <div class="flex justify-end space-x-2">
                                                         <button wire:click="toggleStatus({{ $workingHour->id }})"
                                                             class="text-amber-600 hover:text-amber-900">
-                                                            {{ $workingHour->is_enabled ? 'Disable' : 'Enable' }}
+                                                            {{ $workingHour->is_enabled ? 'معطل' : 'مفعل' }}
                                                         </button>
                                                         <button wire:click="edit({{ $workingHour->id }})"
                                                             class="text-indigo-600 hover:text-indigo-900">
-                                                            Edit
+                                                            تعديل
                                                         </button>
                                                         <button wire:click="delete({{ $workingHour->id }})"
                                                             class="text-red-600 hover:text-red-900"
                                                             onclick="return confirm('Are you sure you want to delete this working hours entry?')">
-                                                            Delete
+                                                            حذف
                                                         </button>
                                                     </div>
                                                 </td>
@@ -212,8 +212,8 @@
                             </div>
                         @else
                             <div class="bg-gray-50 p-4 rounded-lg text-center">
-                                <p class="text-gray-500">No working hours defined for this user.</p>
-                                <p class="text-sm text-gray-400 mt-1">Use the form to add working hours.</p>
+                                <p class="text-gray-500">لم يتم تعريف مواعيد العمل لهذا المستخدم.</p>
+                                <p class="text-sm text-gray-400 mt-1">استخدم النموذج لإضافة مواعيد العمل.</p>
                             </div>
                         @endif
                     </div>
@@ -227,9 +227,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    <h3 class="text-lg font-medium text-gray-900 mb-1">Select a User</h3>
-                    <p class="text-gray-500">Please select a user from the dropdown above to manage their working
-                        hours.</p>
+                    <h3 class="text-lg font-medium text-gray-900 mb-1">اختر مستخدم</h3>
+                    <p class="text-gray-500">يرجى اختيار مستخدم من القائمة المنسدلة أعلاه لإدارة مواعيد العمل.</p>
                 </div>
             </div>
         @endif

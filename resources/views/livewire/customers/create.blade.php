@@ -41,34 +41,34 @@
                         <div class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-4">
-                                    <h3 class="text-lg font-semibold text-slate-800">Customer Details</h3>
+                                    <h3 class="text-lg font-semibold text-slate-800">تفاصيل العميل</h3>
 
                                     <div class="space-y-3">
                                         <div class="flex justify-between">
-                                            <span class="text-slate-600">Name:</span>
+                                            <span class="text-slate-600">الاسم:</span>
                                             <span class="font-medium text-slate-800">{{ $createdCustomer->name }}</span>
                                         </div>
 
                                         <div class="flex justify-between">
-                                            <span class="text-slate-600">Customer Code:</span>
+                                            <span class="text-slate-600">كود العميل:</span>
                                             <span
                                                 class="font-medium text-slate-800">{{ $createdCustomer->customer_code }}</span>
                                         </div>
 
                                         <div class="flex justify-between">
-                                            <span class="text-slate-600">Gender:</span>
+                                            <span class="text-slate-600">الجنس:</span>
                                             <span
                                                 class="font-medium text-slate-800 capitalize">{{ $createdCustomer->gender }}</span>
                                         </div>
 
                                         <div class="flex justify-between">
-                                            <span class="text-slate-600">Balance:</span>
+                                            <span class="text-slate-600">الرصيد:</span>
                                             <span
                                                 class="font-medium text-slate-800">${{ format_int($createdCustomer->balance) }}</span>
                                         </div>
 
                                         <div class="flex justify-between">
-                                            <span class="text-slate-600">Account Type:</span>
+                                            <span class="text-slate-600">نوع الحساب:</span>
                                             <span
                                                 class="font-medium text-slate-800">{{ $createdCustomer->is_client ? 'Client (Has Wallet)' : 'Regular Customer' }}</span>
                                         </div>
@@ -76,11 +76,11 @@
                                 </div>
 
                                 <div class="space-y-4">
-                                    <h3 class="text-lg font-semibold text-slate-800">Contact Information</h3>
+                                    <h3 class="text-lg font-semibold text-slate-800">معلومات الاتصال</h3>
 
                                     <div class="space-y-3">
                                         <div>
-                                            <span class="text-slate-600">Mobile Numbers:</span>
+                                            <span class="text-slate-600">رقم الهاتف:</span>
                                             <div class="mt-1 space-y-1">
                                                 @foreach ($createdCustomer->mobileNumbers as $mobile)
                                                     <div class="font-medium text-slate-800">{{ $mobile->mobile_number }}
@@ -91,7 +91,7 @@
 
                                         @if ($createdCustomer->branch)
                                             <div class="flex justify-between">
-                                                <span class="text-slate-600">Branch:</span>
+                                                <span class="text-slate-600">الفرع:</span>
                                                 <span
                                                     class="font-medium text-slate-800">{{ $createdCustomer->branch->name }}</span>
                                             </div>
@@ -99,7 +99,7 @@
 
                                         @if ($createdCustomer->agent)
                                             <div class="flex justify-between">
-                                                <span class="text-slate-600">Agent:</span>
+                                                <span class="text-slate-600">الموزع:</span>
                                                 <span
                                                     class="font-medium text-slate-800">{{ $createdCustomer->agent->name }}</span>
                                             </div>
@@ -128,16 +128,16 @@
                         @if ($creationStatus === 'success')
                             <button wire:click="backToForm"
                                 class="flex-1 px-6 py-3 bg-white border-2 border-slate-200 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-200">
-                                Create Another Customer
+                                إنشاء عميل آخر
                             </button>
                         @else
                             <button wire:click="backToForm"
                                 class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                                Try Again
+                                إعادة إنشاء
                             </button>
                             <button wire:click="goToCustomersList"
                                 class="flex-1 px-6 py-3 bg-white border-2 border-slate-200 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-200">
-                                Back to Customers
+                                العودة إلى العملاء
                             </button>
                         @endif
                     </div>
@@ -160,10 +160,9 @@
                     <div>
                         <h1
                             class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                            Create New Customer
+                            إنشاء عميل جديد
                         </h1>
-                        <p class="text-slate-600 mt-2">Add a new customer to the system with their details and
-                            preferences
+                        <p class="text-slate-600 mt-2">إضافة عميل جديد إلى النظام بمعلوماته وتفضيلاته
                         </p>
                     </div>
                 </div>
@@ -179,11 +178,10 @@
                     <div class="space-y-6">
                         <!-- Name -->
                         <div>
-                            <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Customer
-                                Name</label>
+                            <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">الاسم</label>
                             <input type="text" wire:model="name" id="name" name="name" required autofocus
                                 class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                                placeholder="Enter customer full name">
+                                placeholder="أدخل الاسم الكامل للعميل">
                             @error('name')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -191,7 +189,7 @@
 
                         <!-- Mobile Numbers -->
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-3">Mobile Numbers</label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-3">رقم الهاتف</label>
                             @error('mobileNumbers')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -202,10 +200,9 @@
                                             <input type="text" wire:model="mobileNumbers.{{ $i }}"
                                                 required maxlength="11" minlength="11" pattern="\d{11}"
                                                 class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                                                placeholder="Enter mobile number"
+                                                placeholder="أدخل رقم الهاتف"
                                                 oninput="this.value = this.value.replace(/[^\d]/g, '').slice(0,11);">
-                                            <p class="mt-1 text-xs text-gray-500">Mobile number must be exactly 11
-                                                digits.</p>
+                                            <p class="mt-1 text-xs text-gray-500">يجب أن يكون رقم الهاتف 11 رقما</p>
                                             @error('mobileNumbers.' . $i)
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -230,7 +227,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                    Add Number
+                                    إضافة رقم
                                 </button>
                             </div>
                         </div>
@@ -238,12 +235,12 @@
                         <!-- Gender -->
                         <div>
                             <label for="gender"
-                                class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
+                                class="block text-sm font-semibold text-slate-700 mb-2">الجنس</label>
                             <select wire:model="gender" id="gender" name="gender" required
                                 class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200">
-                                <option value="">Select Gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
+                                <option value="">اختر الجنس</option>
+                                <option value="male">ذكر</option>
+                                <option value="female">أنثى</option>
                             </select>
                             @error('gender')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -252,22 +249,22 @@
 
                         <!-- Initial Balance Checkbox -->
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Initial Balance</label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">الرصيد الابتدائي</label>
                             <div class="flex items-center space-x-2">
                                 <input type="checkbox" wire:model="useInitialBalance" id="useInitialBalance"
                                     class="form-checkbox h-5 w-5 text-blue-600">
-                                <label for="useInitialBalance" class="text-slate-700">Activate Initial Balance</label>
+                                <label for="useInitialBalance" class="text-slate-700">تفعيل الرصيد الابتدائي</label>
                             </div>
                         </div>
 
                         <!-- Balance -->
                         <div>
                             <label for="balance"
-                                class="block text-sm font-semibold text-slate-700 mb-2">Balance</label>
+                                class="block text-sm font-semibold text-slate-700 mb-2">الرصيد</label>
                             <input type="number" wire:model="balance" id="balance" name="balance" min="0"
                                 step="0.01"
                                 class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                                placeholder="Enter initial balance" :disabled="!useInitialBalance">
+                                placeholder="أدخل الرصيد الابتدائي" :disabled="!useInitialBalance">
                             @error('balance')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -278,22 +275,22 @@
                     <div class="space-y-6">
                         <!-- Wallet Status -->
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-3">Wallet Status</label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-3">حالة المحفظة</label>
                             <div class="flex items-center space-x-3">
                                 <input type="checkbox" wire:model="is_client" id="is_client"
                                     class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500 focus:ring-2">
-                                <span class="text-sm font-medium text-slate-700">Activate Wallet</span>
-                                <span class="ml-2 text-xs text-gray-500">(Leave unchecked for no wallet)</span>
+                                <span class="text-sm font-medium text-slate-700">تفعيل المحفظة</span>
+                                <span class="ml-2 text-xs text-gray-500">(إذا لم تتحقق من إنشاء المحفظة، يمكنك تركها
+                                    غير مفعلة)</span>
                             </div>
                         </div>
 
                         <!-- Agent ID -->
                         <div>
-                            <label for="agent_id" class="block text-sm font-semibold text-slate-700 mb-2">Assigned
-                                Agent</label>
+                            <label for="agent_id" class="block text-sm font-semibold text-slate-700 mb-2">موزع</label>
                             <select wire:model="agent_id" id="agent_id" name="agent_id"
                                 class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200">
-                                <option value="">Select Agent (Optional)</option>
+                                <option value="">اختر موزع (اختياري)</option>
                                 @foreach ($agents as $agent)
                                     <option value="{{ $agent->id }}">{{ $agent->name }}</option>
                                 @endforeach
@@ -306,10 +303,10 @@
                         <!-- Branch ID -->
                         <div>
                             <label for="branch_id"
-                                class="block text-sm font-semibold text-slate-700 mb-2">Branch</label>
+                                class="block text-sm font-semibold text-slate-700 mb-2">الفرع</label>
                             <select wire:model="branch_id" id="branch_id" name="branch_id" required
                                 class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200">
-                                <option value="">Select Branch</option>
+                                <option value="">اختر الفرع</option>
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                                 @endforeach
@@ -330,11 +327,11 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
-                            Create Customer
+                            إنشاء عميل
                         </button>
                         <a href="{{ route('customers.index') }}"
                             class="px-6 py-3 bg-slate-200 text-slate-700 font-medium rounded-xl hover:bg-slate-300 transition-colors duration-150">
-                            Cancel
+                            إلغاء
                         </a>
                     </div>
 
