@@ -395,7 +395,7 @@
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Working Hours</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">ساعات العمل</h3>
                 </div>
 
                 <!-- Status Messages -->
@@ -428,17 +428,17 @@
                 <!-- Working Hours Form -->
                 <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-6">
                     <h4 class="text-md font-medium text-gray-900 mb-4">
-                        {{ $editingWorkingHourId ? 'Edit Working Hours' : 'Add Working Hours' }}
+                        {{ $editingWorkingHourId ? 'تعديل ساعات العمل' : 'إضافة ساعات العمل' }}
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Day of Week -->
                         <div>
                             <x-input-label for="dayOfWeek" class="text-sm font-medium text-gray-700 mb-1">
-                                Day of Week <span class="text-red-500">*</span>
+                                اليوم <span class="text-red-500">*</span>
                             </x-input-label>
                             <select id="dayOfWeek" wire:model="dayOfWeek"
                                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">-- Select day --</option>
+                                <option value="">-- اختر اليوم --</option>
                                 @foreach ($days as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
                                 @endforeach
@@ -449,7 +449,7 @@
                         <!-- Start Time -->
                         <div>
                             <x-input-label for="startTime" class="text-sm font-medium text-gray-700 mb-1">
-                                Start Time <span class="text-red-500">*</span>
+                                وقت البدء <span class="text-red-500">*</span>
                             </x-input-label>
                             <input type="time" id="startTime" wire:model="startTime"
                                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -459,7 +459,7 @@
                         <!-- End Time -->
                         <div>
                             <x-input-label for="endTime" class="text-sm font-medium text-gray-700 mb-1">
-                                End Time <span class="text-red-500">*</span>
+                                وقت الانتهاء <span class="text-red-500">*</span>
                             </x-input-label>
                             <input type="time" id="endTime" wire:model="endTime"
                                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -470,7 +470,7 @@
                         <div class="flex items-center mt-6">
                             <input type="checkbox" id="isEnabled" wire:model="isEnabled"
                                 class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            <label for="isEnabled" class="ml-2 text-sm text-gray-700">Enabled</label>
+                            <label for="isEnabled" class="ml-2 text-sm text-gray-700">مفعل</label>
                             <x-input-error class="mt-1 text-red-600 text-xs" :messages="$errors->get('isEnabled')" />
                         </div>
                     </div>
@@ -479,12 +479,12 @@
                         @if ($editingWorkingHourId)
                             <button type="button" wire:click="resetWorkingHourForm"
                                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Cancel
+                                إلغاء
                             </button>
                         @endif
                         <button type="button" wire:click="saveWorkingHour"
                             class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            {{ $editingWorkingHourId ? 'Update' : 'Add' }} Working Hours
+                            {{ $editingWorkingHourId ? 'تحديث' : 'إضافة' }} ساعات العمل
                         </button>
                     </div>
                 </div>
@@ -492,7 +492,7 @@
                 <!-- Working Hours List -->
                 <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                        <h4 class="text-md font-medium text-gray-900">Current Working Hours</h4>
+                        <h4 class="text-md font-medium text-gray-900">ساعات العمل الحالية</h4>
                     </div>
 
                     @if (count($workingHours) > 0)
@@ -502,23 +502,23 @@
                                     <tr>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Day
+                                            اليوم
                                         </th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Start Time
+                                            وقت البدء
                                         </th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            End Time
+                                            وقت الانتهاء
                                         </th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status
+                                            الحالة
                                         </th>
                                         <th scope="col"
                                             class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions
+                                            الإجراءات
                                         </th>
                                     </tr>
                                 </thead>
@@ -538,12 +538,12 @@
                                                 @if ($workingHour->is_enabled)
                                                     <span
                                                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                        Enabled
+                                                        مفعل
                                                     </span>
                                                 @else
                                                     <span
                                                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                        Disabled
+                                                        غير مفعل
                                                     </span>
                                                 @endif
                                             </td>
@@ -553,11 +553,11 @@
                                                         wire:click="toggleWorkingHourStatus({{ $workingHour->id }})"
                                                         wire:loading.attr="disabled"
                                                         class="text-indigo-600 hover:text-indigo-900">
-                                                        {{ $workingHour->is_enabled ? 'Disable' : 'Enable' }}
+                                                        {{ $workingHour->is_enabled ? 'تعطيل' : 'تفعيل' }}
                                                     </button>
                                                     <button wire:click="editWorkingHour({{ $workingHour->id }})"
                                                         class="text-blue-600 hover:text-blue-900">
-                                                        Edit
+                                                        تعديل
                                                     </button>
                                                 </div>
                                             </td>
@@ -568,7 +568,7 @@
                         </div>
                     @else
                         <div class="p-6 text-center text-gray-500">
-                            No working hours defined for this user. Use the form above to add working hours.
+                            لا توجد ساعات عمل معرفة لهذا المستخدم. استخدم النموذج أعلاه لإضافة ساعات العمل.
                         </div>
                     @endif
                 </div>
@@ -607,15 +607,15 @@
             </div>
             <!-- Content -->
             <div class="text-center mb-8">
-                <h3 class="text-xl font-semibold text-gray-900 mb-3">Delete Working Hours</h3>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">حذف ساعات العمل</h3>
                 <p class="text-gray-700 leading-relaxed">
-                    Are you sure you want to delete the working hours for
+                    هل أنت متأكد أنك تريد حذف ساعات العمل ليوم
                     <span class="font-semibold text-gray-900">
                         @if ($deleteConfirmId)
-                            {{ ucfirst($workingHours->where('id', $deleteConfirmId)->first()?->day_of_week ?? 'this day') }}
+                            {{ ucfirst($workingHours->where('id', $deleteConfirmId)->first()?->day_of_week ?? 'هذا اليوم') }}
                         @endif
-                    </span>?
-                    <br><span class="text-sm text-gray-600 mt-2 block">This action cannot be undone.</span>
+                    </span>؟
+                    <br><span class="text-sm text-gray-600 mt-2 block">لا يمكن التراجع عن هذا الإجراء.</span>
                 </p>
             </div>
             <!-- Actions -->
@@ -623,7 +623,7 @@
                 <button wire:click="cancelDelete"
                     class="flex-1 px-4 py-3 bg-white/40 backdrop-blur-sm border border-white/40 rounded-xl text-gray-700 font-medium hover:bg-white/60 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
                     wire:loading.attr="disabled">
-                    Cancel
+                    إلغاء
                 </button>
                 <button wire:click="confirmDeleteAction"
                     class="flex-1 px-4 py-3 bg-red-500/80 backdrop-blur-sm border border-red-400/50 rounded-xl text-white font-medium hover:bg-red-600/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400/50 shadow-lg"
@@ -634,8 +634,8 @@
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
                         </path>
                     </svg>
-                    <span wire:loading.remove>Delete</span>
-                    <span wire:loading>Deleting...</span>
+                    <span wire:loading.remove>حذف</span>
+                    <span wire:loading>يتم الحذف...</span>
                 </button>
             </div>
         </div>
