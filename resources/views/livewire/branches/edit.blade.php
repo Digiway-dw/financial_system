@@ -1,39 +1,44 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .sortable-header:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateY(-1px);
+        }
+
+        .sortable-header:active {
+            transform: translateY(0);
+        }
+    </style>
     <!-- Header Section -->
-    <div class="bg-white/70 backdrop-blur-sm border-b border-gray-200/50">
+    <div class="bg-white shadow-sm border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="flex-shrink-0">
-                        <div
-                            class="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                </path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900">Edit Branch</h1>
-                        <p class="text-sm text-gray-600">Update branch information and settings</p>
-                    </div>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Edit Branch</h1>
+                    <p class="mt-2 text-sm text-gray-600">Update branch information and settings</p>
                 </div>
-                <a href="{{ route('branches.index') }}"
-                    class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all duration-200 transform hover:scale-105">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Back to Branches
-                </a>
+                <div class="mt-4 sm:mt-0">
+                    <a href="{{ route('branches.index') }}"
+                        class="inline-flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Branches
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-8">
+    <!-- Content Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <form wire:submit.prevent="updateBranch" class="space-y-8">
                 <!-- Basic Information Section -->
                 <div class="space-y-6">
@@ -98,7 +103,8 @@
                         <label for="is_active" class="block text-sm font-medium text-gray-700">
                             Branch Status
                         </label>
-                        <select wire:model="is_active" id="is_active" name="is_active" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                        <select wire:model="is_active" id="is_active" name="is_active"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                             <option value="1">Active</option>
                             <option value="0">Inactive</option>
                         </select>
@@ -110,8 +116,11 @@
                     <div class="border-b border-gray-200 pb-4">
                         <h2 class="text-lg font-semibold text-amber-900 flex items-center">
                             <div class="w-6 h-6 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                                    </path>
                                 </svg>
                             </div>
                             Safe Information
@@ -121,15 +130,25 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label for="safe_name" class="block text-sm font-medium text-gray-700">Safe Name</label>
-                            <input wire:model="safe_name" id="safe_name" name="safe_name" type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Enter safe name" />
+                            <input wire:model="safe_name" id="safe_name" name="safe_name" type="text" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                                placeholder="Enter safe name" />
                         </div>
                         <div>
-                            <label for="safe_current_balance" class="block text-sm font-medium text-gray-700">Balance (EGP)</label>
-                            <input wire:model="safe_current_balance" id="safe_current_balance" name="safe_current_balance" type="number" step="0.01" min="0" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="0.00" />
+                            <label for="safe_current_balance" class="block text-sm font-medium text-gray-700">Balance
+                                (EGP)</label>
+                            <input wire:model="safe_current_balance" id="safe_current_balance"
+                                name="safe_current_balance" type="number" step="0.01" min="0" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                                placeholder="0.00" />
                         </div>
                         <div>
-                            <label for="safe_description" class="block text-sm font-medium text-gray-700">Description</label>
-                            <input wire:model="safe_description" id="safe_description" name="safe_description" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Optional safe description" />
+                            <label for="safe_description"
+                                class="block text-sm font-medium text-gray-700">Description</label>
+                            <input wire:model="safe_description" id="safe_description" name="safe_description"
+                                type="text"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                                placeholder="Optional safe description" />
                         </div>
                     </div>
                 </div>
