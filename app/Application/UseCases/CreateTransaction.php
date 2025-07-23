@@ -69,11 +69,28 @@ class CreateTransaction
             $customer = $this->customerRepository->findByMobileNumber($customerMobileNumber);
         }
 
+        // Only auto-generate customer code and set wallet inactive for Receive transactions
         if (!$customer) {
+            if ($transactionType === 'Receive') {
+                // Auto-generate customer code if not provided (copied from CreateCustomer)
+                if (!$customerCode) {
+                    $prefix = 'F' . $agent->branch_id;
+                    $lastCustomer = \App\Models\Domain\Entities\Customer::where('branch_id', $agent->branch_id)
+                        ->where('customer_code', 'like', $prefix . '-%')
+                        ->orderByDesc('id')->first();
+                    if ($lastCustomer && preg_match('/' . $prefix . '-(\\d+)/', $lastCustomer->customer_code, $matches)) {
+                        $nextNumber = str_pad(((int)$matches[1]) + 1, 5, '0', STR_PAD_LEFT);
+                    } else {
+                        $nextNumber = '00001';
+                    }
+                    $customerCode = $prefix . '-' . $nextNumber;
+                }
+                $isClient = false; // Wallet inactive by default
+            }
             $this->customerRepository->save(new \App\Models\Domain\Entities\Customer([
                 'name' => $customerName,
                 'mobile_number' => $customerMobileNumber,
-                'customer_code' => $customerCode, // Will be null if not provided
+                'customer_code' => $customerCode, // Will be auto-generated for Receive
                 'gender' => $gender,
                 'is_client' => $isClient,
                 'agent_id' => $agentId,
