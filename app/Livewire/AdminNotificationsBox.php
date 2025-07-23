@@ -306,6 +306,14 @@ class AdminNotificationsBox extends Component
         $this->loadNotifications();
     }
 
+    public function clearAllRead()
+    {
+        $user = Auth::user();
+        $user->readNotifications()->delete();
+        $this->loadNotifications();
+        session()->flash('message', 'All read notifications have been cleared.');
+    }
+
     public function render()
     {
         $this->loadNotifications();

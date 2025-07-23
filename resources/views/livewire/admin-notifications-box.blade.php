@@ -143,6 +143,13 @@
                             </svg>
                             Mark All Read
                         </button>
+                        <button wire:click="clearAllRead"
+                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center ml-2">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Clear All Read
+                        </button>
                     </div>
                 </div>
 
