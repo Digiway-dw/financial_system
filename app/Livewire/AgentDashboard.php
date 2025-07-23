@@ -41,6 +41,8 @@ class AgentDashboard extends Component
     public $branchSafes = [];
     public $totalSafesBalance = 0;
     public $searchedTransaction = null;
+    public $selectedLineIds = [];
+    public $isAdminOrSupervisor = false;
 
     // Sorting properties
     public $sortField = 'mobile_number';
@@ -71,10 +73,15 @@ class AgentDashboard extends Component
     public function mount()
     {
         $user = Auth::user();
+        $this->isAdminOrSupervisor = $user->hasRole('admin') || $user->hasRole('supervisor') || $user->hasRole('general_supervisor');
         // Load all branches for selection
         $this->branches = collect($this->branchRepository->all());
         // Set default selected branches (all branches)
-        $this->selectedBranches = $this->branches->pluck('id')->toArray();
+        if ($this->isAdminOrSupervisor) {
+            $this->selectedBranches = $this->branches->pluck('id')->toArray();
+        } else {
+            $this->selectedBranches = $user->branch_id ? [$user->branch_id] : [];
+        }
         $this->loadAgentData();
 
         // Global search by reference number (any transaction in the system)
@@ -198,11 +205,58 @@ class AgentDashboard extends Component
                 'name' => $safe['name'] ?? $safe->name ?? '',
                 'current_balance' => $safe['current_balance'] ?? $safe->current_balance ?? 0,
                 'todays_transactions' => $todaysTransactions,
+                'branch_id' => $branchId,
             ];
         });
         
         // Calculate total safes balance
         $this->totalSafesBalance = collect($this->branchSafes)->sum('current_balance');
+    }
+
+    public function toggleSelectAllLines()
+    {
+        if (count($this->selectedLineIds) === $this->agentLines->count()) {
+            $this->selectedLineIds = [];
+        } else {
+            $this->selectedLineIds = $this->agentLines->pluck('id')->toArray();
+        }
+    }
+
+    public function toggleSelectLine($lineId)
+    {
+        if (($key = array_search($lineId, $this->selectedLineIds)) !== false) {
+            unset($this->selectedLineIds[$key]);
+        } else {
+            $this->selectedLineIds[] = $lineId;
+        }
+        $this->selectedLineIds = array_values($this->selectedLineIds);
+    }
+
+    public function getSelectedLinesProperty()
+    {
+        return $this->agentLines->filter(function ($line) {
+            return in_array($line->id, $this->selectedLineIds);
+        });
+    }
+
+    public function getSelectedTotalsProperty()
+    {
+        $selected = $this->selectedLines;
+        return [
+            'current_balance' => $selected->sum('current_balance'),
+            'daily_limit' => $selected->sum('daily_limit'),
+            'monthly_limit' => $selected->sum('monthly_limit'),
+            'daily_usage' => $selected->sum(function ($line) {
+                $dailyStarting = $line->daily_starting_balance ?? 0;
+                $current = $line->current_balance ?? 0;
+                return max(0, $current - $dailyStarting);
+            }),
+            'monthly_usage' => $selected->sum(function ($line) {
+                $monthlyStarting = $line->starting_balance ?? 0;
+                $current = $line->current_balance ?? 0;
+                return max(0, $current - $monthlyStarting);
+            }),
+        ];
     }
 
     public function render()
@@ -218,6 +272,7 @@ class AgentDashboard extends Component
             'searchedTransaction' => $this->searchedTransaction,
             'sortField' => $this->sortField,
             'sortDirection' => $this->sortDirection,
+            'isAdminOrSupervisor' => $this->isAdminOrSupervisor,
         ]);
     }
 } 

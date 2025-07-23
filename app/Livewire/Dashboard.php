@@ -340,36 +340,34 @@ class Dashboard extends Component
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
             $dashboardView = 'livewire.dashboard.branch_manager';
         } elseif ($user->hasRole('agent') || $user->hasRole('trainee')) {
-            $agentLines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
+            $lines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
 
-            // Apply sorting to agent lines
+            // Apply sorting to lines
             if ($this->sortField === 'mobile_number') {
-                $agentLines = $agentLines->sortBy('mobile_number');
+                $lines = $lines->sortBy('mobile_number');
             } elseif ($this->sortField === 'current_balance') {
-                $agentLines = $agentLines->sortBy('current_balance');
+                $lines = $lines->sortBy('current_balance');
             } elseif ($this->sortField === 'daily_limit') {
-                $agentLines = $agentLines->sortBy('daily_limit');
+                $lines = $lines->sortBy('daily_limit');
             } elseif ($this->sortField === 'daily_usage') {
-                $agentLines = $agentLines->sortBy('daily_usage');
+                $lines = $lines->sortBy('daily_usage');
             } elseif ($this->sortField === 'monthly_limit') {
-                $agentLines = $agentLines->sortBy('monthly_limit');
+                $lines = $lines->sortBy('monthly_limit');
             } elseif ($this->sortField === 'monthly_usage') {
-                $agentLines = $agentLines->sortBy('monthly_usage');
+                $lines = $lines->sortBy('monthly_usage');
             } elseif ($this->sortField === 'network') {
-                $agentLines = $agentLines->sortBy('network');
+                $lines = $lines->sortBy('network');
             } elseif ($this->sortField === 'status') {
-                $agentLines = $agentLines->sortBy('status');
+                $lines = $lines->sortBy('status');
             }
 
             if ($this->sortDirection === 'desc') {
-                $agentLines = $agentLines->reverse();
+                $lines = $lines->reverse();
             }
 
-            // Enhance agent lines with usage data and color classes
-            $agentLinesWithUsage = $agentLines->map(function ($line) {
+            // Enhance lines with usage data and color classes
+            $linesWithUsage = $lines->map(function ($line) {
                 $lineArray = is_object($line) ? $line->toArray() : $line;
-
-                // Add color classes for daily usage
                 $lineArray['daily_usage_class'] = '';
                 if (
                     isset($lineArray['daily_limit'], $lineArray['daily_usage'], $lineArray['status']) &&
@@ -379,13 +377,18 @@ class Dashboard extends Component
                 ) {
                     $lineArray['daily_usage_class'] = 'bg-red-100 text-red-700 font-bold';
                 }
-
                 return (object) $lineArray;
             });
 
-            $data['agentLines'] = $agentLinesWithUsage;
-            $data['agentLinesTotalBalance'] = $agentLines->sum('current_balance');
-            $data['agentTotalBalance'] = $agentLines->sum('current_balance');
+            if ($user->hasRole('agent')) {
+                $data['agentLines'] = $linesWithUsage;
+                $data['agentLinesTotalBalance'] = $lines->sum('current_balance');
+            } elseif ($user->hasRole('trainee')) {
+                $data['traineeLines'] = $linesWithUsage;
+                $data['traineeLinesTotalBalance'] = $lines->sum('current_balance');
+            }
+
+            $data['agentTotalBalance'] = $lines->sum('current_balance');
 
             $agentTransactions = collect($this->transactionRepository->all())->where('agent_id', $user->id);
             $data['agentTotalTransferred'] = $agentTransactions->sum('amount');

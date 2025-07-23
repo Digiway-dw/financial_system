@@ -56,4 +56,85 @@
     </div>
 @endif
 @include('livewire.dashboard.agent', $data ?? [])
+@if(isset($traineeLines) && count($traineeLines))
+    <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">
+        <h4 class="text-xl font-bold text-gray-900 mb-4">All Lines in Your Branch</h4>
+        <div class="mb-4">
+            <span class="text-lg font-semibold text-gray-700">Total Lines Balance: </span>
+            <span class="text-2xl font-bold text-blue-700">{{ format_int($traineeLinesTotalBalance ?? 0) }} EGP</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-2 py-3 text-center">
+                            <input type="checkbox" wire:click="toggleSelectAllTraineeLines" @if(isset($selectedTraineeLineIds) && count($selectedTraineeLineIds) === count($traineeLines) && count($traineeLines) > 0) checked @endif />
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mobile Number</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Balance</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Daily Remaining</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Daily Receive</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly Remaining</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly Receive</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Network</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach ($traineeLines as $line)
+                        @php
+                            $dailyLimit = $line->daily_limit ?? 0;
+                            $monthlyLimit = $line->monthly_limit ?? 0;
+                            $currentBalance = $line->current_balance ?? 0;
+                            $dailyStartingBalance = $line->daily_starting_balance ?? 0;
+                            $monthlyStartingBalance = $line->starting_balance ?? 0;
+                            $dailyRemaining = max(0, $dailyLimit - $currentBalance);
+                            $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
+                            $dailyUsage = max(0, $currentBalance - $dailyStartingBalance);
+                            $monthlyUsage = max(0, $currentBalance - $monthlyStartingBalance);
+                            $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
+                            $circleColor = 'bg-green-400';
+                            if ($usagePercent >= 98) {
+                                $circleColor = 'bg-red-500';
+                            } elseif ($usagePercent >= 80) {
+                                $circleColor = 'bg-yellow-400';
+                            }
+                        @endphp
+                        <tr>
+                            <td class="px-2 py-4 text-center">
+                                <input type="checkbox" wire:click="toggleSelectTraineeLine({{ $line->id }})" @if(isset($selectedTraineeLineIds) && in_array($line->id, $selectedTraineeLineIds)) checked @endif />
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                        <div class="w-1.5 h-1.5 rounded-full {{ $circleColor }}"></div>
+                                    </div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $line->mobile_number }}</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->current_balance) }} EGP</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyRemaining) }} EGP</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyUsage) }} EGP</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyRemaining) }} EGP</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyUsage) }} EGP</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($line->status) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr class="bg-gray-50 font-bold">
+                        <td class="px-2 py-3 text-center" colspan="2">Selected Total</td>
+                        <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($selectedTraineeTotals['current_balance'] ?? 0) }} EGP</td>
+                        <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($selectedTraineeTotals['daily_limit'] ?? 0) }} EGP</td>
+                        <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($selectedTraineeTotals['daily_usage'] ?? 0) }} EGP</td>
+                        <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($selectedTraineeTotals['monthly_limit'] ?? 0) }} EGP</td>
+                        <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($selectedTraineeTotals['monthly_usage'] ?? 0) }} EGP</td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+@endif
 </div>

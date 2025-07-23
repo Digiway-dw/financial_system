@@ -62,7 +62,8 @@
         </div>
     </div>
 
-    <!-- Branch Selection -->
+    @if($isAdminOrSupervisor)
+    <!-- Branch Selection and Switch Button for Admin/Supervisor only -->
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div class="flex items-center gap-2">
             <label for="branches" class="font-semibold text-gray-700">Select Branches:</label>
@@ -85,6 +86,7 @@
             Switch to Admin Dashboard
         </a>
     </div>
+    @endif
 
     <!-- Transaction Search -->
     @if(request()->query('search_transaction'))
@@ -140,21 +142,25 @@
         </thead>
         <tbody>
             @forelse ($branchSafes as $safe)
+                @if($isAdminOrSupervisor || auth()->user()->branch_id == ($safe['branch_id'] ?? null))
                 <tr class="text-center">
                     <td class="px-4 py-2 border font-semibold">{{ $safe['name'] }}</td>
                     <td class="px-4 py-2 border text-blue-700 font-bold">{{ format_int($safe['current_balance']) }}</td>
                     <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}</td>
                 </tr>
+                @endif
             @empty
-                <tr><td colspan="4" class="px-4 py-2 border text-center text-gray-500">No safes found for selected branches.</td></tr>
+                <tr><td colspan="4" class="px-4 py-2 border text-center text-gray-500">No safes found for your branch.</td></tr>
             @endforelse
         </tbody>
         <tfoot>
+            @if($isAdminOrSupervisor)
             <tr class="bg-gray-50 text-center font-bold">
                 <td class="px-4 py-2 border">Total</td>
                 <td class="px-4 py-2 border text-blue-700">{{ format_int($totalSafesBalance) }}</td>
                 <td class="px-4 py-2 border"></td>
             </tr>
+            @endif
         </tfoot>
     </table>
 
@@ -251,6 +257,9 @@
                 <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                     <thead class="bg-gray-100">
                         <tr>
+                            <th class="px-2 py-3 text-center">
+                                <input type="checkbox" wire:click="toggleSelectAllLines" @if(count($selectedLineIds) === $agentLines->count() && $agentLines->count() > 0) checked @endif />
+                            </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('mobile_number')" style="cursor: pointer;">
                                 Mobile Number
                                 @if ($sortField === 'mobile_number')
@@ -309,18 +318,10 @@
                                 $currentBalance = $line->current_balance ?? 0;
                                 $dailyStartingBalance = $line->daily_starting_balance ?? 0;
                                 $monthlyStartingBalance = $line->starting_balance ?? 0;
-                                
-                                // Calculate daily and monthly remaining
-                                // Daily remaining = daily limit - current balance
                                 $dailyRemaining = max(0, $dailyLimit - $currentBalance);
-                                
-                                // Monthly remaining = monthly limit - current balance
                                 $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
-                                
-                                // Calculate daily and monthly usage based on the difference from starting balances
                                 $dailyUsage = max(0, $currentBalance - $dailyStartingBalance);
                                 $monthlyUsage = max(0, $currentBalance - $monthlyStartingBalance);
-                                
                                 $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
                                 $circleColor = 'bg-green-400';
                                 if ($usagePercent >= 98) {
@@ -330,6 +331,9 @@
                                 }
                             @endphp
                             <tr>
+                                <td class="px-2 py-4 text-center">
+                                    <input type="checkbox" wire:click="toggleSelectLine({{ $line->id }})" @if(in_array($line->id, $selectedLineIds)) checked @endif />
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-3">
@@ -340,9 +344,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->current_balance) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyRemaining) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ format_int($dailyUsage) }} EGP
-                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyUsage) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyRemaining) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyUsage) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
@@ -350,6 +352,17 @@
                             </tr>
                         @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr class="bg-gray-50 font-bold">
+                            <td class="px-2 py-3 text-center" colspan="2">Selected Total</td>
+                            <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($this->selectedTotals['current_balance'] ?? 0) }} EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($this->selectedTotals['daily_limit'] ?? 0) }} EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($this->selectedTotals['daily_usage'] ?? 0) }} EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($this->selectedTotals['monthly_limit'] ?? 0) }} EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($this->selectedTotals['monthly_usage'] ?? 0) }} EGP</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
