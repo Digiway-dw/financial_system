@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50" dir="rtl" style="direction: rtl;">
     <style>
         .sortable-header {
             cursor: pointer;
@@ -19,19 +19,18 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Branch Management</h1>
-                    <p class="mt-2 text-sm text-gray-600">Manage your organization branches and their financial
-                        operations</p>
+                    <h1 class="text-3xl font-bold text-gray-900">إدارة الفروع</h1>
+                    <p class="mt-2 text-sm text-gray-600">قم بإدارة فروع المؤسسة والعمليات المالية الخاصة بها</p>
                 </div>
                 <div class="mt-4 sm:mt-0">
                     @can('create-branches')
                         <a href="{{ route('branches.create') }}"
                             class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
-                            Add New Branch
+                            إضافة فرع جديد
                         </a>
                     @endcan
                 </div>
@@ -52,7 +51,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Total Branches</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">إجمالي الفروع</h3>
                         <p class="text-3xl font-bold text-green-600">{{ count($branches) }}</p>
                     </div>
                 </div>
@@ -67,10 +66,10 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Total Safe Balance</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">إجمالي رصيد الخزائن</h3>
                         <p class="text-3xl font-bold text-blue-600">
                             {{ format_int((int) collect($branches)->sum(function ($branch) {return $branch['safe']['current_balance'] ?? 0;})) }}
-                            EGP
+                            ج.م
                         </p>
                     </div>
                 </div>
@@ -85,7 +84,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Active Branches</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">الفروع النشطة</h3>
                         <p class="text-3xl font-bold text-purple-600">
                             {{ collect($branches)->filter(function ($branch) {return isset($branch['safe']);})->count() }}
                         </p>
@@ -100,16 +99,16 @@
             <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Branches Overview</h3>
-                        <p class="text-sm text-gray-600 mt-1">Manage and monitor all your business branches</p>
+                        <h3 class="text-lg font-semibold text-gray-900">نظرة عامة على الفروع</h3>
+                        <p class="text-sm text-gray-600 mt-1">إدارة ومتابعة جميع فروع العمل</p>
                     </div>
                     <div class="flex items-center space-x-2">
                         <div class="flex items-center text-sm text-gray-500">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                             </svg>
-                            Sort by Name
+                            ترتيب حسب الاسم
                         </div>
                     </div>
                 </div>
@@ -128,7 +127,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
-                                    <span>Branch Name</span>
+                                    <span>اسم الفرع</span>
                                     @if ($sortField === 'name')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -144,7 +143,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    <span>Location</span>
+                                    <span>الموقع</span>
                                     @if ($sortField === 'location')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -158,7 +157,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4 6h16M4 12h16M4 18h7" />
                                     </svg>
-                                    <span>Description</span>
+                                    <span>الوصف</span>
                                     @if ($sortField === 'description')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -172,7 +171,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                                     </svg>
-                                    <span>Safe Balance</span>
+                                    <span>رصيد الخزينة</span>
                                     @if ($sortField === 'safe_balance')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -186,7 +185,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    <span>Created Date</span>
+                                    <span>تاريخ الإنشاء</span>
                                     @if ($sortField === 'created_at')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -194,11 +193,11 @@
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                <span>Status</span>
+                                <span>الحالة</span>
                             </th>
                             <th
                                 class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Actions</th>
+                                الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -216,34 +215,34 @@
                                         </div>
                                         <div>
                                             <div class="text-sm font-medium text-gray-900">{{ $branch['name'] }}</div>
-                                            <div class="text-xs text-gray-500">Branch ID: #{{ $branch['id'] }}</div>
+                                            <div class="text-xs text-gray-500">معرّف الفرع: #{{ $branch['id'] }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">
-                                        {{ $branch['location'] ?? 'No location available' }}
+                                        {{ $branch['location'] ?? 'لا يوجد موقع' }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">
-                                        {{ $branch['description'] ?? 'No description available' }}
+                                        {{ $branch['description'] ?? 'لا يوجد وصف' }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if (isset($branch['safe']))
                                         <div class="text-sm font-medium text-gray-900">
                                             {{ format_int((int) $branch['safe']['current_balance']) }}</div>
-                                        <div class="text-xs text-gray-500">EGP</div>
+                                        <div class="text-xs text-gray-500">ج.م</div>
                                     @else
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd"
                                                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                                                     clip-rule="evenodd" />
                                             </svg>
-                                            No Safe
+                                            لا يوجد خزينة
                                         </span>
                                     @endif
                                 </td>
@@ -262,7 +261,7 @@
                                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                                     clip-rule="evenodd" />
                                             </svg>
-                                            Active
+                                            نشط
                                         </span>
                                     @else
                                         <span
@@ -272,7 +271,7 @@
                                                     d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
                                                     clip-rule="evenodd" />
                                             </svg>
-                                            Inactive
+                                            غير نشط
                                         </span>
                                     @endif
                                 </td>
@@ -286,16 +285,19 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
-                                                Edit
+                                                تعديل
                                             </a>
                                         @endcan
                                         <a href="{{ route('branches.show', $branch['id']) }}"
                                             class="inline-flex items-center px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-xs font-medium rounded-md transition-colors duration-150">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
-                                            View
+                                            عرض
                                         </a>
                                         @can('delete-branches')
                                             <button type="button"
@@ -306,7 +308,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
-                                                Delete
+                                                حذف
                                             </button>
                                         @endcan
                                     </div>
@@ -321,8 +323,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                         </svg>
-                                        <h3 class="text-lg font-medium text-gray-900 mb-1">No branches found</h3>
-                                        <p class="text-sm text-gray-500">Get started by creating your first branch.</p>
+                                        <h3 class="text-lg font-medium text-gray-900 mb-1">لا توجد فروع</h3>
+                                        <p class="text-sm text-gray-500">ابدأ بإنشاء أول فرع لك.</p>
                                         @can('create-branches')
                                             <a href="{{ route('branches.create') }}"
                                                 class="mt-4 inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-150">
@@ -331,7 +333,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                                 </svg>
-                                                Create Branch
+                                                إنشاء فرع
                                             </a>
                                         @endcan
                                     </div>
@@ -347,53 +349,71 @@
     {{-- Branch Details and Transactions Section --}}
     @isset($selectedBranch)
         <div class="max-w-7xl mx-auto mt-12 bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">Branch Details</h2>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">تفاصيل الفرع</h2>
             <div class="mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <span class="font-semibold text-gray-700">Name:</span> {{ $selectedBranch['name'] }}
+                        <span class="font-semibold text-gray-700">الاسم:</span> {{ $selectedBranch['name'] }}
                     </div>
                     <div>
-                        <span class="font-semibold text-gray-700">Location:</span> {{ $selectedBranch['location'] ?? 'N/A' }}
+                        <span class="font-semibold text-gray-700">الموقع:</span>
+                        {{ $selectedBranch['location'] ?? 'غير متوفر' }}
                     </div>
                     <div>
-                        <span class="font-semibold text-gray-700">Description:</span> {{ $selectedBranch['description'] ?? 'N/A' }}
+                        <span class="font-semibold text-gray-700">الوصف:</span>
+                        {{ $selectedBranch['description'] ?? 'غير متوفر' }}
                     </div>
                     <div>
-                        <span class="font-semibold text-gray-700">Safe Balance:</span> {{ isset($selectedBranch['safe']) ? format_int((int) $selectedBranch['safe']['current_balance']) . ' EGP' : 'N/A' }}
+                        <span class="font-semibold text-gray-700">رصيد الخزينة:</span>
+                        {{ isset($selectedBranch['safe']) ? format_int((int) $selectedBranch['safe']['current_balance']) . ' ج.م' : 'غير متوفر' }}
                     </div>
                     <div>
-                        <span class="font-semibold text-gray-700">Created At:</span> {{ \Carbon\Carbon::parse($selectedBranch['created_at'])->format('d/m/y h:i A') }}
+                        <span class="font-semibold text-gray-700">تاريخ الإنشاء:</span>
+                        {{ \Carbon\Carbon::parse($selectedBranch['created_at'])->format('d/m/y h:i A') }}
                     </div>
                     <div>
-                        <span class="font-semibold text-gray-700">Status:</span> {{ isset($selectedBranch['is_active']) && $selectedBranch['is_active'] ? 'Active' : 'Inactive' }}
+                        <span class="font-semibold text-gray-700">الحالة:</span>
+                        {{ isset($selectedBranch['is_active']) && $selectedBranch['is_active'] ? 'نشط' : 'غير نشط' }}
                     </div>
                 </div>
             </div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Transactions for this Branch</h3>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">المعاملات الخاصة بهذا الفرع</h3>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
                     <thead>
                         <tr>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer Name</th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                            <th
+                                class="px-3 py-2 bg-gray-50 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                اسم العميل</th>
+                            <th
+                                class="px-3 py-2 bg-gray-50 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                المبلغ</th>
+                            <th
+                                class="px-3 py-2 bg-gray-50 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                النوع</th>
+                            <th
+                                class="px-3 py-2 bg-gray-50 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                التاريخ</th>
+                            <th
+                                class="px-3 py-2 bg-gray-50 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                الحالة</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($branchTransactions as $tx)
                             <tr>
-                                <td class="px-3 py-2 whitespace-nowrap">{{ $tx['customer_name'] }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap">{{ format_int($tx['amount']) }} EGP</td>
-                                <td class="px-3 py-2 whitespace-nowrap">{{ $tx['transaction_type'] }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap">{{ \Carbon\Carbon::parse($tx['created_at'])->format('d/m/y h:i A') }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap">{{ $tx['status'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-right">{{ $tx['customer_name'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-right">{{ format_int($tx['amount']) }} ج.م
+                                </td>
+                                <td class="px-3 py-2 whitespace-nowrap text-right">{{ $tx['transaction_type'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-right">
+                                    {{ \Carbon\Carbon::parse($tx['created_at'])->format('d/m/y h:i A') }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-right">{{ $tx['status'] }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-3 py-2 text-center text-gray-500">No transactions found for this branch.</td>
+                                <td colspan="5" class="px-3 py-2 text-center text-gray-500">لا توجد معاملات لهذا الفرع.
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -407,14 +427,14 @@
         x-show="show" style="display: none;"
         class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
         <div class="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full">
-            <h2 class="text-lg font-bold mb-4">Confirm Delete</h2>
-            <p class="mb-6">Are you sure you want to delete this branch? This will also delete its associated
-                safe(s). This action cannot be undone.</p>
+            <h2 class="text-lg font-bold mb-4">تأكيد الحذف</h2>
+            <p class="mb-6">هل أنت متأكد أنك تريد حذف هذا الفرع؟ سيتم أيضًا حذف الخزائن المرتبطة به. لا يمكن التراجع
+                عن هذا الإجراء.</p>
             <div class="flex justify-end gap-4">
                 <button type="button" @click="show = false"
-                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">إلغاء</button>
                 <button type="button" @click="$wire.deleteBranch(branchId); show = false"
-                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Delete</button>
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">حذف</button>
             </div>
         </div>
     </div>
