@@ -44,38 +44,40 @@
     <!-- Content Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Filters Section -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-            <div class="flex items-center mb-4">
-                <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
-                </svg>
-                <h3 class="text-lg font-semibold text-gray-900">Filter Options</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <div>
-                    <x-input-label for="number" :value="__('Line Number')" class="text-sm font-medium text-gray-700" />
-                    <x-text-input id="number" type="text" wire:model.defer="number"
-                        class="mt-1 block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        placeholder="Search by number..." />
+        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 mb-8">
+            <div class="p-6">
+                <div class="flex items-center mb-6 text-blue-700 border-b border-gray-200 pb-3">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+                    </svg>
+                    <h3 class="font-semibold">Search & Filter Options</h3>
                 </div>
-                <div>
-                    <x-primary-button wire:click="filter"
-                        class="w-full bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 rounded-lg py-2.5 font-medium shadow-sm hover:shadow-md transition-all duration-200">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        Apply Filter
-                    </x-primary-button>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div>
+                        <x-input-label for="number" :value="__('Line Number')" class="text-sm font-medium text-gray-700" />
+                        <x-text-input id="number" type="text" wire:model.defer="number"
+                            class="mt-1 block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Search by number..." />
+                    </div>
+                    <div>
+                        <x-primary-button wire:click="filter"
+                            class="w-full bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 rounded-lg py-2.5 font-medium shadow-sm hover:shadow-md transition-all duration-200">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            Apply Filter
+                        </x-primary-button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Table Section -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
             <!-- Table Header -->
-            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div class="px-6 py-4 border-b border-gray-200 bg-white/60 backdrop-blur-sm rounded-t-2xl">
                 <h3 class="text-lg font-semibold text-gray-900">Lines Overview</h3>
                 <p class="text-sm text-gray-600 mt-1">Track and manage all your financial lines</p>
             </div>
