@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50" dir="rtl" style="direction: rtl;">
     <style>
         .sortable-header {
             cursor: pointer;
@@ -19,8 +19,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Edit Branch</h1>
-                    <p class="mt-2 text-sm text-gray-600">Update branch information and settings</p>
+                    <h1 class="text-3xl font-bold text-gray-900">تعديل بيانات الفرع</h1>
+                    <p class="mt-2 text-sm text-gray-600">يمكنك تعديل بيانات الفرع من خلال النموذج التالي</p>
                 </div>
                 <div class="mt-4 sm:mt-0">
                     <a href="{{ route('branches.index') }}"
@@ -29,7 +29,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        Back to Branches
+                        العودة لقائمة الفروع
                     </a>
                 </div>
             </div>
@@ -51,20 +51,20 @@
                                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            Branch Information
+                            معلومات الفرع
                         </h2>
-                        <p class="text-sm text-gray-600 mt-1">Update the branch details below</p>
+                        <p class="text-sm text-gray-600 mt-1">قم بتحديث بيانات الفرع أدناه</p>
                     </div>
 
                     <!-- Branch Name -->
                     <div class="space-y-2">
                         <label for="name" class="block text-sm font-medium text-gray-700">
-                            Branch Name <span class="text-red-500">*</span>
+                            اسم الفرع <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
                             <input wire:model="name" id="name" name="name" type="text" required autofocus
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                                placeholder="Enter branch name" />
+                                placeholder="ادخل اسم الفرع" />
                         </div>
                         @if ($errors->has('name'))
                             <p class="text-sm text-red-600 flex items-center mt-1">
@@ -81,11 +81,11 @@
                     <!-- Description -->
                     <div class="space-y-2">
                         <label for="description" class="block text-sm font-medium text-gray-700">
-                            Description
+                            الوصف
                         </label>
                         <textarea wire:model="description" id="description" name="description" rows="4"
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm resize-none"
-                            placeholder="Optional description for the branch"></textarea>
+                            placeholder="وصف اختياري للفرع"></textarea>
                         @if ($errors->has('description'))
                             <p class="text-sm text-red-600 flex items-center mt-1">
                                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -101,12 +101,12 @@
                     <!-- Branch Status -->
                     <div class="space-y-2">
                         <label for="is_active" class="block text-sm font-medium text-gray-700">
-                            Branch Status
+                            حالة الفرع
                         </label>
                         <select wire:model="is_active" id="is_active" name="is_active"
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
+                            <option value="1">نشط</option>
+                            <option value="0">غير نشط</option>
                         </select>
                     </div>
                 </div>
@@ -123,32 +123,32 @@
                                     </path>
                                 </svg>
                             </div>
-                            Safe Information
+                            معلومات الخزينة
                         </h2>
-                        <p class="text-sm text-amber-700 mt-1">Edit the safe associated with this branch</p>
+                        <p class="text-sm text-amber-700 mt-1">قم بتعديل بيانات الخزينة المرتبطة بهذا الفرع</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label for="safe_name" class="block text-sm font-medium text-gray-700">Safe Name</label>
+                            <label for="safe_name" class="block text-sm font-medium text-gray-700">اسم الخزينة</label>
                             <input wire:model="safe_name" id="safe_name" name="safe_name" type="text" required
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                                placeholder="Enter safe name" />
+                                placeholder="ادخل اسم الخزينة" />
                         </div>
                         <div>
-                            <label for="safe_current_balance" class="block text-sm font-medium text-gray-700">Balance
-                                (EGP)</label>
+                            <label for="safe_current_balance" class="block text-sm font-medium text-gray-700">الرصيد
+                                (ج.م)</label>
                             <input wire:model="safe_current_balance" id="safe_current_balance"
                                 name="safe_current_balance" type="number" step="0.01" min="0" required
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                                placeholder="0.00" />
+                                placeholder="٠.٠٠" />
                         </div>
                         <div>
-                            <label for="safe_description"
-                                class="block text-sm font-medium text-gray-700">Description</label>
+                            <label for="safe_description" class="block text-sm font-medium text-gray-700">وصف
+                                الخزينة</label>
                             <input wire:model="safe_description" id="safe_description" name="safe_description"
                                 type="text"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                                placeholder="Optional safe description" />
+                                placeholder="وصف اختياري للخزينة" />
                         </div>
                     </div>
                 </div>
@@ -196,7 +196,7 @@
                     <div class="flex space-x-3">
                         <a href="{{ route('branches.index') }}"
                             class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-                            Cancel
+                            إلغاء
                         </a>
                         <button type="submit"
                             class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-all duration-200 transform hover:scale-105">
@@ -204,7 +204,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                             </svg>
-                            Update Branch
+                            حفظ التعديلات
                         </button>
                     </div>
                 </div>
