@@ -2,8 +2,8 @@
     <!-- Page Header -->
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h1 class="text-2xl font-semibold text-gray-900">Create New User</h1>
-            <p class="mt-1 text-sm text-gray-600">Add a new user to the system with appropriate access rights</p>
+            <h1 class="text-2xl font-semibold text-gray-900">إنشاء مستخدم جديد</h1>
+            <p class="mt-1 text-sm text-gray-600">إضافة مستخدم جديد إلى النظام بالصلاحيات المناسبة</p>
         </div>
 
         <a href="{{ route('users.index') }}"
@@ -12,7 +12,7 @@
                 stroke="currentColor" class="w-4 h-4 mr-1">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
             </svg>
-            Back to Users
+            العودة إلى المستخدمين
         </a>
     </div>
 
@@ -41,13 +41,13 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
                         </svg>
-                        Personal Information
+                        المعلومات الشخصية
                     </h3>
                 </div>
 
                 <!-- Name -->
                 <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">الاسم الكامل</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -57,7 +57,7 @@
                             </svg>
                         </div>
                         <input id="name" type="text" wire:model="name" required autofocus autocomplete="name"
-                            placeholder="Enter full name"
+                            placeholder="أدخل الاسم الكامل"
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('name')
@@ -67,7 +67,7 @@
 
                 <!-- Email Address -->
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">البريد الإلكتروني</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -77,7 +77,7 @@
                             </svg>
                         </div>
                         <input id="email" type="email" wire:model="email" required autocomplete="username"
-                            placeholder="user@example.com"
+                            placeholder="user@example.com"البريد الإلكتروني
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('email')
@@ -87,7 +87,7 @@
 
                 <!-- Password -->
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">كلمة المرور</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -97,7 +97,7 @@
                             </svg>
                         </div>
                         <input id="password" type="password" wire:model="password" required autocomplete="new-password"
-                            placeholder="••••••••"
+                            placeholder="••••••••"كلمة المرور
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('password')
@@ -108,7 +108,7 @@
                 <!-- Confirm Password -->
                 <div>
                     <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm
-                        Password</label>
+                        كلمة المرور</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -118,7 +118,7 @@
                             </svg>
                         </div>
                         <input id="password_confirmation" type="password" wire:model="password_confirmation" required
-                            autocomplete="new-password" placeholder="••••••••"
+                            autocomplete="new-password" placeholder="••••••••"كلمة المرور
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('password_confirmation')
@@ -134,14 +134,13 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
                         </svg>
-                        Contact Information
+                        معلومات الاتصال
                     </h3>
                 </div>
 
                 <!-- Phone Number -->
                 <div>
-                    <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">Phone
-                        Number</label>
+                    <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">رقم الهاتف</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -151,7 +150,7 @@
                             </svg>
                         </div>
                         <input id="phone_number" type="text" wire:model="phone_number"
-                            placeholder="+20 123 456 7890"
+                            placeholder="+20 123 456 7890"رقم الهاتف
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('phone_number')
@@ -161,8 +160,7 @@
 
                 <!-- Relative's Phone Number -->
                 <div>
-                    <label for="relative_phone_number" class="block text-sm font-medium text-gray-700 mb-1">Relative's
-                        Phone Number</label>
+                    <label for="relative_phone_number" class="block text-sm font-medium text-gray-700 mb-1">رقم هاتف الأقرب</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -172,7 +170,7 @@
                             </svg>
                         </div>
                         <input id="relative_phone_number" type="text" wire:model="relative_phone_number"
-                            placeholder="+20 123 456 7890"
+                            placeholder="+20 123 456 7890"رقم هاتف الأقرب
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('relative_phone_number')
@@ -182,7 +180,7 @@
 
                 <!-- Land Number -->
                 <div>
-                    <label for="land_number" class="block text-sm font-medium text-gray-700 mb-1">Land Number</label>
+                    <label for="land_number" class="block text-sm font-medium text-gray-700 mb-1">رقم الأرض</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -191,7 +189,7 @@
                                     d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
                             </svg>
                         </div>
-                        <input id="land_number" type="text" wire:model="land_number" placeholder="02 XXXX XXXX"
+                        <input id="land_number" type="text" wire:model="land_number" placeholder="02 XXXX XXXX"رقم الأرض
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('land_number')
@@ -201,7 +199,7 @@
 
                 <!-- Address -->
                 <div>
-                    <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                    <label for="address" class="block text-sm font-medium text-gray-700 mb-1">العنوان</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -212,7 +210,7 @@
                                     d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                             </svg>
                         </div>
-                        <input id="address" type="text" wire:model="address" placeholder="Street address"
+                        <input id="address" type="text" wire:model="address" placeholder="Street address"العنوان
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('address')
@@ -228,14 +226,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
                         </svg>
-                        Employment Information
+                        معلومات التوظيف
                     </h3>
                 </div>
 
                 <!-- National Number -->
                 <div>
-                    <label for="national_number" class="block text-sm font-medium text-gray-700 mb-1">National Number
-                        (14 digits)</label>
+                    <label for="national_number" class="block text-sm font-medium text-gray-700 mb-1">رقم الوطني
+                        (14 رقم)</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -245,7 +243,7 @@
                             </svg>
                         </div>
                         <input id="national_number" type="text" wire:model="national_number" minlength="14"
-                            maxlength="14" pattern="[0-9]{14}" required placeholder="XXXXXXXXXXXX"
+                            maxlength="14" pattern="[0-9]{14}" required placeholder="XXXXXXXXXXXX"رقم الوطني
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('national_number')
@@ -255,7 +253,7 @@
 
                 <!-- Salary -->
                 <div>
-                    <label for="salary" class="block text-sm font-medium text-gray-700 mb-1">Salary</label>
+                    <label for="salary" class="block text-sm font-medium text-gray-700 mb-1">الراتب</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -264,7 +262,7 @@
                                     d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 01-.75.75h-.75m-6-1.5H4.5m0 0l6.75 6.75M4.5 11.25v-5.25m0 0h6.75" />
                             </svg>
                         </div>
-                        <input id="salary" type="number" step="0.01" wire:model="salary" placeholder="0.00"
+                        <input id="salary" type="number" step="0.01" wire:model="salary" placeholder="0.00"الراتب
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                     </div>
                     @error('salary')
@@ -274,7 +272,7 @@
 
                 <!-- Role Selection -->
                 <div>
-                    <label for="selectedRole" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <label for="selectedRole" class="block text-sm font-medium text-gray-700 mb-1">الدور</label>
                     <div class="relative rounded-md shadow-sm">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -285,7 +283,7 @@
                         </div>
                         <select wire:model="selectedRole" id="selectedRole"
                             class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            <option value="">Select Role</option>
+                            <option value="">اختر الدور</option>
                             @foreach ($roles as $role)
                                 <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                             @endforeach
@@ -299,7 +297,7 @@
                 <!-- Branch Selection (only for non-admin/general_supervisor) -->
                 @if (!in_array($selectedRole, ['admin', 'general_supervisor']))
                     <div>
-                        <label for="branchId" class="block text-sm font-medium text-gray-700 mb-1">Branch</label>
+                        <label for="branchId" class="block text-sm font-medium text-gray-700 mb-1">الفرع</label>
                         <div class="relative rounded-md shadow-sm">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -310,7 +308,7 @@
                             </div>
                             <select wire:model="branchId" id="branchId"
                                 class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                                <option value="">Select Branch</option>
+                                <option value="">اختر الفرع</option>
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                                 @endforeach
@@ -331,7 +329,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Working Hours
+                        وقت العمل
                     </h3>
                 </div>
 
@@ -354,11 +352,11 @@
                     class="col-span-2 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <!-- Day of Week -->
                     <div>
-                        <label for="dayOfWeek" class="block text-sm font-medium text-gray-700 mb-1">Day of
-                            Week</label>
+                        <label for="dayOfWeek" class="block text-sm font-medium text-gray-700 mb-1">اليوم
+                            الأسبوع</label>
                         <select id="dayOfWeek" wire:model="dayOfWeek"
                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">-- Select day --</option>
+                            <option value="">-- اختر اليوم --</option>
                             @foreach ($days as $value => $label)
                                 <option value="{{ $value }}">{{ $label }}</option>
                             @endforeach
@@ -370,7 +368,7 @@
 
                     <!-- Start Time -->
                     <div>
-                        <label for="startTime" class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                        <label for="startTime" class="block text-sm font-medium text-gray-700 mb-1">وقت البدء</label>
                         <input type="time" id="startTime" wire:model="startTime"
                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         @error('startTime')
@@ -380,7 +378,7 @@
 
                     <!-- End Time -->
                     <div>
-                        <label for="endTime" class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                        <label for="endTime" class="block text-sm font-medium text-gray-700 mb-1">وقت النهاية</label>
                         <input type="time" id="endTime" wire:model="endTime"
                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         @error('endTime')
@@ -392,7 +390,7 @@
                     <div class="flex items-center mt-6">
                         <input type="checkbox" id="isEnabled" wire:model="isEnabled"
                             class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                        <label for="isEnabled" class="ml-2 text-sm text-gray-700">Enabled</label>
+                        <label for="isEnabled" class="ml-2 text-sm text-gray-700">مفعل</label>
                         @error('isEnabled')
                             <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
                         @enderror
@@ -402,7 +400,7 @@
                     <div class="col-span-4 flex justify-end">
                         <button type="button" wire:click="addWorkingHour"
                             class="px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">
-                            Add Working Hours
+                            إضافة وقت العمل
                         </button>
                     </div>
                 </div>
@@ -416,23 +414,23 @@
                                     <tr>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Day
+                                            اليوم
                                         </th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Start Time
+                                            وقت البدء
                                         </th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            End Time
+                                            وقت النهاية
                                         </th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status
+                                            الحالة
                                         </th>
                                         <th scope="col"
                                             class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions
+                                            الإجراءات
                                         </th>
                                     </tr>
                                 </thead>
@@ -452,12 +450,12 @@
                                                 @if ($workingHour['is_enabled'])
                                                     <span
                                                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                        Enabled
+                                                        مفعل
                                                     </span>
                                                 @else
                                                     <span
                                                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                        Disabled
+                                                        معطل
                                                     </span>
                                                 @endif
                                             </td>
@@ -465,18 +463,18 @@
                                                 <div class="flex justify-end space-x-2">
                                                     <button wire:click="toggleWorkingHourStatus({{ $index }})"
                                                         class="text-indigo-600 hover:text-indigo-900">
-                                                        {{ $workingHour['is_enabled'] ? 'Disable' : 'Enable' }}
+                                                        {{ $workingHour['is_enabled'] ? 'معطل' : 'مفعل' }}
                                                     </button>
                                                     <button wire:click="editWorkingHour({{ $index }})"
                                                         class="text-blue-600 hover:text-blue-900">
-                                                        Edit
+                                                        تعديل
                                                     </button>
                                                     <button wire:click="confirmRemove({{ $index }})"
                                                         class="text-red-600 hover:text-red-900 transition-colors duration-200">
                                                         <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                         </svg>
-                                                        Remove
+                                                        حذف
                                                     </button>
                                                 </div>
                                             </td>
@@ -487,18 +485,17 @@
                         </div>
                     @else
                         <div class="p-4 text-center text-gray-500 bg-gray-50 rounded-lg border border-gray-200">
-                            No working hours defined yet. Use the form above to add working hours.
+                            لم يتم تعريف وقت العمل بعد. استخدم النموذج أعلاه لإضافة وقت العمل.
                         </div>
                     @endif
                 </div>
 
                 <!-- Notes Section -->
                 <div class="col-span-2 mt-4">
-                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Additional
-                        Notes</label>
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات إضافية</label>
                     <div class="relative rounded-md shadow-sm">
                         <textarea id="notes" rows="4" wire:model="notes"
-                            placeholder="Any additional information about this user..."
+                            placeholder="أي معلومات إضافية عن هذا المستخدم..."
                             class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"></textarea>
                     </div>
                     @error('notes')
@@ -514,7 +511,7 @@
                         stroke="currentColor" class="w-4 h-4 mr-2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    Cancel
+                    إلغاء
                 </a>
                 <button type="submit"
                     class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -523,7 +520,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
                     </svg>
-                    Create User
+                    إنشاء مستخدم
                 </button>
             </div>
         </form>
@@ -555,15 +552,15 @@
 
             <!-- Content -->
             <div class="text-center mb-8">
-                <h3 class="text-xl font-semibold text-gray-900 mb-3">Remove Working Hours</h3>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">حذف وقت العمل</h3>
                 <p class="text-gray-700 leading-relaxed">
-                    Are you sure you want to remove the working hours for 
+                    هل أنت متأكد أنك تريد حذف وقت العمل ل
                     <span class="font-semibold text-gray-900">
                         @if($deleteConfirmIndex !== null && isset($tempWorkingHours[$deleteConfirmIndex]))
                             {{ ucfirst($tempWorkingHours[$deleteConfirmIndex]['day_of_week']) }}
                         @endif
                     </span>?
-                    <br><span class="text-sm text-gray-600 mt-2 block">This action cannot be undone.</span>
+                    <br><span class="text-sm text-gray-600 mt-2 block">هذا الإجراء لا يمكن التراجع عنه.</span>
                 </p>
             </div>
 
@@ -571,14 +568,14 @@
             <div class="flex space-x-3">
                 <button wire:click="cancelRemove" 
                         class="flex-1 px-4 py-3 bg-white/30 backdrop-blur-sm border border-white/40 rounded-xl text-gray-700 font-medium hover:bg-white/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50">
-                    Cancel
+                    إلغاء
                 </button>
                 <button wire:click="confirmRemoveAction" 
                         class="flex-1 px-4 py-3 bg-red-500/80 backdrop-blur-sm border border-red-400/50 rounded-xl text-white font-medium hover:bg-red-600/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400/50 shadow-lg">
                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                     </svg>
-                    Remove
+                    حذف
                 </button>
             </div>
         </div>
