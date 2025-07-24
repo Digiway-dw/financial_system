@@ -321,7 +321,7 @@ class CreateTransaction
                 'daily_usage' => ($line->daily_usage ?? 0) + $amount,
                 'monthly_usage' => ($line->monthly_usage ?? 0) + $amount,
                 'daily_remaining' => ($line->daily_remaining ?? (($line->daily_limit ?? 0) - ($line->current_balance ?? 0))) - $amount,
-                'monthly_remaining' => ($line->monthly_remaining ?? (($line->monthly_limit ?? 0) - ($line->current_balance ?? 0))) - $amount,
+                'monthly_remaining' => ($line->monthly_remaining ?? $line->monthly_limit) - $amount,
             ]);
             $line->refresh();
 

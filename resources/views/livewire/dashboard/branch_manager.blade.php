@@ -22,14 +22,12 @@
     <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
         <thead>
             <tr class="bg-gray-100 text-center">
-                <th class="px-4 py-2 border">رصيد افتتاحي</th>
-                <th class="px-4 py-2 border">عدد المعاملات</th>
-                <th class="px-4 py-2 border">الخزينة</th>
+                <th class="px-4 py-2 border"> عدد المعاملات الفرع</th>
+                <th class="px-4 py-2 border">رصيد الخزينة</th>
             </tr>
         </thead>
         <tbody>
             <tr class="text-center">
-                <td class="px-4 py-2 border text-blue-700 font-bold">{{ format_int($startupSafeBalance) }}</td>
                 <td class="px-4 py-2 border text-purple-700 font-bold">{{ $totalTransactionsCount }}</td>
                 <td class="px-4 py-2 border font-bold">{{ format_int($safesBalance) }}</td>
             </tr>
@@ -101,6 +99,9 @@
                 <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                     <thead class="bg-gray-100">
                         <tr>
+                            <th class="px-2 py-3 text-center">
+                                <input type="checkbox" id="select-all-branch-lines" onclick="toggleAllBranchLines(this)" />
+                            </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('mobile_number')" style="cursor: pointer;">
                                 رقم الهاتف
                                 @if ($sortField === 'mobile_number')
@@ -119,9 +120,21 @@
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('daily_usage')" style="cursor: pointer;">
+                                المستلم اليومي
+                                @if ($sortField === 'daily_usage')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('monthly_limit')" style="cursor: pointer;">
                                 المتبقي الشهري
                                 @if ($sortField === 'monthly_limit')
+                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('monthly_usage')" style="cursor: pointer;">
+                                المستلم الشهري
+                                @if ($sortField === 'monthly_usage')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
@@ -140,18 +153,94 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($branchLines as $line)
+                        @foreach ($branchLines as $line)
+                            @php
+                                $dailyLimit = $line->daily_limit ?? 0;
+                                $monthlyLimit = $line->monthly_limit ?? 0;
+                                $currentBalance = $line->current_balance ?? 0;
+                                $dailyStartingBalance = $line->daily_starting_balance ?? 0;
+                                $monthlyStartingBalance = $line->starting_balance ?? 0;
+                                $dailyRemaining = isset($line->daily_remaining) ? $line->daily_remaining : max(0, $dailyLimit - $currentBalance);
+                                $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
+                                $dailyUsage = $line->daily_usage ?? 0;
+                                $monthlyUsage = $line->monthly_usage ?? 0;
+                                $circleColor = 'bg-green-400';
+                                if ($dailyRemaining <= 240) {
+                                    $circleColor = 'bg-red-500';
+                                } elseif ($dailyRemaining <= 1800) {
+                                    $circleColor = 'bg-yellow-400';
+                                }
+                            @endphp
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->mobile_number }}</td>
+                                <td class="px-2 py-4 text-center">
+                                    <input type="checkbox" class="branch-line-checkbox" value="{{ $line->id }}" onclick="updateBranchLinesSum()" />
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <div class="w-1.5 h-1.5 rounded-full {{ $circleColor }}"></div>
+                                        </div>
+                                        <div class="text-sm font-medium text-gray-900">{{ $line->mobile_number }}</div>
+                                    </div>
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->current_balance) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->daily_limit) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->monthly_limit) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyRemaining) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyUsage) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyRemaining) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyUsage) }} EGP</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($line->status) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr class="bg-gray-50 font-bold">
+                            <td class="px-2 py-3 text-center" colspan="2">المجموع المختار</td>
+                            <td class="px-6 py-3 text-sm text-blue-700" id="selected-branch-current-balance">0 EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700" id="selected-branch-daily-remaining">0 EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700" id="selected-branch-daily-usage">0 EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700" id="selected-branch-monthly-remaining">0 EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700" id="selected-branch-monthly-usage">0 EGP</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
                 </table>
+                <script>
+                    function parseEGP(str) {
+                        return parseInt((str || '').replace(/,/g, '').replace(/\s*EGP/, '')) || 0;
+                    }
+                    function updateBranchLinesSum() {
+                        let checkboxes = document.querySelectorAll('.branch-line-checkbox');
+                        let totalCurrent = 0,
+                            totalDailyRem = 0,
+                            totalDailyUsage = 0,
+                            totalMonthlyRem = 0,
+                            totalMonthlyUsage = 0;
+                        checkboxes.forEach(cb => {
+                            if (cb.checked) {
+                                let row = cb.closest('tr');
+                                let tds = row.querySelectorAll('td');
+                                totalCurrent += parseEGP(tds[2].innerText);
+                                totalDailyRem += parseEGP(tds[3].innerText);
+                                totalDailyUsage += parseEGP(tds[4].innerText);
+                                totalMonthlyRem += parseEGP(tds[5].innerText);
+                                totalMonthlyUsage += parseEGP(tds[6].innerText);
+                            }
+                        });
+                        document.getElementById('selected-branch-current-balance').innerText = totalCurrent.toLocaleString() + ' EGP';
+                        document.getElementById('selected-branch-daily-remaining').innerText = totalDailyRem.toLocaleString() + ' EGP';
+                        document.getElementById('selected-branch-daily-usage').innerText = totalDailyUsage.toLocaleString() + ' EGP';
+                        document.getElementById('selected-branch-monthly-remaining').innerText = totalMonthlyRem.toLocaleString() + ' EGP';
+                        document.getElementById('selected-branch-monthly-usage').innerText = totalMonthlyUsage.toLocaleString() + ' EGP';
+                    }
+                    function toggleAllBranchLines(source) {
+                        let checkboxes = document.querySelectorAll('.branch-line-checkbox');
+                        checkboxes.forEach(cb => {
+                            cb.checked = source.checked;
+                        });
+                        updateBranchLinesSum();
+                    }
+                </script>
             </div>
         </div>
     @endif
