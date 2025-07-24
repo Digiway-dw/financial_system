@@ -489,6 +489,11 @@ class Withdrawal extends Create
                     'agent_id' => $user->id,
                     'reference_number' => $referenceNumber,
                 ]);
+                // Deduct from safe balance immediately if completed
+                if ($status === 'completed' && $safe) {
+                    $safe->current_balance -= abs($this->amount);
+                    $safe->save();
+                }
                 // Send notification to all admins
                 if ($status === 'completed') {
                     $admins = \App\Domain\Entities\User::role('admin')->get();
