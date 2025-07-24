@@ -53,8 +53,8 @@ class Withdrawal extends Create
 
     public function updatedSelectedBranchId($value)
     {
-        // When the source branch changes (for branch withdrawal), update safes dropdown to only show safes from that branch
-        if ($this->withdrawalType === 'branch') {
+        // When the source branch changes (for branch or expense withdrawal), update safes dropdown to only show safes from that branch
+        if (in_array($this->withdrawalType, ['branch', 'expense'])) {
             $this->safes = \App\Models\Domain\Entities\Safe::where('branch_id', $value)->get()->map(function ($safe) {
                 return [
                     'id' => $safe->id,
@@ -62,10 +62,10 @@ class Withdrawal extends Create
                     'current_balance' => $safe->current_balance,
                 ];
             })->toArray();
-            if (count($this->safes) > 0) {
-                $this->safeId = $this->safes[0]['id'];
-            } else {
-                $this->safeId = null;
+            // Only set safeId if not already set or if the selected safe is not in the new safes list
+            $safeIds = array_column($this->safes, 'id');
+            if (!$this->safeId || !in_array($this->safeId, $safeIds)) {
+                $this->safeId = count($this->safes) > 0 ? $this->safes[0]['id'] : null;
             }
         }
     }
@@ -314,8 +314,7 @@ class Withdrawal extends Create
 
             // Check if user has permission to access this branch
             $user = Auth::user();
-            $userRole = $user->role ?? null;
-            if (!in_array($userRole, ['admin', 'general_supervisor']) && $user->branch_id != $this->selectedBranchId) {
+            if (!$user->hasRole('admin') && !$user->hasRole('general_supervisor') && $user->branch_id != $this->selectedBranchId) {
                 session()->flash('error', 'لا يمكنك إنشاء مصروفات لفروع أخرى.');
                 return;
             }
@@ -383,6 +382,11 @@ class Withdrawal extends Create
                     'agent_id' => $agent->id,
                     'reference_number' => $referenceNumber,
                 ]);
+                // Deduct from safe balance immediately if admin or supervisor
+                if ($status === 'completed' && $safe) {
+                    $safe->current_balance -= abs($this->amount);
+                    $safe->save();
+                }
                 // Send notification to all admins
                 if ($status === 'completed') {
                     $admins = \App\Domain\Entities\User::role('admin')->get();
@@ -529,6 +533,11 @@ class Withdrawal extends Create
                     'agent_id' => $user->id,
                     'reference_number' => $referenceNumber,
                 ]);
+                // Deduct from safe balance immediately if admin or supervisor
+                if ($status === 'completed' && $safe) {
+                    $safe->current_balance -= abs($this->amount);
+                    $safe->save();
+                }
                 // Send notification to all admins
                 if ($status === 'completed') {
                     $admins = \App\Domain\Entities\User::role('admin')->get();
@@ -630,6 +639,11 @@ class Withdrawal extends Create
                     'destination_branch_id' => $this->selectedBranchId,
                     'destination_safe_id' => $this->safeId, // Same safe for expense
                 ]);
+                // Deduct from safe balance immediately if admin or supervisor
+                if ($status === 'completed' && $safe) {
+                    $safe->current_balance -= abs($this->amount);
+                    $safe->save();
+                }
 
                 // Send notification to admins
                 $admins = \App\Domain\Entities\User::role(['admin', 'general_supervisor'])->get();
