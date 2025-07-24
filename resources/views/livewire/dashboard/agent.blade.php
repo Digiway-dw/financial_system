@@ -286,8 +286,9 @@
                                 // Calculate daily and monthly remaining
                                 $dailyRemaining = isset($line->daily_remaining) ? $line->daily_remaining : max(0, $dailyLimit - $currentBalance);
                                 $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
-                                $dailyUsage = max(0, $currentBalance - $dailyStartingBalance);
-                                $monthlyUsage = max(0, $currentBalance - $monthlyStartingBalance);
+                                // Use direct fields from the lines table for receive
+                                $dailyUsage = $line->daily_usage ?? 0;
+                                $monthlyUsage = $line->monthly_usage ?? 0;
                                 $circleColor = 'bg-green-400';
                                 if ($dailyRemaining <= 240) {
                                     $circleColor = 'bg-red-500';
@@ -310,21 +311,13 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ format_int($line->current_balance) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ format_int($dailyRemaining) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ format_int($dailyUsage) }} EGP
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ format_int($monthlyRemaining) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ format_int($monthlyUsage) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ ucfirst($line->status) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->current_balance) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyRemaining) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyUsage) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyRemaining) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyUsage) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($line->status) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
