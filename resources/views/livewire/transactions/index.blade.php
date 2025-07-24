@@ -207,86 +207,85 @@
                 <p class="text-sm text-gray-500 mt-1">تصفية المعاملات حسب معايير متعددة لتحليل مفصل</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
-                <!-- Customer Code -->
+                <!-- كود العميل -->
                 <div class="space-y-3">
-                    <label for="customer_code" class="block text-sm font-medium text-gray-700">Customer Code</label>
+                    <label for="customer_code" class="block text-sm font-medium text-gray-700">كود العميل</label>
                     <input wire:model.defer="customer_code" id="customer_code" type="text"
-                        placeholder="Enter customer code..."
+                        placeholder="ادخل كود العميل..."
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 bg-white" />
                 </div>
-                <!-- Receiver Mobile -->
+                <!-- جوال المستلم -->
                 <div class="space-y-2">
-                    <label for="receiver_mobile_number" class="block text-sm font-medium text-gray-700">Receiver
-                        Mobile</label>
+                    <label for="receiver_mobile_number" class="block text-sm font-medium text-gray-700">جوال
+                        المستلم</label>
                     <input wire:model.defer="receiver_mobile_number" id="receiver_mobile_number" type="text"
-                        placeholder="Enter mobile number..."
+                        placeholder="ادخل رقم الجوال..."
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
-                <!-- Transfer Line -->
+                <!-- خط التحويل -->
                 <div class="space-y-2">
-                    <label for="transfer_line" class="block text-sm font-medium text-gray-700">Transfer Line</label>
+                    <label for="transfer_line" class="block text-sm font-medium text-gray-700">خط التحويل</label>
                     <input wire:model.defer="transfer_line" id="transfer_line" type="text"
-                        placeholder="Enter line number..."
+                        placeholder="ادخل رقم الخط..."
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
-                <!-- Amount Range -->
+                <!-- نطاق المبلغ -->
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">Amount Range</label>
+                    <label class="block text-sm font-medium text-gray-700">نطاق المبلغ</label>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <input wire:model.defer="amount_from" id="amount_from" type="number" step="0.01"
-                                placeholder="From"
+                                placeholder="من"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                         </div>
                         <div>
                             <input wire:model.defer="amount_to" id="amount_to" type="number" step="0.01"
-                                placeholder="To"
+                                placeholder="إلى"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                         </div>
                     </div>
                 </div>
 
-                <!-- Commission -->
+                <!-- العمولة -->
                 <div class="space-y-2">
-                    <label for="commission" class="block text-sm font-medium text-gray-700">Commission</label>
+                    <label for="commission" class="block text-sm font-medium text-gray-700">العمولة</label>
                     <input wire:model.defer="commission" id="commission" type="number" step="0.01"
                         placeholder="0.00"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
-                <!-- Transaction Type -->
+                <!-- نوع المعاملة -->
                 <div class="space-y-2">
-                    <label for="transaction_type" class="block text-sm font-medium text-gray-700">Transaction
-                        Type</label>
+                    <label for="transaction_type" class="block text-sm font-medium text-gray-700">نوع المعاملة</label>
                     <select wire:model.defer="transaction_type" id="transaction_type"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                        <option value="">All Types</option>
-                        <option value="Transfer">Transfer</option>
-                        <option value="Deposit">Deposit</option>
-                        <option value="Withdrawal">Withdrawal</option>
+                        <option value="">كل الأنواع</option>
+                        <option value="Transfer">تحويل</option>
+                        <option value="Deposit">إيداع</option>
+                        <option value="Withdrawal">سحب</option>
                     </select>
                 </div>
 
-                <!-- Start Date -->
+                <!-- تاريخ البدء -->
                 <div class="space-y-2">
-                    <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
+                    <label for="start_date" class="block text-sm font-medium text-gray-700">تاريخ البدء</label>
                     <input wire:model.defer="start_date" id="start_date" type="date"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
-                <!-- End Date -->
+                <!-- تاريخ الانتهاء -->
                 <div class="space-y-2">
-                    <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
+                    <label for="end_date" class="block text-sm font-medium text-gray-700">تاريخ الانتهاء</label>
                     <input wire:model.defer="end_date" id="end_date" type="date"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
-                <!-- Branch Filter -->
+                <!-- فلتر الفروع -->
                 @if (!$hideBranchFilter)
                     <div class="space-y-2">
-                        <label for="branch_ids" class="block text-sm font-medium text-gray-700">Branches</label>
+                        <label for="branch_ids" class="block text-sm font-medium text-gray-700">الفروع</label>
                         <select wire:model.defer="branch_ids" id="branch_ids" multiple
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                             @cannot('view-all-branches-data') disabled @endcannot>
@@ -295,47 +294,46 @@
                             @endforeach
                         </select>
                         @cannot('view-all-branches-data')
-                            <p class="text-xs text-gray-500 mt-1">You can only view data from your assigned branch.</p>
+                            <p class="text-xs text-gray-500 mt-1">يمكنك فقط عرض بيانات الفرع المخصص لك.</p>
                         @endcannot
                     </div>
                 @else
                     <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">Branch</label>
+                        <label class="block text-sm font-medium text-gray-700">الفرع</label>
                         <div class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100 text-gray-700">
-                            {{ $user->branch->name ?? 'N/A' }}</div>
-                        <p class="text-xs text-gray-500 mt-1">You can only view data from your assigned branch.</p>
+                            {{ $user->branch->name ?? 'غير متوفر' }}</div>
+                        <p class="text-xs text-gray-500 mt-1">يمكنك فقط عرض بيانات الفرع المخصص لك.</p>
                     </div>
                 @endif
 
-                <!-- Employee Filter (conditionally hidden) -->
+                <!-- فلتر الموظفين (يظهر أو يختفي حسب الصلاحية) -->
                 @if (!$hideEmployeeFilter)
                     <div class="space-y-2">
-                        <label for="employee_ids" class="block text-sm font-medium text-gray-700">Employees</label>
+                        <label for="employee_ids" class="block text-sm font-medium text-gray-700">الموظفون</label>
                         <select wire:model.defer="employee_ids" id="employee_ids" multiple
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 bg-white"
                             @cannot('view-other-employees-data') disabled @endcannot>
-                            <option value="" @if (empty($employee_ids) || in_array('', (array) $employee_ids)) selected @endif>All Employees
+                            <option value="" @if (empty($employee_ids) || in_array('', (array) $employee_ids)) selected @endif>كل الموظفين
                             </option>
                             @foreach (\App\Domain\Entities\User::all() as $employee)
                                 <option value="{{ $employee->id }}">{{ $employee->name }}</option>
                             @endforeach
                         </select>
                         @cannot('view-other-employees-data')
-                            <p class="text-xs text-gray-500 mt-1">You can only view your own transactions.</p>
+                            <p class="text-xs text-gray-500 mt-1">يمكنك فقط عرض معاملاتك الخاصة.</p>
                         @endcannot
                     </div>
                 @endif
 
-                <!-- Reference Number -->
+                <!-- رقم المرجع -->
                 <div class="space-y-2">
-                    <label for="reference_number" class="block text-sm font-medium text-gray-700">Reference
-                        Number</label>
+                    <label for="reference_number" class="block text-sm font-medium text-gray-700">رقم المرجع</label>
                     <input wire:model.defer="reference_number" id="reference_number" type="text"
-                        placeholder="Enter reference number..."
+                        placeholder="ادخل رقم المرجع..."
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 bg-white" />
                 </div>
 
-                <!-- Filter Actions -->
+                <!-- إجراءات الفلترة -->
                 <div class="space-y-3 flex flex-col justify-end lg:col-span-2">
                     <div class="flex flex-col md:flex-row gap-3">
                         <button wire:click="filter" type="button"
@@ -345,7 +343,7 @@
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z">
                                 </path>
                             </svg>
-                            Apply Filters
+                            تطبيق الفلاتر
                         </button>
                         <button wire:click="resetFilters" type="button"
                             class="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-xl transition-all duration-200 flex items-center justify-center">
@@ -353,7 +351,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 4v5h.582M20 20v-5h-.581M5 9A7 7 0 0119 15M19 15a7 7 0 01-14 0"></path>
                             </svg>
-                            Reset Filters
+                            إعادة تعيين الفلاتر
                         </button>
                         @if ($user->hasRole('admin') || $user->hasRole('general_supervisor'))
                             <a href="{{ route('transactions.pending') }}"
@@ -362,7 +360,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                Pending
+                                قيد الانتظار
                             </a>
                         @endif
                     </div>
@@ -371,7 +369,8 @@
         </div>
 
         <div class="mt-8 overflow-x-auto">
-            <div class="bg-white rounded-2xl shadow-lg p-0 md:p-0 transition-all duration-300" style="box-shadow: none;">
+            <div class="bg-white rounded-2xl shadow-lg p-0 md:p-0 transition-all duration-300"
+                style="box-shadow: none;">
                 <table class="min-w-full divide-y divide-blue-100 text-xs rtl text-right" style="font-size: 12px;">
                     <thead>
                         <tr>
@@ -393,7 +392,8 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[90px] border-b border-blue-200">
+                            <th
+                                class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[90px] border-b border-blue-200">
                                 جوال المستلم
                             </th>
                             <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[70px] sortable-header border-b border-blue-200"
@@ -450,34 +450,51 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-1 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider w-1 border-b border-blue-200 rounded-tl-2xl whitespace-nowrap">
+                            <th
+                                class="px-1 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider w-1 border-b border-blue-200 rounded-tl-2xl whitespace-nowrap">
                                 إجراءات
                             </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-blue-50 text-xs" style="font-size: 12px;">
                         @forelse ($transactions as $transaction)
-                            <tr class="hover:bg-blue-50 transition-all duration-150 @if (strtolower($transaction['status']) === 'pending') bg-yellow-100 @endif border-b border-blue-100 last:border-b-0">
-                                <td class="px-2 py-2 whitespace-nowrap font-bold text-gray-900">{{ $transaction['customer_name'] }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">{{ $transaction['customer_mobile_number'] }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">{{ $transaction['receiver_mobile_number'] ?? '' }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-green-700 font-bold">{{ format_int($transaction['amount']) }} ج.م</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-purple-700 font-bold">{{ format_int($transaction['commission']) }} ج.م</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-blue-700 font-bold">{{ $transaction['transaction_type'] }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['created_at'])->format('d/m/y h:i A') }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">{{ $transaction['reference_number'] ?? '' }}</td>
-                                <td class="px-1 py-2 whitespace-nowrap text-right text-xs font-bold flex flex-row flex-nowrap gap-1 justify-end items-center">
-                                    <a href="{{ route('transactions.details', $transaction['id']) }}" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-200 transition-colors duration-150 mb-1">
-                                        <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            <tr
+                                class="hover:bg-blue-50 transition-all duration-150 @if (strtolower($transaction['status']) === 'pending') bg-yellow-100 @endif border-b border-blue-100 last:border-b-0">
+                                <td class="px-2 py-2 whitespace-nowrap font-bold text-gray-900">
+                                    {{ $transaction['customer_name'] }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">
+                                    {{ $transaction['customer_mobile_number'] }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">
+                                    {{ $transaction['receiver_mobile_number'] ?? '' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-green-700 font-bold">
+                                    {{ format_int($transaction['amount']) }} ج.م</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-purple-700 font-bold">
+                                    {{ format_int($transaction['commission']) }} ج.م</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-blue-700 font-bold">
+                                    {{ $transaction['transaction_type'] }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">
+                                    {{ \Carbon\Carbon::parse($transaction['created_at'])->format('d/m/y h:i A') }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">
+                                    {{ $transaction['reference_number'] ?? '' }}</td>
+                                <td
+                                    class="px-1 py-2 whitespace-nowrap text-right text-xs font-bold flex flex-row flex-nowrap gap-1 justify-end items-center">
+                                    <a href="{{ route('transactions.details', $transaction['id']) }}"
+                                        class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-200 transition-colors duration-150 mb-1">
+                                        <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                         </svg>
                                         عرض
                                     </a>
                                     @can('edit-all-transactions')
                                         @if (isset($transaction['source_table']) && $transaction['source_table'] === 'cash_transactions')
-                                            <a href="{{ route('cash-transactions.edit', $transaction['id']) }}" class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-200 transition-colors duration-150 mb-1">
+                                            <a href="{{ route('cash-transactions.edit', $transaction['id']) }}"
+                                                class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-200 transition-colors duration-150 mb-1">
                                                 <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
