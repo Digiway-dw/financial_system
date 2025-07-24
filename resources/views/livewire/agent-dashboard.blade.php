@@ -312,12 +312,6 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($agentLines as $line)
-                            {{-- Debug: --}}
-                            <div style="font-size:10px;">
-                                daily_limit: {{ $line->daily_limit }},
-                                current_balance: {{ $line->current_balance }},
-                                daily_remaining: {{ $line->daily_remaining }}
-                            </div>
                             @php
                                 $dailyLimit = $line->daily_limit ?? 0;
                                 $monthlyLimit = $line->monthly_limit ?? 0;

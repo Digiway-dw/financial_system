@@ -22,7 +22,6 @@
     </style>
 
     <!-- Scripts -->
-    <!-- Debug: Host is {{ request()->getHost() }} -->
     <!-- Using dynamic asset loading -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
