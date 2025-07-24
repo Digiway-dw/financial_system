@@ -276,7 +276,8 @@ class CreateTransaction
                 if (!$safe) {
                     throw new \Exception('Safe not found.');
                 }
-                $safeIncrease = $amount + $finalCommission;
+                // Update: safeIncrease should be amount + (finalCommission - deduction)
+                $safeIncrease = $amount + ($finalCommission - $deduction);
                 $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance + $safeIncrease]);
                 $safe->refresh();
             }
