@@ -275,7 +275,33 @@ class Receive extends Component
 
     public function submitTransaction()
     {
+
         $this->validate();
+
+        // --- Customer creation or lookup logic ---
+
+        $customer = Customer::where('mobile_number', $this->clientMobile)->first();
+        if (!$customer) {
+            // Generate unique customer code
+            do {
+                $code = 'C' . date('ym') . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+            } while (Customer::where('customer_code', $code)->exists());
+
+            $user = Auth::user();
+            $customer = Customer::create([
+                'name' => $this->clientName,
+                'mobile_number' => $this->clientMobile,
+                'customer_code' => $code,
+                'gender' => $this->clientGender ?: 'male',
+                'is_client' => true,
+                'agent_id' => $user ? $user->id : null,
+                'branch_id' => $user ? $user->branch_id : null,
+                'balance' => 0,
+            ]);
+        }
+        // Set Livewire properties for use in transaction
+        $this->clientId = $customer->id;
+        $this->clientCode = $customer->customer_code;
 
         // Lookup line and safe
         $line = Line::find($this->selectedLineId);
@@ -330,7 +356,7 @@ class Receive extends Component
                 $this->commission,                // commission
                 $this->discount,                  // deduction
                 'Receive',                        // transactionType
-                auth()->id(),                     // agentId
+                (Auth::user() ? Auth::user()->id : null), // agentId
                 $this->selectedLineId,            // lineId
                 $safe->id,                        // safeId
                 false,                            // isAbsoluteWithdrawal
