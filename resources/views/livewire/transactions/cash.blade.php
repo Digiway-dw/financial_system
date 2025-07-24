@@ -46,62 +46,7 @@
                     </div>
 
                     <div class="mt-10">
-                        <h3 class="text-lg font-medium text-gray-700 mb-4">المعاملات النقدية الأخيرة</h3>
-
-                        <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
-                            @if ($recentCashTransactions->count())
-                                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                                    <thead>
-                                        <tr>
-                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">رقم المرجع</th>
-                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">اسم العميل</th>
-                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">المبلغ</th>
-                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">النوع</th>
-                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">الحالة</th>
-                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">التاريخ</th>
-                                            <th class="px-4 py-2 text-left font-semibold text-gray-600">الإجراءات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @foreach ($recentCashTransactions as $tx)
-                                            <tr>
-                                                <td class="px-4 py-2 text-gray-700">{{ $tx->reference_number ?? 'N/A' }}</td>
-                                                <td class="px-4 py-2 font-medium text-gray-900">{{ $tx->customer_name }}</td>
-                                                <td class="px-4 py-2 text-gray-700">{{ format_int($tx->amount) }} EGP</td>
-                                                <td class="px-4 py-2 text-gray-700">{{ $tx->transaction_type }}</td>
-                                                <td class="px-4 py-2 text-gray-700">{{ $tx->status }}</td>
-                                                <td class="px-4 py-2 text-gray-700">{{ \Carbon\Carbon::parse($tx->transaction_date_time)->format('d/m/y h:i A') }}</td>
-                                                <td class="px-4 py-2 text-right">
-                                                    <a href="{{ route('cash-transactions.details', $tx->id) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-200 transition-colors duration-150 mr-2">
-                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                        </svg>
-                                                        عرض
-                                                    </a>
-                                                    <a href="{{ route('cash-transactions.receipt', $tx->id) }}" class="inline-block text-green-600 hover:text-green-800 mr-2" title="Print Receipt">
-                                                        <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-6 0v4m0 0h4m-4 0H8" />
-                                                        </svg>
-                                                        طباعة
-                                                    </a>
-                                                    <button wire:click="deleteCashTransaction({{ $tx->id }})" class="text-red-600 hover:text-red-800">حذف</button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                            <p class="text-gray-500 text-center py-6">
-                                سيتم عرض تاريخ المعاملات النقدية هنا.
-                                <br>
-                                <a href="{{ route('transactions.index') }}"
-                                    class="text-indigo-600 hover:text-indigo-800">
-                                    عرض جميع المعاملات
-                                </a>
-                            </p>
-                            @endif
-                        </div>
+                        {{-- Removed recent cash transactions table as per request --}}
                     </div>
 
                     <div class="mt-6 text-right">
