@@ -88,9 +88,9 @@
                             {{ $customer->created_at ? $customer->created_at->format('d/m/y') : 'N/A' }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-500 mb-1">أنشئ بواسطة</label>
+                        <label class="block text-sm font-medium text-slate-500 mb-1">الوكيل</label>
                         <div class="text-slate-800 font-semibold">
-                            {{ $customer->createdBy ? $customer->createdBy->name : 'N/A' }}
+                            {{ $customer->agent ? $customer->agent->name : 'N/A' }}
                         </div>
                     </div>
                     <div class="md:col-span-2">
