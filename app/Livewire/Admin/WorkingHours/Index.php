@@ -47,7 +47,7 @@ class Index extends Component
     {
         // Check permissions
         if (!Gate::allows('manage-working-hours')) {
-            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page.');
+            return redirect()->route('dashboard')->with('error', 'لا يمكنك عرض هذه الصفحة.');
         }
 
         // Load users
@@ -121,7 +121,7 @@ class Index extends Component
                     'is_enabled' => $this->isEnabled,
                 ]);
 
-                session()->flash('message', 'Working hours updated successfully.');
+                session()->flash('message', 'تم تحديث ساعات العمل بنجاح.');
             } else {
                 // Check for existing record for the same user and day
                 $existing = WorkingHour::where('user_id', $this->userId)
@@ -136,7 +136,7 @@ class Index extends Component
                         'is_enabled' => $this->isEnabled,
                     ]);
 
-                    session()->flash('message', 'Working hours updated successfully.');
+                    session()->flash('message', 'تم تحديث ساعات العمل بنجاح.');
                 } else {
                     // Create new record
                     WorkingHour::create([
@@ -147,7 +147,7 @@ class Index extends Component
                         'is_enabled' => $this->isEnabled,
                     ]);
 
-                    session()->flash('message', 'Working hours created successfully.');
+                    session()->flash('message', 'تم إنشاء ساعات العمل بنجاح.');
                 }
             }
 

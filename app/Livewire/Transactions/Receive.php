@@ -257,7 +257,7 @@ class Receive extends Component
 
     private function notifyAdmin($transaction)
     {
-        $adminNotificationMessage = "A receive transaction was created with a discount of {$this->discount} EGP.\n"
+        $adminNotificationMessage = "تم إنشاء معاملة إستلام بخصم {$this->discount} EGP.\n"
             . "Transaction Details:" . "\n"
             . "Reference Number: {$transaction->reference_number}\n"
             . "Client: {$this->clientName} ({$this->clientMobile})\n"
@@ -307,7 +307,7 @@ class Receive extends Component
         $line = Line::find($this->selectedLineId);
         $safe = $line->branch->safe;
         if (!$line || !$safe) {
-            $this->errorMessage = 'Line or Safe not found.';
+            $this->errorMessage = 'خط أو خزينة غير موجودة.';
             return;
         }
 
@@ -316,7 +316,7 @@ class Receive extends Component
         $discount = (float) $this->discount;
         $baseCommission = ceil($amount / 500) * 5;
         if ($discount > $baseCommission) {
-            $this->errorMessage = "Discount ({$discount} EGP) cannot be greater than the allowed commission ({$baseCommission} EGP). Please enter a discount less than or equal to the commission.";
+            $this->errorMessage = "الخصم ({$discount} EGP) لا يمكن أن يكون أكبر من العمولة المسموح بها ({$baseCommission} EGP). يرجى إدخال خصم أقل من أو يساوي العمولة.";
             return;
         }
 
@@ -335,12 +335,12 @@ class Receive extends Component
             ->sum('amount');
         if ($monthlyReceived + $this->amount > $line->monthly_limit) {
             $exceededBy = ($monthlyReceived + $this->amount) - $line->monthly_limit;
-            $this->errorMessage = "This transaction would exceed the line's monthly receive limit. Current monthly usage: {$monthlyReceived} EGP, Limit: {$line->monthly_limit} EGP. You would exceed by: {$exceededBy} EGP.";
+            $this->errorMessage = "هذه المعاملة ستتجاوز الحد الشهري للخط. الاستخدام الشهري الحالي: {$monthlyReceived} EGP, الحد: {$line->monthly_limit} EGP. ستتجاوز ب: {$exceededBy} EGP.";
             return;
         }
         if ($dailyReceived + $this->amount > $line->daily_limit) {
             $exceededBy = ($dailyReceived + $this->amount) - $line->daily_limit;
-            $this->errorMessage = "This transaction would exceed the line's daily receive limit. Current daily usage: {$dailyReceived} EGP, Limit: {$line->daily_limit} EGP. You would exceed by: {$exceededBy} EGP.";
+            $this->errorMessage = "هذه المعاملة ستتجاوز الحد اليومي للخط. الاستخدام اليومي الحالي: {$dailyReceived} EGP, الحد: {$line->daily_limit} EGP. ستتجاوز ب: {$exceededBy} EGP.";
             return;
         }
 
@@ -383,7 +383,7 @@ class Receive extends Component
                 }
             } else {
                 DB::rollBack();
-                session()->flash('error', 'Transaction could not be created.');
+                session()->flash('error', 'تعذر إنشاء المعاملة.');
                 return;
             }
         } catch (\Exception $e) {

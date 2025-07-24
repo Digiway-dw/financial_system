@@ -35,7 +35,7 @@ class LogSuccessfulLogout
 
             // Notify all admins and supervisors
             $adminsAndSupervisors = \App\Domain\Entities\User::role(['admin', 'general_supervisor'])->get();
-            $message = "User {$user->name} ({$user->email}) has logged out.";
+            $message = "المستخدم {$user->name} ({$user->email}) قام بتسجيل الخروج.";
             Notification::send($adminsAndSupervisors, new AdminNotification($message));
         }
     }

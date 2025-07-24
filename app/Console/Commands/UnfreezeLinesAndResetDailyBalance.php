@@ -69,8 +69,8 @@ class UnfreezeLinesAndResetDailyBalance extends Command
             
             return 0;
         } catch (\Exception $e) {
-            $this->error('Error resetting usage values: ' . $e->getMessage());
-            Log::error('Failed to reset line usage values', [
+            $this->error('فشل إعادة تعيين قيم الاستخدام: ' . $e->getMessage());
+            Log::error('فشل إعادة تعيين قيم الاستخدام', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);

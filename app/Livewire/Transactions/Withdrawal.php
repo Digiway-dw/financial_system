@@ -203,12 +203,12 @@ class Withdrawal extends Create
         // Check safe balance for all withdrawal types
         $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
         if (!$safe) {
-            session()->flash('error', 'Safe not found.');
+            session()->flash('error', 'خزينة غير موجودة.');
             return;
         }
 
         if ($safe->current_balance < $this->amount) {
-            session()->flash('error', 'Insufficient balance in the selected safe. Available balance: ' . number_format($safe->current_balance, 2) . ' ج.م');
+            session()->flash('error', 'رصيد خزينة الفرع غير كافي. رصيد الخزينة: ' . number_format($safe->current_balance, 2) . ' ج.م');
             return;
         }
 
@@ -230,7 +230,7 @@ class Withdrawal extends Create
                 if ($maxAllowedMonthly !== null && ($monthlyReceived + $this->amount) > $maxAllowedMonthly) {
                     $line->status = 'frozen';
                     $line->save();
-                    session()->flash('error', 'Transaction exceeds the allowed monthly receive limit for this line. The line has been frozen until the start of next month.');
+                    session()->flash('error', 'هذه المعاملة ستتجاوز الحد الشهري للخط. الخط سيتم إنهاؤه حتى بداية الشهر القادم.');
                     return;
                 }
                 $dailyReceived = \App\Models\Domain\Entities\Transaction::where('line_id', $line->id)
@@ -243,7 +243,7 @@ class Withdrawal extends Create
                 if ($maxAllowedDaily !== null && ($dailyReceived + $this->amount) > $maxAllowedDaily) {
                     $line->status = 'frozen';
                     $line->save();
-                    session()->flash('error', 'Transaction exceeds the allowed daily receive limit for this line. The line has been frozen until the end of the day.');
+                    session()->flash('error', 'هذه المعاملة ستتجاوز الحد اليومي للخط. الخط سيتم إنهاؤه حتى نهاية اليوم.');
                     return;
                 }
             }
@@ -252,18 +252,18 @@ class Withdrawal extends Create
         // Additional validation for client wallet withdrawals
         if ($this->withdrawalType === 'client_wallet') {
             if (!$this->clientId) {
-                session()->flash('error', 'Please select a client first.');
+                session()->flash('error', 'يرجى اختيار عميل أولاً.');
                 return;
             }
 
             $client = \App\Models\Domain\Entities\Customer::find($this->clientId);
             if (!$client) {
-                session()->flash('error', 'Selected client not found.');
+                session()->flash('error', 'العميل غير موجود.');
                 return;
             }
 
             if ($client->balance < $this->amount) {
-                session()->flash('error', 'Insufficient client balance. Client balance: ' . number_format($client->balance, 2) . ' ج.م');
+                session()->flash('error', 'رصيد العميل غير كافي. رصيد العميل: ' . number_format($client->balance, 2) . ' ج.م');
                 return;
             }
         }
@@ -271,18 +271,18 @@ class Withdrawal extends Create
         // Additional validation for branch withdrawals
         if ($this->withdrawalType === 'branch') {
             if (!$this->selectedBranchId) {
-                session()->flash('error', 'Please select a branch.');
+                session()->flash('error', 'يرجى اختيار فرع.');
                 return;
             }
 
             $destinationSafe = \App\Models\Domain\Entities\Safe::where('branch_id', $this->selectedBranchId)->first();
             if (!$destinationSafe) {
-                session()->flash('error', 'Selected branch safe not found.');
+                session()->flash('error', 'خزينة الفرع غير موجودة.');
                 return;
             }
 
             if ($destinationSafe->current_balance < $this->amount) {
-                session()->flash('error', 'Insufficient balance in the selected branch safe. Available balance: ' . number_format($destinationSafe->current_balance, 2) . ' ج.م');
+                session()->flash('error', 'رصيد خزينة الفرع غير كافي. رصيد الخزينة: ' . number_format($destinationSafe->current_balance, 2) . ' ج.م');
                 return;
             }
         }
@@ -290,7 +290,7 @@ class Withdrawal extends Create
         // Additional validation for user withdrawals
         if ($this->withdrawalType === 'user') {
             if (!$this->userId) {
-                session()->flash('error', 'Please select a user.');
+                session()->flash('error', 'يرجى اختيار مستخدم.');
                 return;
             }
         }
@@ -298,17 +298,17 @@ class Withdrawal extends Create
         // Additional validation for expense withdrawals
         if ($this->withdrawalType === 'expense') {
             if (!$this->selectedBranchId) {
-                session()->flash('error', 'Please select a branch.');
+                session()->flash('error', 'يرجى اختيار فرع.');
                 return;
             }
 
             if (!$this->selectedExpenseItem) {
-                session()->flash('error', 'Please select an expense type.');
+                session()->flash('error', 'يرجى اختيار نوع المصروف.');
                 return;
             }
 
             if ($this->selectedExpenseItem === 'other' && empty($this->customExpenseItem)) {
-                session()->flash('error', 'Please specify the custom expense type.');
+                session()->flash('error', 'يرجى تحديد نوع المصروف المخصص.');
                 return;
             }
 
@@ -316,7 +316,7 @@ class Withdrawal extends Create
             $user = Auth::user();
             $userRole = $user->role ?? null;
             if (!in_array($userRole, ['admin', 'general_supervisor']) && $user->branch_id != $this->selectedBranchId) {
-                session()->flash('error', 'You can only create expense withdrawals for your own branch.');
+                session()->flash('error', 'لا يمكنك إنشاء مصروفات لفروع أخرى.');
                 return;
             }
         }
@@ -362,7 +362,7 @@ class Withdrawal extends Create
             if ($this->withdrawalType === 'user') {
                 $user = User::find($this->userId);
                 if (!$user) {
-                    session()->flash('error', 'Selected user not found.');
+                    session()->flash('error', 'المستخدم غير موجود.');
                     return;
                 }
                 $customerName = $user->name;
@@ -403,18 +403,18 @@ class Withdrawal extends Create
             if ($this->withdrawalType === 'client_wallet') {
                 $paymentMethod = 'client wallet';
                 if (!$this->clientId) {
-                    session()->flash('error', 'Please select a valid client.');
+                    session()->flash('error', 'يرجى اختيار عميل صالح.');
                     return;
                 }
                 $client = \App\Models\Domain\Entities\Customer::find($this->clientId);
                 if (!$client || !isset($client->balance)) {
-                    session()->flash('error', 'No wallet found for this client.');
+                    session()->flash('error', 'لا يوجد رصيد لهذا العميل.');
                     return;
                 }
 
                 // Check if customer has sufficient balance
                 if ($client->balance < $this->amount) {
-                    session()->flash('error', 'Insufficient balance in client wallet.');
+                    session()->flash('error', 'رصيد العميل غير كافي.');
                     return;
                 }
 

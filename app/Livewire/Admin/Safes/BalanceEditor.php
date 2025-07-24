@@ -29,20 +29,20 @@ class BalanceEditor extends Component
     ];
 
     protected $messages = [
-        'selectedSafeId.required' => 'Please select a safe to edit.',
-        'newBalance.required' => 'Please enter the new balance amount.',
-        'newBalance.integer' => 'Balance must be a whole number (no decimals).',
-        'newBalance.min' => 'Balance cannot be negative.',
-        'adjustmentReason.required' => 'Please provide a reason for this balance adjustment.',
-        'adjustmentReason.min' => 'Reason must be at least 10 characters long.',
-        'adjustmentReason.max' => 'Reason cannot exceed 500 characters.',
+        'selectedSafeId.required' => 'يرجى اختيار خزينة أولاً.',
+        'newBalance.required' => 'يرجى إدخال الرصيد الجديد.',
+        'newBalance.integer' => 'الرصيد يجب أن يكون عددا صحيحا (بدون فواصل).',
+        'newBalance.min' => 'الرصيد لا يمكن أن يكون سالبا.',
+        'adjustmentReason.required' => 'يرجى تقديم سبب لهذا التعديل في الرصيد.',
+        'adjustmentReason.min' => 'يجب أن يكون السبب على الأقل 10 أحرف.',
+        'adjustmentReason.max' => 'السبب لا يمكن أن يتجاوز 500 حرف.',
     ];
 
     public function mount()
     {
         // Only allow admins to access this feature
         if (!Auth::user() || !Auth::user()->hasRole('admin')) {
-            abort(403, 'Only administrators can edit safe balances.');
+            abort(403, 'لا يمكن تعديل رصيد الخزينة للمستخدمين غير المديرين.');
         }
 
         $this->loadSafes();
@@ -85,7 +85,7 @@ class BalanceEditor extends Component
         $this->validate();
 
         if (!$this->selectedSafe) {
-            $this->errorMessage = 'Please select a safe first.';
+            $this->errorMessage = 'يرجى اختيار خزينة أولاً.';
             return;
         }
 
@@ -93,7 +93,7 @@ class BalanceEditor extends Component
         $newBalance = (int) $this->newBalance;
 
         if ($currentBalance == $newBalance) {
-            $this->errorMessage = 'New balance is the same as current balance. No changes needed.';
+            $this->errorMessage = 'الرصيد الجديد هو نفس الرصيد الحالي. لا توجد تغييرات.';
             return;
         }
 
@@ -106,7 +106,7 @@ class BalanceEditor extends Component
         $this->validate();
 
         if (!$this->selectedSafe) {
-            $this->errorMessage = 'Safe selection lost. Please try again.';
+            $this->errorMessage = 'فقدت اختيار الخزينة. يرجى المحاولة مرة أخرى.';
             return;
         }
 
@@ -166,7 +166,7 @@ class BalanceEditor extends Component
                 'error' => $e->getMessage(),
                 'admin_user' => Auth::user()->name,
             ]);
-            $this->errorMessage = 'Failed to update safe balance. Please try again or contact support.';
+            $this->errorMessage = 'فشل تحديث رصيد الخزينة. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.';
         }
     }
 

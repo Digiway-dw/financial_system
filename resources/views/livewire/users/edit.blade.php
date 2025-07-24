@@ -443,7 +443,7 @@
                                     <option value="{{ $value }}">{{ $label }}</option>
                                 @endforeach
                             </select>
-                            <x-input-error class="mt-1 text-red-600 text-xs" :messages="$errors->get('dayOfWeek')" />
+                            <x-input-error class="mt-1 text-red-600 text-xs" :messages="$s->get('dayOfWeek')" />
                         </div>
 
                         <!-- Start Time -->

@@ -35,20 +35,20 @@ class AgentDashboardAccess
 
                 if ($transaction && $transaction->agent_id !== $user->id) {
                     return redirect()->route('transactions.index')
-                        ->with('error', 'You can only view your own transactions.');
+                        ->with('error', 'لا يمكنك عرض معاملات غير خاصة بك.');
                 }
             }
 
             // Prevent access to company financial reports
             if ($request->is('*/reports/financial*') || $request->is('*/reports/profit*')) {
                 return redirect()->route('dashboard.agent')
-                    ->with('error', 'You do not have permission to access financial reports.');
+                    ->with('error', 'لا يمكنك عرض تقارير المالية.');
             }
 
             // Prevent access to safe or line balance modification
             if ($request->is('*/safes/*/edit*') || $request->is('*/lines/*/balance*')) {
                 return redirect()->route('dashboard.agent')
-                    ->with('error', 'You do not have permission to modify balances.');
+                    ->with('error', 'لا يمكنك تعديل الرصيد.');
             }
 
             // Prevent access to user management
@@ -62,7 +62,7 @@ class AgentDashboardAccess
 
                 // Redirect with error message
                 return redirect()->route('dashboard.agent')
-                    ->with('error', 'You do not have permission to access user management.');
+                    ->with('error', 'لا يمكنك عرض قائمة المستخدمين.');
             }
         }
 

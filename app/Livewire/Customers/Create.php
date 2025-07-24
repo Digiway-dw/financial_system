@@ -100,7 +100,7 @@ class Create extends Component
         // Custom validation for unique mobile numbers
         foreach ($this->mobileNumbers as $number) {
             if (\App\Models\Domain\Entities\CustomerMobileNumber::where('mobile_number', $number)->exists()) {
-                $this->addError('mobileNumbers', 'The mobile number ' . $number . ' is already used. Please enter another number.');
+                $this->addError('mobileNumbers', 'الرقم ' . $number . ' مستخدم بالفعل. يرجى إدخال رقم آخر.');
                 return;
             }
         }
@@ -131,12 +131,12 @@ class Create extends Component
             // Set success status
             $this->createdCustomer = $customer->fresh(['mobileNumbers', 'branch', 'agent', 'createdBy']); // Reload with relationships
             $this->creationStatus = 'success';
-            $this->statusMessage = 'Customer created successfully!';
+            $this->statusMessage = 'تم إنشاء العميل بنجاح!';
             $this->showStatusPage = true;
         } catch (\Exception $e) {
             // Set error status
             $this->creationStatus = 'error';
-            $this->statusMessage = 'Failed to create customer: ' . $e->getMessage();
+            $this->statusMessage = 'فشل إنشاء العميل: ' . $e->getMessage();
             $this->showStatusPage = true;
         }
     }

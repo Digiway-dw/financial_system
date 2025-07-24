@@ -34,7 +34,7 @@ class LogSuccessfulLogin
 
         // Notify all admins and supervisors
         $adminsAndSupervisors = \App\Domain\Entities\User::role(['admin', 'general_supervisor'])->get();
-        $message = "User {$user->name} ({$user->email}) has logged in.";
+        $message = "المستخدم {$user->name} ({$user->email}) قام بتسجيل الدخول.";
         Notification::send($adminsAndSupervisors, new AdminNotification($message));
     }
 }

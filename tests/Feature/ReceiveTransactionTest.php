@@ -243,7 +243,7 @@ test('receive transaction fails with insufficient safe balance', function () {
         ->set('amount', 1000) // Requires 990 from safe (1000 - 10 commission)
         ->set('selectedLineId', $this->line->id)
         ->call('submitTransaction')
-        ->assertSet('errorMessage', 'Please resolve safe balance issues before submitting.');
+        ->assertSet('errorMessage', 'رصيد خزينة الفرع غير كافي. رصيد الخزينة: 500.00 ج.م');
 });
 
 test('receive transaction fails when line not found', function () {
@@ -254,7 +254,7 @@ test('receive transaction fails when line not found', function () {
         ->set('amount', 500)
         ->set('selectedLineId', 99999) // Non-existent line
         ->call('submitTransaction')
-        ->assertSet('errorMessage', 'Failed to create receive transaction: Selected line not found.');
+        ->assertSet('errorMessage', 'خط أو خزينة غير موجودة.');
 });
 
 test('receive transaction fails when no safe exists for branch', function () {
@@ -268,7 +268,7 @@ test('receive transaction fails when no safe exists for branch', function () {
         ->set('amount', 500)
         ->set('selectedLineId', $this->line->id)
         ->call('submitTransaction')
-        ->assertSet('errorMessage', 'Failed to create receive transaction: No safe found for this branch.');
+        ->assertSet('errorMessage', 'لا يوجد خزينة لهذا الفرع.');
 });
 
 test('form resets correctly after successful transaction', function () {

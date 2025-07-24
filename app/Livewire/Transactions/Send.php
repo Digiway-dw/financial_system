@@ -280,24 +280,24 @@ class Send extends Component
 
         // Additional validation
         if ($amount <= 0) {
-            $this->errorMessage = 'Invalid transaction amount.';
+            $this->errorMessage = 'المبلغ غير صالح.';
             return;
         }
 
         // Check discount against base commission (before discount)
         $baseCommission = ceil($amount / 500) * 5;
         if ($discount > $baseCommission) {
-            $this->errorMessage = 'Discount cannot be greater than commission.';
+            $this->errorMessage = 'الخصم لا يمكن أن يكون أكبر من العمولة.';
             return;
         }
 
         if ($this->collectFromCustomerWallet && $clientBalance < $amount) {
-            $this->errorMessage = 'Client balance is insufficient for this transaction.';
+            $this->errorMessage = 'رصيد العميل غير كافي لهذه المعاملة.';
             return;
         }
 
         if ($this->lowBalanceWarning) {
-            $this->errorMessage = 'Please resolve balance issues before submitting.';
+            $this->errorMessage = 'يرجى حل مشكلات الرصيد قبل إرسال المعاملة.';
             return;
         }
 
@@ -340,7 +340,7 @@ class Send extends Component
                 // Get selected line for transaction
                 $line = Line::find($this->selectedLineId);
                 if (!$line) {
-                    throw new \Exception('Selected line not found.');
+                    throw new \Exception('الخط غير موجود.');
                 }
 
                 $safe = $line->branch->safe;
@@ -348,7 +348,7 @@ class Send extends Component
                     // Try to find any safe for this branch as fallback
                     $safe = Safe::where('branch_id', $line->branch_id)->first();
                     if (!$safe) {
-                        throw new \Exception('No safe found for this branch.');
+                        throw new \Exception('لا يوجد خزينة لهذا الفرع.');
                     }
                 }
 
@@ -375,7 +375,7 @@ class Send extends Component
 
                 // Notify admin if a discount was applied
                 if ($discount > 0) {
-                    $adminNotificationMessage = "A send transaction was created with a discount of {$discount} EGP.\n"
+                    $adminNotificationMessage = "تم إنشاء معاملة إرسال بخصم {$discount} EGP.\n"
                         . "Transaction Details:" . "\n"
                         . "Reference Number: {$transaction->reference_number}\n"
                         . "Client: {$this->clientName} ({$this->clientMobile})\n"
@@ -398,7 +398,7 @@ class Send extends Component
                 return redirect()->route('transactions.receipt', ['transaction' => $transaction->id]);
             });
         } catch (\Exception $e) {
-            $this->errorMessage = 'Failed to create transaction: ' . $e->getMessage();
+            $this->errorMessage = 'فشل إنشاء المعاملة: ' . $e->getMessage();
         }
     }
 
