@@ -254,7 +254,8 @@ class Dashboard extends Component
             $data['totalLines'] = count($this->lineRepository->all());
             $data['totalSafes'] = count($this->safeRepository->all());
             $data['totalCustomers'] = Customer::count();
-            $data['totalTransactions'] = count($this->transactionRepository->all());
+            // Count both Transaction and CashTransaction for totalTransactions
+            $data['totalTransactions'] = Transaction::count() + CashTransaction::count();
             $data['totalSafeBalance'] = collect($this->safeRepository->all())->sum('current_balance');
 
             $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);
@@ -314,7 +315,8 @@ class Dashboard extends Component
             $data['totalSafes'] = count($this->safeRepository->all());
             $data['totalLines'] = count($this->lineRepository->all());
             $data['totalCustomers'] = Customer::count();
-            $data['totalTransactions'] = count($this->transactionRepository->all());
+            // Count both Transaction and CashTransaction for totalTransactions
+            $data['totalTransactions'] = Transaction::count() + CashTransaction::count();
             $data['totalSafeBalance'] = collect($this->safeRepository->all())->sum('current_balance');
             $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);
             $data['totalTransferred'] = $allTransactions['totals']['total_transferred'] ?? 0;
