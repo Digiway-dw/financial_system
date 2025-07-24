@@ -68,7 +68,7 @@
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-2 py-3 text-center">
-                            <input type="checkbox" wire:click="toggleSelectAllTraineeLines" @if(isset($selectedTraineeLineIds) && count($selectedTraineeLineIds) === count($traineeLines) && count($traineeLines) > 0) checked @endif />
+                            <input type="checkbox" id="select-all-trainee-lines" onclick="toggleAllTraineeLines(this)" @if(isset($selectedTraineeLineIds) && count($selectedTraineeLineIds) === count($traineeLines) && count($traineeLines) > 0) checked @endif />
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">رقم الهاتف</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">الرصيد</th>
@@ -88,21 +88,20 @@
                             $currentBalance = $line->current_balance ?? 0;
                             $dailyStartingBalance = $line->daily_starting_balance ?? 0;
                             $monthlyStartingBalance = $line->starting_balance ?? 0;
-                            $dailyRemaining = max(0, $dailyLimit - $currentBalance);
+                            $dailyRemaining = isset($line->daily_remaining) ? $line->daily_remaining : max(0, $dailyLimit - $currentBalance);
                             $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
                             $dailyUsage = max(0, $currentBalance - $dailyStartingBalance);
                             $monthlyUsage = max(0, $currentBalance - $monthlyStartingBalance);
-                            $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
                             $circleColor = 'bg-green-400';
-                            if ($usagePercent >= 98) {
+                            if ($dailyRemaining <= 240) {
                                 $circleColor = 'bg-red-500';
-                            } elseif ($usagePercent >= 80) {
+                            } elseif ($dailyRemaining <= 1800) {
                                 $circleColor = 'bg-yellow-400';
                             }
                         @endphp
                         <tr>
                             <td class="px-2 py-4 text-center">
-                                <input type="checkbox" wire:click="toggleSelectTraineeLine({{ $line->id }})" @if(isset($selectedTraineeLineIds) && in_array($line->id, $selectedTraineeLineIds)) checked @endif />
+                                <input type="checkbox" class="trainee-line-checkbox" value="{{ $line->id }}" onclick="updateTraineeLinesSum()" @if(isset($selectedTraineeLineIds) && in_array($line->id, $selectedTraineeLineIds)) checked @endif />
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 <div class="flex items-center">
@@ -125,15 +124,51 @@
                 <tfoot>
                     <tr class="bg-gray-50 font-bold">
                         <td class="px-2 py-3 text-center" colspan="2">Selected Total</td>
-                        <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($selectedTraineeTotals['current_balance'] ?? 0) }} EGP</td>
-                        <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($selectedTraineeTotals['daily_limit'] ?? 0) }} EGP</td>
-                        <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($selectedTraineeTotals['daily_usage'] ?? 0) }} EGP</td>
-                        <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($selectedTraineeTotals['monthly_limit'] ?? 0) }} EGP</td>
-                        <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($selectedTraineeTotals['monthly_usage'] ?? 0) }} EGP</td>
+                        <td class="px-6 py-3 text-sm text-blue-700" id="selected-trainee-current-balance">0 EGP</td>
+                        <td class="px-6 py-3 text-sm text-blue-700" id="selected-trainee-daily-remaining">0 EGP</td>
+                        <td class="px-6 py-3 text-sm text-blue-700" id="selected-trainee-daily-usage">0 EGP</td>
+                        <td class="px-6 py-3 text-sm text-blue-700" id="selected-trainee-monthly-remaining">0 EGP</td>
+                        <td class="px-6 py-3 text-sm text-blue-700" id="selected-trainee-monthly-usage">0 EGP</td>
                         <td colspan="2"></td>
                     </tr>
                 </tfoot>
             </table>
+            <script>
+                function parseEGP(str) {
+                    return parseInt((str || '').replace(/,/g, '').replace(/\s*EGP/, '')) || 0;
+                }
+                function updateTraineeLinesSum() {
+                    let checkboxes = document.querySelectorAll('.trainee-line-checkbox');
+                    let totalCurrent = 0,
+                        totalDailyRem = 0,
+                        totalDailyUsage = 0,
+                        totalMonthlyRem = 0,
+                        totalMonthlyUsage = 0;
+                    checkboxes.forEach(cb => {
+                        if (cb.checked) {
+                            let row = cb.closest('tr');
+                            let tds = row.querySelectorAll('td');
+                            totalCurrent += parseEGP(tds[2].innerText);
+                            totalDailyRem += parseEGP(tds[3].innerText);
+                            totalDailyUsage += parseEGP(tds[4].innerText);
+                            totalMonthlyRem += parseEGP(tds[5].innerText);
+                            totalMonthlyUsage += parseEGP(tds[6].innerText);
+                        }
+                    });
+                    document.getElementById('selected-trainee-current-balance').innerText = totalCurrent.toLocaleString() + ' EGP';
+                    document.getElementById('selected-trainee-daily-remaining').innerText = totalDailyRem.toLocaleString() + ' EGP';
+                    document.getElementById('selected-trainee-daily-usage').innerText = totalDailyUsage.toLocaleString() + ' EGP';
+                    document.getElementById('selected-trainee-monthly-remaining').innerText = totalMonthlyRem.toLocaleString() + ' EGP';
+                    document.getElementById('selected-trainee-monthly-usage').innerText = totalMonthlyUsage.toLocaleString() + ' EGP';
+                }
+                function toggleAllTraineeLines(source) {
+                    let checkboxes = document.querySelectorAll('.trainee-line-checkbox');
+                    checkboxes.forEach(cb => {
+                        cb.checked = source.checked;
+                    });
+                    updateTraineeLinesSum();
+                }
+            </script>
         </div>
     </div>
 @endif

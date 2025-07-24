@@ -160,6 +160,11 @@ class AgentDashboard extends Component
         $this->agentLines = $lines->map(function ($line) {
             $lineArray = is_object($line) ? $line->toArray() : $line;
 
+            // Add daily_remaining for alert circle color logic
+            $lineArray['daily_remaining'] = isset($lineArray['daily_limit'], $lineArray['current_balance'])
+                ? max(0, $lineArray['daily_limit'] - $lineArray['current_balance'])
+                : 0;
+
             // Add color classes for daily usage
             $lineArray['daily_usage_class'] = '';
             if (

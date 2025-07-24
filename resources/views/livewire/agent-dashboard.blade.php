@@ -312,21 +312,27 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($agentLines as $line)
+                            {{-- Debug: --}}
+                            <div style="font-size:10px;">
+                                daily_limit: {{ $line->daily_limit }},
+                                current_balance: {{ $line->current_balance }},
+                                daily_remaining: {{ $line->daily_remaining }}
+                            </div>
                             @php
                                 $dailyLimit = $line->daily_limit ?? 0;
                                 $monthlyLimit = $line->monthly_limit ?? 0;
                                 $currentBalance = $line->current_balance ?? 0;
                                 $dailyStartingBalance = $line->daily_starting_balance ?? 0;
                                 $monthlyStartingBalance = $line->starting_balance ?? 0;
-                                $dailyRemaining = max(0, $dailyLimit - $currentBalance);
+                                $dailyRemaining = isset($line->daily_remaining) ? $line->daily_remaining : (($dailyLimit - $currentBalance) ?? 0);
                                 $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
                                 $dailyUsage = max(0, $currentBalance - $dailyStartingBalance);
                                 $monthlyUsage = max(0, $currentBalance - $monthlyStartingBalance);
                                 $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
                                 $circleColor = 'bg-green-400';
-                                if ($usagePercent >= 98) {
+                                if ($line->daily_remaining <= 240) {
                                     $circleColor = 'bg-red-500';
-                                } elseif ($usagePercent >= 80) {
+                                } elseif ($line->daily_remaining <= 1800) {
                                     $circleColor = 'bg-yellow-400';
                                 }
                             @endphp

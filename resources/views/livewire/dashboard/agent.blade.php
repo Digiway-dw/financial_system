@@ -284,15 +284,14 @@
                                 $dailyStartingBalance = $line->daily_starting_balance ?? 0;
                                 $monthlyStartingBalance = $line->starting_balance ?? 0;
                                 // Calculate daily and monthly remaining
-                                $dailyRemaining = max(0, $dailyLimit - $currentBalance);
+                                $dailyRemaining = isset($line->daily_remaining) ? $line->daily_remaining : max(0, $dailyLimit - $currentBalance);
                                 $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
                                 $dailyUsage = max(0, $currentBalance - $dailyStartingBalance);
                                 $monthlyUsage = max(0, $currentBalance - $monthlyStartingBalance);
-                                $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
                                 $circleColor = 'bg-green-400';
-                                if ($usagePercent >= 98) {
+                                if ($dailyRemaining <= 240) {
                                     $circleColor = 'bg-red-500';
-                                } elseif ($usagePercent >= 80) {
+                                } elseif ($dailyRemaining <= 1800) {
                                     $circleColor = 'bg-yellow-400';
                                 }
                             @endphp

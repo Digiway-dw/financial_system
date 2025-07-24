@@ -41,6 +41,8 @@ class Dashboard extends Component
     public $sendTransactionsCount = 0;
     public $receiveTransactionsCount = 0;
     public $totalTransactionsCount = 0;
+    public $selectedTraineeLineIds = [];
+    public $traineeLines = [];
 
     // Sorting properties for line tables
     public $sortField = 'mobile_number';
@@ -80,6 +82,14 @@ class Dashboard extends Component
             $this->branches = collect($this->branchRepository->all());
             $this->selectedBranchId = request('branch', 'all');
             $this->updateAuditorMetrics();
+        } elseif ($user->hasRole('trainee')) {
+            // For trainees, load traineeLines for their branch
+            $this->branches = collect($this->branchRepository->all());
+            $this->selectedBranchId = $user->branch_id;
+            $lines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
+            $this->traineeLines = $lines->map(function ($line) {
+                return is_object($line) ? $line : (object)$line;
+            })->values()->all();
         } else {
             $this->branches = collect($this->branchRepository->all());
             $this->selectedBranchId = request('branch', 'all');
@@ -208,6 +218,15 @@ class Dashboard extends Component
         } else {
             $this->sortField = $field;
             $this->sortDirection = 'asc';
+        }
+    }
+
+    public function toggleSelectAllTraineeLines()
+    {
+        if (isset($this->traineeLines) && count($this->selectedTraineeLineIds) === count($this->traineeLines)) {
+            $this->selectedTraineeLineIds = [];
+        } else {
+            $this->selectedTraineeLineIds = collect($this->traineeLines)->pluck('id')->toArray();
         }
     }
 
