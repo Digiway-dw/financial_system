@@ -65,8 +65,10 @@
                 </div>
                 <div class="flex items-end gap-2">
                     <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">توليد التقرير</button>
+                    <button type="button" wire:click="exportSummaryPdf" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">تصدير ملخص النظام</button>
                     <button type="button" wire:click="exportExcel" class="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition">تصدير الـ Excel</button>
-                    <button type="button" wire:click="exportPdf" class="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition">تصدير الـ PDF</button>
+                    <button type="button" wire:click="exportPdf" class="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition">تصدير المعاملات</button>
+                    <button type="button" wire:click="exportAllPdf" class="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition">تصدير الكل</button>
                 </div>
             </form>
         </div>

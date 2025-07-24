@@ -145,7 +145,7 @@ class Index extends Component
         })->values()->all();
 
         // Customer balances
-        $this->customerBalances = \App\Models\Domain\Entities\Customer::all()->map(function($customer) {
+        $this->customerBalances = \App\Models\Domain\Entities\Customer::where('is_client', true)->get()->map(function($customer) {
             return [
                 'customer' => $customer->name,
                 'balance' => $customer->balance,
@@ -187,6 +187,51 @@ class Index extends Component
     {
         $export = new \App\Exports\TransactionsExport(collect($this->transactions));
         return \Maatwebsite\Excel\Facades\Excel::download($export, 'transactions_report.xlsx');
+    }
+
+    public function exportSummaryPdf()
+    {
+        $summary = [
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+            'totalTransferred' => $this->financialSummary['total_transfer'] ?? 0,
+            'totalCommission' => $this->financialSummary['commission_earned'] ?? 0,
+            'totalDeductions' => $this->financialSummary['total_discounts'] ?? 0,
+            'netProfits' => $this->financialSummary['net_profit'] ?? 0,
+            'financialSummary' => $this->financialSummary,
+            'customerBalances' => $this->customerBalances,
+            'safeBalances' => $this->safeBalances,
+            'lineBalances' => $this->lineBalances,
+        ];
+        $html = view('reports.summary_pdf', $summary)->render();
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4', 'default_font' => 'dejavusans']);
+        $mpdf->WriteHTML($html);
+        return response()->streamDownload(function () use ($mpdf) {
+            echo $mpdf->Output('', 'S');
+        }, 'system_summary_report.pdf');
+    }
+
+    public function exportAllPdf()
+    {
+        $summary = [
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+            'totalTransferred' => $this->financialSummary['total_transfer'] ?? 0,
+            'totalCommission' => $this->financialSummary['commission_earned'] ?? 0,
+            'totalDeductions' => $this->financialSummary['total_discounts'] ?? 0,
+            'netProfits' => $this->financialSummary['net_profit'] ?? 0,
+            'financialSummary' => $this->financialSummary,
+            'customerBalances' => $this->customerBalances,
+            'safeBalances' => $this->safeBalances,
+            'lineBalances' => $this->lineBalances,
+            'transactions' => $this->transactions,
+        ];
+        $html = view('reports.all_pdf', $summary)->render();
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4', 'default_font' => 'dejavusans']);
+        $mpdf->WriteHTML($html);
+        return response()->streamDownload(function () use ($mpdf) {
+            echo $mpdf->Output('', 'S');
+        }, 'full_report.pdf');
     }
 
     public function exportPdf()
