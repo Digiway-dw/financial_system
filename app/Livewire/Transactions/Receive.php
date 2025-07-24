@@ -293,7 +293,7 @@ class Receive extends Component
                 'mobile_number' => $this->clientMobile,
                 'customer_code' => $code,
                 'gender' => $this->clientGender ?: 'male',
-                'is_client' => true,
+                'is_client' => false,
                 'agent_id' => $user ? $user->id : null,
                 'branch_id' => $user ? $user->branch_id : null,
                 'balance' => 0,
