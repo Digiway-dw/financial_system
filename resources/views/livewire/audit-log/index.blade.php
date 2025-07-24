@@ -4,10 +4,12 @@
             cursor: pointer;
             transition: all 0.2s ease-in-out;
         }
+
         .sortable-header:hover {
             background-color: #f3f4f6 !important;
             transform: translateY(-1px);
         }
+
         .sortable-header:active {
             transform: translateY(0);
         }
@@ -472,8 +474,10 @@
                                                 </path>
                                             </svg>
                                         </div>
-                                        <h3 class="text-lg font-medium text-gray-900 mb-2">لم يتم العثور على سجلات التدقيق</h3>
-                                        <p class="text-sm text-gray-500">حاول تعديل معايير البحث أو التحقق مرة أخرى لاحقًا
+                                        <h3 class="text-lg font-medium text-gray-900 mb-2">لم يتم العثور على سجلات
+                                            التدقيق</h3>
+                                        <p class="text-sm text-gray-500">حاول تعديل معايير البحث أو التحقق مرة أخرى
+                                            لاحقًا
                                             للنشاط الجديد.</p>
                                     </div>
                                 </td>
@@ -530,7 +534,7 @@
                         </button>
                     </div>
                     <div class="bg-gray-50 rounded-xl p-4 max-h-96 overflow-y-auto">
-                        <pre id="propertiesContent" class="text-sm text-gray-800 whitespace-pre-wrap font-mono"></pre>
+                        <div id="propertiesContent" class="text-sm text-gray-800"></div>
                     </div>
                 </div>
                 <div class="bg-gray-50 px-6 py-3">
@@ -545,7 +549,21 @@
 
     <script>
         function showProperties(properties) {
-            document.getElementById('propertiesContent').textContent = JSON.stringify(properties, null, 2);
+            const container = document.getElementById('propertiesContent');
+            container.innerHTML = '';
+            // If properties has 'attributes', use it, else use as is
+            const data = properties.attributes || properties;
+            if (typeof data === 'object' && data !== null) {
+                let html = '<table class="min-w-full divide-y divide-gray-200"><tbody>';
+                for (const [key, value] of Object.entries(data)) {
+                    html +=
+                        `<tr><td class='py-2 pr-4 font-semibold text-gray-700'>${key}</td><td class='py-2'>${value}</td></tr>`;
+                }
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } else {
+                container.textContent = data;
+            }
             document.getElementById('propertiesModal').classList.remove('hidden');
         }
 
