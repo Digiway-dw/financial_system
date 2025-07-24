@@ -270,29 +270,7 @@
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200 sortable-header"
-                                wire:click="sortBy('log_name')">
-                                <div class="flex items-center space-x-1">
-                                    <span>الفئة</span>
-                                    @if ($sortField === 'log_name')
-                                        <div class="text-purple-600">
-                                            @if ($sortDirection === 'asc')
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                                </svg>
-                                            @else
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                </svg>
-                                            @endif
-                                        </div>
-                                    @endif
-                                </div>
-                            </th>
+                            <!-- Removed 'الفئة' column header -->
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-200 sortable-header"
                                 wire:click="sortBy('event')">
                                 <div class="flex items-center space-x-1">
@@ -345,25 +323,7 @@
                                     </div>
                                 </td>
 
-                                <!-- Log Category -->
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @php
-                                        $categoryColors = [
-                                            'default' => 'bg-gray-100 text-gray-800',
-                                            'transaction' => 'bg-blue-100 text-blue-800',
-                                            'user' => 'bg-green-100 text-green-800',
-                                            'system' => 'bg-yellow-100 text-yellow-800',
-                                            'security' => 'bg-red-100 text-red-800',
-                                            'financial' => 'bg-purple-100 text-purple-800',
-                                        ];
-                                        $categoryClass =
-                                            $categoryColors[$activity->log_name] ?? $categoryColors['default'];
-                                    @endphp
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $categoryClass }}">
-                                        {{ ucfirst($activity->log_name) }}
-                                    </span>
-                                </td>
+                                <!-- Removed 'الفئة' column cell -->
 
                                 <!-- Event Type -->
                                 <td class="px-6 py-4 whitespace-nowrap">
