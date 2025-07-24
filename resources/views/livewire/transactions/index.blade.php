@@ -525,7 +525,8 @@
                                         طباعة
                                     </a>
                                     @can('delete-transactions')
-                                        <button wire:click="deleteTransaction('{{ $transaction['id'] }}')"
+                                        <button x-data
+                                            @click="if(confirm('هل أنت متأكد أنك تريد حذف هذه المعاملة؟')) { $wire.deleteTransaction('{{ $transaction['id'] }}') }"
                                             class="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 text-xs font-bold rounded-lg hover:bg-red-200 transition-colors duration-150 mb-1">حذف</button>
                                     @endcan
                                 </td>
