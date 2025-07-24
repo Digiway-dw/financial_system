@@ -4,10 +4,12 @@
             cursor: pointer;
             transition: all 0.2s ease-in-out;
         }
+
         .sortable-header:hover {
             background-color: #f3f4f6 !important;
             transform: translateY(-1px);
         }
+
         .sortable-header:active {
             transform: translateY(0);
         }
@@ -18,38 +20,52 @@
         <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center border border-blue-100">
             <h2 class="text-lg font-bold text-blue-800 mb-4 flex items-center">
                 <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
                 بحث عن المعاملات برقم المرجع
             </h2>
             <form method="GET" action="{{ route('agent-dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
                 <div class="flex gap-2">
-                    <input type="text" name="reference_number" id="reference_number" value="{{ request('reference_number') }}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200" placeholder="Enter reference number...">
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">بحث</button>
+                    <input type="text" name="reference_number" id="reference_number"
+                        value="{{ request('reference_number') }}"
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200"
+                        placeholder="Enter reference number...">
+                    <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">بحث</button>
                 </div>
             </form>
-            @if(request('reference_number'))
-                @if(isset($searchedTransaction) && $searchedTransaction)
+            @if (request('reference_number'))
+                @if (isset($searchedTransaction) && $searchedTransaction)
                     <div class="mt-6 w-full max-w-md bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <h4 class="font-bold text-blue-800 mb-2">تفاصيل المعاملة</h4>
                         <div class="text-sm text-gray-700">
-                            <div><span class="font-semibold">المرجع:</span> {{ $searchedTransaction->reference_number }}</div>
-                            <div><span class="font-semibold">المبلغ:</span> {{ format_int($searchedTransaction->amount) }}</div>
+                            <div><span class="font-semibold">المرجع:</span> {{ $searchedTransaction->reference_number }}
+                            </div>
+                            <div><span class="font-semibold">المبلغ:</span>
+                                {{ format_int($searchedTransaction->amount) }}</div>
                             <div><span class="font-semibold">الحالة:</span> {{ $searchedTransaction->status }}</div>
-                            <div><span class="font-semibold">التاريخ:</span> {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
+                            <div><span class="font-semibold">التاريخ:</span>
+                                {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}
+                            </div>
                         </div>
                         <div class="mt-4 text-right">
-                            <a href="{{ route('transactions.print', $searchedTransaction->id) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                            <a href="{{ route('transactions.print', $searchedTransaction->id) }}"
+                                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 9V2h12v7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
                                     <rect width="12" height="8" x="6" y="14" rx="2" />
                                 </svg>
                                 طباعة
                             </a>
-                            <a href="{{ $searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? route('transactions.details', $searchedTransaction->id) : route('transactions.cash.details', $searchedTransaction->id) }}" class="ml-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <a href="{{ $searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? route('transactions.details', $searchedTransaction->id) : route('transactions.cash.details', $searchedTransaction->id) }}"
+                                class="ml-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0A9 9 0 11 3 12a9 9 0 0118 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12H9m12 0A9 9 0 11 3 12a9 9 0 0118 0z" />
                                 </svg>
                                 عرض
                             </a>
@@ -62,64 +78,77 @@
         </div>
     </div>
 
-    @if($isAdminOrSupervisor)
-    <!-- Branch Selection and Switch Button for Admin/Supervisor only -->
-    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div class="flex items-center gap-2">
-            <label for="branches" class="font-semibold text-gray-700">اختر الفروع:</label>
-            <select wire:model.live="selectedBranches" id="branches" multiple
-                class="border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200">
-                <option value="all" wire:click="selectAllBranches">جميع الفروع</option>
-                @foreach ($branches as $branch)
-                    <option value="{{ $branch->id }}" @if (in_array($branch->id, $selectedBranches)) selected @endif>
-                        {{ $branch->name }}
-                    </option>
-                @endforeach
-            </select>
-            <button type="button" wire:click="selectAllBranches" 
-                class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-xs">
-                اختر الكل
-            </button>
+    @if ($isAdminOrSupervisor)
+        <!-- Branch Selection and Switch Button for Admin/Supervisor only -->
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <label for="branches" class="font-semibold text-gray-700">اختر الفروع:</label>
+                <select wire:model.live="selectedBranches" id="branches" multiple
+                    class="border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200">
+                    <option value="all" wire:click="selectAllBranches">جميع الفروع</option>
+                    @foreach ($branches as $branch)
+                        <option value="{{ $branch->id }}" @if (in_array($branch->id, $selectedBranches)) selected @endif>
+                            {{ $branch->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="button" wire:click="selectAllBranches"
+                    class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-xs">
+                    اختر الكل
+                </button>
+            </div>
+            <a href="{{ route('dashboard') }}"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 transition">
+                التبديل إلى لوحة التحكم الإدارية
+            </a>
         </div>
-        <a href="{{ route('dashboard') }}"
-            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 transition">
-            التبديل إلى لوحة التحكم الإدارية
-        </a>
-    </div>
     @endif
 
     <!-- Transaction Search -->
-    @if(request()->query('search_transaction'))
+    @if (request()->query('search_transaction'))
         <div class="mb-6 bg-white rounded-xl shadow p-6 flex flex-col items-center">
             <form method="GET" action="{{ route('agent-dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
                 <input type="hidden" name="search_transaction" value="1">
-                <label for="reference_number" class="block text-sm font-medium text-gray-700">بحث عن المعاملة برقم المرجع</label>
+                <label for="reference_number" class="block text-sm font-medium text-gray-700">بحث عن المعاملة برقم
+                    المرجع</label>
                 <div class="flex gap-2">
-                    <input type="text" name="reference_number" id="reference_number" value="{{ request('reference_number') }}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200" placeholder="أدخل رقم المرجع...">
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">بحث</button>
+                    <input type="text" name="reference_number" id="reference_number"
+                        value="{{ request('reference_number') }}"
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200"
+                        placeholder="أدخل رقم المرجع...">
+                    <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">بحث</button>
                 </div>
             </form>
-            @if(isset($searchedTransaction))
+            @if (isset($searchedTransaction))
                 <div class="mt-6 w-full max-w-md bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <h4 class="font-bold text-blue-800 mb-2">تفاصيل المعاملة</h4>
                     <div class="text-sm text-gray-700">
-                        <div><span class="font-semibold">المرجع:</span> {{ $searchedTransaction->reference_number }}</div>
-                        <div><span class="font-semibold">المبلغ:</span> {{ format_int($searchedTransaction->amount) }}</div>
+                        <div><span class="font-semibold">المرجع:</span> {{ $searchedTransaction->reference_number }}
+                        </div>
+                        <div><span class="font-semibold">المبلغ:</span> {{ format_int($searchedTransaction->amount) }}
+                        </div>
                         <div><span class="font-semibold">الحالة:</span> {{ $searchedTransaction->status }}</div>
-                        <div><span class="font-semibold">التاريخ:</span> {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
+                        <div><span class="font-semibold">التاريخ:</span>
+                            {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
                     </div>
                     <div class="mt-4 text-right">
-                        <a href="{{ route('transactions.print', $searchedTransaction->id) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        <a href="{{ route('transactions.print', $searchedTransaction->id) }}"
+                            class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 9V2h12v7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
                                 <rect width="12" height="8" x="6" y="14" rx="2" />
                             </svg>
                             طباعة
                         </a>
-                        <a href="{{ $searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? route('transactions.details', $searchedTransaction->id) : route('transactions.cash.details', $searchedTransaction->id) }}" class="ml-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <a href="{{ $searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? route('transactions.details', $searchedTransaction->id) : route('transactions.cash.details', $searchedTransaction->id) }}"
+                            class="ml-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0A9 9 0 11 3 12a9 9 0 0118 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12H9m12 0A9 9 0 11 3 12a9 9 0 0118 0z" />
                             </svg>
                             عرض
                         </a>
@@ -142,24 +171,29 @@
         </thead>
         <tbody>
             @forelse ($branchSafes as $safe)
-                @if($isAdminOrSupervisor || auth()->user()->branch_id == ($safe['branch_id'] ?? null))
-                <tr class="text-center">
-                    <td class="px-4 py-2 border font-semibold">{{ $safe['name'] }}</td>
-                    <td class="px-4 py-2 border text-blue-700 font-bold">{{ format_int($safe['current_balance']) }}</td>
-                    <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}</td>
-                </tr>
+                @if ($isAdminOrSupervisor || auth()->user()->branch_id == ($safe['branch_id'] ?? null))
+                    <tr class="text-center">
+                        <td class="px-4 py-2 border font-semibold">{{ $safe['name'] }}</td>
+                        <td class="px-4 py-2 border text-blue-700 font-bold">
+                            {{ format_int($safe['current_balance']) }}</td>
+                        <td class="px-4 py-2 border text-purple-700 font-bold">{{ $safe['todays_transactions'] ?? 0 }}
+                        </td>
+                    </tr>
                 @endif
             @empty
-                <tr><td colspan="4" class="px-4 py-2 border text-center text-gray-500">لم يتم العثور على خزنات للفرع الخاص بك.</td></tr>
+                <tr>
+                    <td colspan="4" class="px-4 py-2 border text-center text-gray-500">لم يتم العثور على خزنات
+                        للفرع الخاص بك.</td>
+                </tr>
             @endforelse
         </tbody>
         <tfoot>
-            @if($isAdminOrSupervisor)
-            <tr class="bg-gray-50 text-center font-bold">
-                <td class="px-4 py-2 border">
-                <td class="px-4 py-2 border text-blue-700">{{ format_int($totalSafesBalance) }}</td>
-                <td class="px-4 py-2 border"></td>
-            </tr>
+            @if ($isAdminOrSupervisor)
+                <tr class="bg-gray-50 text-center font-bold">
+                    <td class="px-4 py-2 border">
+                    <td class="px-4 py-2 border text-blue-700">{{ format_int($totalSafesBalance) }}</td>
+                    <td class="px-4 py-2 border"></td>
+                </tr>
             @endif
         </tfoot>
     </table>
@@ -226,20 +260,20 @@
                 </a>
             @endcan
             @can('manage-customers')
-            <a href="{{ route('customers.create') }}"
-                class="group flex items-center p-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 rounded-xl transition-all duration-200">
-                <div
-                    class="w-12 h-12 bg-indigo-100 group-hover:bg-indigo-200 rounded-lg flex items-center justify-center mr-4">
-                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-indigo-900">إضافة العميل</h3>
-                    <p class="text-sm text-indigo-700">تسجيل عميل جديد</p>
-                </div>
-            </a>
+                <a href="{{ route('customers.create') }}"
+                    class="group flex items-center p-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 rounded-xl transition-all duration-200">
+                    <div
+                        class="w-12 h-12 bg-indigo-100 group-hover:bg-indigo-200 rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-indigo-900">إضافة العميل</h3>
+                        <p class="text-sm text-indigo-700">تسجيل عميل جديد</p>
+                    </div>
+                </a>
             @endcan
         </div>
     </div>
@@ -258,51 +292,60 @@
                     <thead class="bg-gray-100">
                         <tr>
                             <th class="px-2 py-3 text-center">
-                                <input type="checkbox" wire:click="toggleSelectAllLines" @if(count($selectedLineIds) === $agentLines->count() && $agentLines->count() > 0) checked @endif />
+                                <input type="checkbox" wire:click="toggleSelectAllLines"
+                                    @if (count($selectedLineIds) === $agentLines->count() && $agentLines->count() > 0) checked @endif />
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('mobile_number')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('mobile_number')" style="cursor: pointer;">
                                 رقم الهاتف
                                 @if ($sortField === 'mobile_number')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('current_balance')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('current_balance')" style="cursor: pointer;">
                                 الرصيد
                                 @if ($sortField === 'current_balance')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('daily_limit')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('daily_limit')" style="cursor: pointer;">
                                 المتبقي يوميا
                                 @if ($sortField === 'daily_limit')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('daily_usage')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('daily_usage')" style="cursor: pointer;">
                                 المستلم يوميا
                                 @if ($sortField === 'daily_usage')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('monthly_limit')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('monthly_limit')" style="cursor: pointer;">
                                 المتبقي شهريا
                                 @if ($sortField === 'monthly_limit')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('monthly_usage')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('monthly_usage')" style="cursor: pointer;">
                                 المستلم شهريا
                                 @if ($sortField === 'monthly_usage')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('network')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('network')" style="cursor: pointer;">
                                 الشبكة
                                 @if ($sortField === 'network')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header" wire:click="sortBy('status')" style="cursor: pointer;">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('status')" style="cursor: pointer;">
                                 الحالة
                                 @if ($sortField === 'status')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -318,10 +361,13 @@
                                 $currentBalance = $line->current_balance ?? 0;
                                 $dailyStartingBalance = $line->daily_starting_balance ?? 0;
                                 $monthlyStartingBalance = $line->starting_balance ?? 0;
-                                $dailyRemaining = isset($line->daily_remaining) ? $line->daily_remaining : (($dailyLimit - $currentBalance) ?? 0);
+                                $dailyRemaining = isset($line->daily_remaining)
+                                    ? $line->daily_remaining
+                                    : $dailyLimit - $currentBalance ?? 0;
                                 $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
-                                $dailyUsage = max(0, $currentBalance - $dailyStartingBalance);
-                                $monthlyUsage = max(0, $currentBalance - $monthlyStartingBalance);
+                                $dailyUsage = $line->daily_usage ?? max(0, $currentBalance - $dailyStartingBalance);
+                                $monthlyUsage =
+                                    $line->monthly_usage ?? max(0, $currentBalance - $monthlyStartingBalance);
                                 $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
                                 $circleColor = 'bg-green-400';
                                 if ($line->daily_remaining <= 240) {
@@ -332,34 +378,49 @@
                             @endphp
                             <tr>
                                 <td class="px-2 py-4 text-center">
-                                    <input type="checkbox" wire:click="toggleSelectLine({{ $line->id }})" @if(in_array($line->id, $selectedLineIds)) checked @endif />
+                                    <input type="checkbox" wire:click="toggleSelectLine({{ $line->id }})"
+                                        @if (in_array($line->id, $selectedLineIds)) checked @endif />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                        <div
+                                            class="flex-shrink-0 w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-3">
                                             <div class="w-1.5 h-1.5 rounded-full {{ $circleColor }}"></div>
                                         </div>
-                                        <div class="text-sm font-medium text-gray-900">{{ $line->mobile_number }}</div>
+                                        <div class="text-sm font-medium text-gray-900">{{ $line->mobile_number }}
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($line->current_balance) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyRemaining) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($dailyUsage) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyRemaining) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ format_int($monthlyUsage) }} EGP</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($line->status) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ format_int($line->current_balance) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ format_int($dailyRemaining) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ format_int($line->daily_usage) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ format_int($monthlyRemaining) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ format_int($line->monthly_usage) }} EGP</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ ucfirst($line->status) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot>
                         <tr class="bg-gray-50 font-bold">
                             <td class="px-2 py-3 text-center" colspan="2">المجموع المختار</td>
-                            <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($this->selectedTotals['current_balance'] ?? 0) }} EGP</td>
-                            <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($this->selectedTotals['daily_limit'] ?? 0) }} EGP</td>
-                            <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($this->selectedTotals['daily_usage'] ?? 0) }} EGP</td>
-                            <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($this->selectedTotals['monthly_limit'] ?? 0) }} EGP</td>
-                            <td class="px-6 py-3 text-sm text-blue-700">{{ format_int($this->selectedTotals['monthly_usage'] ?? 0) }} EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700">
+                                {{ format_int($this->selectedTotals['current_balance'] ?? 0) }} EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700">
+                                {{ format_int($this->selectedTotals['daily_limit'] ?? 0) }} EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700">
+                                {{ format_int($this->selectedTotals['daily_usage'] ?? 0) }} EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700">
+                                {{ format_int($this->selectedTotals['monthly_limit'] ?? 0) }} EGP</td>
+                            <td class="px-6 py-3 text-sm text-blue-700">
+                                {{ format_int($this->selectedTotals['monthly_usage'] ?? 0) }} EGP</td>
                             <td colspan="2"></td>
                         </tr>
                     </tfoot>
@@ -368,4 +429,4 @@
         </div>
     @endif
 
-</div> 
+</div>
