@@ -54,17 +54,20 @@ class Index extends Component
             $adminRole->syncPermissions($permissions);
         }
 
-        // Create or update admin user
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
+        // Create or update admin user, handling soft deletes
+        $admin = User::withTrashed()->where('email', 'admin@example.com')->first();
+        if (!$admin) {
+            $admin = User::create([
                 'name' => 'Admin',
+                'email' => 'admin@example.com',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
-            ]
-        );
-        // Assign admin role
-        $admin->assignRole('admin');
+            ]);
+            $admin->assignRole('admin');
+        } elseif ($admin->trashed()) {
+            // If the admin user is soft deleted, restore it
+            $admin->restore();
+        }
 
         $this->roles = Role::whereNotIn('name', ['Branch Manager', 'Supervisor'])->get();
         $this->branches = Branch::orderBy('name')->get();
