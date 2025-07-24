@@ -264,6 +264,26 @@ class Dashboard extends Component
             $pendingTransactionsCount = Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
             $pendingCashCount = CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
             $data['pendingTransactionsCount'] = $pendingTransactionsCount + $pendingCashCount;
+            // Add adminLines and adminLinesTotalBalance for the lines table
+            $allLines = collect($this->lineRepository->all());
+            $adminLines = $allLines->map(function ($line) {
+                $lineArray = is_object($line) ? $line->toArray() : $line;
+                $lineArray['daily_remaining'] = isset($lineArray['daily_limit'], $lineArray['current_balance'])
+                    ? max(0, $lineArray['daily_limit'] - $lineArray['current_balance'])
+                    : 0;
+                $lineArray['daily_usage_class'] = '';
+                if (
+                    isset($lineArray['daily_limit'], $lineArray['daily_usage'], $lineArray['status']) &&
+                    $lineArray['daily_limit'] > 0 &&
+                    $lineArray['daily_usage'] >= $lineArray['daily_limit'] &&
+                    $lineArray['status'] === 'frozen'
+                ) {
+                    $lineArray['daily_usage_class'] = 'bg-red-100 text-red-700 font-bold';
+                }
+                return (object) $lineArray;
+            });
+            $data['adminLines'] = $adminLines;
+            $data['adminLinesTotalBalance'] = $allLines->sum('current_balance');
             $dashboardView = 'livewire.dashboard.admin';
         } elseif ($user->hasRole('general_supervisor')) {
             // Supervisor dashboard metrics
@@ -302,6 +322,26 @@ class Dashboard extends Component
             $pendingTransactionsCount = Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
             $pendingCashCount = CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
             $data['pendingTransactionsCount'] = $pendingTransactionsCount + $pendingCashCount;
+            // Add supervisorLines and supervisorLinesTotalBalance for the lines table
+            $allLines = collect($this->lineRepository->all());
+            $supervisorLines = $allLines->map(function ($line) {
+                $lineArray = is_object($line) ? $line->toArray() : $line;
+                $lineArray['daily_remaining'] = isset($lineArray['daily_limit'], $lineArray['current_balance'])
+                    ? max(0, $lineArray['daily_limit'] - $lineArray['current_balance'])
+                    : 0;
+                $lineArray['daily_usage_class'] = '';
+                if (
+                    isset($lineArray['daily_limit'], $lineArray['daily_usage'], $lineArray['status']) &&
+                    $lineArray['daily_limit'] > 0 &&
+                    $lineArray['daily_usage'] >= $lineArray['daily_limit'] &&
+                    $lineArray['status'] === 'frozen'
+                ) {
+                    $lineArray['daily_usage_class'] = 'bg-red-100 text-red-700 font-bold';
+                }
+                return (object) $lineArray;
+            });
+            $data['supervisorLines'] = $supervisorLines;
+            $data['supervisorLinesTotalBalance'] = $allLines->sum('current_balance');
             $dashboardView = 'livewire.dashboard.general_supervisor';
         } elseif ($user->hasRole('branch_manager')) {
             $userBranch = $user->branch;
