@@ -156,16 +156,12 @@ class AgentDashboard extends Component
             $lines = $lines->reverse();
         }
 
-        // Enhance lines with usage data and color classes
+        // Enhance lines with usage data and color classes (standardized)
         $this->agentLines = $lines->map(function ($line) {
             $lineArray = is_object($line) ? $line->toArray() : $line;
-
-            // Add daily_remaining for alert circle color logic
             $lineArray['daily_remaining'] = isset($lineArray['daily_limit'], $lineArray['current_balance'])
                 ? max(0, $lineArray['daily_limit'] - $lineArray['current_balance'])
                 : 0;
-
-            // Add color classes for daily usage
             $lineArray['daily_usage_class'] = '';
             if (
                 isset($lineArray['daily_limit'], $lineArray['daily_usage'], $lineArray['status']) &&
@@ -175,7 +171,7 @@ class AgentDashboard extends Component
             ) {
                 $lineArray['daily_usage_class'] = 'bg-red-100 text-red-700 font-bold';
             }
-
+            // monthly_usage is used directly for monthly receive
             return (object) $lineArray;
         });
 
