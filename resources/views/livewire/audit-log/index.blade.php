@@ -106,116 +106,135 @@
         </div>
 
         <!-- Enhanced Filter Section -->
-        <div class="mb-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-8">
-            <div class="border-b border-gray-200 pb-4 mb-6">
-                <h2 class="text-lg font-semibold text-gray-900 flex items-center">
-                    <div class="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div
+            class="mb-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border border-purple-200/70 p-0 overflow-hidden">
+            <button type="button" onclick="toggleFilters()"
+                class="w-full flex items-center justify-between px-8 py-5 bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-purple-100 focus:outline-none">
+                <div class="flex items-center">
+                    <div class="w-7 h-7 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z">
-                            </path>
+                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
                         </svg>
                     </div>
-                    المرشحات المتقدمة
-                </h2>
-                <p class="text-sm text-gray-600 mt-1">تصفية السجلات التتبعية بمعايير مختلفة للتحليل الدقيق</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Search -->
-                <div class="space-y-2">
-                    <label for="search" class="block text-sm font-medium text-gray-700">البحث</label>
-                    <input wire:model.defer="search" id="search" type="text"
-                        placeholder="البحث عن الوصفات، الأحداث..."
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
+                    <span class="text-lg font-semibold text-gray-900">المرشحات المتقدمة</span>
                 </div>
-
-                <!-- Log Name Filter -->
-                <div class="space-y-2">
-                    <label for="logName" class="block text-sm font-medium text-gray-700">فئة السجل</label>
-                    <select wire:model.defer="logName" id="logName"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                        <option value="">جميع الفئات</option>
-                        @foreach ($logNames as $log)
-                            <option value="{{ $log }}">{{ ucfirst($log) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Event Type Filter -->
-                <div class="space-y-2">
-                    <label for="eventType" class="block text-sm font-medium text-gray-700">نوع الحدث</label>
-                    <select wire:model.defer="eventType" id="eventType"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                        <option value="">جميع الأحداث</option>
-                        @foreach ($eventTypes as $event)
-                            <option value="{{ $event }}">{{ ucfirst($event) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- User Type Filter -->
-                <div class="space-y-2">
-                    <label for="causerType" class="block text-sm font-medium text-gray-700">نوع المستخدم</label>
-                    <select wire:model.defer="causerType" id="causerType"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                        <option value="">جميع أنواع المستخدمين</option>
-                        @foreach ($causerTypes as $type)
-                            <option value="{{ $type }}">{{ class_basename($type) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Start Date -->
-                <div class="space-y-2">
-                    <label for="startDate" class="block text-sm font-medium text-gray-700">من تاريخ</label>
-                    <input wire:model.defer="startDate" id="startDate" type="date"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
-                </div>
-
-                <!-- End Date -->
-                <div class="space-y-2">
-                    <label for="endDate" class="block text-sm font-medium text-gray-700">إلى تاريخ</label>
-                    <input wire:model.defer="endDate" id="endDate" type="date"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
-                </div>
-
-                <!-- Subject Type Filter -->
-                <div class="space-y-2">
-                    <label for="subjectType" class="block text-sm font-medium text-gray-700">نوع الموضوع</label>
-                    <select wire:model.defer="subjectType" id="subjectType"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                        <option value="">جميع الموضوعات</option>
-                        @foreach ($subjectTypes as $type)
-                            <option value="{{ $type }}">{{ class_basename($type) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="space-y-2 flex flex-col justify-end">
-                    <div class="flex space-x-3">
-                        <button wire:click="$refresh"
-                            class="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z">
-                                </path>
-                            </svg>
-                            تطبيق
-                        </button>
-                        <button wire:click="resetFilters"
-                            class="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all duration-200 transform hover:scale-105">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                                </path>
-                            </svg>
-                        </button>
+                <svg id="filtersChevron" class="w-6 h-6 text-purple-500 transition-transform duration-200"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+            <div id="filtersPanel" class="px-8 py-8 space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Search -->
+                    <div class="space-y-2 relative">
+                        <label for="search" class="block text-sm font-medium text-gray-700">البحث</label>
+                        <div class="relative">
+                            <input wire:model.defer="search" id="search" type="text"
+                                placeholder="البحث عن الوصفات، الأحداث..."
+                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
+                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+                                </svg>
+                            </span>
+                        </div>
                     </div>
+
+                    <!-- Removed 'فئة السجل' filter -->
+
+                    <!-- Event Type Filter -->
+                    <div class="space-y-2">
+                        <label for="eventType" class="block text-sm font-medium text-gray-700">نوع الحدث</label>
+                        <select wire:model.defer="eventType" id="eventType"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                            <option value="">جميع الأحداث</option>
+                            @foreach ($eventTypes as $event)
+                                <option value="{{ $event }}">{{ ucfirst($event) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- User Type Filter -->
+                    <div class="space-y-2">
+                        <label for="causerType" class="block text-sm font-medium text-gray-700">نوع المستخدم</label>
+                        <select wire:model.defer="causerType" id="causerType"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                            <option value="">جميع أنواع المستخدمين</option>
+                            @foreach ($causerTypes as $type)
+                                <option value="{{ $type }}">{{ class_basename($type) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="space-y-2">
+                        <label for="startDate" class="block text-sm font-medium text-gray-700">من تاريخ</label>
+                        <input wire:model.defer="startDate" id="startDate" type="date"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="space-y-2">
+                        <label for="endDate" class="block text-sm font-medium text-gray-700">إلى تاريخ</label>
+                        <input wire:model.defer="endDate" id="endDate" type="date"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
+                    </div>
+
+                    <!-- Subject Type Filter -->
+                    <div class="space-y-2">
+                        <label for="subjectType" class="block text-sm font-medium text-gray-700">نوع الموضوع</label>
+                        <select wire:model.defer="subjectType" id="subjectType"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                            <option value="">جميع الموضوعات</option>
+                            @foreach ($subjectTypes as $type)
+                                <option value="{{ $type }}">{{ class_basename($type) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <!-- Action Buttons -->
+                <div class="flex flex-row-reverse items-center gap-3 mt-8">
+                    <button wire:click="$refresh"
+                        class="flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-105 shadow-sm">
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
+                        </svg>
+                        تطبيق الفلاتر
+                    </button>
+                    <button wire:click="resetFilters"
+                        class="flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all duration-200 transform hover:scale-105">
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        إعادة تعيين
+                    </button>
                 </div>
             </div>
         </div>
+        <script>
+            function toggleFilters() {
+                const panel = document.getElementById('filtersPanel');
+                const chevron = document.getElementById('filtersChevron');
+                if (panel.style.display === 'none') {
+                    panel.style.display = '';
+                    chevron.style.transform = 'rotate(0deg)';
+                } else {
+                    panel.style.display = 'none';
+                    chevron.style.transform = 'rotate(180deg)';
+                }
+            }
+            // Start collapsed on mobile
+            document.addEventListener('DOMContentLoaded', function() {
+                if (window.innerWidth < 768) {
+                    document.getElementById('filtersPanel').style.display = 'none';
+                    document.getElementById('filtersChevron').style.transform = 'rotate(180deg)';
+                }
+            });
+        </script>
 
         <!-- Enhanced Audit Log Table -->
         <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 overflow-hidden">
