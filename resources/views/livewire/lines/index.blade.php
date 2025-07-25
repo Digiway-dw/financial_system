@@ -84,81 +84,81 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] sortable-header"
+                            <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] sortable-header"
                                 wire:click="sortBy('mobile_number')">
-                                <div class="flex items-center space-x-1">
+                                <div class="flex items-center space-x-reverse space-x-1">
                                     <span>رقم الجوال</span>
                                     @if ($sortField === 'mobile_number')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header"
+                            <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header"
                                 wire:click="sortBy('current_balance')">
-                                <div class="flex items-center space-x-1">
+                                <div class="flex items-center space-x-reverse space-x-1">
                                     <span>الرصيد الحالي</span>
                                     @if ($sortField === 'current_balance')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px] sortable-header"
+                            <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px] sortable-header"
                                 wire:click="sortBy('daily_limit')">
-                                <div class="flex items-center space-x-1">
+                                <div class="flex items-center space-x-reverse space-x-1">
                                     <span>الحد اليومي</span>
                                     @if ($sortField === 'daily_limit')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header"
+                            <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header"
                                 wire:click="sortBy('monthly_limit')">
-                                <div class="flex items-center space-x-1">
+                                <div class="flex items-center space-x-reverse space-x-1">
                                     <span>الحد الشهري</span>
                                     @if ($sortField === 'monthly_limit')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px] sortable-header"
+                            <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px] sortable-header"
                                 wire:click="sortBy('daily_usage')">
-                                <div class="flex items-center space-x-1">
+                                <div class="flex items-center space-x-reverse space-x-1">
                                     <span>إجمالي الاستلام اليومي</span>
                                     @if ($sortField === 'daily_usage')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header"
+                            <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header"
                                 wire:click="sortBy('monthly_usage')">
-                                <div class="flex items-center space-x-1">
+                                <div class="flex items-center space-x-reverse space-x-1">
                                     <span>إجمالي الاستلام الشهري</span>
                                     @if ($sortField === 'monthly_usage')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px] sortable-header"
+                            <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px] sortable-header"
                                 wire:click="sortBy('network')">
-                                <div class="flex items-center space-x-1">
+                                <div class="flex items-center space-x-reverse space-x-1">
                                     <span>الشبكة</span>
                                     @if ($sortField === 'network')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px] sortable-header"
+                            <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px] sortable-header"
                                 wire:click="sortBy('status')">
-                                <div class="flex items-center space-x-1">
+                                <div class="flex items-center space-x-reverse space-x-1">
                                     <span>الحالة</span>
                                     @if ($sortField === 'status')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px] sortable-header"
+                            <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[70px] sortable-header"
                                 wire:click="sortBy('branch_id')">
-                                <div class="flex items-center space-x-1">
+                                <div class="flex items-center space-x-reverse space-x-1">
                                     <span>الفرع</span>
                                     @if ($sortField === 'branch_id')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
