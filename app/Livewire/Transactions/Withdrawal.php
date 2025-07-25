@@ -146,11 +146,12 @@ class Withdrawal extends Create
         if (strlen($search) >= 2) {
             $clients = \App\Models\Domain\Entities\Customer::where(function ($query) use ($search) {
                 $query->where('mobile_number', 'like', "%$search%")
-                    ->orWhere('customer_code', 'like', "%$search%");
+                    ->orWhere('customer_code', 'like', "%$search%")
+                    ->orWhere('name', 'like', "%$search%");
             })
+                ->where('is_client', true)
                 ->limit(8)
-                ->get(['id', 'name', 'mobile_number', 'customer_code', 'balance']);
-
+                ->get(['id', 'name', 'mobile_number', 'customer_code', 'balance', 'is_client']);
             $this->clientSuggestions = $clients->toArray();
         } else {
             $this->clientSuggestions = [];
@@ -411,8 +412,8 @@ class Withdrawal extends Create
                     return;
                 }
                 $client = \App\Models\Domain\Entities\Customer::find($this->clientId);
-                if (!$client || !isset($client->balance)) {
-                    session()->flash('error', 'لا يوجد رصيد لهذا العميل.');
+                if (!$client || !$client->is_client) {
+                    session()->flash('error', 'لا يوجد محفظة لهذا العميل.');
                     return;
                 }
 

@@ -73,8 +73,9 @@ class Deposit extends Create
                     ->orWhere('customer_code', 'like', "%$search%")
                     ->orWhere('name', 'like', "%$search%");
             })
+                ->where('is_client', true)
                 ->limit(8)
-                ->get(['id', 'name', 'mobile_number', 'customer_code', 'balance']);
+                ->get(['id', 'name', 'mobile_number', 'customer_code', 'balance', 'is_client']);
             $this->clientSuggestions = $clients->toArray();
         } else {
             $this->clientSuggestions = [];
@@ -185,10 +186,12 @@ class Deposit extends Create
                     return;
                 }
                 $client = \App\Models\Domain\Entities\Customer::find($this->clientId);
-                if ($client) {
-                    $client->balance += $this->amount;
-                    $client->save();
+                if (!$client || !$client->is_client) {
+                    session()->flash('error', 'لا يوجد محفظة لهذا العميل.');
+                    return;
                 }
+                $client->balance += $this->amount;
+                $client->save();
                 $safe = \App\Models\Domain\Entities\Safe::find($safeId);
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
