@@ -56,7 +56,11 @@ class Index extends Component
             'sortDirection' => $this->clientSortDirection,
         ];
         $result = $this->customerRepository->getAll($filters);
-        $this->clients = $result['customers'] ?? $result;
+        $clients = $result['customers'] ?? $result;
+        // Only include customers with a wallet (balance > 0 or not null)
+        $this->clients = array_filter($clients, function($client) {
+            return isset($client['balance']) && $client['balance'] > 0;
+        });
     }
 
     public function filter()
