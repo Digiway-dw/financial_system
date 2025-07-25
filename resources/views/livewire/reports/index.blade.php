@@ -78,19 +78,19 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="p-4 bg-blue-50 rounded-xl">
                     <div class="text-xs text-gray-500">المبلغ المستلم</div>
-                    <div class="text-lg font-bold">{{ number_format($financialSummary['total_transfer'] ?? 0, 2) }} EGP</div>
+                        <div class="text-lg font-bold">{{ $financialSummary['total_transfer'] == 0 ? '0' : number_format($financialSummary['total_transfer'], 0) }} EGP</div>
                 </div>
                 <div class="p-4 bg-green-50 rounded-xl">
                     <div class="text-xs text-gray-500">العمولة</div>
-                    <div class="text-lg font-bold">{{ number_format($financialSummary['commission_earned'] ?? 0, 2) }} EGP</div>
+                    <div class="text-lg font-bold">{{ $financialSummary['commission_earned'] == 0 ? '0' : number_format($financialSummary['commission_earned'], 0) }} EGP</div>
                 </div>
                 <div class="p-4 bg-yellow-50 rounded-xl">
                     <div class="text-xs text-gray-500">الخصم</div>
-                    <div class="text-lg font-bold">{{ number_format($financialSummary['total_discounts'] ?? 0, 2) }} EGP</div>
+                    <div class="text-lg font-bold">{{ $financialSummary['total_discounts'] == 0 ? '0' : number_format($financialSummary['total_discounts'], 0) }} EGP</div>
                 </div>
                 <div class="p-4 bg-purple-50 rounded-xl">
                     <div class="text-xs text-gray-500">الربح الصافي</div>
-                    <div class="text-lg font-bold">{{ number_format($financialSummary['net_profit'] ?? 0, 2) }} EGP</div>
+                    <div class="text-lg font-bold">{{ $financialSummary['net_profit'] == 0 ? '0' : number_format($financialSummary['net_profit'], 0) }} EGP</div>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
                 @foreach($safeBalances as $safe)
                     <div class="p-4 bg-gray-50 rounded-xl flex justify-between">
                         <span>{{ $safe['branch'] }}</span>
-                        <span class="font-bold">{{ number_format($safe['balance'], 2) }} EGP</span>
+                        <span class="font-bold">{{ $safe['balance'] == 0 ? '0' : number_format($safe['balance'], 0) }} EGP</span>
                     </div>
                 @endforeach
             </div>
@@ -113,7 +113,7 @@
                 @foreach($lineBalances as $line)
                     <div class="p-4 bg-gray-50 rounded-xl flex justify-between">
                         <span>{{ $line['branch'] }}</span>
-                        <span class="font-bold">{{ number_format($line['balance'], 2) }} EGP</span>
+                        <span class="font-bold">{{ $line['balance'] == 0 ? '0' : number_format($line['balance'], 0) }} EGP</span>
                     </div>
                 @endforeach
             </div>
@@ -125,7 +125,7 @@
                 @foreach($customerBalances as $customer)
                     <div class="p-4 bg-gray-50 rounded-xl flex justify-between">
                         <span>{{ $customer['customer'] }}</span>
-                        <span class="font-bold">{{ number_format($customer['balance'], 2) }} EGP</span>
+                            <span class="font-bold">{{ $customer['balance'] == 0 ? '0' : number_format($customer['balance'], 0) }} EGP</span>
                     </div>
                 @endforeach
             </div>
@@ -202,8 +202,8 @@
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-900">{{ $transaction['customer_name'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['customer_code'] ?? '' }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ number_format($transaction['amount'], 2) }} EGP</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ number_format($transaction['commission'], 2) }} EGP</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['amount'] == 0 ? '0' : number_format($transaction['amount'], 0) }} EGP</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['commission'] == 0 ? '0' : number_format($transaction['commission'], 0) }} EGP</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['status'] }}</td>

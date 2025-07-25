@@ -32,8 +32,8 @@ class Index extends Component
 
     public function mount()
     {
-        $this->startDate = '2020-01-01';
-        $this->endDate = '2030-01-01';
+        $this->startDate = now()->subDays(30)->format('Y-m-d');
+        $this->endDate = now()->format('Y-m-d');
         $this->users = User::all();
         $this->branches = Branch::all();
         $this->customers = Customer::all();
@@ -237,12 +237,12 @@ class Index extends Component
     public function exportPdf()
     {
         $summary = [
-            'startDate' => $this->startDate,
-            'endDate' => $this->endDate,
-            'totalTransferred' => $this->financialSummary['total_transfer'] ?? 0,
-            'totalCommission' => $this->financialSummary['commission_earned'] ?? 0,
-            'totalDeductions' => $this->financialSummary['total_discounts'] ?? 0,
-            'netProfits' => $this->financialSummary['net_profit'] ?? 0,
+            'تاريخ البدء' => $this->startDate,
+            'تاريخ النهاية' => $this->endDate,
+            'إجمالي التحويلات' => $this->financialSummary['total_transfer'] ?? 0,
+            'إجمالي العمولات' => $this->financialSummary['commission_earned'] ?? 0,
+            'إجمالي الخصومات' => $this->financialSummary['total_discounts'] ?? 0,
+            'صافي الربح' => $this->financialSummary['net_profit'] ?? 0,
         ];
         $html = view('reports.transactions_pdf', array_merge([
             'transactions' => $this->transactions
