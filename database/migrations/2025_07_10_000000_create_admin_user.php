@@ -22,19 +22,7 @@ return new class extends Migration
             $adminRole->syncPermissions($permissions);
         }
 
-        // Create admin user
-        $admin = User::where('email', 'admin@example.com')->first();
-        if (!$admin) {
-            $admin = User::create([
-                'name' => 'Admin',
-                'email' => 'admin@example.com',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-            ]);
-
-            // Assign admin role
-            $admin->assignRole('admin');
-        }
+        // Removed default admin@example.com account creation/check logic
     }
 
     /**

@@ -26,20 +26,6 @@ class AdminUserSeeder extends Seeder
             $adminRole->syncPermissions($permissions);
         }
 
-        // Create or update admin user
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'Admin',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-            ]
-        );
-        // Assign admin role
-        $admin->assignRole('admin');
-
-        $this->command->info('Admin user created with:');
-        $this->command->info('Email: admin@example.com');
-        $this->command->info('Password: password');
+        // Removed default admin@example.com account creation and info output
     }
 }

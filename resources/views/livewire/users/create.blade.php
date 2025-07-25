@@ -178,9 +178,7 @@
                                         d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
                                 </svg>
                             </div>
-                            <input id="phone_number" type="text" wire:model="phone_number"
-                                placeholder="+20 123 456 7890"رقم الهاتف
-                                class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            <input id="phone_number" type="text" wire:model="phone_number" pattern="[0-9]{11}" minlength="11" maxlength="11" required placeholder="مثال: 01XXXXXXXXX" رقم الهاتف class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         </div>
                         @error('phone_number')
                             <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
@@ -199,9 +197,7 @@
                                         d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
                                 </svg>
                             </div>
-                            <input id="relative_phone_number" type="text" wire:model="relative_phone_number"
-                                placeholder="+20 123 456 7890"رقم هاتف الأقرب
-                                class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            <input id="relative_phone_number" type="text" wire:model="relative_phone_number" pattern="[0-9]{11}" minlength="11" maxlength="11" required placeholder="مثال: 01XXXXXXXXX" رقم هاتف الأقرب class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         </div>
                         @error('relative_phone_number')
                             <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
@@ -297,7 +293,7 @@
                                 </svg>
                             </div>
                             <input id="salary" type="number" step="0.01" wire:model="salary"
-                                placeholder="0.00"الراتب
+                                placeholder="0"الراتب
                                 class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         </div>
                         @error('salary')
