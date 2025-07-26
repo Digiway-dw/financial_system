@@ -203,7 +203,23 @@
                                 <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-900">{{ $transaction['customer_name'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['customer_code'] ?? '' }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['amount'] == 0 ? '0' : number_format($transaction['amount'], 0) }} EGP</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['commission'] == 0 ? '0' : number_format($transaction['commission'], 0) }} EGP</td>
+                                @php
+                                    $isWithdrawalOrDepositOrAdjustment = in_array($transaction['transaction_type'], ['Withdrawal', 'Deposit', 'Adjustment']);
+                                @endphp
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">
+                                    @if($isWithdrawalOrDepositOrAdjustment)
+                                        -
+                                    @else
+                                        {{ $transaction['commission'] == 0 ? '0' : number_format($transaction['commission'], 0) }} EGP
+                                    @endif
+                                </td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">
+                                    @if($isWithdrawalOrDepositOrAdjustment)
+                                        -
+                                    @else
+                                        {{ $transaction['discount'] == 0 ? '0' : number_format($transaction['discount'], 0) }} EGP
+                                    @endif
+                                </td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['status'] }}</td>
