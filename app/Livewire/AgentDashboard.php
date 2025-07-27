@@ -102,10 +102,10 @@ class AgentDashboard extends Component
             $this->selectAllBranches();
             return;
         }
-        
+
         $this->loadAgentData();
     }
-    
+
     public function selectAllBranches()
     {
         $this->selectedBranches = $this->branches->pluck('id')->toArray();
@@ -120,14 +120,14 @@ class AgentDashboard extends Component
             $this->sortField = $field;
             $this->sortDirection = 'asc';
         }
-        
+
         $this->loadAgentData();
     }
 
     private function loadAgentData()
     {
         $user = Auth::user();
-        
+
         // Filter lines by selected branches
         $lines = collect($this->lineRepository->all())->filter(function ($line) {
             return in_array($line->branch_id, $this->selectedBranches);
@@ -159,9 +159,8 @@ class AgentDashboard extends Component
         // Enhance lines with usage data and color classes (standardized)
         $this->agentLines = $lines->map(function ($line) {
             $lineArray = is_object($line) ? $line->toArray() : $line;
-            $lineArray['daily_remaining'] = isset($lineArray['daily_limit'], $lineArray['current_balance'])
-                ? max(0, $lineArray['daily_limit'] - $lineArray['current_balance'])
-                : 0;
+            // Use daily_remaining from the database only
+            $lineArray['daily_remaining'] = $lineArray['daily_remaining'] ?? 0;
             $lineArray['daily_usage_class'] = '';
             if (
                 isset($lineArray['daily_limit'], $lineArray['daily_usage'], $lineArray['status']) &&
@@ -187,21 +186,21 @@ class AgentDashboard extends Component
             $safeId = $safe['id'] ?? $safe->id;
             $branchId = $safe['branch_id'] ?? $safe->branch_id;
             $currentUserId = Auth::id();
-            
+
             // Filter cash transactions by current agent
             $cashTransactions = CashTransaction::where('safe_id', $safeId)
                 ->where('agent_id', $currentUserId)
                 ->whereDate('created_at', $today)
                 ->count();
-                
+
             // Filter regular transactions by current agent
             $regularTransactions = Transaction::where('branch_id', $branchId)
                 ->where('agent_id', $currentUserId)
                 ->whereDate('created_at', $today)
                 ->count();
-            
+
             $todaysTransactions = $cashTransactions + $regularTransactions;
-            
+
             return [
                 'name' => $safe['name'] ?? $safe->name ?? '',
                 'current_balance' => $safe['current_balance'] ?? $safe->current_balance ?? 0,
@@ -209,7 +208,7 @@ class AgentDashboard extends Component
                 'branch_id' => $branchId,
             ];
         });
-        
+
         // Calculate total safes balance
         $this->totalSafesBalance = collect($this->branchSafes)->sum('current_balance');
     }
@@ -276,4 +275,4 @@ class AgentDashboard extends Component
             'isAdminOrSupervisor' => $this->isAdminOrSupervisor,
         ]);
     }
-} 
+}

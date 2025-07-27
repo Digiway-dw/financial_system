@@ -325,7 +325,7 @@
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('monthly_limit')" style="cursor: pointer;">
-                                المتبقي شهريا
+                                المتبقي شهرياchecl
                                 @if ($sortField === 'monthly_limit')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
@@ -356,23 +356,22 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($agentLines as $line)
                             @php
+                                // Use only daily_remaining and monthly_remaining from the lines table/Model
+                                $dailyRemaining = $line->daily_remaining ?? 0;
+                                $monthlyRemaining = $line->monthly_remaining ?? 0;
                                 $dailyLimit = $line->daily_limit ?? 0;
                                 $monthlyLimit = $line->monthly_limit ?? 0;
                                 $currentBalance = $line->current_balance ?? 0;
                                 $dailyStartingBalance = $line->daily_starting_balance ?? 0;
                                 $monthlyStartingBalance = $line->starting_balance ?? 0;
-                                $dailyRemaining = isset($line->daily_remaining)
-                                    ? $line->daily_remaining
-                                    : $dailyLimit - $currentBalance ?? 0;
-                                $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
                                 $dailyUsage = $line->daily_usage ?? max(0, $currentBalance - $dailyStartingBalance);
                                 $monthlyUsage =
                                     $line->monthly_usage ?? max(0, $currentBalance - $monthlyStartingBalance);
                                 $usagePercent = $dailyLimit > 0 ? ($dailyUsage / $dailyLimit) * 100 : 0;
                                 $circleColor = 'bg-green-400';
-                                if ($line->daily_remaining <= 240) {
+                                if ($dailyRemaining <= 240) {
                                     $circleColor = 'bg-red-500';
-                                } elseif ($line->daily_remaining <= 1800) {
+                                } elseif ($dailyRemaining <= 1800) {
                                     $circleColor = 'bg-yellow-400';
                                 }
                             @endphp

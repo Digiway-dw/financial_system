@@ -373,6 +373,9 @@ class Send extends Component
                     notes: null
                 );
 
+                // IMPORTANT: Do NOT update daily_remaining or monthly_remaining for send transactions.
+                // These fields must remain unchanged for this transaction type.
+
                 // Notify admin if a discount was applied
                 if ($discount > 0) {
                     $adminNotificationMessage = "تم إنشاء معاملة إرسال بخصم {$discount} EGP.\n"
