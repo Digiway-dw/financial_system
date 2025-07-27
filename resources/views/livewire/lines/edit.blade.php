@@ -17,20 +17,22 @@
                     <x-input-error class="mt-2" :messages="$errors->get('mobileNumber')" />
                 </div>
 
-                <!-- الرصيد الحالي -->
-                <div>
-                    <x-input-label for="currentBalance" :value="'الرصيد الحالي'" />
-                    <div class="relative">
-                        <x-text-input wire:model="currentBalance" id="currentBalance" name="currentBalance"
-                            type="text" class="mt-1 block w-full pl-16" required
-                            x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="text-gray-500 text-base">ج.م</span>
+                <!-- الرصيد الحالي - Only visible to Admin -->
+                @if ($this->canEditBalance())
+                    <div>
+                        <x-input-label for="currentBalance" :value="'الرصيد الحالي'" />
+                        <div class="relative">
+                            <x-text-input wire:model="currentBalance" id="currentBalance" name="currentBalance"
+                                type="text" class="mt-1 block w-full pl-16" required
+                                x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="text-gray-500 text-base">ج.م</span>
+                            </div>
                         </div>
+                        <x-input-error class="mt-2" :messages="$errors->get('currentBalance')" />
+                        <p class="text-xs text-gray-500 mt-1">أرقام صحيحة فقط (بدون كسور عشرية)</p>
                     </div>
-                    <x-input-error class="mt-2" :messages="$errors->get('currentBalance')" />
-                    <p class="text-xs text-gray-500 mt-1">أرقام صحيحة فقط (بدون كسور عشرية)</p>
-                </div>
+                @endif
 
                 <!-- الحد اليومي -->
                 <div>

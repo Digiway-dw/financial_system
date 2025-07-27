@@ -50,14 +50,13 @@ class Edit extends Component
 
     public function mount($userId)
     {
-        // Temporarily commenting out the role check
-        // if (!auth()->user() || !auth()->user()->hasRole('admin')) {
-        //     abort(403, 'Only admin can edit user details.');
-        // }
         $user = User::findOrFail($userId);
-        // if ($user->hasRole('admin')) {
-        //     abort(403, 'Cannot edit admin user.');
-        // }
+        
+        // Check if current user can edit this user
+        if (!$this->canEditUser($user)) {
+            abort(403, 'You are not authorized to edit this user.');
+        }
+        
         $this->userId = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
@@ -70,14 +69,61 @@ class Edit extends Component
         $this->notes = $user->notes;
         $this->branchId = $user->branch_id;
         $this->selectedRole = $user->getRoleNames()->first();
-        $this->roles = array_filter(
-            Role::pluck('name')->toArray(),
-            fn($role) => $role !== 'Branch Manager' && $role !== 'Supervisor'
-        );
+        
+        // Load available roles based on current user's permissions
+        $this->roles = $this->getAvailableRoles();
         $this->branches = Branch::all();
 
         // Load working hours
         $this->loadWorkingHours();
+    }
+
+    public function canEditUser($targetUser): bool
+    {
+        $currentUser = auth()->user();
+        
+        // Admin can edit anyone except other admins
+        if ($currentUser->hasRole('admin')) {
+            return !$targetUser->hasRole('admin') || $currentUser->id === $targetUser->id;
+        }
+        
+        // Supervisor can edit non-admin, non-supervisor users
+        if ($currentUser->hasRole('general_supervisor')) {
+            return !$targetUser->hasRole(['admin', 'general_supervisor']);
+        }
+        
+        // Other users cannot edit anyone
+        return false;
+    }
+
+    public function canEditRoles(): bool
+    {
+        $currentUser = auth()->user();
+        return $currentUser->hasRole(['admin', 'general_supervisor']);
+    }
+
+    public function getAvailableRoles(): array
+    {
+        $currentUser = auth()->user();
+        $allRoles = Role::pluck('name')->toArray();
+        
+        // Admin can assign all roles except admin to others
+        if ($currentUser->hasRole('admin')) {
+            return array_filter($allRoles, function($role) {
+                return $role !== 'admin';
+            });
+        }
+        
+        // Supervisor can only assign these roles
+        if ($currentUser->hasRole('general_supervisor')) {
+            $allowedRoles = ['agent', 'branch_manager', 'trainee', 'auditor'];
+            return array_filter($allRoles, function($role) use ($allowedRoles) {
+                return in_array($role, $allowedRoles);
+            });
+        }
+        
+        // Other users cannot assign roles
+        return [];
     }
 
     public function loadWorkingHours()
@@ -127,9 +173,25 @@ class Edit extends Component
     {
         $this->validate();
         $user = User::findOrFail($this->userId);
-        // if ($user->hasRole('admin')) {
-        //     abort(403, 'Cannot edit admin user.');
-        // }
+        
+        // Check if current user can edit this user
+        if (!$this->canEditUser($user)) {
+            abort(403, 'You are not authorized to edit this user.');
+        }
+        
+        // Check if role change is allowed
+        if ($this->selectedRole !== $user->getRoleNames()->first()) {
+            if (!$this->canEditRoles()) {
+                abort(403, 'You are not authorized to change user roles.');
+            }
+            
+            // Validate that the selected role is allowed for current user
+            $availableRoles = $this->getAvailableRoles();
+            if (!in_array($this->selectedRole, $availableRoles)) {
+                abort(403, 'You are not authorized to assign this role.');
+            }
+        }
+        
         $user->name = $this->name;
         $user->email = $this->email;
         $user->phone_number = $this->phone_number;
@@ -141,7 +203,12 @@ class Edit extends Component
         $user->notes = $this->notes;
         $user->branch_id = !in_array($this->selectedRole, ['admin']) ? $this->branchId : null;
         $user->save();
-        $user->syncRoles([$this->selectedRole]);
+        
+        // Only update role if user has permission and role has changed
+        if ($this->canEditRoles() && $this->selectedRole !== $user->getRoleNames()->first()) {
+            $user->syncRoles([$this->selectedRole]);
+        }
+        
         session()->flash('message', 'User updated successfully.');
         return redirect()->route('users.index');
     }

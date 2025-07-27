@@ -41,8 +41,10 @@ class Index extends Component
 
     public function mount()
     {
-        // Temporarily commenting out Gate authorization
-        // Gate::authorize('manage-users');
+        // Check if current user can manage users
+        if (!$this->canManageUsers()) {
+            abort(403, 'You are not authorized to manage users.');
+        }
 
         // Create admin role if it doesn't exist
         $adminRole = Role::where('name', 'admin')->first();
@@ -54,10 +56,75 @@ class Index extends Component
             $adminRole->syncPermissions($permissions);
         }
 
-        // Removed logic that always creates or restores admin@example.com user
-
-        $this->roles = Role::whereNotIn('name', ['Branch Manager', 'Supervisor'])->get();
+        // Load available roles based on current user's permissions
+        $this->roles = $this->getAvailableRoles();
         $this->branches = Branch::orderBy('name')->get();
+    }
+
+    public function canManageUsers(): bool
+    {
+        $currentUser = auth()->user();
+        return $currentUser && $currentUser->hasRole(['admin', 'general_supervisor']);
+    }
+
+    public function canEditUserRole($targetUser): bool
+    {
+        $currentUser = auth()->user();
+        
+        // Admin can edit anyone except other admins
+        if ($currentUser->hasRole('admin')) {
+            return !$targetUser->hasRole('admin') || $currentUser->id === $targetUser->id;
+        }
+        
+        // Supervisor can edit non-admin, non-supervisor users
+        if ($currentUser->hasRole('general_supervisor')) {
+            return !$targetUser->hasRole(['admin', 'general_supervisor']);
+        }
+        
+        // Other users cannot edit anyone
+        return false;
+    }
+
+    public function canViewUser($targetUser): bool
+    {
+        $currentUser = auth()->user();
+        
+        // Admin can view anyone except other admins
+        if ($currentUser->hasRole('admin')) {
+            return !$targetUser->hasRole('admin') || $currentUser->id === $targetUser->id;
+        }
+        
+        // Supervisor can view non-admin, non-supervisor users
+        if ($currentUser->hasRole('general_supervisor')) {
+            return !$targetUser->hasRole(['admin', 'general_supervisor']);
+        }
+        
+        // Other users cannot view anyone
+        return false;
+    }
+
+    public function getAvailableRoles()
+    {
+        $currentUser = auth()->user();
+        $allRoles = Role::all();
+        
+        // Admin can assign all roles except admin to others
+        if ($currentUser->hasRole('admin')) {
+            return $allRoles->filter(function($role) {
+                return $role->name !== 'admin';
+            });
+        }
+        
+        // Supervisor can only assign these roles
+        if ($currentUser->hasRole('general_supervisor')) {
+            $allowedRoles = ['agent', 'branch_manager', 'trainee', 'auditor'];
+            return $allRoles->filter(function($role) use ($allowedRoles) {
+                return in_array($role->name, $allowedRoles);
+            });
+        }
+        
+        // Other users cannot assign roles
+        return collect([]);
     }
 
     public function filter()
@@ -90,17 +157,38 @@ class Index extends Component
 
     public function editRole(int $userId)
     {
-        $this->editingUserId = $userId;
         $user = User::find($userId);
+        
+        // Check if current user can edit this user's role
+        if (!$this->canEditUserRole($user)) {
+            session()->flash('error', 'You are not authorized to edit this user\'s role.');
+            return;
+        }
+        
+        $this->editingUserId = $userId;
         $this->selectedRole = $user->getRoleNames()->first();
     }
 
     public function saveRole()
     {
-        // Temporarily commenting out Gate authorization
-        // Gate::authorize('manage-users');
         $user = User::find($this->editingUserId);
-        if ($user && $this->selectedRole) {
+        
+        // Check if current user can edit this user's role
+        if (!$user || !$this->canEditUserRole($user)) {
+            session()->flash('error', 'You are not authorized to edit this user\'s role.');
+            $this->cancelEdit();
+            return;
+        }
+        
+        // Validate that the selected role is allowed for current user
+        $availableRoles = $this->getAvailableRoles()->pluck('name')->toArray();
+        if (!in_array($this->selectedRole, $availableRoles)) {
+            session()->flash('error', 'You are not authorized to assign this role.');
+            $this->cancelEdit();
+            return;
+        }
+        
+        if ($this->selectedRole) {
             $user->syncRoles([$this->selectedRole]);
             Cache::forget('spatie.permission.cache'); // Clear permission cache
             session()->flash('message', 'User role updated successfully.');

@@ -92,89 +92,55 @@
 
                 <!-- Right Column -->
                 <div class="space-y-6">
-                    <!-- Balance -->
-                    <div>
-                        <label for="balance" class="block text-sm font-semibold text-slate-700 mb-2">
-                            الرصيد
-                            @if (!Auth::user()->hasRole('admin'))
-                                <span class="text-xs text-red-500 font-medium">(للمدير فقط)</span>
-                            @endif
-                        </label>
-                        <div class="relative">
-                            <span
-                                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">EGP</span>
-                            @if (Auth::user()->hasRole('admin'))
+                    <!-- Balance - Only visible to Admin -->
+                    @if ($this->canEditBalance())
+                        <div>
+                            <label for="balance" class="block text-sm font-semibold text-slate-700 mb-2">الرصيد</label>
+                            <div class="relative">
+                                <span
+                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">EGP</span>
                                 <input type="text" wire:model="balance" id="balance" name="balance"
                                     min="0" required
                                     class="w-full pl-14 pr-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
                                     placeholder="أدخل الرصيد (أرقام فقط)"
                                     @if (!$is_client) disabled @endif
                                     oninput="this.value = this.value.replace(/[^\d]/g, '');">
-                            @else
-                                <input type="text" value="{{ format_int($balance) }}" readonly
-                                    class="w-full pl-14 pr-4 py-3 bg-gray-100 border border-gray-300 rounded-xl text-gray-600 cursor-not-allowed"
-                                    placeholder="يتطلب الوصول للمدير">
-                                <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
-                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
-                                        </path>
-                                    </svg>
-                                </div>
-                            @endif
-                        </div>
-                        @if (Auth::user()->hasRole('admin'))
-                            <p class="mt-1 text-xs text-gray-500">الرصيد يجب أن يكون رقما فقط (لا يسمح بالكسور)
-                            </p>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">الرصيد يجب أن يكون رقما فقط (لا يسمح بالكسور)</p>
                             @error('balance')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                        @else
-                            <p class="mt-1 text-xs text-red-500">⚠️ يمكن للمديرين فقط تعديل رصيد المحفظة</p>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
 
-                    <!-- Is Client -->
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-3">حالة المحفظة</label>
-                        @if ($is_client)
-                            <div class="flex items-center space-x-3">
-                                <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                    مفعل
-                                </span>
-                                <button type="button" wire:click="deactivateWallet"
-                                    class="px-4 py-2 bg-red-100 text-red-700 rounded-xl hover:bg-red-200 transition-colors duration-150 text-xs font-medium">Deactivate
-                                    مفعل</button>
-                            </div>
-                        @else
-                            <div class="flex items-center space-x-3">
-                                <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                                    لا يوجد محفظة
-                                </span>
-                                <button type="button" wire:click="activateWallet"
-                                    class="px-4 py-2 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors duration-150 text-xs font-medium">Activate
-                                    مفعل</button>
-                            </div>
-                        @endif
-                    </div>
+                    <!-- Is Client - Only visible to Admin and Supervisor -->
+                    @if ($this->canToggleWallet())
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-3">حالة المحفظة</label>
+                            @if ($is_client)
+                                <div class="flex items-center space-x-3">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                        مفعل
+                                    </span>
+                                    <button type="button" wire:click="deactivateWallet"
+                                        class="px-4 py-2 bg-red-100 text-red-700 rounded-xl hover:bg-red-200 transition-colors duration-150 text-xs font-medium">إلغاء التفعيل</button>
+                                </div>
+                            @else
+                                <div class="flex items-center space-x-3">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                                        لا يوجد محفظة
+                                    </span>
+                                    <button type="button" wire:click="activateWallet"
+                                        class="px-4 py-2 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors duration-150 text-xs font-medium">تفعيل المحفظة</button>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
 
-                    <!-- Agent ID -->
-                    <div>
-                        <label for="agent_id" class="block text-sm font-semibold text-slate-700 mb-2">موزع</label>
-                        <select wire:model="agent_id" id="agent_id" name="agent_id"
-                            class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200">
-                            <option value="">اختر موزع (اختياري)</option>
-                            @foreach ($agents as $agent)
-                                <option value="{{ $agent->id }}">{{ $agent->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('agent_id')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <!-- Agent ID - Hidden since no one can edit it -->
+                    <!-- The agent who created the customer is preserved automatically -->
 
                     <!-- Branch ID -->
                     <div>

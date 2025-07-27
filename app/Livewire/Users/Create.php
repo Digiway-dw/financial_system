@@ -57,12 +57,45 @@ class Create extends Component
 
     public function mount()
     {
-        $this->roles = array_filter(
-            Role::pluck('name')->toArray(),
-            fn($role) => $role !== 'Branch Manager' && $role !== 'Supervisor'
-        );
+        // Check if current user can create users
+        if (!$this->canCreateUsers()) {
+            abort(403, 'You are not authorized to create users.');
+        }
+        
+        // Load available roles based on current user's permissions
+        $this->roles = $this->getAvailableRoles();
         $this->selectedRole = 'agent'; // Default role
         $this->branches = \App\Models\Domain\Entities\Branch::all();
+    }
+
+    public function canCreateUsers(): bool
+    {
+        $currentUser = auth()->user();
+        return $currentUser && $currentUser->hasRole(['admin', 'general_supervisor']);
+    }
+
+    public function getAvailableRoles(): array
+    {
+        $currentUser = auth()->user();
+        $allRoles = Role::pluck('name')->toArray();
+        
+        // Admin can assign all roles except admin to others
+        if ($currentUser->hasRole('admin')) {
+            return array_filter($allRoles, function($role) {
+                return $role !== 'admin';
+            });
+        }
+        
+        // Supervisor can only assign these roles
+        if ($currentUser->hasRole('general_supervisor')) {
+            $allowedRoles = ['agent', 'branch_manager', 'trainee', 'auditor'];
+            return array_filter($allRoles, function($role) use ($allowedRoles) {
+                return in_array($role, $allowedRoles);
+            });
+        }
+        
+        // Other users cannot assign roles
+        return [];
     }
 
     protected function rules()
@@ -105,6 +138,17 @@ class Create extends Component
     public function createUser()
     {
         $this->validate();
+
+        // Check if current user can create users
+        if (!$this->canCreateUsers()) {
+            abort(403, 'You are not authorized to create users.');
+        }
+
+        // Validate that the selected role is allowed for current user
+        $availableRoles = $this->getAvailableRoles();
+        if (!in_array($this->selectedRole, $availableRoles)) {
+            abort(403, 'You are not authorized to assign this role.');
+        }
 
         $userData = [
             'name' => $this->name,

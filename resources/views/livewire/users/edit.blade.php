@@ -231,84 +231,86 @@
                     </div>
                 </div>
 
-                <!-- Role & Permissions Section -->
-                <div class="mt-8">
-                    <div class="flex items-center mb-6">
-                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-semibold text-gray-900">الدور والصلاحيات</h3>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Role Selection -->
-                        <div>
-                            <x-input-label for="selectedRole"
-                                class="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor"
+                <!-- Role & Permissions Section - Only visible to Admin and Supervisor -->
+                @if ($this->canEditRoles())
+                    <div class="mt-8">
+                        <div class="flex items-center mb-6">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 616 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z">
+                                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
                                     </path>
                                 </svg>
-                                الدور الوظيفي <span class="text-red-500 ml-1">*</span>
-                            </x-input-label>
-                            <select wire:model="selectedRole" id="selectedRole"
-                                class="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
-                                <option value="">اختر الدور</option>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role }}">{{ $role }}</option>
-                                @endforeach
-                            </select>
-                            <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('selectedRole')" />
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900">الدور والصلاحيات</h3>
                         </div>
 
-                        <!-- Branch Selection -->
-                        @if (!in_array($selectedRole, ['admin', 'general_supervisor']))
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Role Selection -->
                             <div>
-                                <x-input-label for="branchId"
+                                <x-input-label for="selectedRole"
                                     class="flex items-center text-sm font-medium text-gray-700 mb-2">
                                     <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                            d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 616 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z">
                                         </path>
                                     </svg>
-                                    تعيين الفرع <span class="text-red-500 ml-1">*</span>
+                                    الدور الوظيفي <span class="text-red-500 ml-1">*</span>
                                 </x-input-label>
-                                <select wire:model="branchId" id="branchId"
+                                <select wire:model="selectedRole" id="selectedRole"
                                     class="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
-                                    <option value="">اختر الفرع</option>
-                                    @foreach ($branches as $branch)
-                                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                    <option value="">اختر الدور</option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role }}">{{ $role }}</option>
                                     @endforeach
                                 </select>
-                                <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('branchId')" />
+                                <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('selectedRole')" />
                             </div>
-                        @else
-                            <div class="flex items-center p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                <div class="flex-shrink-0">
-                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
+
+                            <!-- Branch Selection -->
+                            @if (!in_array($selectedRole, ['admin', 'general_supervisor']))
+                                <div>
+                                    <x-input-label for="branchId"
+                                        class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                            </path>
+                                        </svg>
+                                        تعيين الفرع <span class="text-red-500 ml-1">*</span>
+                                    </x-input-label>
+                                    <select wire:model="branchId" id="branchId"
+                                        class="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                                        <option value="">اختر الفرع</option>
+                                        @foreach ($branches as $branch)
+                                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('branchId')" />
                                 </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-blue-800">صلاحية كاملة</p>
-                                    <p class="text-xs text-blue-600 mt-1">
-                                        هذا الدور لديه صلاحية الوصول إلى جميع الفروع.
-                                    </p>
+                            @else
+                                <div class="flex items-center p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div class="flex-shrink-0">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-blue-800">صلاحية كاملة</p>
+                                        <p class="text-xs text-blue-600 mt-1">
+                                            هذا الدور لديه صلاحية الوصول إلى جميع الفروع.
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endif
 
                 <!-- Notes Section -->
                 <div class="mt-8">

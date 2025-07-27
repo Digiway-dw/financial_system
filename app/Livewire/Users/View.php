@@ -20,9 +20,12 @@ class View extends Component
     public function mount($userId)
     {
         $user = User::findOrFail($userId);
-        // if ($user->hasRole('admin')) {
-        //     abort(403, 'Cannot view admin user.');
-        // }
+        
+        // Check if current user can view this user
+        if (!$this->canViewUser($user)) {
+            abort(403, 'You are not authorized to view this user profile.');
+        }
+        
         $this->user = $user;
         $this->branch = $user->branch;
         $this->role = $user->getRoleNames()->first();
@@ -33,6 +36,24 @@ class View extends Component
         $this->workingHours = WorkingHour::where('user_id', $userId)
             ->orderBy('day_of_week')
             ->get();
+    }
+
+    public function canViewUser($targetUser): bool
+    {
+        $currentUser = auth()->user();
+        
+        // Admin can view anyone except other admins
+        if ($currentUser->hasRole('admin')) {
+            return !$targetUser->hasRole('admin') || $currentUser->id === $targetUser->id;
+        }
+        
+        // Supervisor can view non-admin, non-supervisor users
+        if ($currentUser->hasRole('general_supervisor')) {
+            return !$targetUser->hasRole(['admin', 'general_supervisor']);
+        }
+        
+        // Other users cannot view anyone
+        return false;
     }
 
     public function render()

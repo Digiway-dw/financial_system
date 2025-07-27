@@ -55,16 +55,33 @@ class Edit extends Component
             'customerCode' => 'nullable|string|max:255',
             'gender' => 'required|in:male,female',
             'is_client' => 'boolean',
-            'agent_id' => 'nullable|exists:users,id',
             'branch_id' => 'required|exists:branches,id',
         ];
 
         // Only admins can edit balance
-        if (auth()->user() && auth()->user()->hasRole('admin')) {
+        if ($this->canEditBalance()) {
             $rules['balance'] = 'required|integer|min:0';
         }
 
         return $rules;
+    }
+
+    public function canEditBalance(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->hasRole('admin');
+    }
+
+    public function canToggleWallet(): bool
+    {
+        $user = auth()->user();
+        return $user && ($user->hasRole('admin') || $user->hasRole('general_supervisor'));
+    }
+
+    public function canEditAgent(): bool
+    {
+        // No one can edit the agent field
+        return false;
     }
 
     protected function validationAttributes(): array
@@ -133,9 +150,18 @@ class Edit extends Component
         try {
             // Use the first mobile number as the primary
             $primaryMobile = $this->mobileNumbers[0];
-            // Only admins can modify balance - preserve existing balance for non-admins
-            $oldBalance = (int) $this->customer->balance;
-            $balanceToUpdate = $user->hasRole('admin') ? (int) $this->balance : (int) $this->customer->balance;
+            
+            // Preserve original values for restricted fields
+            $originalCustomer = $this->customer;
+            
+            // Only admins can modify balance
+            $balanceToUpdate = $this->canEditBalance() ? (int) $this->balance : (int) $originalCustomer->balance;
+            
+            // No one can edit agent_id - preserve original
+            $agentIdToUpdate = $originalCustomer->agent_id;
+            
+            // Only admin and supervisor can toggle is_client
+            $isClientToUpdate = $this->canToggleWallet() ? $this->is_client : $originalCustomer->is_client;
 
             $this->updateCustomerUseCase->execute(
                 $this->customerId,
@@ -144,22 +170,24 @@ class Edit extends Component
                 $this->customerCode,
                 $this->gender,
                 $balanceToUpdate,
-                $this->is_client,
-                $this->agent_id,
+                $isClientToUpdate,
+                $agentIdToUpdate,
                 $this->branch_id
             );
+            
             // Sync mobile numbers
             $this->customer->mobileNumbers()->delete();
             foreach ($this->mobileNumbers as $number) {
                 $this->customer->mobileNumbers()->create(['mobile_number' => $number]);
             }
+            
             // If admin changed balance, record a transaction
-            if ($user->hasRole('admin') && $oldBalance != $this->balance) {
+            if ($this->canEditBalance() && $originalCustomer->balance != $this->balance) {
                 \App\Models\Domain\Entities\Transaction::create([
                     'customer_name' => $this->customer->name,
                     'customer_mobile_number' => $this->customer->mobile_number,
                     'customer_code' => $this->customer->customer_code,
-                    'amount' => abs($this->balance - $oldBalance),
+                    'amount' => abs($this->balance - $originalCustomer->balance),
                     'commission' => 0,
                     'deduction' => 0,
                     'transaction_type' => 'Adjustment',
@@ -171,6 +199,7 @@ class Edit extends Component
                     'notes' => 'Admin balance adjustment',
                 ]);
             }
+            
             session()->flash('message', 'Customer updated successfully.');
             return redirect()->route('customers.index');
         } catch (\Exception $e) {
@@ -180,12 +209,20 @@ class Edit extends Component
 
     public function activateWallet()
     {
+        if (!$this->canToggleWallet()) {
+            session()->flash('error', 'You are not authorized to activate wallets.');
+            return;
+        }
         $this->is_client = true;
         $this->updateCustomer();
     }
 
     public function deactivateWallet()
     {
+        if (!$this->canToggleWallet()) {
+            session()->flash('error', 'You are not authorized to deactivate wallets.');
+            return;
+        }
         $this->is_client = false;
         $this->updateCustomer();
     }

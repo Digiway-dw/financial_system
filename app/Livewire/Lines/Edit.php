@@ -31,19 +31,31 @@ class Edit extends Component
 
     protected function rules(): array
     {
-        return [
+        $rules = [
             'mobileNumber' => [
                 'required',
                 'digits:11',
                 Rule::unique('lines', 'mobile_number')->ignore($this->lineId),
             ],
-            'currentBalance' => 'required|numeric|min:0',
             'dailyLimit' => 'required|numeric|min:0',
             'monthlyLimit' => 'required|numeric|min:0',
             'network' => 'required|in:vodafone,orange,etisalat,we,fawry',
             'status' => 'required|string|in:active,inactive',
             'branchId' => 'required|exists:branches,id',
         ];
+
+        // Only admins can edit balance
+        if ($this->canEditBalance()) {
+            $rules['currentBalance'] = 'required|numeric|min:0';
+        }
+
+        return $rules;
+    }
+
+    public function canEditBalance(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->hasRole('admin');
     }
 
     public function boot(LineRepository $lineRepository, UpdateLine $updateLineUseCase, BranchRepository $branchRepository)
@@ -79,11 +91,15 @@ class Edit extends Component
         $this->validate();
 
         try {
+            // Preserve original balance for non-admin users
+            $originalBalance = (float) $this->line->current_balance;
+            $balanceToUpdate = $this->canEditBalance() ? (float) $this->currentBalance : $originalBalance;
+
             $this->updateLineUseCase->execute(
                 $this->lineId,
                 [
                     'mobile_number' => $this->mobileNumber,
-                    'current_balance' => (float) $this->currentBalance,
+                    'current_balance' => $balanceToUpdate,
                     'daily_limit' => (float) $this->dailyLimit,
                     'monthly_limit' => (float) $this->monthlyLimit,
                     'network' => $this->network,
