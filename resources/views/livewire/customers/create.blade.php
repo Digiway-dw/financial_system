@@ -248,64 +248,75 @@
                         </div>
 
                         <!-- Initial Balance Checkbox -->
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">الرصيد الابتدائي</label>
-                            <div class="flex items-center space-x-2">
-                                <input type="checkbox" wire:model="useInitialBalance" id="useInitialBalance"
-                                    class="form-checkbox h-5 w-5 text-blue-600">
-                                <label for="useInitialBalance" class="text-slate-700">تفعيل الرصيد الابتدائي</label>
-                            </div>
-                            @if ($useInitialBalance)
-                                <div class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <div class="text-sm text-blue-800">
-                                            <p class="font-medium">ملاحظة:</p>
-                                            <p>سيتم إضافة الرصيد الابتدائي تلقائياً إلى خزنة الفرع المحدد.</p>
-                                            @if (!$this->canSelectBranch())
-                                                <p class="mt-1 text-xs text-blue-600">(سيتم إضافة الرصيد إلى خزنة فرعك
-                                                    المخصص)</p>
-                                            @endif
+                        @if (auth()->user() && auth()->user()->hasRole('admin'))
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">الرصيد الابتدائي</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" wire:model="useInitialBalance" id="useInitialBalance"
+                                        class="form-checkbox h-5 w-5 text-blue-600">
+                                    <label for="useInitialBalance" class="text-slate-700">تفعيل الرصيد
+                                        الابتدائي</label>
+                                </div>
+                                @if ($useInitialBalance)
+                                    <div class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <div class="flex items-start">
+                                            <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                </path>
+                                            </svg>
+                                            <div class="text-sm text-blue-800">
+                                                <p class="font-medium">ملاحظة:</p>
+                                                <p>سيتم إضافة الرصيد الابتدائي تلقائياً إلى خزنة الفرع المحدد.</p>
+                                                @if (!$this->canSelectBranch())
+                                                    <p class="mt-1 text-xs text-blue-600">(سيتم إضافة الرصيد إلى خزنة
+                                                        فرعك
+                                                        المخصص)</p>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endif
-                        </div>
+                                @endif
+                            </div>
+                        @endif
 
                         <!-- Balance -->
-                        <div>
-                            <label for="balance"
-                                class="block text-sm font-semibold text-slate-700 mb-2">الرصيد</label>
-                            <input type="text" wire:model="balance" id="balance" name="balance"
-                                inputmode="numeric" pattern="^[0-9]+$" min="0"
-                                class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
-                                placeholder="أدخل الرصيد الابتدائي" :disabled="!useInitialBalance"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                            <p class="mt-1 text-xs text-gray-500">يُسمح فقط بالأرقام الصحيحة (بدون كسور عشرية أو فواصل)
-                            </p>
-                            @error('balance')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        @if (auth()->user() && auth()->user()->hasRole('admin'))
+                            <div>
+                                <label for="balance"
+                                    class="block text-sm font-semibold text-slate-700 mb-2">الرصيد</label>
+                                <input type="text" wire:model="balance" id="balance" name="balance"
+                                    inputmode="numeric" pattern="^[0-9]+$" min="0"
+                                    class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
+                                    placeholder="أدخل الرصيد الابتدائي" :disabled="!useInitialBalance"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <p class="mt-1 text-xs text-gray-500">يُسمح فقط بالأرقام الصحيحة (بدون كسور عشرية أو
+                                    فواصل)
+                                </p>
+                                @error('balance')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Right Column -->
                     <div class="space-y-6">
                         <!-- Wallet Status -->
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-3">حالة المحفظة</label>
-                            <div class="flex items-center space-x-3">
-                                <input type="checkbox" wire:model="is_client" id="is_client"
-                                    class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500 focus:ring-2">
-                                <span class="text-sm font-medium text-slate-700">تفعيل المحفظة</span>
-                                <span class="ml-2 text-xs text-gray-500">(إذا لم تتحقق من إنشاء المحفظة، يمكنك تركها
-                                    غير مفعلة)</span>
+                        @if (auth()->user() && auth()->user()->hasRole('admin'))
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-3">حالة المحفظة</label>
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox" wire:model="is_client" id="is_client"
+                                        class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500 focus:ring-2">
+                                    <span class="text-sm font-medium text-slate-700">تفعيل المحفظة</span>
+                                    <span class="ml-2 text-xs text-gray-500">(إذا لم تتحقق من إنشاء المحفظة، يمكنك
+                                        تركها
+                                        غير مفعلة)</span>
+                                </div>
                             </div>
-                        </div>
+                        @endif
 
                         <!-- Agent ID -->
                         <div>
