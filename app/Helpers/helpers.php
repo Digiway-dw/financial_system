@@ -18,6 +18,10 @@ if (!function_exists('generate_reference_number')) {
 
 if (!function_exists('format_int')) {
     function format_int($value) {
+        // Handle empty strings, null values, and non-numeric values
+        if (empty($value) || !is_numeric($value)) {
+            $value = 0;
+        }
         return number_format(round($value), 0, '', ',');
     }
 } 

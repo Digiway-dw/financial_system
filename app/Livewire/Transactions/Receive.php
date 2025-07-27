@@ -40,7 +40,7 @@ class Receive extends Component
     public $commission = null;
 
     #[Validate('nullable|numeric|min:0')]
-    public $discount = 0.0;
+    public $discount = null;
 
     #[Validate('required_if:discount,>0')]
     public $discountNotes = '';
@@ -101,6 +101,7 @@ class Receive extends Component
 
     public function updatedDiscount()
     {
+        $this->discount = abs((float) $this->discount);
         $this->calculateCommission();
         $this->checkSafeBalance();
     }
