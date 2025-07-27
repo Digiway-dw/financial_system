@@ -32,7 +32,13 @@ class CreateCustomer
     {
         // Auto-generate customer code if not provided
         if (!$customerCode) {
-            $prefix = 'F' . $branchId;
+            // Get the branch to access its name
+            $branch = \App\Models\Domain\Entities\Branch::find($branchId);
+            if (!$branch) {
+                throw new \Exception('Branch not found.');
+            }
+            
+            $prefix = $branch->name; // Use branch name (e.g., "F1", "F2", "F3")
             $lastCustomer = \App\Models\Domain\Entities\Customer::where('branch_id', $branchId)
                 ->where('customer_code', 'like', $prefix . '-%')
                 ->orderByDesc('id')->first();
