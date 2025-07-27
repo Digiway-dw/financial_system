@@ -291,7 +291,7 @@ class Send extends Component
             return;
         }
 
-        if ($this->collectFromCustomerWallet && $clientBalance < $amount) {
+        if ($this->collectFromCustomerWallet && $clientBalance < ($amount + $commission - $discount)) {
             $this->errorMessage = 'رصيد العميل غير كافي لهذه المعاملة.';
             return;
         }

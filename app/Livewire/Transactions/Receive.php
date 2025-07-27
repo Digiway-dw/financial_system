@@ -294,7 +294,7 @@ class Receive extends Component
                 'mobile_number' => $this->clientMobile,
                 'customer_code' => $code,
                 'gender' => $this->clientGender ?: 'male',
-                'is_client' => false,
+                'is_client' => true, // Customers created via receive transactions should have wallets
                 'agent_id' => $user ? $user->id : null,
                 'branch_id' => $user ? $user->branch_id : null,
                 'balance' => 0,

@@ -71,12 +71,14 @@ class CreateTransaction
 
         // Only auto-generate customer code and set wallet inactive for Receive transactions
         if (!$customer) {
-            // Set wallet inactive by default for all new customers created via transaction
-            if ($transactionType === 'Receive' || $transactionType === 'Send') {
-                $isClient = false;
+            // Set wallet status based on transaction type
+            if ($transactionType === 'Receive') {
+                $isClient = true; // Receive transactions should create customers with wallets
+            } elseif ($transactionType === 'Send') {
+                $isClient = false; // Send transactions create customers without wallets by default
             }
             // Auto-generate customer code for Receive (already handled above)
-            $this->customerRepository->save(new \App\Models\Domain\Entities\Customer([
+            $customer = new \App\Models\Domain\Entities\Customer([
                 'name' => $customerName,
                 'mobile_number' => $customerMobileNumber,
                 'customer_code' => $customerCode, // Will be auto-generated for Receive
@@ -84,7 +86,8 @@ class CreateTransaction
                 'is_client' => $isClient,
                 'agent_id' => $agentId,
                 'branch_id' => $agent->branch_id,
-            ]));
+            ]);
+            $customer = $this->customerRepository->save($customer);
         } else {
             // Update existing customer data if necessary (e.g., if name or code changed during transaction)
             $customer->name = $customerName;
@@ -93,7 +96,9 @@ class CreateTransaction
                 $customer->customer_code = $customerCode;
             }
             $customer->gender = $gender;
-            $customer->is_client = $isClient;
+            // Preserve existing wallet status for existing customers
+            // NEVER override existing customer's wallet status - only set it for new customers
+            // Existing customers should keep their current wallet status regardless of transaction type
             $this->customerRepository->save($customer);
         }
 
@@ -242,13 +247,15 @@ class CreateTransaction
         // Check current balance for transfer type only
         if ($shouldApplyBalances && $transactionType === 'Transfer') {
             if ($paymentMethod === 'client wallet') {
-                // Decrease client balance by (amount + final commission)
-                if (($customer->balance - ($amount + $finalCommission)) < 0) {
-                    throw new \Exception('Insufficient balance in client wallet for this transaction. Available: ' . number_format($customer->balance, 2) . ' EGP, Required: ' . number_format($amount + $finalCommission, 2) . ' EGP');
+                // Decrease client balance by (amount + final commission - deduction)
+                $clientDeduction = $amount + $finalCommission - $deduction;
+                if (($customer->balance - $clientDeduction) < 0) {
+                    throw new \Exception('Insufficient balance in client wallet for this transaction. Available: ' . number_format($customer->balance, 2) . ' EGP, Required: ' . number_format($clientDeduction, 2) . ' EGP');
                 }
-                $customer->balance -= ($amount + $finalCommission);
+                $customer->balance -= $clientDeduction;
                 $this->customerRepository->save($customer);
-                $customer->refresh();
+                // Refresh customer object to ensure we have the latest data
+                $customer = $this->customerRepository->findByMobileNumber($customer->mobile_number);
                 // Decrease line balance by amount
                 if (($line->current_balance - $amount) < 0) {
                     throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');

@@ -62,9 +62,9 @@ class Edit extends Component
 
         if ($this->line) {
             $this->mobileNumber = $this->line->mobile_number;
-            $this->currentBalance = $this->line->current_balance;
-            $this->dailyLimit = $this->line->daily_limit;
-            $this->monthlyLimit = $this->line->monthly_limit;
+            $this->currentBalance = (int) $this->line->current_balance;
+            $this->dailyLimit = (int) $this->line->daily_limit;
+            $this->monthlyLimit = (int) $this->line->monthly_limit;
             $this->network = $this->line->network;
             $this->status = $this->line->status;
             $this->branchId = $this->line->branch_id;

@@ -22,7 +22,7 @@
                     <x-input-label for="currentBalance" :value="'الرصيد الحالي'" />
                     <div class="relative">
                         <x-text-input wire:model="currentBalance" id="currentBalance" name="currentBalance"
-                            type="number" step="1" min="0" class="mt-1 block w-full pl-16" required
+                            type="text" class="mt-1 block w-full pl-16" required
                             x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span class="text-gray-500 text-base">ج.م</span>
@@ -36,8 +36,8 @@
                 <div>
                     <x-input-label for="dailyLimit" :value="'الحد اليومي'" />
                     <div class="relative">
-                        <x-text-input wire:model="dailyLimit" id="dailyLimit" name="dailyLimit" type="number"
-                            step="1" min="0" class="mt-1 block w-full pl-16" required
+                        <x-text-input wire:model="dailyLimit" id="dailyLimit" name="dailyLimit" type="text"
+                            class="mt-1 block w-full pl-16" required
                             x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span class="text-gray-500 text-base">ج.م</span>
@@ -51,8 +51,8 @@
                 <div>
                     <x-input-label for="monthlyLimit" :value="'الحد الشهري'" />
                     <div class="relative">
-                        <x-text-input wire:model="monthlyLimit" id="monthlyLimit" name="monthlyLimit" type="number"
-                            step="1" min="0" class="mt-1 block w-full pl-16" required
+                        <x-text-input wire:model="monthlyLimit" id="monthlyLimit" name="monthlyLimit" type="text"
+                            class="mt-1 block w-full pl-16" required
                             x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span class="text-gray-500 text-base">ج.م</span>
