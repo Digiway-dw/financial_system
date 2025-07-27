@@ -63,7 +63,7 @@ class Edit extends Component
         $this->email = $user->email;
         $this->phone_number = $user->phone_number;
         $this->national_number = $user->national_number;
-        $this->salary = $user->salary;
+        $this->salary = $user->salary ? (int) $user->salary : null; // Cast to int to remove .00
         $this->address = $user->address;
         $this->land_number = $user->land_number;
         $this->relative_phone_number = $user->relative_phone_number;
