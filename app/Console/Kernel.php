@@ -25,16 +25,21 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/daily-reset.log'));
 
-        // Reset daily_remaining for lines once per day at 00:00 Cairo time
-        $schedule->command('lines:reset-daily-remaining')
+        // Reset daily_usage for lines once per day at 00:00 Cairo time
+        $schedule->command('lines:reset-daily-usage')
             ->dailyAt('00:00')
             ->timezone('Africa/Cairo')
             ->runInBackground()
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/daily-reset.log'));
-        // Reset daily_remaining for lines once per day (safe to run every minute)
-        $schedule->command('lines:reset-daily-remaining')->everyMinute();
-        // $schedule->command('lines:reset-daily-remaining')->everyMinute();
+
+        // Reset monthly_usage for lines once per month at 00:00 on the 1st, Cairo time
+        $schedule->command('lines:reset-monthly-usage')
+            ->monthlyOn(1, '00:00')
+            ->timezone('Africa/Cairo')
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/monthly-reset.log'));
         // Session timing commands have been removed - no auto-logout functionality
 
         // Record startup safe balances at midnight
