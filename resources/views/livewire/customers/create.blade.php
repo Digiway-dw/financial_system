@@ -255,6 +255,22 @@
                                     class="form-checkbox h-5 w-5 text-blue-600">
                                 <label for="useInitialBalance" class="text-slate-700">تفعيل الرصيد الابتدائي</label>
                             </div>
+                            @if($useInitialBalance)
+                                <div class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div class="flex items-start">
+                                        <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <div class="text-sm text-blue-800">
+                                            <p class="font-medium">ملاحظة:</p>
+                                            <p>سيتم إضافة الرصيد الابتدائي تلقائياً إلى خزنة الفرع المحدد.</p>
+                                            @if(!$this->canSelectBranch())
+                                                <p class="mt-1 text-xs text-blue-600">(سيتم إضافة الرصيد إلى خزنة فرعك المخصص)</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Balance -->
@@ -300,21 +316,26 @@
                             @enderror
                         </div>
 
-                        <!-- Branch ID -->
-                        <div>
-                            <label for="branch_id"
-                                class="block text-sm font-semibold text-slate-700 mb-2">الفرع</label>
-                            <select wire:model="branch_id" id="branch_id" name="branch_id" required
-                                class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200">
-                                <option value="">اختر الفرع</option>
-                                @foreach ($branches as $branch)
-                                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('branch_id')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <!-- Branch ID - Only visible to Admin and Supervisor -->
+                        @if($this->canSelectBranch())
+                            <div>
+                                <label for="branch_id"
+                                    class="block text-sm font-semibold text-slate-700 mb-2">الفرع</label>
+                                <select wire:model="branch_id" id="branch_id" name="branch_id" required
+                                    class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200">
+                                    <option value="">اختر الفرع</option>
+                                    @foreach ($branches as $branch)
+                                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('branch_id')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        @else
+                            <!-- Hidden input for non-admin/supervisor users -->
+                            <input type="hidden" wire:model="branch_id" value="{{ $branch_id }}">
+                        @endif
                     </div>
                 </div>
 

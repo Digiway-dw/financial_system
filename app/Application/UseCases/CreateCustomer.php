@@ -4,14 +4,19 @@ namespace App\Application\UseCases;
 
 use App\Models\Domain\Entities\Customer;
 use App\Domain\Interfaces\CustomerRepository;
+use App\Domain\Interfaces\SafeRepository;
 
 class CreateCustomer
 {
     private CustomerRepository $customerRepository;
+    private SafeRepository $safeRepository;
 
-    public function __construct(CustomerRepository $customerRepository)
-    {
+    public function __construct(
+        CustomerRepository $customerRepository,
+        SafeRepository $safeRepository
+    ) {
         $this->customerRepository = $customerRepository;
+        $this->safeRepository = $safeRepository;
     }
 
     public function execute(

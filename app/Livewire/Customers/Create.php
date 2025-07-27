@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use App\Domain\Interfaces\UserRepository;
 use App\Domain\Interfaces\BranchRepository;
+use App\Domain\Interfaces\SafeRepository;
 use App\Domain\Entities\User;
+use App\Constants\Roles;
 
 class Create extends Component
 {
@@ -48,15 +50,18 @@ class Create extends Component
     private CreateCustomer $createCustomerUseCase;
     private UserRepository $userRepository;
     private BranchRepository $branchRepository;
+    private SafeRepository $safeRepository;
 
     public function boot(
         CreateCustomer $createCustomerUseCase,
         UserRepository $userRepository,
-        BranchRepository $branchRepository
+        BranchRepository $branchRepository,
+        SafeRepository $safeRepository
     ) {
         $this->createCustomerUseCase = $createCustomerUseCase;
         $this->userRepository = $userRepository;
         $this->branchRepository = $branchRepository;
+        $this->safeRepository = $safeRepository;
     }
 
     public function mount()
@@ -66,6 +71,17 @@ class Create extends Component
         Gate::authorize('manage-customers');
         $this->agents = User::role('agent')->get();
         $this->branches = $this->branchRepository->all();
+        
+        // Set default branch based on user role
+        if (!$this->canSelectBranch()) {
+            $this->branch_id = $user->branch_id;
+        }
+    }
+
+    public function canSelectBranch(): bool
+    {
+        $user = Auth::user();
+        return $user->hasRole(Roles::ADMIN) || $user->hasRole(Roles::GENERAL_SUPERVISOR);
     }
 
     public function addMobileNumber()
@@ -128,10 +144,24 @@ class Create extends Component
             $customer->created_by = Auth::id();
             $customer->save();
 
+            // If initial balance is provided, update the branch safe
+            $safeUpdated = false;
+            if ($this->useInitialBalance && $balance > 0) {
+                $this->updateBranchSafeBalance($this->branch_id, $balance);
+                $safeUpdated = true;
+            }
+
             // Set success status
             $this->createdCustomer = $customer->fresh(['mobileNumbers', 'branch', 'agent', 'createdBy']); // Reload with relationships
             $this->creationStatus = 'success';
-            $this->statusMessage = 'تم إنشاء العميل بنجاح!';
+            
+            if ($safeUpdated) {
+                $branchName = $customer->branch->name ?? 'Unknown Branch';
+                $this->statusMessage = "تم إنشاء العميل بنجاح! تم إضافة الرصيد الابتدائي ({$balance} جنيه) إلى خزنة فرع {$branchName}.";
+            } else {
+                $this->statusMessage = 'تم إنشاء العميل بنجاح!';
+            }
+            
             $this->showStatusPage = true;
         } catch (\Exception $e) {
             // Set error status
@@ -141,14 +171,49 @@ class Create extends Component
         }
     }
 
+    private function updateBranchSafeBalance(int $branchId, float $amount): void
+    {
+        // Find the branch safe
+        $branchSafes = \App\Models\Domain\Entities\Safe::where('branch_id', $branchId)
+            ->where('type', 'branch')
+            ->get();
+
+        if ($branchSafes->isEmpty()) {
+            throw new \Exception('No branch safe found for the selected branch. Please ensure the branch has a safe configured.');
+        }
+
+        // Use the first branch safe (there should typically be only one per branch)
+        $branchSafe = $branchSafes->first();
+        
+        // Update the safe balance
+        $newBalance = $branchSafe->current_balance + $amount;
+        $this->safeRepository->update($branchSafe->id, ['current_balance' => $newBalance]);
+        
+        // Log the safe update for audit purposes
+        \Log::info('Safe balance updated for customer creation', [
+            'safe_id' => $branchSafe->id,
+            'safe_name' => $branchSafe->name,
+            'branch_id' => $branchId,
+            'amount_added' => $amount,
+            'previous_balance' => $branchSafe->current_balance,
+            'new_balance' => $newBalance,
+            'created_by' => Auth::id()
+        ]);
+    }
+
     public function backToForm()
     {
         $this->showStatusPage = false;
         $this->createdCustomer = null;
         $this->creationStatus = null;
         $this->statusMessage = '';
-        $this->reset(['name', 'mobileNumbers', 'gender', 'balance', 'is_client', 'agent_id', 'branch_id']);
+        $this->reset(['name', 'mobileNumbers', 'gender', 'balance', 'is_client', 'agent_id', 'branch_id', 'useInitialBalance']);
         $this->mobileNumbers = [''];
+        
+        // Reset branch_id based on user role
+        if (!$this->canSelectBranch()) {
+            $this->branch_id = Auth::user()->branch_id;
+        }
     }
 
     public function goToCustomersList()
