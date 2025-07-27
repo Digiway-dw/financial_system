@@ -271,7 +271,9 @@ class Create extends Component
             if ($this->deduction > 0) {
                 $adminNotificationMessage = "A transaction was created with a deduction of " . $this->deduction . " EGP. Note: " . $this->notes . ". Transaction ID: " . $createdTransaction->id;
                 $admins = \App\Domain\Entities\User::role('admin')->get();
-                Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $createdTransaction->id)));
+                $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+                $recipients = $admins->merge($supervisors)->unique('id');
+                Notification::send($recipients, new AdminNotification($adminNotificationMessage, route('transactions.edit', $createdTransaction->id)));
                 session()->flash('message', 'Transaction submitted for admin approval due to discount applied.');
                 $this->reset(['customerName', 'customerMobileNumber', 'lineMobileNumber', 'customerCode', 'amount', 'commission', 'deduction', 'transactionType', 'branchId', 'lineId', 'safeId', 'isAbsoluteWithdrawal', 'paymentMethod', 'gender', 'isClient']);
                 $this->calculateCommission();

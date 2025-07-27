@@ -234,7 +234,7 @@ class Send extends Component
                     'mobile_number' => $line->mobile_number,
                     'current_balance' => $line->current_balance,
                     'network' => $line->network,
-                    'display' => $line->mobile_number . ' (' . number_format($line->current_balance, 2) . ' EGP) - ' . ucfirst($line->network),
+                    'display' => $line->mobile_number . ' (' . number_format($line->current_balance, 0) . ' EGP) - ' . ucfirst($line->network),
                 ];
             })
             ->toArray();
@@ -379,21 +379,23 @@ class Send extends Component
                 // These fields must remain unchanged for this transaction type.
 
                 // Notify admin if a discount was applied
-                if ($discount > 0) {
+                if (($this->discount ?? 0) > 0) {
                     $adminNotificationMessage = "تم إنشاء معاملة إرسال بخصم {$discount} EGP.\n"
                         . "Transaction Details:" . "\n"
                         . "Reference Number: {$transaction->reference_number}\n"
                         . "Client: {$this->clientName} ({$this->clientMobile})\n"
                         . "Amount: {$this->amount} EGP\n"
                         . "Commission: {$this->commission} EGP\n"
-                        . "Discount: {$this->discount} EGP\n"
+                        . "Discount: {$discount} EGP\n"
                         . "Receiver: {$this->receiverMobile}\n"
                         . "Line: {$this->selectedLineId}\n"
                         . "Branch: {$transaction->branch->name}\n"
                         . "Note: {$this->discountNotes}\n"
                         . "Transaction ID: {$transaction->id}";
                     $admins = User::role('admin')->get();
-                    Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
+                    $supervisors = User::role('general_supervisor')->get();
+                    $recipients = $admins->merge($supervisors)->unique('id');
+                    Notification::send($recipients, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
                 }
 
                 // Print receipt

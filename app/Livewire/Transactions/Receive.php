@@ -215,7 +215,7 @@ class Receive extends Component
                     'mobile_number' => $line->mobile_number,
                     'current_balance' => $line->current_balance,
                     'network' => $line->network,
-                    'display' => $line->mobile_number . ' (' . number_format($line->current_balance, 2) . ' EGP) - ' . ucfirst($line->network),
+                    'display' => $line->mobile_number . ' (' . number_format($line->current_balance, 0) . ' EGP) - ' . ucfirst($line->network),
                 ];
             })
             ->toArray();
@@ -260,21 +260,46 @@ class Receive extends Component
 
     private function notifyAdmin($transaction)
     {
-        $discountDisplay = $this->discount ?? 0;
-        $adminNotificationMessage = "تم إنشاء معاملة إستلام بخصم {$discountDisplay} EGP.\n"
-            . "Transaction Details:" . "\n"
-            . "Reference Number: {$transaction->reference_number}\n"
-            . "Client: {$this->clientName} ({$this->clientMobile})\n"
-            . "Amount: {$this->amount} EGP\n"
-            . "Commission: {$this->commission} EGP\n"
-            . "Discount: {$discountDisplay} EGP\n"
-            . "Sender: {$this->senderMobile}\n"
-            . "Line: {$this->selectedLineId}\n"
-            . "Branch: {$transaction->branch->name}\n"
-            . "Note: {$this->discountNotes}\n"
-            . "Transaction ID: {$transaction->id}";
-        $admins = \App\Domain\Entities\User::role('admin')->get();
-        \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
+        try {
+            $discountDisplay = $this->discount ?? 0;
+            $adminNotificationMessage = "تم إنشاء معاملة إستلام بخصم {$discountDisplay} EGP.\n"
+                . "Transaction Details:" . "\n"
+                . "Reference Number: {$transaction->reference_number}\n"
+                . "Client: {$this->clientName} ({$this->clientMobile})\n"
+                . "Amount: {$this->amount} EGP\n"
+                . "Commission: {$this->commission} EGP\n"
+                . "Discount: {$discountDisplay} EGP\n"
+                . "Sender: {$this->senderMobile}\n"
+                . "Line: {$this->selectedLineId}\n"
+                . "Branch: {$transaction->branch->name}\n"
+                . "Note: {$this->discountNotes}\n"
+                . "Transaction ID: {$transaction->id}";
+            $admins = \App\Domain\Entities\User::role('admin')->get();
+            
+            // Log for debugging
+            \Illuminate\Support\Facades\Log::info('Sending receive transaction notification', [
+                'transaction_id' => $transaction->id,
+                'admin_count' => $admins->count(),
+                'message' => $adminNotificationMessage
+            ]);
+            
+            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
+            
+            // Log success
+            \Illuminate\Support\Facades\Log::info('Receive transaction notification sent successfully', [
+                'transaction_id' => $transaction->id
+            ]);
+        } catch (\Exception $e) {
+            // Log the error
+            \Illuminate\Support\Facades\Log::error('Failed to send receive transaction notification', [
+                'transaction_id' => $transaction->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Don't throw the exception to avoid breaking the transaction
+            // Just log it for debugging
+        }
     }
 
     public function submitTransaction()
@@ -379,9 +404,38 @@ class Receive extends Component
 
             // Only if transaction was created, proceed with notification and redirect
             if ($createdTransaction) {
-                if ($this->discount > 0) {
-                    // Notify admin for approval
-                    $this->notifyAdmin($createdTransaction);
+                // Log for debugging
+                \Illuminate\Support\Facades\Log::info('Receive transaction created successfully', [
+                    'transaction_id' => $createdTransaction->id,
+                    'discount' => $this->discount ?? 0,
+                    'has_discount' => ($this->discount ?? 0) > 0
+                ]);
+                
+                if (($this->discount ?? 0) > 0) {
+                    // Notify admin for approval - using direct notification like Send component
+                    \Illuminate\Support\Facades\Log::info('Sending notification for receive transaction with discount', [
+                        'transaction_id' => $createdTransaction->id,
+                        'discount' => $this->discount
+                    ]);
+                    
+                    $discountDisplay = $this->discount ?? 0;
+                    $adminNotificationMessage = "تم إنشاء معاملة إستلام بخصم {$discountDisplay} EGP.\n"
+                        . "Transaction Details:" . "\n"
+                        . "Reference Number: {$createdTransaction->reference_number}\n"
+                        . "Client: {$this->clientName} ({$this->clientMobile})\n"
+                        . "Amount: {$this->amount} EGP\n"
+                        . "Commission: {$this->commission} EGP\n"
+                        . "Discount: {$discountDisplay} EGP\n"
+                        . "Sender: {$this->senderMobile}\n"
+                        . "Line: {$this->selectedLineId}\n"
+                        . "Branch: {$createdTransaction->branch->name}\n"
+                        . "Note: {$this->discountNotes}\n"
+                        . "Transaction ID: {$createdTransaction->id}";
+                    $admins = \App\Domain\Entities\User::role('admin')->get();
+                    $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+                    $recipients = $admins->merge($supervisors)->unique('id');
+                    \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $createdTransaction->id)));
+                    
                     DB::commit();
                     // Print receipt and redirect to receipt page for transactions with discount
                     app(\App\Services\ReceiptPrinterService::class)->printReceipt($createdTransaction, 'html');

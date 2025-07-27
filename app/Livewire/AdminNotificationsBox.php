@@ -70,15 +70,22 @@ class AdminNotificationsBox extends Component
         if ($this->typeFilter !== 'all') {
             $query = $query->where(function($q) {
                 if ($this->typeFilter === 'send') {
-                    $q->where('data->type', 'send')->orWhere('data->category', 'send');
+                    $q->where('data->message', 'like', '%إرسال%');
                 } elseif ($this->typeFilter === 'receive') {
-                    $q->where('data->type', 'receive')->orWhere('data->category', 'receive');
+                    $q->where('data->message', 'like', '%إستلام%');
                 } elseif ($this->typeFilter === 'cash') {
-                    $q->where('data->type', 'cash')->orWhere('data->category', 'cash');
+                    $q->where('data->message', 'like', '%نقد%')
+                      ->orWhere('data->message', 'like', '%cash%')
+                      ->orWhere('data->message', 'like', '%withdrawal%')
+                      ->orWhere('data->message', 'like', '%deposit%');
                 } elseif ($this->typeFilter === 'others') {
                     $q->where(function($subq) {
-                        $subq->whereNotIn('data->type', ['send', 'receive', 'cash'])
-                             ->whereNotIn('data->category', ['send', 'receive', 'cash']);
+                        $subq->where('data->message', 'not like', '%إرسال%')
+                             ->where('data->message', 'not like', '%إستلام%')
+                             ->where('data->message', 'not like', '%نقد%')
+                             ->where('data->message', 'not like', '%cash%')
+                             ->where('data->message', 'not like', '%withdrawal%')
+                             ->where('data->message', 'not like', '%deposit%');
                     });
                 }
             });
