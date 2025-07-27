@@ -29,16 +29,27 @@ class ResetDailyRemaining extends Command
     public function handle()
     {
         $today = Carbon::now()->toDateString();
-        $lastReset = Cache::get('lines:last_reset');
+        $lastDailyReset = Cache::get('lines:last_daily_reset');
+        $lastMonthlyReset = Cache::get('lines:last_monthly_reset');
+        $firstOfMonth = Carbon::now()->firstOfMonth()->toDateString();
 
-        if ($lastReset === $today) {
+        // Daily reset
+        if ($lastDailyReset !== $today) {
+            DB::table('lines')->update(['daily_usage' => 0]);
+            Cache::put('lines:last_daily_reset', $today, now()->addDay());
+            $this->info('daily_usage reset to 0 for all lines.');
+        } else {
             $this->info('Daily reset already performed today.');
-            return 0;
         }
 
-        DB::table('lines')->update(['daily_usage' => 0]);
-        Cache::put('lines:last_reset', $today, now()->addDay());
-        $this->info('daily_remaining reset to 0 for all lines.');
+        // Monthly reset
+        if ($lastMonthlyReset !== $firstOfMonth) {
+            DB::table('lines')->update(['monthly_usage' => 0]);
+            Cache::put('lines:last_monthly_reset', $firstOfMonth, now()->addMonth());
+            $this->info('monthly_usage reset to 0 for all lines.');
+        } else {
+            $this->info('Monthly reset already performed this month.');
+        }
         return 0;
     }
 }
