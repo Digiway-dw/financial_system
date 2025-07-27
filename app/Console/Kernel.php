@@ -19,11 +19,22 @@ class Kernel extends ConsoleKernel
         $schedule->command('working-hours:check')->everyMinute();
         $schedule->command('sessions:check-inactive')->everyMinute();
         $schedule->command('app:unfreeze-lines-and-reset-daily-balance')
-            ->dailyAt('00:00')
+            ->dailyAt('22:40')
+            ->timezone('Africa/Cairo')
             ->runInBackground()
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/daily-reset.log'));
 
+        // Reset daily_remaining for lines once per day at 00:00 Cairo time
+        $schedule->command('lines:reset-daily-remaining')
+            ->dailyAt('00:00')
+            ->timezone('Africa/Cairo')
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/daily-reset.log'));
+        // Reset daily_remaining for lines once per day (safe to run every minute)
+        $schedule->command('lines:reset-daily-remaining')->everyMinute();
+        // $schedule->command('lines:reset-daily-remaining')->everyMinute();
         // Session timing commands have been removed - no auto-logout functionality
 
         // Record startup safe balances at midnight
