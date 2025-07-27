@@ -81,9 +81,13 @@
                             </label>
                             <div class="relative">
                                 <input wire:model="clientMobile" wire:input="searchClient" id="clientMobile"
-                                    type="text"
+                                    type="text" maxlength="11" minlength="11" pattern="\d{11}"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('clientMobile') border-red-500 @enderror"
-                                    placeholder="ادخل رقم الموبايل، اسم العميل، أو رمز العميل" autocomplete="off">
+                                    placeholder="ادخل رقم الموبايل (11 رقم)" autocomplete="off"
+                                    oninput="this.value=this.value.replace(/[^\d]/g,'').slice(0,11);">
+                                @if (strlen($clientMobile ?? '') > 0 && strlen($clientMobile ?? '') != 11)
+                                    <p class="mt-1 text-sm text-red-600">يجب أن يكون رقم الموبايل 11 رقم.</p>
+                                @endif
                                 @if ($clientId)
                                     <button type="button" wire:click="clearClientSelection"
                                         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors">
@@ -277,8 +281,7 @@
                             <input wire:model="receiverMobile" id="receiverMobile" type="text" maxlength="11"
                                 minlength="11"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 @error('receiverMobile') border-red-500 @enderror"
-                                placeholder="ادخل رقم الموبايل المستلم (11 رقم)" pattern="\d{11}"
-                                autocomplete="off"
+                                placeholder="ادخل رقم الموبايل المستلم (11 رقم)" pattern="\d{11}" autocomplete="off"
                                 oninput="this.value = this.value.replace(/[^\d]/g, '').slice(0,11);" onblur="">
                             <p class="mt-1 text-xs text-gray-500">يجب أن يكون رقم الموبايل المستلم 11 رقم.</p>
                             @if (strlen($receiverMobile) > 0 && strlen($receiverMobile) < 11)
@@ -295,8 +298,7 @@
                             <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
                                 المبلغ (EGP) <span class="text-red-500">*</span>
                             </label>
-                            <input wire:model.live="amount" id="amount" type="text"
-                                min="1"
+                            <input wire:model.live="amount" id="amount" type="text" min="1"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 @error('amount') border-red-500 @enderror"
                                 placeholder="ادخل المبلغ (أرقام فقط)" autocomplete="off"
                                 oninput="this.value = this.value.replace(/[^\d]/g, '');">
@@ -326,8 +328,7 @@
                             <label for="discount" class="block text-sm font-medium text-gray-700 mb-2">
                                 الخصم (اختياري)
                             </label>
-                            <input wire:model.live="discount" id="discount" type="text"
-                                min="0"
+                            <input wire:model.live="discount" id="discount" type="text" min="0"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('discount') border-red-500 @enderror"
                                 placeholder="ادخل الخصم (أرقام فقط)" autocomplete="off"
                                 value="{{ old('discount', '') }}"
