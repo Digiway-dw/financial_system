@@ -369,6 +369,11 @@ class Receive extends Component
                 null                              // notes
             );
 
+            // Decrease daily_remaining and monthly_remaining of the line by the received amount
+            $line->daily_remaining = max(0, ($line->daily_remaining ?? 0) - $this->amount);
+            $line->monthly_remaining = max(0, ($line->monthly_remaining ?? 0) - $this->amount);
+            $line->save();
+
             // Only if transaction was created, proceed with notification and redirect
             if ($createdTransaction) {
                 if ($this->discount > 0) {
