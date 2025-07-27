@@ -40,7 +40,7 @@ class Receive extends Component
     public $commission = null;
 
     #[Validate('nullable|numeric|min:0')]
-    public $discount = 0;
+    public $discount = null;
 
     #[Validate('required_if:discount,>0')]
     public $discountNotes = '';
@@ -101,7 +101,9 @@ class Receive extends Component
 
     public function updatedDiscount()
     {
-        $this->discount = abs((float) $this->discount);
+        if (empty($this->discount)) {
+            $this->discount = null;
+        }
         $this->calculateCommission();
         $this->checkSafeBalance();
     }
@@ -258,13 +260,14 @@ class Receive extends Component
 
     private function notifyAdmin($transaction)
     {
-        $adminNotificationMessage = "تم إنشاء معاملة إستلام بخصم {$this->discount} EGP.\n"
+        $discountDisplay = $this->discount ?? 0;
+        $adminNotificationMessage = "تم إنشاء معاملة إستلام بخصم {$discountDisplay} EGP.\n"
             . "Transaction Details:" . "\n"
             . "Reference Number: {$transaction->reference_number}\n"
             . "Client: {$this->clientName} ({$this->clientMobile})\n"
             . "Amount: {$this->amount} EGP\n"
             . "Commission: {$this->commission} EGP\n"
-            . "Discount: {$this->discount} EGP\n"
+            . "Discount: {$discountDisplay} EGP\n"
             . "Sender: {$this->senderMobile}\n"
             . "Line: {$this->selectedLineId}\n"
             . "Branch: {$transaction->branch->name}\n"

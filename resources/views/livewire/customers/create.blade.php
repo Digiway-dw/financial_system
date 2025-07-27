@@ -248,7 +248,7 @@
                         </div>
 
                         <!-- Initial Balance Checkbox -->
-                        @if (auth()->user() && auth()->user()->hasRole('admin'))
+                        @if ($this->canSelectBranch())
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-2">الرصيد الابتدائي</label>
                                 <div class="flex items-center space-x-2">
@@ -282,7 +282,7 @@
                         @endif
 
                         <!-- Balance -->
-                        @if (auth()->user() && auth()->user()->hasRole('admin'))
+                        @if ($this->canSelectBranch())
                             <div>
                                 <label for="balance"
                                     class="block text-sm font-semibold text-slate-700 mb-2">الرصيد</label>
@@ -304,7 +304,7 @@
                     <!-- Right Column -->
                     <div class="space-y-6">
                         <!-- Wallet Status -->
-                        @if (auth()->user() && auth()->user()->hasRole('admin'))
+                        @if ($this->canSelectBranch())
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-3">حالة المحفظة</label>
                                 <div class="flex items-center space-x-3">
@@ -317,21 +317,6 @@
                                 </div>
                             </div>
                         @endif
-
-                        <!-- Agent ID -->
-                        <div>
-                            <label for="agent_id" class="block text-sm font-semibold text-slate-700 mb-2">موزع</label>
-                            <select wire:model="agent_id" id="agent_id" name="agent_id"
-                                class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200">
-                                <option value="">اختر موزع (اختياري)</option>
-                                @foreach ($agents as $agent)
-                                    <option value="{{ $agent->id }}">{{ $agent->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('agent_id')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
 
                         <!-- Branch ID - Only visible to Admin and Supervisor -->
                         @if ($this->canSelectBranch())

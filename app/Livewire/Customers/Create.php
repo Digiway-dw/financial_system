@@ -30,13 +30,9 @@ class Create extends Component
     #[Validate('boolean')]
     public $is_client = false; // Default: customer does not have a wallet
 
-    #[Validate('nullable|exists:users,id')]
-    public $agent_id = null;
-
     #[Validate('required|exists:branches,id')]
     public $branch_id = '';
 
-    public $agents = [];
     public $branches = [];
 
     // Status tracking
@@ -69,7 +65,6 @@ class Create extends Component
         $user = Auth::user();
         // Remove the abort for agents, rely on Gate authorization
         Gate::authorize('manage-customers');
-        $this->agents = User::role('agent')->get();
         $this->branches = $this->branchRepository->all();
         
         // Set default branch based on user role
@@ -104,7 +99,6 @@ class Create extends Component
             'gender' => 'required|in:male,female',
             'balance' => $this->useInitialBalance ? 'required|numeric|min:0' : 'nullable|numeric|min:0',
             'is_client' => 'required|boolean',
-            'agent_id' => 'required|exists:users,id',
             'branch_id' => 'required|exists:branches,id',
         ];
     }
@@ -132,7 +126,7 @@ class Create extends Component
                 $this->gender,
                 $balance,
                 $this->is_client,
-                $this->agent_id,
+                Auth::id(), // Set current user as agent
                 $this->branch_id
             );
 
@@ -207,7 +201,7 @@ class Create extends Component
         $this->createdCustomer = null;
         $this->creationStatus = null;
         $this->statusMessage = '';
-        $this->reset(['name', 'mobileNumbers', 'gender', 'balance', 'is_client', 'agent_id', 'branch_id', 'useInitialBalance']);
+        $this->reset(['name', 'mobileNumbers', 'gender', 'balance', 'is_client', 'branch_id', 'useInitialBalance']);
         $this->mobileNumbers = [''];
         
         // Reset branch_id based on user role

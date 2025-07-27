@@ -107,7 +107,9 @@ class Send extends Component
 
     public function updatedDiscount()
     {
-        $this->discount = abs((float) $this->discount);
+        if (empty($this->discount)) {
+            $this->discount = null;
+        }
         $this->calculateCommission();
     }
 
