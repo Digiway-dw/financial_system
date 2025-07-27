@@ -51,7 +51,7 @@ class Deposit extends Create
         $this->branchUsers = User::where('branch_id', Auth::user()->branch_id ?? null)->get();
 
         $user = Auth::user();
-        if ($user->hasRole('admin') || $user->hasRole('supervisor')) {
+        if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
             $this->branchSafes = \App\Models\Domain\Entities\Safe::with('branch')->get();
             $this->branches = \App\Models\Domain\Entities\Branch::all();
         } else {
