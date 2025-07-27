@@ -68,7 +68,6 @@
                     <select wire:model="network" id="network" name="network"
                         class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                         required>
-                        <option value="">اختر مزود الشبكة</option>
                         <option value="vodafone">فودافون</option>
                         <option value="orange">أورانج</option>
                         <option value="etisalat">اتصالات</option>

@@ -19,7 +19,7 @@ class Edit extends Component
     public $currentBalance = 0.00;
     public $dailyLimit = 0.00;
     public $monthlyLimit = 0.00;
-    public $network = 'Vodafone';
+    public $network = 'vodafone';
     public $status = 'active';
     public $branchId = '';
 
