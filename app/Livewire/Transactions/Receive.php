@@ -421,6 +421,12 @@ class Receive extends Component
         $this->loadAvailableLines();
     }
 
+    // Public method for Livewire/Blade to call
+    public function resetTransactionForm()
+    {
+        $this->resetForm();
+    }
+
     public function clearClientSelection()
     {
         $this->reset([
