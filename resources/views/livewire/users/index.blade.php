@@ -170,62 +170,73 @@
         <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 text-right">
-                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
+                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10 text-center">
                         <tr>
                             <th scope="col"
-                                class="px-8 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                class="px-8 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header text-center"
                                 wire:click="sortBy('name')">
-                                <div class="flex flex-row-reverse items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    بيانات المستخدم
-                                    @if ($sortField === 'name')
-                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                    @endif
+                                <div class="flex flex-col items-center justify-center">
+                                    <span class="flex flex-row-reverse items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        بيانات المستخدم
+                                        @if ($sortField === 'name')
+                                            <span
+                                                class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                        @endif
+                                    </span>
                                 </div>
                             </th>
                             <th scope="col"
-                                class="px-8 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                class="px-8 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header text-center"
                                 wire:click="sortBy('branch_id')">
-                                <div class="flex flex-row-reverse items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                    </svg>
-                                    الفرع
-                                    @if ($sortField === 'branch_id')
-                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                    @endif
+                                <div class="flex flex-col items-center justify-center">
+                                    <span class="flex flex-row-reverse items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                        الفرع
+                                        @if ($sortField === 'branch_id')
+                                            <span
+                                                class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                        @endif
+                                    </span>
                                 </div>
                             </th>
                             <th scope="col"
-                                class="px-8 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                class="px-8 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header text-center"
                                 wire:click="sortBy('role')">
-                                <div class="flex flex-row-reverse items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                    </svg>
-                                    الدور
-                                    @if ($sortField === 'role')
-                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                    @endif
+                                <div class="flex flex-col items-center justify-center">
+                                    <span class="flex flex-row-reverse items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                        </svg>
+                                        الدور
+                                        @if ($sortField === 'role')
+                                            <span
+                                                class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                        @endif
+                                    </span>
                                 </div>
                             </th>
                             <th scope="col"
-                                class="px-8 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header">
-                                <div class="flex flex-row-reverse items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                                    </svg>
-                                    الإجراءات
+                                class="px-8 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <span class="flex flex-row-reverse items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-indigo-500"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                                        </svg>
+                                        الإجراءات
+                                    </span>
                                 </div>
                             </th>
                         </tr>
