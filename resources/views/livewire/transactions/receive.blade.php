@@ -206,7 +206,7 @@
                             <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
                                 المبلغ (EGP) <span class="text-red-500">*</span>
                             </label>
-                            <input wire:model.live="amount" id="amount" type="number" step="1"
+                            <input wire:model.live="amount" id="amount" type="text"
                                 min="1"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('amount') border-red-500 @enderror"
                                 placeholder="ادخل المبلغ" oninput="this.value=this.value.replace(/[^\d]/g,'')">
@@ -231,7 +231,7 @@
                             <label for="discount" class="block text-sm font-medium text-gray-700 mb-2">
                                 الخصم (EGP)
                             </label>
-                            <input wire:model.live="discount" id="discount" type="number" step="1"
+                            <input wire:model.live="discount" id="discount" type="text"
                                 min="0"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('discount') border-red-500 @enderror"
                                 placeholder="ادخل مبلغ الخصم"

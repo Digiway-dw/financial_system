@@ -292,7 +292,7 @@
                                         d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 01-.75.75h-.75m-6-1.5H4.5m0 0l6.75 6.75M4.5 11.25v-5.25m0 0h6.75" />
                                 </svg>
                             </div>
-                            <input id="salary" type="number" step="0.01" wire:model="salary"
+                            <input id="salary" type="text" wire:model="salary"
                                 placeholder="0"الراتب
                                 class="pl-10 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         </div>

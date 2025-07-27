@@ -32,15 +32,15 @@
             </div>
             <div>
                 <x-input-label for="amount" :value="__('Amount')" />
-                <x-text-input id="amount" type="number" wire:model="amount" class="mt-1 block w-full" step="0.01" min="1" />
+                <x-text-input id="amount" type="text" wire:model="amount" class="mt-1 block w-full" />
             </div>
             <div>
                 <x-input-label for="commission" :value="__('Commission')" />
-                <x-text-input id="commission" type="number" wire:model="commission" class="mt-1 block w-full bg-gray-100" readonly />
+                <x-text-input id="commission" type="text" wire:model="commission" class="mt-1 block w-full bg-gray-100" readonly />
             </div>
             <div>
                 <x-input-label for="discount" :value="__('Discount (optional)')" />
-                <x-text-input id="discount" type="number" wire:model="discount" class="mt-1 block w-full" step="0.01" min="0" />
+                <x-text-input id="discount" type="text" wire:model="discount" class="mt-1 block w-full" />
             </div>
             <div>
                 <x-input-label for="line_type" :value="__('Line Type')" />

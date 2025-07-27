@@ -148,7 +148,7 @@
                                 class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">ج.م</span>
                             <input id="salary"
                                 class="block w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                                type="number" step="0.01" wire:model="salary"
+                                type="text" wire:model="salary"
                                 placeholder="ادخل الراتب بالجنيه المصري" />
                         </div>
                         <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('salary')" />

@@ -69,7 +69,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">المبلغ</label>
-                        <input type="number" step="0.01" wire:model.defer="direct_amount" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter amount">
+                                                        <input type="text" wire:model.defer="direct_amount" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter amount">
                         @error('direct_amount') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
                     <div>

@@ -148,7 +148,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <span class="text-gray-500 sm:text-sm">EGP</span>
                                 </div>
-                                <input type="number" id="amount" wire:model.defer="amount" step="0.01"
+                                <input type="text" id="amount" wire:model.defer="amount"
                                     min="1"
                                     class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-12 sm:text-sm border-gray-300 rounded-md"
                                     placeholder="0.00">

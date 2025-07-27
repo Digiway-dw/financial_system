@@ -195,7 +195,7 @@
                                 <span class="text-gray-500 text-sm">ج.م</span>
                             </div>
                             <input wire:model="safe_initial_balance" id="safe_initial_balance"
-                                name="safe_initial_balance" type="number" step="1" min="0" required
+                                name="safe_initial_balance" type="text" required
                                 class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                                 placeholder="٠" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
                         </div>

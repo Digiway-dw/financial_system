@@ -236,12 +236,12 @@
                     <label class="block text-sm font-medium text-gray-700">نطاق المبلغ</label>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <input wire:model.defer="amount_from" id="amount_from" type="number" step="0.01"
+                            <input wire:model.defer="amount_from" id="amount_from" type="text"
                                 placeholder="من"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                         </div>
                         <div>
-                            <input wire:model.defer="amount_to" id="amount_to" type="number" step="0.01"
+                            <input wire:model.defer="amount_to" id="amount_to" type="text"
                                 placeholder="إلى"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                         </div>
@@ -251,7 +251,7 @@
                 <!-- العمولة -->
                 <div class="space-y-2">
                     <label for="commission" class="block text-sm font-medium text-gray-700">العمولة</label>
-                    <input wire:model.defer="commission" id="commission" type="number" step="0.01"
+                                                <input wire:model.defer="commission" id="commission" type="text"
                         placeholder="0.00"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>

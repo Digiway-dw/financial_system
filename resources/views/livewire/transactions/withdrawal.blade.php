@@ -227,7 +227,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <span class="text-slate-500 text-sm font-medium">ج.م</span>
                                     </div>
-                                    <input type="number" step="0.01" min="0" wire:model="amount"
+                                    <input type="text" wire:model="amount"
                                         id="amount"
                                         class="w-full pl-12 pr-4 py-3 rounded-lg border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 bg-white text-slate-900"
                                         placeholder="0.00">
@@ -487,7 +487,7 @@
                                             class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <span class="text-slate-500 text-sm font-medium">ج.م</span>
                                         </div>
-                                        <input type="number" wire:model.defer="amount" min="1"
+                                        <input type="text" wire:model.defer="amount"
                                             step="0.01"
                                             class="w-full pl-12 pr-4 py-3 rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 bg-white text-slate-900"
                                             placeholder="0.00" required />
@@ -631,7 +631,7 @@
                                     </svg>
                                     المبلغ
                                 </label>
-                                <input type="number" step="0.01" min="0" wire:model="amount" id="amount" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 bg-white text-slate-900" placeholder="أدخل المبلغ ج.م">
+                                <input type="text" wire:model="amount" id="amount" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 bg-white text-slate-900" placeholder="أدخل المبلغ ج.م">
                                 @error('amount')
                                     <p class="text-red-600 text-sm mt-1 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p>
                                 @enderror
@@ -701,8 +701,7 @@
                                             class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <span class="text-slate-500 text-sm font-medium">ج.م</span>
                                         </div>
-                                        <input type="number" id="amount" wire:model="amount" step="0.01"
-                                            min="0.01"
+                                        <input type="text" id="amount" wire:model="amount"
                                             class="w-full pl-12 pr-4 py-3 rounded-lg border-slate-300 shadow-sm focus:border-red-500 focus:ring-red-500 transition-all duration-200 bg-white text-slate-900"
                                             placeholder="أدخل المبلغ">
                                     </div>

@@ -160,7 +160,7 @@
                             </div>
                             <div>
                                 <label class="block text-gray-700 font-medium mb-1">Amount</label>
-                                <input type="number" wire:model.defer="amount" min="1" step="0.01"
+                                <input type="text" wire:model.defer="amount"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200"
                                     required />
                                 @error('amount')
@@ -348,7 +348,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-gray-700 font-medium mb-2">Amount</label>
-                                    <input type="number" wire:model.defer="amount" min="1" step="0.01"
+                                    <input type="text" wire:model.defer="amount"
                                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                                         placeholder="Enter amount" required />
                                     @error('amount')
@@ -412,7 +412,7 @@
                             </div>
                             <div>
                                 <label class="block text-gray-700 font-medium mb-1">Amount</label>
-                                <input type="number" wire:model.defer="amount" min="1" step="0.01"
+                                <input type="text" wire:model.defer="amount"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200"
                                     required />
                                 @error('amount')
@@ -445,7 +445,7 @@
                         <form wire:submit.prevent="submitDeposit" class="space-y-6">
                             <div>
                                 <label class="block text-gray-700 font-medium mb-1">Amount</label>
-                                <input type="number" wire:model.defer="amount" min="1" step="0.01"
+                                <input type="text" wire:model.defer="amount"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200"
                                     required />
                                 @error('amount')

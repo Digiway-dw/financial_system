@@ -65,7 +65,7 @@
                                 <!-- Amount -->
                                 <div>
                                     <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">المبلغ (جنيه مصري)</label>
-                                    <input wire:model="amount" id="amount" name="amount" type="number" step="0.01"
+                                    <input wire:model="amount" id="amount" name="amount" type="text"
                                         class="w-full px-4 py-3 bg-white/70 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
                                         required />
                                     @error('amount')<div class="text-red-600 text-xs mt-1">{{ $message }}</div>@enderror

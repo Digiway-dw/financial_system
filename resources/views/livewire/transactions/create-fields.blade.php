@@ -108,7 +108,7 @@
         <!-- Amount -->
         <div>
             <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">المبلغ (جنيه مصري)</label>
-            <input wire:model.live="amount" id="amount" name="amount" type="number"
+                                    <input wire:model.live="amount" id="amount" name="amount" type="text"
                 class="w-full px-4 py-3 bg-white/70 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
                 required />
             <x-input-error class="mt-2" :messages="$errors->get('amount')" />
@@ -117,7 +117,7 @@
         <!-- Commission -->
         <div>
             <label for="commission" class="block text-sm font-medium text-gray-700 mb-2">العمولة (جنيه مصري)</label>
-            <input wire:model="commission" id="commission" name="commission" type="number" step="0.01"
+                                    <input wire:model="commission" id="commission" name="commission" type="text"
                 class="w-full px-4 py-3 bg-gray-100/70 border border-gray-200/50 rounded-xl text-gray-900 cursor-not-allowed"
                 readonly />
             <x-input-error class="mt-2" :messages="$errors->get('commission')" />
@@ -127,7 +127,7 @@
         <div>
             <label for="deduction" class="block text-sm font-medium text-gray-700 mb-2">الخصم (تعديل يدوي من
                 العمولة)</label>
-            <input wire:model="deduction" id="deduction" name="deduction" type="number" step="0.01"
+                                    <input wire:model="deduction" id="deduction" name="deduction" type="text"
                 class="w-full px-4 py-3 bg-white/70 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500" />
             <x-input-error class="mt-2" :messages="$errors->get('deduction')" />
         </div>

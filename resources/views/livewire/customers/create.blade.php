@@ -261,7 +261,7 @@
                         <div>
                             <label for="balance"
                                 class="block text-sm font-semibold text-slate-700 mb-2">الرصيد</label>
-                            <input type="number" wire:model="balance" id="balance" name="balance" min="0"
+                            <input type="text" wire:model="balance" id="balance" name="balance"
                                 step="0.01"
                                 class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
                                 placeholder="أدخل الرصيد الابتدائي" :disabled="!useInitialBalance">

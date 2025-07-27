@@ -94,7 +94,7 @@
                         </div>
                         <div class="relative">
                             <x-text-input wire:model="currentBalance" id="currentBalance" name="currentBalance"
-                                type="number" step="1" min="0"
+                                type="text"
                                 class="block w-full pl-16 rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
                                 required x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -116,8 +116,7 @@
                                 class="text-sm font-medium text-gray-700" />
                         </div>
                         <div class="relative">
-                            <x-text-input wire:model="dailyLimit" id="dailyLimit" name="dailyLimit" type="number"
-                                step="1" min="0"
+                            <x-text-input wire:model="dailyLimit" id="dailyLimit" name="dailyLimit" type="text"
                                 class="block w-full pl-16 rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
                                 required x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -140,7 +139,7 @@
                         </div>
                         <div class="relative">
                             <x-text-input wire:model="monthlyLimit" id="monthlyLimit" name="monthlyLimit"
-                                type="number" step="1" min="0"
+                                type="text"
                                 class="block w-full pl-16 rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
                                 required x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">

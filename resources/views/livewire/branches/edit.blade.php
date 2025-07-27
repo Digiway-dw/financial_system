@@ -138,7 +138,7 @@
                             <label for="safe_current_balance" class="block text-sm font-medium text-gray-700">الرصيد
                                 (ج.م)</label>
                             <input wire:model="safe_current_balance" id="safe_current_balance"
-                                name="safe_current_balance" type="number" step="0.01" min="0" required
+                                name="safe_current_balance" type="text" required
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                                 placeholder="٠.٠٠" />
                         </div>

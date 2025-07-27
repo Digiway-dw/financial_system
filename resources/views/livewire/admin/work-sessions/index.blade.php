@@ -669,7 +669,7 @@
                                         class="block text-sm font-medium text-gray-700">وقت انتهاء الجلسة
                                         (دقائق)</label>
                                     <div class="mt-1 relative rounded-md shadow-sm">
-                                        <input type="number" wire:model="sessionLifetime" id="sessionLifetime"
+                                        <input type="text" wire:model="sessionLifetime" id="sessionLifetime"
                                             min="1" max="1440"
                                             class="focus:ring-purple-500 focus:border-purple-500 block w-full pl-4 pr-12 sm:text-sm border-gray-300 rounded-md"
                                             placeholder="120">

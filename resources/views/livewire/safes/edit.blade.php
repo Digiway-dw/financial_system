@@ -85,7 +85,7 @@
                                     <span class="text-gray-500 text-sm">EGP</span>
                                 </div>
                                 <input wire:model="currentBalance" id="currentBalance" name="currentBalance"
-                                    type="number" step="0.01" required
+                                    type="text" required
                                     class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                                     placeholder="0.00" />
                             </div>

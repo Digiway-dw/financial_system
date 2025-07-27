@@ -32,7 +32,7 @@
     </div>
             <div>
                 <x-input-label for="amount" :value="__('Amount')" />
-                <x-text-input id="amount" type="number" class="mt-1 block w-full border-yellow-500" step="0.01" min="1" />
+                <x-text-input id="amount" type="text" class="mt-1 block w-full border-yellow-500" />
                     </div>
             <div>
                 <x-input-label for="transaction_type" :value="__('Transaction Type')" />

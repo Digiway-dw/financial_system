@@ -110,7 +110,7 @@
                                 <label for="newBalance" class="block text-sm font-medium text-gray-700 mb-2">
                                     New Balance <span class="text-red-500">*</span>
                                 </label>
-                                <input wire:model="newBalance" id="newBalance" type="number" step="1" min="0"
+                                <input wire:model="newBalance" id="newBalance" type="text"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 @error('newBalance') border-red-500 @enderror"
                                     placeholder="Enter new balance (whole numbers only)">
                                 <p class="mt-1 text-xs text-gray-500">Balance must be a whole number (no decimals allowed)</p>

@@ -104,7 +104,7 @@
                             <span
                                 class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">EGP</span>
                             @if (Auth::user()->hasRole('admin'))
-                                <input type="number" wire:model="balance" id="balance" name="balance" step="1"
+                                <input type="text" wire:model="balance" id="balance" name="balance"
                                     min="0" required
                                     class="w-full pl-14 pr-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
                                     placeholder="أدخل الرصيد (أرقام فقط)"
