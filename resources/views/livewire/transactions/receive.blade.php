@@ -82,11 +82,16 @@
                                 رقم هاتف العميل <span class="text-red-500">*</span>
                             </label>
                             <input wire:model.live.debounce.300ms="clientMobile" id="clientMobile" type="text"
+                                maxlength="11" minlength="11" pattern="\d{11}"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('clientMobile') border-red-500 @enderror"
-                                placeholder="ادخل رقم الهاتف" autocomplete="off">
+                                placeholder="ادخل رقم الهاتف" autocomplete="off"
+                                oninput="this.value=this.value.replace(/[^\d]/g,'').slice(0,11)">
                             @error('clientMobile')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
+                            @if (strlen($clientMobile ?? '') > 0 && strlen($clientMobile ?? '') != 11)
+                                <p class="mt-1 text-sm text-red-600">يجب أن يكون رقم الهاتف 11 رقم.</p>
+                            @endif
 
                             <!-- Client Suggestions Dropdown -->
                             @if (!empty($clientSuggestions) && $clientMobile)

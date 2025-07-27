@@ -40,7 +40,7 @@ class Receive extends Component
     public $commission = null;
 
     #[Validate('nullable|numeric|min:0')]
-    public $discount = null;
+    public $discount = 0;
 
     #[Validate('required_if:discount,>0')]
     public $discountNotes = '';
@@ -355,7 +355,7 @@ class Receive extends Component
                 $this->clientCode,                // customerCode
                 $this->amount,                    // amount
                 $this->commission,                // commission
-                $this->discount,                  // deduction
+                $this->discount ?? 0,             // deduction (ensure float, never null)
                 'Receive',                        // transactionType
                 (Auth::user() ? Auth::user()->id : null), // agentId
                 $this->selectedLineId,            // lineId
