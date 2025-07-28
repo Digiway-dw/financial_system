@@ -30,8 +30,8 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-2xl font-bold text-gray-900">إدارة الخزائن</h1>
-                        <p class="text-sm text-gray-600">مراقبة وإدارة جميع الخزائن ومحافظ العملاء</p>
+                        <h1 class="text-2xl font-bold text-gray-900 px-4">إدارة الخزائن</h1>
+                        <p class="text-sm text-gray-600 px-4">مراقبة وإدارة جميع الخزائن ومحافظ العملاء</p>
                     </div>
                 </div>
                 <div class="mt-4 sm:mt-0 flex items-center space-x-3">
@@ -73,7 +73,7 @@
                             </path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="px-2">
                         <h3 class="text-sm font-medium text-gray-600">إجمالي عدد الخزائن</h3>
                         <p class="text-2xl font-bold text-emerald-600">{{ count($safes) }}</p>
                     </div>
@@ -89,10 +89,10 @@
                             </path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="px-2">
                         <h3 class="text-sm font-medium text-gray-600">إجمالي الرصيد</h3>
                         <p class="text-2xl font-bold text-blue-600">
-                            {{ format_int(collect($safes)->sum('current_balance')) }} ج.م</p>
+                            {{ format_int(collect($safes)->sum('current_balance')) }} </p>
                     </div>
                 </div>
             </div>
@@ -106,7 +106,7 @@
                             </path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="px-2">
                         <h3 class="text-sm font-medium text-gray-600">محافظ العملاء</h3>
                         <p class="text-2xl font-bold text-purple-600">{{ count($clients) }}</p>
                     </div>
@@ -122,10 +122,10 @@
                             </path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="px-2">
                         <h3 class="text-sm font-medium text-gray-600">إجمالي رصيد المحافظ</h3>
                         <p class="text-2xl font-bold text-amber-600">
-                            {{ format_int(collect($clients)->sum('balance')) }} ج.م</p>
+                            {{ format_int(collect($clients)->sum('balance')) }} </p>
                     </div>
                 </div>
             </div>
@@ -257,7 +257,7 @@
                                                 </path>
                                             </svg>
                                         </div>
-                                        <div>
+                                        <div class="px-1">
                                             <div class="text-sm font-medium text-gray-900">{{ $safe['name'] }}</div>
                                             <div class="text-xs text-gray-500">معرّف الخزينة: #{{ $safe['id'] }}
                                             </div>
@@ -268,7 +268,7 @@
                                     <div class="flex items-center">
                                         <span
                                             class="text-2xl font-bold text-emerald-600">{{ format_int($safe['current_balance']) }}</span>
-                                        <span class="text-sm text-gray-500 ml-1">ج.م</span>
+                                        <span class="text-sm text-gray-500 ml-1"></span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -323,7 +323,7 @@
                                 </path>
                             </svg>
                         </div>
-                        <div>
+                        <div class="px-2">
                             <h3 class="text-lg font-semibold text-gray-900">محافظ العملاء</h3>
                             <p class="text-sm text-gray-600">محافظ العملاء الرقمية وأرصدتهم</p>
                         </div>
