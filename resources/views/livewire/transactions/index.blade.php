@@ -65,7 +65,8 @@
                         class="group flex items-center px-8 py-7 md:px-10 md:py-8 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-2xl transition-all duration-200 shadow-sm mb-2 md:mb-0">
                         <div
                             class="w-16 h-16 bg-blue-100 group-hover:bg-blue-200 rounded-xl flex items-center justify-center mr-8">
-                            <svg class="w-6 h-6 text-blue-600 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-blue-600 " fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                             </svg>
@@ -207,6 +208,18 @@
                 <p class="text-sm text-gray-500 mt-1">تصفية المعاملات حسب معايير متعددة لتحليل مفصل</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+                <!-- عدد الصفوف لكل صفحة -->
+                <div class="space-y-2">
+                    <label for="perPage" class="block text-sm font-medium text-gray-700">عدد الصفوف في الجدول</label>
+                    <select wire:model="perPage" id="perPage"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 bg-white">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
                 <!-- كود العميل -->
                 <div class="space-y-3">
                     <label for="customer_code" class="block text-sm font-medium text-gray-700">كود العميل</label>
@@ -368,6 +381,16 @@
         <div class="mt-8 overflow-x-auto">
             <div class="bg-white rounded-2xl shadow-lg p-0 md:p-0 transition-all duration-300"
                 style="box-shadow: none;">
+                <!-- Pagination Controls -->
+                <div class="flex justify-between items-center px-4 py-2">
+                    <div>
+                        عرض
+                        <span class="font-bold">{{ count($transactions) }}</span>
+                        من أصل
+                        <span class="font-bold">{{ $totalTransactions }}</span>
+                        معاملة
+                    </div>
+                </div>
                 <table class="min-w-full divide-y divide-blue-100 text-xs rtl text-right" style="font-size: 12px;">
                     <thead>
                         <tr>
@@ -536,6 +559,18 @@
                         @endforelse
                     </tbody>
                 </table>
+                <!-- Load More Button at Bottom -->
+                @if (count($transactions) < $totalTransactions)
+                    <div class="flex justify-center py-4">
+                        <button wire:click="loadMore"
+                            class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-base font-bold shadow">تحميل
+                            المزيد</button>
+                    </div>
+                @elseif($totalTransactions > 0)
+                    <div class="flex justify-center py-4">
+                        <span class="text-xs text-gray-400">تم عرض جميع النتائج</span>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

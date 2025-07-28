@@ -7,6 +7,7 @@ use App\Application\UseCases\DeleteTransaction;
 use Livewire\Component;
 use Illuminate\Support\Facades\Gate;
 
+
 class Index extends Component
 {
     public array $transactions;
@@ -27,6 +28,10 @@ class Index extends Component
     public $branch_ids = [];
     public $reference_number;
 
+    public $perPage = 10; // Default rows per page
+    public $currentPage = 1;
+    public $lazyLoading = false;
+
     private ListTransactions $listTransactionsUseCase;
     private DeleteTransaction $deleteTransactionUseCase;
 
@@ -44,12 +49,14 @@ class Index extends Component
             return redirect()->route('dashboard');
         }
         Gate::authorize('view-transactions');
-        
+
         // Initialize transactions array
         $this->transactions = [];
-        
+
         $this->loadTransactions();
     }
+
+    public int $totalTransactions = 0;
 
     public function loadTransactions()
     {
@@ -68,15 +75,45 @@ class Index extends Component
             'reference_number' => $this->reference_number,
             'sortField' => $this->sortField,
             'sortDirection' => $this->sortDirection,
-        ], function($value) {
+        ], function ($value) {
             return $value !== null && $value !== '';
         });
-        
-        $this->transactions = $this->listTransactionsUseCase->execute($filters);
+
+        $allTransactions = $this->listTransactionsUseCase->execute($filters);
+        $total = count($allTransactions);
+        if ($this->lazyLoading) {
+            $this->transactions = array_slice($allTransactions, 0, $this->perPage * $this->currentPage);
+        } else {
+            $this->currentPage = max(1, min($this->currentPage, ceil($total / $this->perPage)));
+            $offset = ($this->currentPage - 1) * $this->perPage;
+            $this->transactions = array_slice($allTransactions, $offset, $this->perPage);
+        }
+        $this->totalTransactions = $total;
+    }
+
+    public function updatedPerPage($value)
+    {
+        $this->currentPage = 1;
+        $this->loadTransactions();
+    }
+
+    public function goToPage($page)
+    {
+        $this->currentPage = $page;
+        $this->loadTransactions();
+    }
+
+    public function loadMore()
+    {
+        $this->currentPage++;
+        $this->lazyLoading = true;
+        $this->loadTransactions();
     }
 
     public function filter()
     {
+        $this->currentPage = 1;
+        $this->lazyLoading = false;
         $this->loadTransactions();
     }
 
@@ -117,6 +154,8 @@ class Index extends Component
         $this->employee_ids = [];
         $this->branch_ids = [];
         $this->reference_number = null;
+        $this->currentPage = 1;
+        $this->lazyLoading = false;
         $this->loadTransactions();
     }
 
@@ -159,6 +198,9 @@ class Index extends Component
     {
         return view('livewire.transactions.index', [
             'transactions' => $this->transactions,
+            'perPage' => $this->perPage,
+            'currentPage' => $this->currentPage,
+            'totalTransactions' => $this->totalTransactions ?? count($this->transactions),
         ]);
     }
 }
