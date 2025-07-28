@@ -129,21 +129,23 @@
                     </select>
                 </div>
                 <div class="flex items-end gap-2">
-                    <button type="submit"
-                        class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">توليد
-                        التقرير</button>
-                    <button type="button" wire:click="exportSummaryPdf"
-                        class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">تصدير
-                        ملخص النظام</button>
-                    <button type="button" wire:click="exportExcel"
-                        class="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition">تصدير
-                        الـ Excel</button>
-                    <button type="button" wire:click="exportPdf"
-                        class="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition">تصدير
-                        المعاملات</button>
-                    <button type="button" wire:click="exportAllPdf"
-                        class="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition">تصدير
-                        الكل</button>
+                    <div class="flex flex-wrap gap-3 w-full">
+                        <button type="submit"
+                            class="min-w-[160px] px-6 py-3 bg-blue-600 text-white rounded-2xl font-semibold hover:bg-blue-700 transition shadow-md">توليد
+                            التقرير</button>
+                        <button type="button" wire:click="exportSummaryPdf"
+                            class="min-w-[160px] px-6 py-3 bg-indigo-600 text-white rounded-2xl font-semibold hover:bg-indigo-700 transition shadow-md">تصدير
+                            ملخص النظام</button>
+                        <button type="button" wire:click="exportExcel"
+                            class="min-w-[160px] px-6 py-3 bg-green-600 text-white rounded-2xl font-semibold hover:bg-green-700 transition shadow-md">تصدير
+                            الـ Excel</button>
+                        <button type="button" wire:click="exportPdf"
+                            class="min-w-[160px] px-6 py-3 bg-red-600 text-white rounded-2xl font-semibold hover:bg-red-700 transition shadow-md">تصدير
+                            المعاملات</button>
+                        <button type="button" wire:click="exportAllPdf"
+                            class="min-w-[160px] px-6 py-3 bg-purple-600 text-white rounded-2xl font-semibold hover:bg-purple-700 transition shadow-md">تصدير
+                            الكل</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -237,8 +239,7 @@
                 </div>
                 <div class="hidden md:block">
                     <span
-                        class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-4 py-2 rounded-full shadow">إجمالي:
-                        {{ count($transactions) }} عملية</span>
+                        class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-4 py-2 rounded-full shadow"></span>
                 </div>
             </div>
             <div class="overflow-x-auto px-8 pb-8">
@@ -370,6 +371,14 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="flex justify-center mt-4">
+                    @if ($hasMore)
+                        <button wire:click="loadMore"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">
+                            تحميل المزيد
+                        </button>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

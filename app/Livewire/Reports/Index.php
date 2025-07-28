@@ -9,8 +9,18 @@ use App\Domain\Entities\User;
 use App\Models\Domain\Entities\Branch;
 use App\Models\Domain\Entities\Customer;
 
+
 class Index extends Component
 {
+    public $totalCount = 0;
+
+    public function loadMore()
+    {
+        $this->perPage += 10;
+        $this->generateReport();
+    }
+    public $perPage = 10;
+    public $hasMore = false;
     public $startDate;
     public $endDate;
     public $selectedUser;
@@ -62,7 +72,9 @@ class Index extends Component
         // Branch filter
         if ($this->selectedBranch) {
             $ordinary->where('branch_id', $this->selectedBranch);
-            $cash->whereHas('safe', function($q) { $q->where('branch_id', $this->selectedBranch); });
+            $cash->whereHas('safe', function ($q) {
+                $q->where('branch_id', $this->selectedBranch);
+            });
         }
         // Customer name filter
         if ($this->selectedCustomer) {
@@ -80,7 +92,7 @@ class Index extends Component
             $cash->where('transaction_type', $this->selectedTransactionType);
         }
 
-        $ordinaryTxs = $ordinary->with(['agent', 'branch'])->get()->map(function ($tx) {
+        $ordinaryTxs = $ordinary->with(['agent', 'branch'])->take($this->perPage + 1)->get()->map(function ($tx) {
             return [
                 'id' => $tx->id,
                 'customer_name' => $tx->customer_name,
@@ -97,7 +109,7 @@ class Index extends Component
                 'source' => 'ordinary',
             ];
         });
-        $cashTxs = $cash->with(['agent', 'safe.branch'])->get()->map(function ($tx) {
+        $cashTxs = $cash->with(['agent', 'safe.branch'])->take($this->perPage + 1)->get()->map(function ($tx) {
             return [
                 'id' => $tx->id,
                 'customer_name' => $tx->customer_name,
@@ -115,10 +127,15 @@ class Index extends Component
             ];
         });
         $all = collect($ordinaryTxs)->merge($cashTxs);
-        $all = $all->sortBy(function($tx) {
+
+        $all = $all->sortBy(function ($tx) {
             return $tx[$this->sortField] ?? null;
         }, SORT_REGULAR, $this->sortDirection === 'desc');
-        $this->transactions = $all->values()->all();
+        $all = $all->values();
+        $this->totalCount = $all->count();
+        $this->hasMore = $all->count() > $this->perPage;
+        $this->transactions = $all->take($this->perPage)->all();
+
 
         // Financial summary
         $this->financialSummary = [
@@ -129,7 +146,7 @@ class Index extends Component
         ];
 
         // Safe balances by branch
-        $this->safeBalances = \App\Models\Domain\Entities\Safe::with('branch')->get()->groupBy('branch_id')->map(function($safes) {
+        $this->safeBalances = \App\Models\Domain\Entities\Safe::with('branch')->get()->groupBy('branch_id')->map(function ($safes) {
             return [
                 'branch' => $safes->first()->branch->name ?? '-',
                 'balance' => $safes->sum('current_balance'),
@@ -137,7 +154,7 @@ class Index extends Component
         })->values()->all();
 
         // Line balances by branch
-        $this->lineBalances = \App\Models\Domain\Entities\Line::with('branch')->get()->groupBy('branch_id')->map(function($lines) {
+        $this->lineBalances = \App\Models\Domain\Entities\Line::with('branch')->get()->groupBy('branch_id')->map(function ($lines) {
             return [
                 'branch' => $lines->first()->branch->name ?? '-',
                 'balance' => $lines->sum('current_balance'),
@@ -145,13 +162,15 @@ class Index extends Component
         })->values()->all();
 
         // Customer balances
-        $this->customerBalances = \App\Models\Domain\Entities\Customer::where('is_client', true)->get()->map(function($customer) {
+        $this->customerBalances = \App\Models\Domain\Entities\Customer::where('is_client', true)->get()->map(function ($customer) {
             return [
                 'customer' => $customer->name,
                 'balance' => $customer->balance,
             ];
         })->all();
     }
+
+
 
     public function sortBy($field)
     {
@@ -180,6 +199,8 @@ class Index extends Component
             'selectedBranch' => $this->selectedBranch,
             'selectedCustomer' => $this->selectedCustomer,
             'selectedTransactionType' => $this->selectedTransactionType,
+            'hasMore' => $this->hasMore,
+            'totalCount' => $this->totalCount,
         ]);
     }
 
