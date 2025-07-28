@@ -39,7 +39,7 @@
     <!-- Content Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        @if (session('message'))
+        {{-- @if (session('message'))
             <div class="p-4 mb-6 text-sm text-green-700 bg-green-100 border-l-4 border-green-500 rounded-lg"
                 role="alert">
                 <div class="flex items-center">
@@ -51,7 +51,7 @@
                     <span>{{ session('message') }}</span>
                 </div>
             </div>
-        @endif
+        @endif --}}
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <form wire:submit.prevent="createUser">

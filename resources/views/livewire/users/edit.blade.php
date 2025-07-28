@@ -282,7 +282,7 @@
                                         </svg>
                                         تعيين الفرع <span class="text-red-500 ml-1">*</span>
                                     </x-input-label>
-                                    <select wire:model="branchId" id="branchId"
+                                    <select wire:model="branchId" id="branchId" 
                                         class="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
                                         <option value="">اختر الفرع</option>
                                         @foreach ($branches as $branch)
@@ -414,7 +414,7 @@
                 </div>
 
                 <!-- Status Messages -->
-                @if (session()->has('workingHourMessage'))
+                {{-- @if (session()->has('workingHourMessage'))
                     <div class="p-3 bg-green-100 border border-green-200 rounded-lg mb-6">
                         <div class="flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600 mr-2"
@@ -425,7 +425,7 @@
                             <span class="text-green-700 text-sm">{{ session('workingHourMessage') }}</span>
                         </div>
                     </div>
-                @endif
+                @endif --}}
 
                 @if (session()->has('workingHourError'))
                     <div class="p-3 bg-red-100 border border-red-200 rounded-lg mb-6">
