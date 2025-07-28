@@ -530,6 +530,17 @@
                         @endif
                     </div>
 
+                    <!-- Ignore Work Hours Checkbox -->
+                    <div class="col-span-2">
+                        <label class="inline-flex items-center mt-3">
+                            <input type="checkbox" wire:model="ignore_work_hours" class="form-checkbox h-5 w-5 text-indigo-600">
+                            <span class="ml-2 text-gray-700">تجاهل أوقات العمل (يمكنه العمل في أي وقت)</span>
+                        </label>
+                        @error('ignore_work_hours')
+                            <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+
                     <!-- Notes Section -->
                     <div class="col-span-2 mt-4">
                         <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات

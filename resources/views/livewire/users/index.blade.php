@@ -227,6 +227,10 @@
                                 </div>
                             </th>
                             <th scope="col"
+                                class="px-8 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider text-center">
+                                تجاهل أوقات العمل
+                            </th>
+                            <th scope="col"
                                 class="px-8 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider sortable-header text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <span class="flex flex-row-reverse items-center justify-center">
@@ -349,8 +353,7 @@
                                                 'branch_manager' => 'bg-emerald-500 border-emerald-300',
                                                 'agent' => 'bg-green-500 border-green-300',
                                                 'trainee' => 'bg-gray-500 border-gray-300',
-                                                'accountant' => 'bg-cyan-500 border-cyan-300',
-                                                'supervisor' => 'bg-indigo-500 border-indigo-300',
+                                                'auditor' => 'bg-cyan-500 border-cyan-300',
                                             ];
 
                                             $roleIcons = [
@@ -381,6 +384,29 @@
                                                 {{ ucfirst($roleName) }}
                                             </span>
                                         </div>
+                                    @endif
+                                </td>
+                                <td class="px-8 py-6 whitespace-nowrap text-center align-middle">
+                                    @if(app()->make('livewire')->current()->canToggleIgnoreWorkHours($user))
+                                        <button wire:click="toggleIgnoreWorkHours({{ $user->id }})" wire:loading.attr="disabled" class="focus:outline-none">
+                                            @if($user->ignore_work_hours)
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">نعم</span>
+                                            @else
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">لا</span>
+                                            @endif
+                                            <span wire:loading wire:target="toggleIgnoreWorkHours({{ $user->id }})" class="ml-2 inline-block align-middle">
+                                                <svg class="animate-spin h-4 w-4 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                                                </svg>
+                                            </span>
+                                        </button>
+                                    @else
+                                        @if($user->ignore_work_hours)
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">نعم</span>
+                                        @else
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">لا</span>
+                                        @endif
                                     @endif
                                 </td>
                                 <!-- Action Buttons -->

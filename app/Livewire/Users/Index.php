@@ -236,6 +236,35 @@ class Index extends Component
         }
     }
 
+    public function canToggleIgnoreWorkHours($targetUser): bool
+    {
+        $currentUser = auth()->user();
+        // Only admin and supervisor can toggle
+        if (!$currentUser || (!$currentUser->hasRole('admin') && !$currentUser->hasRole('general_supervisor'))) {
+            return false;
+        }
+        // Supervisor cannot toggle for admin
+        if ($currentUser->hasRole('general_supervisor') && $targetUser->hasRole('admin')) {
+            return false;
+        }
+        // Only admin can toggle for themselves
+        if ($targetUser->hasRole('admin') && $currentUser->id !== $targetUser->id) {
+            return false;
+        }
+        return true;
+    }
+
+    public function toggleIgnoreWorkHours($userId)
+    {
+        $user = User::findOrFail($userId);
+        if (!$this->canToggleIgnoreWorkHours($user)) {
+            abort(403, 'You are not authorized to edit this user.');
+        }
+        $user->ignore_work_hours = !$user->ignore_work_hours;
+        $user->save();
+        session()->flash('message', 'تم تحديث حالة تجاهل أوقات العمل للمستخدم بنجاح.');
+    }
+
     public function render()
     {
         $query = User::with('branch');

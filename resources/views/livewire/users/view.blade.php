@@ -39,15 +39,24 @@
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
                                 @if ($role == 'admin') bg-red-100 text-red-800
-                                @elseif($role == 'manager') bg-purple-100 text-purple-800
-                                @elseif($role == 'supervisor') bg-blue-100 text-blue-800
+                                @elseif($role == 'general_supervisor') bg-blue-100 text-blue-800
+                                @elseif($role == 'branch_manager') bg-purple-100 text-purple-800
+                                @elseif($role == 'agent') bg-green-100 text-green-800
+                                @elseif($role == 'auditor') bg-cyan-100 text-cyan-800
+                                @elseif($role == 'trainee') bg-gray-100 text-gray-800
                                 @else bg-green-100 text-green-800 @endif">
                                     @if ($role == 'admin')
                                         مدير
-                                    @elseif($role == 'manager')
-                                        مشرف
-                                    @elseif($role == 'supervisor')
-                                        مراقب
+                                    @elseif($role == 'general_supervisor')
+                                        مشرف عام
+                                    @elseif($role == 'branch_manager')
+                                        مدير فرع
+                                    @elseif($role == 'agent')
+                                        موظف
+                                    @elseif($role == 'auditor')
+                                        مراجع
+                                    @elseif($role == 'trainee')
+                                        متدرب
                                     @else
                                         موظف
                                     @endif
@@ -80,6 +89,22 @@
                         </h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-900">
+                            <!-- Ignore Work Hours Status -->
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
+                                </svg>
+                                <div>
+                                    <span class="block text-sm text-gray-500">تجاهل أوقات العمل</span>
+                                    <span class="font-medium">
+                                        @if($user->ignore_work_hours)
+                                            نعم (يمكنه العمل في أي وقت)
+                                        @else
+                                            لا (يخضع لأوقات العمل المحددة)
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
                             <div class="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -28,6 +28,7 @@ class Edit extends Component
     public $selectedRole;
     public $roles = [];
     public $branches = [];
+    public $ignore_work_hours = false;
 
     // Working hours properties
     public $workingHours = [];
@@ -69,6 +70,7 @@ class Edit extends Component
         $this->notes = $user->notes;
         $this->branchId = $user->branch_id;
         $this->selectedRole = $user->getRoleNames()->first();
+        $this->ignore_work_hours = (bool) $user->ignore_work_hours;
         
         // Load available roles based on current user's permissions
         $this->roles = $this->getAvailableRoles();
@@ -126,6 +128,25 @@ class Edit extends Component
         return [];
     }
 
+    public function canEditIgnoreWorkHours($targetUser = null): bool
+    {
+        $currentUser = auth()->user();
+        $targetUser = $targetUser ?: User::findOrFail($this->userId);
+        // Only admin and supervisor can edit
+        if (!$currentUser || (!$currentUser->hasRole('admin') && !$currentUser->hasRole('general_supervisor'))) {
+            return false;
+        }
+        // Supervisor cannot edit for admin
+        if ($currentUser->hasRole('general_supervisor') && $targetUser->hasRole('admin')) {
+            return false;
+        }
+        // Only admin can edit for themselves
+        if ($targetUser->hasRole('admin') && $currentUser->id !== $targetUser->id) {
+            return false;
+        }
+        return true;
+    }
+
     public function loadWorkingHours()
     {
         $this->workingHours = WorkingHour::where('user_id', $this->userId)
@@ -161,6 +182,7 @@ class Edit extends Component
                 'nullable',
                 'exists:branches,id',
             ],
+            'ignore_work_hours' => 'boolean',
             // Working hours validation rules
             'dayOfWeek' => 'nullable|in:every_day,monday,tuesday,wednesday,thursday,friday,saturday,sunday',
             'startTime' => 'nullable|date_format:H:i',
@@ -171,13 +193,15 @@ class Edit extends Component
 
     public function updateUser()
     {
-        $this->validate();
         $user = User::findOrFail($this->userId);
-        
-        // Check if current user can edit this user
         if (!$this->canEditUser($user)) {
             abort(403, 'You are not authorized to edit this user.');
         }
+        // Prevent supervisor from editing admin
+        if (auth()->user()->hasRole('general_supervisor') && $user->hasRole('admin')) {
+            abort(403, 'You are not authorized to edit the admin user.');
+        }
+        $this->validate();
         
         // Check if role change is allowed
         if ($this->selectedRole !== $user->getRoleNames()->first()) {
@@ -202,6 +226,7 @@ class Edit extends Component
         $user->relative_phone_number = $this->relative_phone_number;
         $user->notes = $this->notes;
         $user->branch_id = !in_array($this->selectedRole, ['admin']) ? $this->branchId : null;
+        $user->ignore_work_hours = (bool) $this->ignore_work_hours;
         $user->save();
         
         // Only update role if user has permission and role has changed

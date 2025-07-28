@@ -73,7 +73,7 @@ class AgentDashboard extends Component
     public function mount()
     {
         $user = Auth::user();
-        $this->isAdminOrSupervisor = $user->hasRole('admin') || $user->hasRole('supervisor') || $user->hasRole('general_supervisor');
+        $this->isAdminOrSupervisor = $user->hasRole('admin') || $user->hasRole('general_supervisor');
         // Load all branches for selection
         $this->branches = collect($this->branchRepository->all());
         // Set default selected branches (all branches)

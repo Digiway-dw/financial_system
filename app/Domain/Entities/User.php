@@ -61,6 +61,7 @@ class User extends Authenticatable
         'land_number',
         'relative_phone_number',
         'notes',
+        'ignore_work_hours',
     ];
 
     /**
@@ -83,6 +84,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'ignore_work_hours' => 'boolean',
         ];
     }
 

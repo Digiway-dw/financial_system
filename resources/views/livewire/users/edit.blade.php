@@ -342,6 +342,19 @@
                     <p class="mt-2 text-xs text-gray-500">هذه الملاحظات للاستخدام الداخلي فقط ولن تظهر للمستخدم.</p>
                 </div>
 
+                <!-- Ignore Work Hours Checkbox -->
+                @if(app()->make('livewire')->current()->canEditIgnoreWorkHours())
+                <div class="col-span-2">
+                    <label class="inline-flex items-center mt-3">
+                        <input type="checkbox" wire:model="ignore_work_hours" class="form-checkbox h-5 w-5 text-indigo-600">
+                        <span class="ml-2 text-gray-700">تجاهل أوقات العمل (يمكنه العمل في أي وقت)</span>
+                    </label>
+                    @error('ignore_work_hours')
+                        <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
+                    @enderror
+                </div>
+                @endif
+
                 <!-- Submit Button -->
                 <div class="flex items-center justify-between pt-8 mt-8 border-t border-gray-200">
                     <div class="flex items-center space-x-3">

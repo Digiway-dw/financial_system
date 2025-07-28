@@ -20,12 +20,12 @@ class UserSeeder extends Seeder
             'description' => 'Test branch for Cairo',
         ]);
 
-        $roles = ['Admin', 'Agent', 'Supervisor', 'Branch Manager', 'Trainee'];
+        $roles = ['admin', 'agent', 'general_supervisor', 'branch_manager', 'trainee'];
         foreach ($roles as $role) {
             $user = User::firstOrCreate(
-                ['email' => strtolower(str_replace(' ', '_', $role)) . '@example.com'],
+                ['email' => $role . '@example.com'],
                 [
-                    'name' => $role . ' User',
+                    'name' => ucfirst(str_replace('_', ' ', $role)) . ' User',
                     'password' => Hash::make('password'),
                     'branch_id' => $branch->id,
                 ]

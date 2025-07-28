@@ -13,12 +13,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RoleSeeder::class);
-        $this->call(EnhancedPermissionsSeeder::class);
         $this->call(AdminUserSeeder::class);
-        $this->call(EnsureAdminRoleSeeder::class);
-        $this->call(LineSeeder::class);
-
-        // Add the comprehensive financial system seeder
-        $this->call(FinancialSystemSeeder::class);
+        // All other seeders are removed to ensure only roles and admin user are created
     }
 }

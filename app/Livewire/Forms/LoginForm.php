@@ -98,6 +98,11 @@ class LoginForm extends Form
      */
     protected function validateWorkingHours($user): void
     {
+        // Bypass working hours check if user can work any time
+        if ($user->ignore_work_hours) {
+            return;
+        }
+
         // Get current server time
         $now = Carbon::now();
         $currentDayOfWeek = strtolower($now->englishDayOfWeek);

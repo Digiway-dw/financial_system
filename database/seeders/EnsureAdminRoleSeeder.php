@@ -13,13 +13,14 @@ class EnsureAdminRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Ensure all required roles exist
+        // Ensure all required roles exist using Constants\Roles
         $roles = [
-            'Admin',
-            'Agent',
-            'Branch Manager',
-            'Supervisor',
-            'Trainee',
+            'admin',
+            'agent',
+            'branch_manager',
+            'general_supervisor',
+            'trainee',
+            'auditor',
         ];
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role]);

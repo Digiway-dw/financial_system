@@ -28,6 +28,7 @@ class Create extends Component
     public $land_number;
     public $relative_phone_number;
     public $notes;
+    public $ignore_work_hours = false;
 
     // Working hours properties
     public $workingHours = [];
@@ -127,6 +128,7 @@ class Create extends Component
             'land_number' => 'nullable|string|max:20',
             'relative_phone_number' => 'nullable|digits:11',
             'notes' => 'nullable|string',
+            'ignore_work_hours' => 'boolean',
             // Working hours validation rules
             'dayOfWeek' => 'nullable|in:every_day,monday,tuesday,wednesday,thursday,friday,saturday,sunday',
             'startTime' => 'nullable|date_format:H:i',
@@ -161,6 +163,7 @@ class Create extends Component
             'land_number' => $this->land_number,
             'relative_phone_number' => $this->relative_phone_number,
             'notes' => $this->notes,
+            'ignore_work_hours' => (bool) $this->ignore_work_hours,
         ];
         if (!in_array($this->selectedRole, ['admin'])) {
             $userData['branch_id'] = $this->branchId;

@@ -59,7 +59,7 @@ test('non-admin users cannot access work sessions page', function () {
 
 test('supervisor can access work sessions page', function () {
     // Create a supervisor user
-    $supervisor = createUserWithRole('supervisor');
+    $supervisor = createUserWithRole('general_supervisor');
 
     // Log in as supervisor
     $this->actingAs($supervisor);
