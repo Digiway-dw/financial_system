@@ -5,7 +5,9 @@
                 <div class="flex-shrink-0">
                     <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
                         <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                            </path>
                         </svg>
                     </div>
                 </div>
@@ -22,53 +24,68 @@
             <form wire:submit.prevent="generateReport" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">التاريخ البدء</label>
-                    <input wire:model="startDate" type="date" class="w-full px-4 py-3 border border-gray-300 rounded-xl" />
-                    </div>
+                    <input wire:model="startDate" type="date"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl" />
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">التاريخ النهاية</label>
-                    <input wire:model="endDate" type="date" class="w-full px-4 py-3 border border-gray-300 rounded-xl" />
+                    <input wire:model="endDate" type="date"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">الموظف</label>
                     <select wire:model="selectedUser" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
                         <option value="">جميع</option>
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                @endforeach
-                            </select>
-                            </div>
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">الفرع</label>
                     <select wire:model="selectedBranch" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
                         <option value="">جميع</option>
-                                @foreach ($branches as $branch)
-                                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                                @endforeach
-                            </select>
-                            </div>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">اسم العميل</label>
-                    <input wire:model="selectedCustomer" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="ادخل اسم العميل" />
-                        </div>
+                    <input wire:model="selectedCustomer" type="text"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="ادخل اسم العميل" />
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">كود العميل</label>
-                    <input wire:model="selectedCustomerCode" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="ادخل كود العميل" />
+                    <input wire:model="selectedCustomerCode" type="text"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="ادخل كود العميل" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">نوع المعاملة</label>
-                    <select wire:model="selectedTransactionType" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
+                    <select wire:model="selectedTransactionType"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl">
                         <option value="">جميع</option>
-                                @foreach ($transactionTypes as $type)
-                                    <option value="{{ $type }}">{{ $type }}</option>
-                                @endforeach
-                            </select>
+                        @foreach ($transactionTypes as $type)
+                            <option value="{{ $type }}">{{ $type }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="flex items-end gap-2">
-                    <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">توليد التقرير</button>
-                    <button type="button" wire:click="exportSummaryPdf" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">تصدير ملخص النظام</button>
-                    <button type="button" wire:click="exportExcel" class="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition">تصدير الـ Excel</button>
-                    <button type="button" wire:click="exportPdf" class="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition">تصدير المعاملات</button>
-                    <button type="button" wire:click="exportAllPdf" class="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition">تصدير الكل</button>
+                    <button type="submit"
+                        class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">توليد
+                        التقرير</button>
+                    <button type="button" wire:click="exportSummaryPdf"
+                        class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">تصدير
+                        ملخص النظام</button>
+                    <button type="button" wire:click="exportExcel"
+                        class="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition">تصدير
+                        الـ Excel</button>
+                    <button type="button" wire:click="exportPdf"
+                        class="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition">تصدير
+                        المعاملات</button>
+                    <button type="button" wire:click="exportAllPdf"
+                        class="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition">تصدير
+                        الكل</button>
                 </div>
             </form>
         </div>
@@ -78,19 +95,27 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="p-4 bg-blue-50 rounded-xl">
                     <div class="text-xs text-gray-500">المبلغ المستلم</div>
-                        <div class="text-lg font-bold">{{ $financialSummary['total_transfer'] == 0 ? '0' : number_format($financialSummary['total_transfer'], 0) }} EGP</div>
+                    <div class="text-lg font-bold">
+                        {{ $financialSummary['total_transfer'] == 0 ? '0' : number_format($financialSummary['total_transfer'], 0) }}
+                        EGP</div>
                 </div>
                 <div class="p-4 bg-green-50 rounded-xl">
                     <div class="text-xs text-gray-500">العمولة</div>
-                    <div class="text-lg font-bold">{{ $financialSummary['commission_earned'] == 0 ? '0' : number_format($financialSummary['commission_earned'], 0) }} EGP</div>
+                    <div class="text-lg font-bold">
+                        {{ $financialSummary['commission_earned'] == 0 ? '0' : number_format($financialSummary['commission_earned'], 0) }}
+                        EGP</div>
                 </div>
                 <div class="p-4 bg-yellow-50 rounded-xl">
                     <div class="text-xs text-gray-500">الخصم</div>
-                    <div class="text-lg font-bold">{{ $financialSummary['total_discounts'] == 0 ? '0' : number_format($financialSummary['total_discounts'], 0) }} EGP</div>
+                    <div class="text-lg font-bold">
+                        {{ $financialSummary['total_discounts'] == 0 ? '0' : number_format($financialSummary['total_discounts'], 0) }}
+                        EGP</div>
                 </div>
                 <div class="p-4 bg-purple-50 rounded-xl">
                     <div class="text-xs text-gray-500">الربح الصافي</div>
-                    <div class="text-lg font-bold">{{ $financialSummary['net_profit'] == 0 ? '0' : number_format($financialSummary['net_profit'], 0) }} EGP</div>
+                    <div class="text-lg font-bold">
+                        {{ $financialSummary['net_profit'] == 0 ? '0' : number_format($financialSummary['net_profit'], 0) }}
+                        EGP</div>
                 </div>
             </div>
         </div>
@@ -98,10 +123,11 @@
         <div class="bg-white rounded-2xl shadow border border-gray-200 mb-8 p-6">
             <h3 class="text-lg font-semibold mb-4">الرصيد الخزني بالفروع</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($safeBalances as $safe)
+                @foreach ($safeBalances as $safe)
                     <div class="p-4 bg-gray-50 rounded-xl flex justify-between">
                         <span>{{ $safe['branch'] }}</span>
-                        <span class="font-bold">{{ $safe['balance'] == 0 ? '0' : number_format($safe['balance'], 0) }} EGP</span>
+                        <span class="font-bold">{{ $safe['balance'] == 0 ? '0' : number_format($safe['balance'], 0) }}
+                            EGP</span>
                     </div>
                 @endforeach
             </div>
@@ -110,10 +136,11 @@
         <div class="bg-white rounded-2xl shadow border border-gray-200 mb-8 p-6">
             <h3 class="text-lg font-semibold mb-4">الرصيد الخطي بالفروع</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($lineBalances as $line)
+                @foreach ($lineBalances as $line)
                     <div class="p-4 bg-gray-50 rounded-xl flex justify-between">
                         <span>{{ $line['branch'] }}</span>
-                        <span class="font-bold">{{ $line['balance'] == 0 ? '0' : number_format($line['balance'], 0) }} EGP</span>
+                        <span class="font-bold">{{ $line['balance'] == 0 ? '0' : number_format($line['balance'], 0) }}
+                            EGP</span>
                     </div>
                 @endforeach
             </div>
@@ -122,10 +149,12 @@
         <div class="bg-white rounded-2xl shadow border border-gray-200 mb-8 p-6">
             <h3 class="text-lg font-semibold mb-4">الرصيد المحفظة العميل</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($customerBalances as $customer)
+                @foreach ($customerBalances as $customer)
                     <div class="p-4 bg-gray-50 rounded-xl flex justify-between">
                         <span>{{ $customer['customer'] }}</span>
-                            <span class="font-bold">{{ $customer['balance'] == 0 ? '0' : number_format($customer['balance'], 0) }} EGP</span>
+                        <span
+                            class="font-bold">{{ $customer['balance'] == 0 ? '0' : number_format($customer['balance'], 0) }}
+                            EGP</span>
                     </div>
                 @endforeach
             </div>
@@ -137,94 +166,120 @@
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
                     <thead>
                         <tr>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header" wire:click="sortBy('customer_name')">
+                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('customer_name')">
                                 <div class="flex items-center space-x-1">
-                                    <span>العميل</span
-                                @if ($sortField === 'customer_name')
+                                    <span>العميل</span @if ($sortField === 'customer_name')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                @endif
+                                    @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Customer Code</th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header" wire:click="sortBy('amount')">
+                            <th
+                                class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                Customer Code</th>
+                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('amount')">
                                 <div class="flex items-center space-x-1">
                                     <span>Amount</span>
-                                @if ($sortField === 'amount')
-                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                @endif
+                                    @if ($sortField === 'amount')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header" wire:click="sortBy('commission')">
+                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('commission')">
                                 <div class="flex items-center space-x-1">
                                     <span>Commission</span>
-                                @if ($sortField === 'commission')
-                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                @endif
+                                    @if ($sortField === 'commission')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header" wire:click="sortBy('transaction_type')">
+                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('transaction_type')">
                                 <div class="flex items-center space-x-1">
                                     <span>Type</span>
-                                @if ($sortField === 'transaction_type')
-                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                @endif
+                                    @if ($sortField === 'transaction_type')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header" wire:click="sortBy('agent_name')">
+                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('agent_name')">
                                 <div class="flex items-center space-x-1">
                                     <span>Agent</span>
-                                @if ($sortField === 'agent_name')
-                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                @endif
+                                    @if ($sortField === 'agent_name')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header" wire:click="sortBy('status')">
+                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('status')">
                                 <div class="flex items-center space-x-1">
                                     <span>Status</span>
-                                @if ($sortField === 'status')
-                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                @endif
+                                    @if ($sortField === 'status')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header" wire:click="sortBy('transaction_date_time')">
+                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
+                                wire:click="sortBy('transaction_date_time')">
                                 <div class="flex items-center space-x-1">
                                     <span>Date</span>
                                     @if ($sortField === 'transaction_date_time')
-                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                @endif
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
                                 </div>
                             </th>
-                            <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Reference</th>
+                            <th
+                                class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                Reference</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 text-xs">
                         @forelse($transactions as $transaction)
                             <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-900">{{ $transaction['customer_name'] }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['customer_code'] ?? '' }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['amount'] == 0 ? '0' : number_format($transaction['amount'], 0) }} EGP</td>
+                                <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-900">
+                                    {{ $transaction['customer_name'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">
+                                    {{ $transaction['customer_code'] ?? '' }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">
+                                    {{ $transaction['amount'] == 0 ? '0' : number_format($transaction['amount'], 0) }}
+                                    EGP</td>
                                 @php
-                                    $isWithdrawalOrDepositOrAdjustment = in_array($transaction['transaction_type'], ['Withdrawal', 'Deposit', 'Adjustment']);
+                                    $isWithdrawalOrDepositOrAdjustment = in_array($transaction['transaction_type'], [
+                                        'Withdrawal',
+                                        'Deposit',
+                                        'Adjustment',
+                                    ]);
                                 @endphp
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">
-                                    @if($isWithdrawalOrDepositOrAdjustment)
+                                    @if ($isWithdrawalOrDepositOrAdjustment)
                                         -
                                     @else
-                                        {{ $transaction['commission'] == 0 ? '0' : number_format($transaction['commission'], 0) }} EGP
+                                        {{ $transaction['commission'] == 0 ? '0' : number_format($transaction['commission'], 0) }}
+                                        EGP
                                     @endif
                                 </td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">
-                                    @if($isWithdrawalOrDepositOrAdjustment)
+                                    @if ($isWithdrawalOrDepositOrAdjustment)
                                         -
                                     @else
-                                        {{ $transaction['discount'] == 0 ? '0' : number_format($transaction['discount'], 0) }} EGP
+                                        {{ isset($transaction['discount']) && $transaction['discount'] == 0 ? '0' : (isset($transaction['discount']) ? number_format($transaction['discount'], 0) : '-') }}
+                                        EGP
                                     @endif
                                 </td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['transaction_type'] }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['status'] }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ \Carbon\Carbon::parse($transaction['transaction_date_time'])->format('d/m/y h:i A') }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['reference_number'] ?? '' }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">
+                                    {{ $transaction['transaction_type'] }}</td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}
+                                </td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['status'] }}
+                                </td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">
+                                    {{ \Carbon\Carbon::parse($transaction['transaction_date_time'])->format('d/m/y h:i A') }}
+                                </td>
+                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">
+                                    {{ $transaction['reference_number'] ?? '' }}</td>
                             </tr>
                         @empty
                             <tr>
