@@ -231,6 +231,7 @@
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                             <option value="">جميع أنواع المستخدمين</option>
                             @foreach ($causerTypes as $type)
+                                
                                 <option value="{{ $type }}">{{ class_basename($type) }}</option>
                             @endforeach
                         </select>
