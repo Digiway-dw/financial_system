@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gray-50" dir="rtl">
     <div class="bg-white border-b border-gray-200 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex items-center gap-3">
@@ -21,6 +21,64 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Filter Section -->
         <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-8">
+            <style>
+                /* RTL adjustments */
+                [dir="rtl"] .text-left {
+                    text-align: right !important;
+                }
+
+                [dir="rtl"] .text-right {
+                    text-align: left !important;
+                }
+
+                [dir="rtl"] .mr-2 {
+                    margin-left: 0.5rem !important;
+                    margin-right: 0 !important;
+                }
+
+                [dir="rtl"] .ml-2 {
+                    margin-right: 0.5rem !important;
+                    margin-left: 0 !important;
+                }
+
+                [dir="rtl"] .space-x-1> :not([hidden])~ :not([hidden]) {
+                    --tw-space-x-reverse: 1;
+                    margin-left: calc(0.25rem * var(--tw-space-x-reverse));
+                    margin-right: calc(0.25rem * calc(1 - var(--tw-space-x-reverse)));
+                }
+
+                [dir="rtl"] .space-x-2> :not([hidden])~ :not([hidden]) {
+                    --tw-space-x-reverse: 1;
+                    margin-left: calc(0.5rem * var(--tw-space-x-reverse));
+                    margin-right: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
+                }
+
+                [dir="rtl"] .space-x-3> :not([hidden])~ :not([hidden]) {
+                    --tw-space-x-reverse: 1;
+                    margin-left: calc(0.75rem * var(--tw-space-x-reverse));
+                    margin-right: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)));
+                }
+
+                [dir="rtl"] .pl-4 {
+                    padding-right: 1rem !important;
+                    padding-left: 0 !important;
+                }
+
+                [dir="rtl"] .pr-4 {
+                    padding-left: 1rem !important;
+                    padding-right: 0 !important;
+                }
+
+                [dir="rtl"] .text-xs,
+                [dir="rtl"] .text-sm,
+                [dir="rtl"] .text-base,
+                [dir="rtl"] .text-lg,
+                [dir="rtl"] .text-xl,
+                [dir="rtl"] .text-2xl,
+                [dir="rtl"] .text-3xl {
+                    direction: rtl;
+                }
+            </style>
             <form wire:submit.prevent="generateReport" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">التاريخ البدء</label>
@@ -161,7 +219,28 @@
         </div>
         <!-- Transactions Table -->
         <div class="bg-white rounded-2xl shadow border border-gray-200">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4 px-8 pt-8">جميع المعاملات</h3>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between px-8 pt-8 mb-4 gap-4">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 7v4a1 1 0 001 1h3m10-5v4a1 1 0 01-1 1h-3m-4 4h6m2 4H7a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800">جميع المعاملات</h3>
+                        <p class="text-sm text-gray-500 mt-1">جدول تفصيلي لكل المعاملات المالية مع خيارات الفرز والبحث
+                        </p>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <span
+                        class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-4 py-2 rounded-full shadow">إجمالي:
+                        {{ count($transactions) }} عملية</span>
+                </div>
+            </div>
             <div class="overflow-x-auto px-8 pb-8">
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
                     <thead>
@@ -169,18 +248,20 @@
                             <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('customer_name')">
                                 <div class="flex items-center space-x-1">
-                                    <span>العميل</span @if ($sortField === 'customer_name')
-                                    <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    <span>اسم العميل</span>
+                                    @if ($sortField === 'customer_name')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
                             <th
                                 class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                                Customer Code</th>
+                                كود العميل
+                            </th>
                             <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('amount')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Amount</span>
+                                    <span>المبلغ</span>
                                     @if ($sortField === 'amount')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -189,7 +270,7 @@
                             <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('commission')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Commission</span>
+                                    <span>العمولة</span>
                                     @if ($sortField === 'commission')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -198,7 +279,7 @@
                             <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('transaction_type')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Type</span>
+                                    <span>نوع المعاملة</span>
                                     @if ($sortField === 'transaction_type')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -207,7 +288,7 @@
                             <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('agent_name')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Agent</span>
+                                    <span>الموظف</span>
                                     @if ($sortField === 'agent_name')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -216,7 +297,7 @@
                             <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('status')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Status</span>
+                                    <span>الحالة</span>
                                     @if ($sortField === 'status')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -225,7 +306,7 @@
                             <th class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('transaction_date_time')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Date</span>
+                                    <span>التاريخ</span>
                                     @if ($sortField === 'transaction_date_time')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
@@ -233,7 +314,8 @@
                             </th>
                             <th
                                 class="px-3 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                                Reference</th>
+                                الرقم المرجعي
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 text-xs">
@@ -261,14 +343,14 @@
                                         EGP
                                     @endif
                                 </td>
-                                <td class="px-3 py-2 whitespace-nowrap text-gray-700">
+                                {{-- <td class="px-3 py-2 whitespace-nowrap text-gray-700">
                                     @if ($isWithdrawalOrDepositOrAdjustment)
                                         -
                                     @else
                                         {{ isset($transaction['discount']) && $transaction['discount'] == 0 ? '0' : (isset($transaction['discount']) ? number_format($transaction['discount'], 0) : '-') }}
                                         EGP
                                     @endif
-                                </td>
+                                </td> --}}
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">
                                     {{ $transaction['transaction_type'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}
