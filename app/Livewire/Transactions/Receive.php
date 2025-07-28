@@ -317,14 +317,16 @@ class Receive extends Component
             } while (Customer::where('customer_code', $code)->exists());
 
             $user = Auth::user();
+            // Use selected branch if available, otherwise use user's branch
+            $branchId = $this->canSelectBranch && $this->selectedBranchId ? $this->selectedBranchId : ($user ? $user->branch_id : null);
             $customer = Customer::create([
                 'name' => $this->clientName,
                 'mobile_number' => $this->clientMobile,
                 'customer_code' => $code,
                 'gender' => $this->clientGender ?: 'male',
-                'is_client' => true, // Customers created via receive transactions should have wallets
+                'is_client' => false, // Customers created via receive transactions should have inactive wallets
                 'agent_id' => $user ? $user->id : null,
-                'branch_id' => $user ? $user->branch_id : null,
+                'branch_id' => $branchId,
                 'balance' => 0,
             ]);
         }
