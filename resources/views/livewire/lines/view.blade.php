@@ -43,18 +43,10 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                التاريخ</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                النوع</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                المبلغ</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                الحالة</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">التاريخ</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">النوع</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">المبلغ</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">الحالة</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -66,8 +58,7 @@
                                     {{ $tx->transaction_type }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-700">
                                     {{ format_int($tx->amount) }} EGP</td>
-                                <td
-                                    class="px-6 py-4 whitespace-nowrap text-sm font-semibold {{ $tx->status === 'completed' ? 'text-green-700' : ($tx->status === 'pending' ? 'text-yellow-700' : 'text-red-700') }}">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold {{ $tx->status === 'completed' ? 'text-green-700' : ($tx->status === 'pending' ? 'text-yellow-700' : 'text-red-700') }}">
                                     {{ ucfirst($tx->status) }}</td>
                             </tr>
                         @empty
@@ -78,6 +69,14 @@
                     </tbody>
                 </table>
             </div>
+            @if ($transactions->hasMorePages())
+                <div class="flex justify-center mt-6">
+                    <button wire:click="loadMore" wire:loading.attr="disabled"
+                        class="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200">
+                        تحميل المزيد
+                    </button>
+                </div>
+            @endif
         </div>
     </div>
 </div>
