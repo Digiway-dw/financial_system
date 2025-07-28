@@ -18,6 +18,14 @@
         <span class="text-sm font-medium text-gray-700"> : الفرع</span>
 
     </div>
+    <div class="mb-4">
+        <div class="text-lg font-bold text-gray-800">
+            {{ auth()->user()->name }}
+        </div>
+        <div class="text-sm text-gray-500">
+            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
+        </div>
+    </div>
     <!-- Remove branch selector and branch details section -->
     <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
         <thead>

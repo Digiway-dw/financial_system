@@ -20,6 +20,14 @@
             <div class="text-base font-bold text-gray-800">{{ $selectedBranchDetails['name'] }}</div>
         </div>
     @endif
+    <div class="mb-4">
+        <div class="text-lg font-bold text-gray-800">
+            {{ auth()->user()->name }}
+        </div>
+        <div class="text-sm text-gray-500">
+            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
+        </div>
+    </div>
     <!-- Auditor Summary Table: Safe Name, Safe Balance, Today's Transactions -->
     <table class="min-w-max w-full table-auto border border-gray-300 mb-6">
         <thead>

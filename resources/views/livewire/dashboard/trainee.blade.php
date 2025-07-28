@@ -1,4 +1,12 @@
 <div>
+    <div class="mb-4">
+        <div class="text-lg font-bold text-gray-800">
+            {{ auth()->user()->name }}
+        </div>
+        <div class="text-sm text-gray-500">
+            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
+        </div>
+    </div>
 <!-- Trainee Summary Table: Safe Name, Safe Balance, Startup Balance, Today's Transactions -->
 
 

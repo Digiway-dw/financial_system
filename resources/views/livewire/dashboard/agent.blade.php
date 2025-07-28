@@ -14,6 +14,14 @@
             transform: translateY(0);
         }
     </style>
+    <div class="mb-4">
+        <div class="text-lg font-bold text-gray-800">
+            {{ auth()->user()->name }}
+        </div>
+        <div class="text-sm text-gray-500">
+            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
+        </div>
+    </div>
     @if (isset($showAdminAgentToggle) && $showAdminAgentToggle && request()->query('as_agent'))
         <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <form method="get" action="{{ route('dashboard') }}" class="flex items-center gap-2">

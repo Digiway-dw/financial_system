@@ -1,4 +1,12 @@
 <div dir="rtl" style="direction: rtl; text-align: right;">
+    <div class="mb-4">
+        <div class="text-lg font-bold text-gray-800">
+            {{ auth()->user()->name }}
+        </div>
+        <div class="text-sm text-gray-500">
+            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
+        </div>
+    </div>
     @if (isset($showAdminAgentToggle) && $showAdminAgentToggle)
         <div class="mb-6 flex justify-end">
             <a href="{{ route('agent-dashboard') }}"
