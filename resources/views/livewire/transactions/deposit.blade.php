@@ -1,4 +1,58 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50" dir="rtl"
+    style="direction: rtl; text-align: right;">
+    <style>
+        /* RTL fixes for deposit page */
+        [dir="rtl"] .flex-row-reverse {
+            flex-direction: row-reverse;
+        }
+
+        [dir="rtl"] .gap-3> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 1;
+            margin-left: calc(0.75rem * var(--tw-space-x-reverse));
+            margin-right: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)));
+        }
+
+        [dir="rtl"] .mr-2 {
+            margin-left: 0.5rem !important;
+            margin-right: 0 !important;
+        }
+
+        [dir="rtl"] .ml-2 {
+            margin-right: 0.5rem !important;
+            margin-left: 0 !important;
+        }
+
+        [dir="rtl"] .ml-3 {
+            margin-right: 0.75rem !important;
+            margin-left: 0 !important;
+        }
+
+        [dir="rtl"] .text-left {
+            text-align: right !important;
+        }
+
+        [dir="rtl"] .text-right {
+            text-align: right !important;
+        }
+
+        [dir="rtl"] .text-center {
+            text-align: center !important;
+        }
+
+        [dir="rtl"] .rounded-l-xl {
+            border-top-right-radius: 0.75rem !important;
+            border-bottom-right-radius: 0.75rem !important;
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+
+        [dir="rtl"] .rounded-r-xl {
+            border-top-left-radius: 0.75rem !important;
+            border-bottom-left-radius: 0.75rem !important;
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+    </style>
     <div class="py-8 px-4 sm:px-6 lg:px-8">
         <div class="max-w-6xl mx-auto">
             <!-- Header Section -->
@@ -96,7 +150,7 @@
                                     </svg>
                                 </div>
                                 <span
-                                    class="text-sm font-medium {{ $depositType === 'direct' ? 'text-blue-700' : 'text-slate-700' }}">Direct</span>
+                                    class="text-sm font-medium {{ $depositType === 'direct' ? 'text-blue-700' : 'text-slate-700' }}">مباشر</span>
                             </div>
                         </button>
                         <button wire:click="$set('depositType', 'client_wallet')"
@@ -110,8 +164,8 @@
                                     </svg>
                                 </div>
                                 <span
-                                    class="text-sm font-medium {{ $depositType === 'client_wallet' ? 'text-emerald-700' : 'text-slate-700' }}">Client
-                                    Wallet</span>
+                                    class="text-sm font-medium {{ $depositType === 'client_wallet' ? 'text-emerald-700' : 'text-slate-700' }}">محفظة
+                                    العميل</span>
                             </div>
                         </button>
                         <button wire:click="$set('depositType', 'user')"
@@ -125,7 +179,7 @@
                                     </svg>
                                 </div>
                                 <span
-                                    class="text-sm font-medium {{ $depositType === 'user' ? 'text-purple-700' : 'text-slate-700' }}">User</span>
+                                    class="text-sm font-medium {{ $depositType === 'user' ? 'text-purple-700' : 'text-slate-700' }}">مستخدم</span>
                             </div>
                         </button>
                         <button wire:click="$set('depositType', 'admin')"
@@ -139,7 +193,7 @@
                                     </svg>
                                 </div>
                                 <span
-                                    class="text-sm font-medium {{ $depositType === 'admin' ? 'text-orange-700' : 'text-slate-700' }}">Admin</span>
+                                    class="text-sm font-medium {{ $depositType === 'admin' ? 'text-orange-700' : 'text-slate-700' }}">الادمن</span>
                             </div>
                         </button>
                     </div>
@@ -150,7 +204,7 @@
                     @if ($depositType === 'direct')
                         <form wire:submit.prevent="submitDeposit" class="space-y-6">
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Name</label>
+                                <label class="block text-gray-700 font-medium mb-1">اسم العميل</label>
                                 <input type="text" wire:model.defer="customerName"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200"
                                     required />
@@ -159,7 +213,7 @@
                                 @enderror
                             </div>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Amount</label>
+                                <label class="block text-gray-700 font-medium mb-1">المبلغ</label>
                                 <input type="text" wire:model.defer="amount"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200"
                                     required />
@@ -168,7 +222,7 @@
                                 @enderror
                             </div>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Notes</label>
+                                <label class="block text-gray-700 font-medium mb-1">ملاحظات</label>
                                 <textarea wire:model.defer="notes"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" rows="2" required></textarea>
                                 @error('notes')
@@ -176,7 +230,7 @@
                                 @enderror
                             </div>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Safe</label>
+                                <label class="block text-gray-700 font-medium mb-1">الخزنة</label>
                                 <select wire:model="safeId"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200">
                                     @foreach ($branchSafes as $safe)
@@ -186,8 +240,8 @@
                                 </select>
                             </div>
                             <button type="submit"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Submit
-                                Direct Deposit</button>
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">تنفيذ
+                                إيداع مباشر</button>
                         </form>
                     @elseif ($depositType === 'client_wallet')
                         <form wire:submit.prevent="submitDeposit" class="space-y-6">
@@ -200,16 +254,16 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
-                                    Customer Selection
+                                    اختيار العميل
                                 </h4>
 
                                 <!-- Customer Search Field -->
                                 <div class="relative mb-4">
-                                    <label class="block text-gray-700 font-medium mb-2">Search Customer</label>
+                                    <label class="block text-gray-700 font-medium mb-2">بحث عن العميل</label>
                                     <div class="relative">
                                         <input type="text" wire:model.live.debounce.300ms="clientSearch"
                                             class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                                            placeholder="Enter name, mobile, or customer code" autocomplete="off" />
+                                            placeholder="ادخل الاسم أو الجوال أو كود العميل" autocomplete="off" />
                                         @if ($clientId)
                                             <button type="button" wire:click="clearClientSelection"
                                                 class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors">
@@ -285,7 +339,7 @@
                                                         stroke-width="2"
                                                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                Selected Customer
+                                                العميل المحدد
                                             </h5>
                                             <button type="button" wire:click="clearClientSelection"
                                                 class="text-gray-400 hover:text-red-500 transition-colors">
@@ -298,22 +352,22 @@
                                         </div>
                                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                             <div>
-                                                <span class="font-medium text-gray-600">Name:</span>
+                                                <span class="font-medium text-gray-600">الاسم:</span>
                                                 <div class="text-gray-900">{{ $clientName }}</div>
                                             </div>
                                             <div>
-                                                <span class="font-medium text-gray-600">Mobile:</span>
+                                                <span class="font-medium text-gray-600">الجوال:</span>
                                                 <div class="text-gray-900">{{ $clientMobile }}</div>
                                             </div>
                                             <div>
-                                                <span class="font-medium text-gray-600">Code:</span>
+                                                <span class="font-medium text-gray-600">الكود:</span>
                                                 <div class="text-gray-900">{{ $clientCode }}</div>
                                             </div>
                                             <div>
-                                                <span class="font-medium text-gray-600">Balance:</span>
+                                                <span class="font-medium text-gray-600">الرصيد:</span>
                                                 <div
                                                     class="font-semibold {{ $clientBalance >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                                                    {{ format_int($clientBalance) }} EGP
+                                                    {{ format_int($clientBalance) }} ج.م
                                                 </div>
                                             </div>
                                         </div>
@@ -324,20 +378,21 @@
                             <!-- Depositor Information -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-gray-700 font-medium mb-2">Depositor National ID</label>
+                                    <label class="block text-gray-700 font-medium mb-2">الرقم القومي للمودع</label>
                                     <input type="text" wire:model.defer="depositorNationalId" minlength="14"
                                         maxlength="14" pattern="[0-9]{14}" required
                                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                                        placeholder="14-digit national ID" />
+                                        placeholder="الرقم القومي (14 رقم)" />
                                     @error('depositorNationalId')
                                         <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div>
-                                    <label class="block text-gray-700 font-medium mb-2">Depositor Mobile Number</label>
-                                    <input type="text" wire:model.defer="depositorMobileNumber" minlength="11" maxlength="11" pattern="[0-9]{11}" inputmode="numeric"
+                                    <label class="block text-gray-700 font-medium mb-2">رقم جوال المودع</label>
+                                    <input type="text" wire:model.defer="depositorMobileNumber" minlength="11"
+                                        maxlength="11" pattern="[0-9]{11}" inputmode="numeric"
                                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                                        placeholder="Mobile number" required />
+                                        placeholder="رقم الجوال" required />
                                     @error('depositorMobileNumber')
                                         <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
                                     @enderror
@@ -347,16 +402,16 @@
                             <!-- Transaction Details -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-gray-700 font-medium mb-2">Amount</label>
+                                    <label class="block text-gray-700 font-medium mb-2">المبلغ</label>
                                     <input type="text" wire:model.defer="amount"
                                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                                        placeholder="Enter amount" required />
+                                        placeholder="ادخل المبلغ" required />
                                     @error('amount')
                                         <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div>
-                                    <label class="block text-gray-700 font-medium mb-2">Safe</label>
+                                    <label class="block text-gray-700 font-medium mb-2">الخزنة</label>
                                     <select wire:model="safeId"
                                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all">
                                         @foreach ($branchSafes as $safe)
@@ -372,10 +427,10 @@
                             </div>
 
                             <div>
-                                <label class="block text-gray-700 font-medium mb-2">Notes</label>
+                                <label class="block text-gray-700 font-medium mb-2">ملاحظات</label>
                                 <textarea wire:model.defer="notes"
                                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                                    rows="3" placeholder="Enter transaction notes" required></textarea>
+                                    rows="3" placeholder="أدخل ملاحظات العملية" required></textarea>
                                 @error('notes')
                                     <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
                                 @enderror
@@ -390,18 +445,18 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                                     </svg>
-                                    Submit Client Wallet Deposit
+                                    تنفيذ إيداع محفظة عميل
                                 </span>
                             </button>
                         </form>
                     @elseif ($depositType === 'user')
                         <form wire:submit.prevent="submitDeposit" class="space-y-6">
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">User</label>
+                                <label class="block text-gray-700 font-medium mb-1">المستخدم</label>
                                 <select wire:model="userId"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200"
                                     required>
-                                    <option value="">Select a user</option>
+                                    <option value="">اختر مستخدمًا</option>
                                     @foreach ($branchUsers as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach
@@ -411,7 +466,7 @@
                                 @enderror
                             </div>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Amount</label>
+                                <label class="block text-gray-700 font-medium mb-1">المبلغ</label>
                                 <input type="text" wire:model.defer="amount"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200"
                                     required />
@@ -420,7 +475,7 @@
                                 @enderror
                             </div>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Notes</label>
+                                <label class="block text-gray-700 font-medium mb-1">ملاحظات</label>
                                 <textarea wire:model.defer="notes"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" rows="2" required></textarea>
                                 @error('notes')
@@ -428,23 +483,23 @@
                                 @enderror
                             </div>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Safe</label>
+                                <label class="block text-gray-700 font-medium mb-1">الخزنة</label>
                                 <select wire:model="safeId"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200">
                                     @foreach ($branchSafes as $safe)
-                                        <option value="{{ $safe->id }}">{{ $safe->name ?? 'Safe #' . $safe->id }}
+                                        <option value="{{ $safe->id }}">{{ $safe->name ?? 'خزنة #' . $safe->id }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
                             <button type="submit"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Submit
-                                User Deposit</button>
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">تنفيذ
+                                إيداع مستخدم</button>
                         </form>
                     @elseif ($depositType === 'admin')
                         <form wire:submit.prevent="submitDeposit" class="space-y-6">
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Amount</label>
+                                <label class="block text-gray-700 font-medium mb-1">المبلغ</label>
                                 <input type="text" wire:model.defer="amount"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200"
                                     required />
@@ -453,7 +508,7 @@
                                 @enderror
                             </div>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Notes</label>
+                                <label class="block text-gray-700 font-medium mb-1">ملاحظات</label>
                                 <textarea wire:model.defer="notes"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" rows="2" required></textarea>
                                 @error('notes')
@@ -461,12 +516,12 @@
                                 @enderror
                             </div>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Safe</label>
+                                <label class="block text-gray-700 font-medium mb-1">الخزنة</label>
                                 <select wire:model="safeId"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200">
                                     @foreach ($branchSafes as $safe)
                                         <option value="{{ $safe->id }}">
-                                            {{ $safe->name ?? 'Safe #' . $safe->id }}
+                                            {{ $safe->name ?? 'خزنة #' . $safe->id }}
                                             @if ($safe->branch)
                                                 - {{ $safe->branch->name }}
                                             @endif
@@ -475,8 +530,8 @@
                                 </select>
                             </div>
                             <button type="submit"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Submit
-                                Admin Deposit</button>
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">تنفيذ
+                                إيداع ادمن</button>
                         </form>
                     @endif
                 </div>
