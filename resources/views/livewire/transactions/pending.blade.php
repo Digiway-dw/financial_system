@@ -133,22 +133,22 @@
                     <thead>
                         <tr class="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-gray-200/30">
                             <th
-                                class="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 اسم العميل</th>
                             <th
-                                class="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 المبلغ</th>
                             <th
-                                class="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 النوع</th>
                             <th
-                                class="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 رقم الخط</th>
                             <th
-                                class="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 الوكيل</th>
                             <th
-                                class="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 التاريخ</th>
                             <th
                                 class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
