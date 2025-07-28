@@ -435,6 +435,17 @@ class Withdrawal extends Create
                     return;
                 }
 
+                // Check if the resulting balance would exceed the database constraint limits
+                $newBalance = $client->balance - $this->amount;
+                if ($newBalance > 1000000) {
+                    session()->flash('error', 'لا يمكن إجراء السحب. الرصيد الناتج سيتجاوز الحد الأقصى المسموح به (1,000,000 ج.م).');
+                    return;
+                }
+                if ($newBalance < -1000000) {
+                    session()->flash('error', 'لا يمكن إجراء السحب. الرصيد الناتج سيتجاوز الحد الأدنى المسموح به (-1,000,000 ج.م).');
+                    return;
+                }
+
                 $customerName = $client->name;
                 $customerMobileNumber = $client->mobile_number;
                 $customerCode = $client->customer_code;

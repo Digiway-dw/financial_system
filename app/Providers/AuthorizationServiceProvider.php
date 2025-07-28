@@ -123,7 +123,8 @@ class AuthorizationServiceProvider extends ServiceProvider
         });
 
         Gate::define('edit-branches', function (DomainUser $user) {
-            return $user->hasRole(Roles::ADMIN);
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });
 
         Gate::define('delete-branches', function (DomainUser $user) {

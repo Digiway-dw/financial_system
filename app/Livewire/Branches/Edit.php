@@ -23,6 +23,10 @@ class Edit extends Component
 
     public $is_active = true;
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     public $safe;
     public $safeId;
     public $safe_name = '';
@@ -54,7 +58,28 @@ class Edit extends Component
 
         $this->name = $this->branch->name;
         $this->description = $this->branch->description;
-        $this->is_active = (bool)($this->branch->is_active ?? true);
+        
+
+        
+        // Ensure proper boolean conversion
+        $rawValue = $this->branch->is_active;
+        if (is_string($rawValue)) {
+            $this->is_active = $rawValue === '1' || $rawValue === 'true';
+        } else {
+            $this->is_active = (bool)($rawValue ?? true);
+        }
+        
+        // Debug what's being loaded
+        \Log::info('Branch edit form loaded', [
+            'branch_id' => $this->branchId,
+            'branch_name' => $this->branch->name,
+            'raw_is_active' => $rawValue,
+            'converted_is_active' => $this->is_active,
+            'is_active_type' => gettype($this->is_active),
+        ]);
+        
+        // Force the value to be properly set
+        $this->dispatch('branch-status-loaded', ['is_active' => $this->is_active]);
 
         // Load the first associated safe (main safe)
         $safe = $this->branch->safes->first();
@@ -69,11 +94,19 @@ class Edit extends Component
 
     public function updateBranch()
     {
+        \Log::info('Form submitted', [
+            'is_active_value' => $this->is_active,
+            'is_active_type' => gettype($this->is_active),
+        ]);
+        
         $this->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
             'is_active' => 'boolean',
         ]);
 
         try {
+
             $this->updateBranchUseCase->execute(
                 $this->branchId,
                 [
@@ -110,6 +143,13 @@ class Edit extends Component
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update branch or safe: ' . $e->getMessage());
         }
+    }
+
+
+
+    public function updatedIsActive($value)
+    {
+        \Log::info('is_active updated', ['new_value' => $value, 'type' => gettype($value)]);
     }
 
     public function render()

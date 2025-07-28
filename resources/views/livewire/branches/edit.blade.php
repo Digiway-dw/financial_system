@@ -105,9 +105,10 @@
                         </label>
                         <select wire:model="is_active" id="is_active" name="is_active"
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                            <option value="1">نشط</option>
-                            <option value="0">غير نشط</option>
+                            <option value="1" {{ $is_active == true || $is_active == '1' ? 'selected' : '' }}>نشط</option>
+                            <option value="0" {{ $is_active == false || $is_active == '0' ? 'selected' : '' }}>غير نشط</option>
                         </select>
+                        <p class="text-sm text-gray-500 mt-1">الحالة الحالية: {{ $is_active ? 'نشط' : 'غير نشط' }} (قيمة: {{ $is_active }})</p>
                     </div>
                 </div>
 
@@ -198,6 +199,7 @@
                             class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
                             إلغاء
                         </a>
+
                         <button type="submit"
                             class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-all duration-200 transform hover:scale-105">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
