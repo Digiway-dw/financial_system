@@ -277,12 +277,12 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 114 0v2m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                                     </svg>
-                                    رقم الهوية الوطنية
+                                    الرقم القومي
                                 </label>
                                 <input type="text" wire:model="nationalId" id="nationalId"
                                     minlength="14" maxlength="14" pattern="[0-9]{14}" required
                                     class="w-full rounded-lg border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 bg-white text-slate-900"
-                                    placeholder="أدخل رقم الهوية الوطنية">
+                                    placeholder="أدخل الرقم القومي">
                                 @error('nationalId')
                                     <p class="text-red-600 text-sm mt-1 flex items-center"><svg class="w-4 h-4 mr-1"
                                             fill="currentColor" viewBox="0 0 20 20">
@@ -504,12 +504,12 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 114 0v2m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                                         </svg>
-                                        رقم الهوية الوطنية للمستلم
+                                        الرقم القومي للمستلم
                                     </label>
                                     <input type="text" wire:model.defer="withdrawalNationalId" minlength="14"
                                         maxlength="14" pattern="[0-9]{14}" required
                                         class="w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 bg-white text-slate-900"
-                                        placeholder="أدخل رقم الهوية الوطنية (14 رقم)" />
+                                        placeholder="أدخل الرقم القومي (14 رقم)" />
                                     @error('withdrawalNationalId')
                                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                                     @enderror
