@@ -75,11 +75,9 @@
                             <div class="mt-4 lg:mt-0">
                                 <a href="{{ route('customers.create') }}"
                                     class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 border border-blue-500/20">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
+                                    
                                     اضافة عميل جديد
+                                    
                                 </a>
                             </div>
                         @endif
@@ -177,7 +175,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
-                                        <span>الاسم</span>
+                                        <span >الاسم</span>
                                         @if ($sortField === 'name')
                                             <span
                                                 class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -229,22 +227,22 @@
                                         @endif
                                     </div>
                                 </th>
-                                <th class="px-6 py-4 text-right text-sm font-semibold text-slate-700">الإجراءات</th>
+                                <th class="px-6 py-4  text-sm font-semibold text-slate-700  items-center ">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @forelse ($customers as $customer)
                                 <tr class="hover:bg-slate-50/50 transition-colors duration-150">
                                     <td class="px-6 py-4">
-                                        <div class="flex items-center space-x-3">
+                                        <div class="flex items-center space-x-3 ">
                                             <div
-                                                class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                                class="w-10 h-10 bg-gradient-to-r  from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-sm ">
                                                 {{ strtoupper(substr($customer['name'], 0, 1)) }}
                                             </div>
                                             <div>
-                                                <div class="text-sm font-medium text-slate-900">{{ $customer['name'] }}
+                                                <div class="text-sm font-medium text-slate-900 px-2">{{ $customer['name'] }}
                                                 </div>
-                                                <div class="text-xs text-slate-500">ID: {{ $customer['id'] }}</div>
+                                                <div class="text-xs text-slate-500 px-2">ID: {{ $customer['id'] }}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -282,7 +280,8 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end space-x-2">
+                                        <div class="flex items-center justify-end space-x-2 ">
+                                            <dev class="px-2">
                                             <a href="{{ route('customers.view', $customer['id']) }}"
                                                 class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-200 transition-colors duration-150">
                                                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
@@ -293,8 +292,11 @@
                                                         stroke-width="2"
                                                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                 </svg>
+                                                
                                                 عرض
+
                                             </a>
+                                            </dev>
                                             @php
                                                 $cannotEditRoles = ['agent', 'trainee', 'auditor'];
                                             @endphp
