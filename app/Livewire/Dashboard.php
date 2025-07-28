@@ -83,10 +83,10 @@ class Dashboard extends Component
             $this->selectedBranchId = request('branch', 'all');
             $this->updateAuditorMetrics();
         } elseif ($user->hasRole('trainee')) {
-            // For trainees, load traineeLines for their branch
+            // For trainees, load traineeLines for their branch (only active lines)
             $this->branches = collect($this->branchRepository->all());
             $this->selectedBranchId = $user->branch_id;
-            $lines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
+            $lines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null)->where('status', 'active');
             $this->traineeLines = $lines->map(function ($line) {
                 return is_object($line) ? $line : (object)$line;
             })->values()->all();
@@ -257,7 +257,7 @@ class Dashboard extends Component
             $data['showAdminAgentToggle'] = true;
             $data['totalUsers'] = count($this->userRepository->all());
             $data['totalBranches'] = count($this->branchRepository->all());
-            $data['totalLines'] = count($this->lineRepository->all());
+            $data['totalLines'] = collect($this->lineRepository->all())->where('status', 'active')->count();
             $data['totalSafes'] = count($this->safeRepository->all());
             $data['totalCustomers'] = Customer::count();
             // Count both Transaction and CashTransaction for totalTransactions
@@ -271,8 +271,8 @@ class Dashboard extends Component
             $pendingTransactionsCount = Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
             $pendingCashCount = CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
             $data['pendingTransactionsCount'] = $pendingTransactionsCount + $pendingCashCount;
-            // Add adminLines and adminLinesTotalBalance for the lines table
-            $allLines = collect($this->lineRepository->all());
+            // Add adminLines and adminLinesTotalBalance for the lines table (only active lines)
+            $allLines = collect($this->lineRepository->all())->where('status', 'active');
             $adminLines = $allLines->map(function ($line) {
                 $lineArray = is_object($line) ? $line->toArray() : $line;
                 $lineArray['daily_remaining'] = isset($lineArray['daily_limit'], $lineArray['current_balance'])
@@ -319,7 +319,7 @@ class Dashboard extends Component
             $data['totalUsers'] = count($this->userRepository->all());
             $data['totalBranches'] = count($this->branchRepository->all());
             $data['totalSafes'] = count($this->safeRepository->all());
-            $data['totalLines'] = count($this->lineRepository->all());
+            $data['totalLines'] = collect($this->lineRepository->all())->where('status', 'active')->count();
             $data['totalCustomers'] = Customer::count();
             // Count both Transaction and CashTransaction for totalTransactions
             $data['totalTransactions'] = Transaction::count() + CashTransaction::count();
@@ -330,8 +330,8 @@ class Dashboard extends Component
             $pendingTransactionsCount = Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
             $pendingCashCount = CashTransaction::where('status', 'pending')->where('transaction_type', 'Withdrawal')->count();
             $data['pendingTransactionsCount'] = $pendingTransactionsCount + $pendingCashCount;
-            // Add supervisorLines and supervisorLinesTotalBalance for the lines table
-            $allLines = collect($this->lineRepository->all());
+            // Add supervisorLines and supervisorLinesTotalBalance for the lines table (only active lines)
+            $allLines = collect($this->lineRepository->all())->where('status', 'active');
             $supervisorLines = $allLines->map(function ($line) {
                 $lineArray = is_object($line) ? $line->toArray() : $line;
                 $lineArray['daily_remaining'] = isset($lineArray['daily_limit'], $lineArray['current_balance'])
@@ -368,8 +368,8 @@ class Dashboard extends Component
                 return !$u->hasRole('admin') && !$u->hasRole('general_supervisor');
             });
             $data['branchUsersCount'] = $branchUsers->count();
-            // Fetch all lines for the branch
-            $branchLines = Line::where('branch_id', $branchId)->get();
+            // Fetch all active lines for the branch
+            $branchLines = Line::where('branch_id', $branchId)->where('status', 'active')->get();
             
             // Apply sorting to branch manager lines
             if ($this->sortField === 'mobile_number') {
@@ -407,7 +407,7 @@ class Dashboard extends Component
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
             $dashboardView = 'livewire.dashboard.branch_manager';
         } elseif ($user->hasRole('agent') || $user->hasRole('trainee')) {
-            $lines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null);
+            $lines = collect($this->lineRepository->all())->where('branch_id', $user->branch_id ?? null)->where('status', 'active');
 
             // Apply sorting to lines
             if ($this->sortField === 'mobile_number') {

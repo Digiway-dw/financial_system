@@ -128,9 +128,9 @@ class AgentDashboard extends Component
     {
         $user = Auth::user();
 
-        // Filter lines by selected branches
+        // Filter lines by selected branches (only active lines)
         $lines = collect($this->lineRepository->all())->filter(function ($line) {
-            return in_array($line->branch_id, $this->selectedBranches);
+            return in_array($line->branch_id, $this->selectedBranches) && $line->status === 'active';
         });
 
         // Apply sorting
