@@ -141,7 +141,7 @@
                             الـ Excel</button>
                         <button type="button" wire:click="exportPdf"
                             class="min-w-[160px] px-6 py-3 bg-red-600 text-white rounded-2xl font-semibold hover:bg-red-700 transition shadow-md">تصدير
-                            المعاملات</button>
+                            ألPDF</button>
                         <button type="button" wire:click="exportAllPdf"
                             class="min-w-[160px] px-6 py-3 bg-purple-600 text-white rounded-2xl font-semibold hover:bg-purple-700 transition shadow-md">تصدير
                             الكل</button>

@@ -206,7 +206,7 @@ class Index extends Component
 
     public function exportExcel()
     {
-        $export = new \App\Exports\TransactionsExport(collect($this->transactions));
+        $export = new \App\Exports\AutoSizeTransactionsExport(collect($this->transactions));
         return \Maatwebsite\Excel\Facades\Excel::download($export, 'transactions_report.xlsx');
     }
 
