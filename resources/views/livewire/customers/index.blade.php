@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100" dir="rtl" style="direction: rtl;">
     @php
         $forbiddenRoles = ['agent', 'trainee'];
     @endphp
@@ -24,6 +24,37 @@
 
                 .sortable-header:active {
                     transform: translateY(0);
+                }
+
+                /* RTL adjustments */
+                [dir="rtl"] .text-left {
+                    text-align: right !important;
+                }
+
+                [dir="rtl"] .text-right {
+                    text-align: left !important;
+                }
+
+                [dir="rtl"] .mr-2 {
+                    margin-left: 0.5rem !important;
+                    margin-right: 0 !important;
+                }
+
+                [dir="rtl"] .ml-2 {
+                    margin-right: 0.5rem !important;
+                    margin-left: 0 !important;
+                }
+
+                [dir="rtl"] .space-x-2> :not([hidden])~ :not([hidden]) {
+                    --tw-space-x-reverse: 1;
+                    margin-left: calc(0.5rem * var(--tw-space-x-reverse));
+                    margin-right: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
+                }
+
+                [dir="rtl"] .space-x-3> :not([hidden])~ :not([hidden]) {
+                    --tw-space-x-reverse: 1;
+                    margin-left: calc(0.75rem * var(--tw-space-x-reverse));
+                    margin-right: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)));
                 }
             </style>
             <!-- Header Section -->
