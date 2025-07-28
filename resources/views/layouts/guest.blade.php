@@ -29,7 +29,7 @@
                 class="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-purple-600/20 rounded-full blur-3xl">
             </div>
         </div>
-
+{{-- 
         <!-- Logo Section -->
         <div class="relative z-10 mb-8">
             <div class="flex flex-col items-center">
@@ -46,7 +46,7 @@
                 </h1>
                 <p class="text-slate-600 text-sm mt-1">Secure financial management platform</p>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Main Card -->
         <div class="relative z-10 w-full max-w-md">
@@ -58,7 +58,7 @@
         <!-- Footer -->
         <div class="relative z-10 mt-8 text-center">
             <p class="text-xs text-slate-500">
-                © {{ date('Y') }} Financial System. All rights reserved.
+                © {{ date('Y') }} fido dido System. All rights reserved.
             </p>
         </div>
     </div>
