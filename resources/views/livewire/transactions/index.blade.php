@@ -391,77 +391,11 @@
                         معاملة
                     </div>
                 </div>
-                <table class="min-w-full divide-y divide-blue-100 text-xs rtl text-right" style="font-size: 12px;">
+                <table class="min-w-full divide-y divide-blue-100 text-xs rtl text-right border border-blue-200" style="font-size: 12px;">
                     <thead>
                         <tr>
-                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[90px] sortable-header border-b border-blue-200 rounded-tr-2xl"
-                                wire:click="sortBy('customer_name')">
-                                <div class="flex items-center gap-1 justify-end">
-                                    <span>اسم العميل</span>
-                                    @if ($sortField === 'customer_name')
-                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                    @endif
-                                </div>
-                            </th>
-                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[90px] sortable-header border-b border-blue-200"
-                                wire:click="sortBy('customer_mobile_number')">
-                                <div class="flex items-center gap-1 justify-end">
-                                    <span>رقم الجوال</span>
-                                    @if ($sortField === 'customer_mobile_number')
-                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                    @endif
-                                </div>
-                            </th>
-                            <th
-                                class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[90px] border-b border-blue-200">
-                                جوال المستلم
-                            </th>
-                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[70px] sortable-header border-b border-blue-200"
-                                wire:click="sortBy('amount')">
-                                <div class="flex items-center gap-1 justify-end">
-                                    <span>المبلغ</span>
-                                    @if ($sortField === 'amount')
-                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                    @endif
-                                </div>
-                            </th>
-                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[70px] sortable-header border-b border-blue-200"
-                                wire:click="sortBy('commission')">
-                                <div class="flex items-center gap-1 justify-end">
-                                    <span>العمولة</span>
-                                    @if ($sortField === 'commission')
-                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                    @endif
-                                </div>
-                            </th>
-                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[60px] sortable-header border-b border-blue-200"
-                                wire:click="sortBy('transaction_type')">
-                                <div class="flex items-center gap-1 justify-end">
-                                    <span>النوع</span>
-                                    @if ($sortField === 'transaction_type')
-                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                    @endif
-                                </div>
-                            </th>
-                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[80px] sortable-header border-b border-blue-200"
-                                wire:click="sortBy('agent_name')">
-                                <div class="flex items-center gap-1 justify-end">
-                                    <span>اسم الوكيل</span>
-                                    @if ($sortField === 'agent_name')
-                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                    @endif
-                                </div>
-                            </th>
-                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[90px] sortable-header border-b border-blue-200"
-                                wire:click="sortBy('created_at')">
-                                <div class="flex items-center gap-1 justify-end">
-                                    <span>التاريخ</span>
-                                    @if ($sortField === 'created_at')
-                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                    @endif
-                                </div>
-                            </th>
-                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[90px] sortable-header border-b border-blue-200"
+                            <!-- Reference Number (Most Important for Identification) -->
+                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[100px] sortable-header border-b border-blue-200 border-l border-blue-200 rounded-tr-2xl"
                                 wire:click="sortBy('reference_number')">
                                 <div class="flex items-center gap-1 justify-end">
                                     <span>رقم المرجع</span>
@@ -470,8 +404,82 @@
                                     @endif
                                 </div>
                             </th>
-                            <th
-                                class="px-1 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider w-1 border-b border-blue-200 rounded-tl-2xl whitespace-nowrap">
+                            <!-- Date (Chronological Order) -->
+                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[90px] sortable-header border-b border-blue-200 border-l border-blue-200"
+                                wire:click="sortBy('created_at')">
+                                <div class="flex items-center gap-1 justify-end">
+                                    <span>التاريخ</span>
+                                    @if ($sortField === 'created_at')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <!-- Transaction Type -->
+                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[80px] sortable-header border-b border-blue-200 border-l border-blue-200"
+                                wire:click="sortBy('transaction_type')">
+                                <div class="flex items-center gap-1 justify-end">
+                                    <span>النوع</span>
+                                    @if ($sortField === 'transaction_type')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <!-- Customer Name -->
+                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[100px] sortable-header border-b border-blue-200 border-l border-blue-200"
+                                wire:click="sortBy('customer_name')">
+                                <div class="flex items-center gap-1 justify-end">
+                                    <span>اسم العميل</span>
+                                    @if ($sortField === 'customer_name')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <!-- Amount -->
+                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[80px] sortable-header border-b border-blue-200 border-l border-blue-200"
+                                wire:click="sortBy('amount')">
+                                <div class="flex items-center gap-1 justify-end">
+                                    <span>المبلغ</span>
+                                    @if ($sortField === 'amount')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <!-- Commission -->
+                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[70px] sortable-header border-b border-blue-200 border-l border-blue-200"
+                                wire:click="sortBy('commission')">
+                                <div class="flex items-center gap-1 justify-end">
+                                    <span>العمولة</span>
+                                    @if ($sortField === 'commission')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <!-- Customer Mobile -->
+                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[100px] sortable-header border-b border-blue-200 border-l border-blue-200"
+                                wire:click="sortBy('customer_mobile_number')">
+                                <div class="flex items-center gap-1 justify-end">
+                                    <span>رقم العميل</span>
+                                    @if ($sortField === 'customer_mobile_number')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <!-- Recipient Mobile -->
+                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[100px] border-b border-blue-200 border-l border-blue-200">
+                                <span>رقم المستلم</span>
+                            </th>
+                            <!-- Agent -->
+                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[90px] sortable-header border-b border-blue-200 border-l border-blue-200"
+                                wire:click="sortBy('agent_name')">
+                                <div class="flex items-center gap-1 justify-end">
+                                    <span>الوكيل</span>
+                                    @if ($sortField === 'agent_name')
+                                        <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                    @endif
+                                </div>
+                            </th>
+                            <!-- Actions -->
+                            <th class="px-2 py-2 bg-blue-50 text-right text-xs font-bold text-blue-900 tracking-wider min-w-[120px] border-b border-blue-200 border-l border-blue-200 rounded-tl-2xl whitespace-nowrap">
                                 إجراءات
                             </th>
                         </tr>
@@ -480,26 +488,34 @@
                         @forelse ($transactions as $transaction)
                             <tr
                                 class="hover:bg-blue-50 transition-all duration-150 @if (strtolower($transaction['status']) === 'pending') bg-yellow-100 @endif border-b border-blue-100 last:border-b-0">
-                                <td class="px-2 py-2 whitespace-nowrap font-bold text-gray-900">
-                                    {{ $transaction['customer_name'] }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">
-                                    {{ $transaction['customer_mobile_number'] }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">
-                                    {{ $transaction['receiver_mobile_number'] ?? '' }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-green-700 font-bold">
-                                    {{ format_int($transaction['amount']) }} ج.م</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-purple-700 font-bold">
-                                    {{ format_int($transaction['commission']) }} ج.م</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-blue-700 font-bold">
-                                    {{ $transaction['transaction_type'] }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">
-                                    {{ \Carbon\Carbon::parse($transaction['created_at'])->format('d/m/y h:i A') }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-gray-700">
+                                <!-- Reference Number -->
+                                <td class="px-2 py-2 whitespace-nowrap text-gray-700 font-bold border-l border-blue-200">
                                     {{ $transaction['reference_number'] ?? '' }}</td>
+                                <!-- Date -->
+                                <td class="px-2 py-2 whitespace-nowrap text-gray-700 border-l border-blue-200">
+                                    {{ \Carbon\Carbon::parse($transaction['created_at'])->format('d/m/y h:i A') }}</td>
+                                <!-- Transaction Type -->
+                                <td class="px-2 py-2 whitespace-nowrap text-blue-700 font-bold border-l border-blue-200">
+                                    {{ $transaction['transaction_type'] }}</td>
+                                <!-- Customer Name -->
+                                <td class="px-2 py-2 whitespace-nowrap font-bold text-gray-900 border-l border-blue-200">
+                                    {{ $transaction['customer_name'] }}</td>
+                                <!-- Amount -->
+                                <td class="px-2 py-2 whitespace-nowrap text-green-700 font-bold border-l border-blue-200">
+                                    {{ format_int($transaction['amount']) }} ج.م</td>
+                                <!-- Commission -->
+                                <td class="px-2 py-2 whitespace-nowrap text-purple-700 font-bold border-l border-blue-200">
+                                    {{ format_int($transaction['commission']) }} ج.م</td>
+                                <!-- Customer Mobile -->
+                                <td class="px-2 py-2 whitespace-nowrap text-gray-700 border-l border-blue-200">
+                                    {{ $transaction['customer_mobile_number'] }}</td>
+                                <!-- Recipient Mobile -->
+                                <td class="px-2 py-2 whitespace-nowrap text-gray-700 border-l border-blue-200">
+                                    {{ $transaction['receiver_mobile_number'] ?? '' }}</td>
+                                <!-- Agent Name -->
+                                <td class="px-2 py-2 whitespace-nowrap text-gray-700 border-l border-blue-200">{{ $transaction['agent_name'] }}</td>
                                 <td
-                                    class="px-1 py-2 whitespace-nowrap text-right text-xs font-bold flex flex-row flex-nowrap gap-1 justify-end items-center">
+                                    class="px-1 py-2 whitespace-nowrap text-right text-xs font-bold flex flex-row flex-nowrap gap-1 justify-end items-center border-l border-blue-200">
                                     <a href="{{ route('transactions.details', $transaction['id']) }}"
                                         class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-200 transition-colors duration-150 mb-1">
                                         <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor"

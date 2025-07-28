@@ -476,7 +476,7 @@ class Dashboard extends Component
             $data['branchSafes'] = $branchSafes->map(function ($safe) use ($branchStartupBalance, $today, $branchId) {
                 // Count BOTH CashTransaction and regular Transaction records for this branch (all users)
                 $safeId = $safe['id'] ?? $safe->id;
-
+                
                 $cashTransactions = \App\Models\Domain\Entities\CashTransaction::where('safe_id', $safeId)
                     ->whereDate('created_at', $today)
                     ->count();
@@ -500,10 +500,14 @@ class Dashboard extends Component
             })->whereDate('created_at', $today);
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
 
-            // Today's transactions for this agent
-            $data['agentTodayTransactionsCount'] = Transaction::where('agent_id', $user->id)
+            // Today's transactions for this agent (both regular and cash transactions)
+            $regularTransactions = Transaction::where('agent_id', $user->id)
                 ->whereDate('created_at', $today)
                 ->count();
+            $cashTransactions = \App\Models\Domain\Entities\CashTransaction::where('agent_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->count();
+            $data['agentTodayTransactionsCount'] = $regularTransactions + $cashTransactions;
 
             // Transaction search by reference number (agent/trainee)
             if (request()->query('search_transaction') && request()->query('reference_number')) {

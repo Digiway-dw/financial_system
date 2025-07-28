@@ -48,7 +48,7 @@ class Deposit extends Create
         // Do NOT call parent::mount() to avoid Gate::authorize restriction
         $this->transactionType = 'Deposit';
         $this->depositType = 'direct';
-        
+
         $user = Auth::user();
         // Load users based on role - admin/supervisor can see all users, others see only branch users
         if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {

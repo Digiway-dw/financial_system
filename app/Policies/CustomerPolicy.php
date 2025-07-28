@@ -16,10 +16,11 @@ class CustomerPolicy
      */
     public function viewAny(User $user): bool
     {
-        // Only Admin, Branch Manager, and General Supervisor can view customer lists
+        // Admin, Branch Manager, General Supervisor, and Auditor can view customer lists
         return $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::BRANCH_MANAGER) ||
-            $user->hasRole(Roles::GENERAL_SUPERVISOR);
+            $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+            $user->hasRole(Roles::AUDITOR);
     }
 
     /**
@@ -27,10 +28,11 @@ class CustomerPolicy
      */
     public function view(User $user, Customer $customer): bool
     {
-        // Only Admin, Branch Manager, and General Supervisor can view any customer
+        // Admin, Branch Manager, General Supervisor, and Auditor can view any customer
         return $user->hasRole(Roles::ADMIN) ||
             $user->hasRole(Roles::BRANCH_MANAGER) ||
-            $user->hasRole(Roles::GENERAL_SUPERVISOR);
+            $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
+            $user->hasRole(Roles::AUDITOR);
     }
 
     /**

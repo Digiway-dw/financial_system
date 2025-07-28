@@ -19,7 +19,8 @@
                     @if (auth()->user() &&
                             (auth()->user()->hasRole('admin') ||
                                 auth()->user()->hasRole('branch_manager') ||
-                                auth()->user()->hasRole('general_supervisor')))
+                                auth()->user()->hasRole('general_supervisor') ||
+                                auth()->user()->hasRole('auditor')))
                         <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')" wire:navigate>
                             {{ __('العملاء') }}
                         </x-nav-link>

@@ -446,6 +446,17 @@ class EloquentTransactionRepository implements TransactionRepository
             if (isset($filters['employee_ids']) && is_array($filters['employee_ids']) && count($filters['employee_ids']) > 0) {
                 $cash->whereIn('agent_id', $filters['employee_ids']);
             }
+            // Add branch filtering for cash transactions
+            if (isset($filters['branch_id'])) {
+                $cash->whereHas('agent', function ($agentQuery) use ($filters) {
+                    $agentQuery->where('branch_id', $filters['branch_id']);
+                });
+            }
+            if (isset($filters['branch_ids']) && is_array($filters['branch_ids']) && count($filters['branch_ids']) > 0) {
+                $cash->whereHas('agent', function ($agentQuery) use ($filters) {
+                    $agentQuery->whereIn('branch_id', $filters['branch_ids']);
+                });
+            }
             if (isset($filters['reference_number']) && $filters['reference_number']) {
                 // Standardize the reference number format - remove spaces and make case-insensitive
                 $refNumber = trim($filters['reference_number']);

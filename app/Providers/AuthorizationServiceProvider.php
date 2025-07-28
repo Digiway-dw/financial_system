@@ -24,6 +24,11 @@ class AuthorizationServiceProvider extends ServiceProvider
                 $user->hasRole(Roles::GENERAL_SUPERVISOR);
         });
 
+        Gate::define('manage-sim-lines', function (DomainUser $user) {
+            return $user->hasRole(Roles::ADMIN) ||
+                $user->hasRole(Roles::GENERAL_SUPERVISOR);
+        });
+
         // ===== SAFE MANAGEMENT =====
         Gate::define('manage-safes', function (DomainUser $user) {
             return $user->hasRole(Roles::ADMIN) ||
@@ -83,7 +88,8 @@ class AuthorizationServiceProvider extends ServiceProvider
             return $user->hasRole(Roles::ADMIN) ||
                 $user->hasRole(Roles::BRANCH_MANAGER) ||
                 $user->hasRole(Roles::GENERAL_SUPERVISOR) ||
-                $user->hasRole(Roles::AGENT);
+                $user->hasRole(Roles::AGENT) ||
+                $user->hasRole(Roles::AUDITOR);
         });
 
         // ===== LINES VIEWING =====
