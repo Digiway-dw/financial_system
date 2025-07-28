@@ -48,9 +48,15 @@ class Deposit extends Create
         // Do NOT call parent::mount() to avoid Gate::authorize restriction
         $this->transactionType = 'Deposit';
         $this->depositType = 'direct';
-        $this->branchUsers = User::where('branch_id', Auth::user()->branch_id ?? null)->get();
-
+        
         $user = Auth::user();
+        // Load users based on role - admin/supervisor can see all users, others see only branch users
+        if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
+            $this->branchUsers = User::all();
+        } else {
+            $this->branchUsers = User::where('branch_id', $user->branch_id ?? null)->get();
+        }
+
         if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
             $this->branchSafes = \App\Models\Domain\Entities\Safe::with('branch')->get();
             $this->branches = \App\Models\Domain\Entities\Branch::all();
@@ -107,10 +113,11 @@ class Deposit extends Create
             $agent = Auth::user();
             
             // Check if branch is active before proceeding
-            $branchId = $agent->branch_id;
-            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
-            
             $safeId = $this->safeId ?? 0;
+            $safe = \App\Models\Domain\Entities\Safe::find($safeId);
+            if ($safe && $safe->branch_id) {
+                \App\Helpers\BranchStatusHelper::validateBranchActive($safe->branch_id);
+            }
             $transactionType = 'Deposit';
             $notes = $this->notes;
 
