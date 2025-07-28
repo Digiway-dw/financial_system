@@ -12,18 +12,47 @@
     <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
         <style>
             /* RTL fixes for dashboard */
-            [dir="rtl"] .flex-row-reverse { flex-direction: row-reverse; }
-            [dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+            [dir="rtl"] .flex-row-reverse {
+                flex-direction: row-reverse;
+            }
+
+            [dir="rtl"] .space-x-4> :not([hidden])~ :not([hidden]) {
                 --tw-space-x-reverse: 1;
                 margin-left: calc(1rem * var(--tw-space-x-reverse));
                 margin-right: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
             }
-            [dir="rtl"] .mr-4 { margin-left: 1rem !important; margin-right: 0 !important; }
-            [dir="rtl"] .ml-2 { margin-right: 0.5rem !important; margin-left: 0 !important; }
-            [dir="rtl"] .text-left { text-align: right !important; }
-            [dir="rtl"] .text-right { text-align: left !important; }
-            [dir="rtl"] .rounded-l-xl { border-top-right-radius: 0.75rem !important; border-bottom-right-radius: 0.75rem !important; border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }
-            [dir="rtl"] .rounded-r-xl { border-top-left-radius: 0.75rem !important; border-bottom-left-radius: 0.75rem !important; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+
+            [dir="rtl"] .mr-4 {
+                margin-left: 1rem !important;
+                margin-right: 0 !important;
+            }
+
+            [dir="rtl"] .ml-2 {
+                margin-right: 0.5rem !important;
+                margin-left: 0 !important;
+            }
+
+            [dir="rtl"] .text-left {
+                text-align: right !important;
+            }
+
+            [dir="rtl"] .text-right {
+                text-align: left !important;
+            }
+
+            [dir="rtl"] .rounded-l-xl {
+                border-top-right-radius: 0.75rem !important;
+                border-bottom-right-radius: 0.75rem !important;
+                border-top-left-radius: 0 !important;
+                border-bottom-left-radius: 0 !important;
+            }
+
+            [dir="rtl"] .rounded-r-xl {
+                border-top-left-radius: 0.75rem !important;
+                border-bottom-left-radius: 0.75rem !important;
+                border-top-right-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+            }
         </style>
         <div class="border-b border-gray-100 pb-4 mb-6">
             <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -211,7 +240,7 @@
                 <div>
                     <p class="text-gray-600 text-lg font-medium">إجمالي المبالغ المنقولة</p>
                     <p class="text-gray-900 text-4xl font-extrabold mt-1">{{ format_int($totalTransferred) }}
-                        
+
                     </p>
                 </div>
             </div>

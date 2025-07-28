@@ -1,4 +1,53 @@
-<div class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+<div class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50" dir="rtl"
+    style="direction: rtl; text-align: right;">
+    <style>
+        /* RTL fixes for pending transactions */
+        [dir="rtl"] .flex-row-reverse {
+            flex-direction: row-reverse;
+        }
+
+        [dir="rtl"] .gap-3> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 1;
+            margin-left: calc(0.75rem * var(--tw-space-x-reverse));
+            margin-right: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)));
+        }
+
+        [dir="rtl"] .mr-4 {
+            margin-left: 1rem !important;
+            margin-right: 0 !important;
+        }
+
+        [dir="rtl"] .ml-2 {
+            margin-right: 0.5rem !important;
+            margin-left: 0 !important;
+        }
+
+        [dir="rtl"] .text-left {
+            text-align: right !important;
+        }
+
+        [dir="rtl"] .text-right {
+            text-align: right !important;
+        }
+
+        [dir="rtl"] .text-center {
+            text-align: center !important;
+        }
+
+        [dir="rtl"] .rounded-l-xl {
+            border-top-right-radius: 0.75rem !important;
+            border-bottom-right-radius: 0.75rem !important;
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+
+        [dir="rtl"] .rounded-r-xl {
+            border-top-left-radius: 0.75rem !important;
+            border-bottom-left-radius: 0.75rem !important;
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+    </style>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header Section -->
         <div class="bg-white shadow-sm border-b border-amber-200/20 mb-8">
