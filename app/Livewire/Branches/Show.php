@@ -12,27 +12,16 @@ class Show extends Component
 {
     use WithPagination;
     public $branch;
-    public $branchTransactions = [];
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
-    public $sortRefresh = 0;
+    public $perPage = 10;
+    public $page = 1;
+    public $branchId;
 
     public function mount($branchId)
     {
+        $this->branchId = $branchId;
         $this->branch = Branch::with('safe')->findOrFail($branchId)->toArray();
-        $transactions = Transaction::where('branch_id', $branchId)->get()->toArray();
-        $cashTransactions = CashTransaction::where('destination_branch_id', $branchId)
-            ->orWhereHas('safe', function($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
-            })->get()->toArray();
-        $all = array_merge($transactions, $cashTransactions);
-        // Attach agent_name (user name) to each transaction
-        foreach ($all as &$tx) {
-            $userId = $tx['agent_id'] ?? null;
-            $user = $userId ? \App\Domain\Entities\User::find($userId) : null;
-            $tx['agent_name'] = $user ? $user->name : '-';
-        }
-        $this->branchTransactions = $all;
     }
 
     public function sortBy($field)
@@ -43,28 +32,51 @@ class Show extends Component
             $this->sortField = $field;
             $this->sortDirection = 'asc';
         }
-        $this->sortRefresh++;
+        $this->resetPage();
     }
 
-    public function getSortedTransactions()
+    public function loadMore()
     {
-        $transactions = collect($this->branchTransactions);
-        $field = $this->sortField;
-        $direction = $this->sortDirection;
-        $sorted = $transactions->sortBy(function($tx) use ($field) {
+        $this->perPage += 10;
+    }
+
+    public function getBranchTransactionsProperty()
+    {
+        $transactions = Transaction::where('branch_id', $this->branchId);
+        $cashTransactions = CashTransaction::where('destination_branch_id', $this->branchId)
+            ->orWhereHas('safe', function($q) {
+                $q->where('branch_id', $this->branchId);
+            });
+
+        $all = $transactions->get()->toBase()->merge($cashTransactions->get())->all();
+        // Attach agent_name (user name) to each transaction
+        foreach ($all as &$tx) {
+            $userId = $tx['agent_id'] ?? null;
+            $user = $userId ? \App\Domain\Entities\User::find($userId) : null;
+            $tx['agent_name'] = $user ? $user->name : '-';
+        }
+        // Sort
+        $sorted = collect($all)->sortBy(function($tx) {
+            $field = $this->sortField;
             return $tx[$field] ?? null;
-        }, SORT_REGULAR, $direction === 'desc');
-        return $sorted->values()->all();
+        }, SORT_REGULAR, $this->sortDirection === 'desc');
+        // Paginate manually
+        return $sorted->values()->slice(0, $this->perPage);
     }
 
     public function render()
     {
-        $refresh = $this->sortRefresh; // force Livewire to re-render on sort
         return view('livewire.branches.show', [
             'branch' => $this->branch,
-            'branchTransactions' => $this->getSortedTransactions(),
+            'branchTransactions' => $this->branchTransactions,
             'sortField' => $this->sortField,
             'sortDirection' => $this->sortDirection,
+            'hasMore' => count($this->branchTransactions) >= $this->perPage,
         ]);
     }
-} 
+
+    public function resetPage()
+    {
+        $this->perPage = 10;
+    }
+}
