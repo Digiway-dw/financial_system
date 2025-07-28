@@ -387,38 +387,49 @@
                                     @endif
                                 </td>
                                 <td class="px-8 py-6 whitespace-nowrap text-center align-middle">
-                                    @if(app()->make('livewire')->current()->canToggleIgnoreWorkHours($user))
-                                        <button wire:click="toggleIgnoreWorkHours({{ $user->id }})" wire:loading.attr="disabled" class="focus:outline-none">
-                                            @if($user->ignore_work_hours)
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">نعم</span>
+                                    @if (app()->make('livewire')->current()->canToggleIgnoreWorkHours($user))
+                                        <button wire:click="toggleIgnoreWorkHours({{ $user->id }})"
+                                            wire:loading.attr="disabled" class="focus:outline-none">
+                                            @if ($user->ignore_work_hours)
+                                                <span
+                                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">نعم</span>
                                             @else
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">لا</span>
+                                                <span
+                                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">لا</span>
                                             @endif
-                                            <span wire:loading wire:target="toggleIgnoreWorkHours({{ $user->id }})" class="ml-2 inline-block align-middle">
-                                                <svg class="animate-spin h-4 w-4 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                                            <span wire:loading
+                                                wire:target="toggleIgnoreWorkHours({{ $user->id }})"
+                                                class="ml-2 inline-block align-middle">
+                                                <svg class="animate-spin h-4 w-4 text-indigo-500"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                    viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                        stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8v8z"></path>
                                                 </svg>
                                             </span>
                                         </button>
                                     @else
-                                        @if($user->ignore_work_hours)
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">نعم</span>
+                                        @if ($user->ignore_work_hours)
+                                            <span
+                                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">نعم</span>
                                         @else
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">لا</span>
+                                            <span
+                                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">لا</span>
                                         @endif
                                     @endif
                                 </td>
                                 <!-- Action Buttons -->
                                 <td class="px-8 py-6 whitespace-nowrap text-sm font-medium align-middle">
-                                    <div class="flex flex-wrap items-center gap-2">
+                                    <div class="flex flex-wrap items-center gap-1.5">
                                         @if ($user->trashed())
                                             @can('restore', $user)
                                                 <button wire:click="confirmRestore({{ $user->id }})" type="button"
-                                                    class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-400 via-green-500 to-green-600 border-2 border-green-300 rounded-xl font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transition-all duration-200">
+                                                    class="inline-flex items-center justify-center px-2.5 py-1.5 bg-gradient-to-r from-green-400 via-green-500 to-green-600 border border-green-300 rounded-lg font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transition-all duration-200">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                                        class="w-4 h-4 mr-1.5">
+                                                        class="w-4 h-4 mr-1">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
@@ -427,22 +438,22 @@
                                             @endcan
                                         @else
                                             @if ($editingUserId === $user->id)
-                                                <div class="flex space-x-2">
+                                                <div class="flex gap-1.5">
                                                     <button wire:click="saveRole" type="button"
-                                                        class="inline-flex items-center justify-center px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 border border-green-300 rounded-lg font-medium text-xs text-white tracking-wide hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-0.5 shadow-sm">
+                                                        class="inline-flex items-center justify-center px-2.5 py-1.5 bg-gradient-to-r from-green-500 to-green-600 border border-green-300 rounded-lg font-medium text-xs text-white tracking-wide hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-0.5 shadow-sm">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                             viewBox="0 0 24 24" stroke-width="1.5"
-                                                            stroke="currentColor" class="w-4 h-4 mr-1.5">
+                                                            stroke="currentColor" class="w-4 h-4 mr-1">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 d="M4.5 12.75l6 6 9-13.5" />
                                                         </svg>
                                                         حفظ
                                                     </button>
                                                     <button wire:click="cancelEdit" type="button"
-                                                        class="inline-flex items-center justify-center px-3 py-2 bg-gradient-to-r from-gray-400 to-gray-500 border border-gray-300 rounded-lg font-medium text-xs text-white tracking-wide hover:from-gray-500 hover:to-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-0.5 shadow-sm">
+                                                        class="inline-flex items-center justify-center px-2.5 py-1.5 bg-gradient-to-r from-gray-400 to-gray-500 border border-gray-300 rounded-lg font-medium text-xs text-white tracking-wide hover:from-gray-500 hover:to-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-0.5 shadow-sm">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                             viewBox="0 0 24 24" stroke-width="1.5"
-                                                            stroke="currentColor" class="w-4 h-4 mr-1.5">
+                                                            stroke="currentColor" class="w-4 h-4 mr-1">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 d="M6 18L18 6M6 6l12 12" />
                                                         </svg>
@@ -450,13 +461,14 @@
                                                     </button>
                                                 </div>
                                             @else
-                                                <div class="flex flex-wrap gap-2">
+                                                <div class="flex flex-wrap gap-1.5">
                                                     @if ($this->canEditUserRole($user))
-                                                        <button wire:click="editRole({{ $user->id }})" type="button"
-                                                            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-indigo-400 via-indigo-500 to-indigo-600 border-2 border-indigo-300 rounded-xl font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-indigo-500 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 transition-all duration-200">
+                                                        <button wire:click="editRole({{ $user->id }})"
+                                                            type="button"
+                                                            class="inline-flex items-center justify-center px-2.5 py-1.5 bg-gradient-to-r from-indigo-400 via-indigo-500 to-indigo-600 border border-indigo-300 rounded-lg font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-indigo-500 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 transition-all duration-200">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                 viewBox="0 0 24 24" stroke-width="1.5"
-                                                                stroke="currentColor" class="w-4 h-4 mr-1.5">
+                                                                stroke="currentColor" class="w-4 h-4 mr-1">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                                     d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                                             </svg>
@@ -464,10 +476,10 @@
                                                         </button>
 
                                                         <a href="{{ route('users.edit', $user->id) }}"
-                                                            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border-2 border-yellow-300 rounded-xl font-semibold text-xs text-gray-900 tracking-wide shadow-md hover:scale-105 hover:from-yellow-500 hover:to-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 transition-all duration-200">
+                                                            class="inline-flex items-center justify-center px-2.5 py-1.5 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border border-yellow-300 rounded-lg font-semibold text-xs text-gray-900 tracking-wide shadow-md hover:scale-105 hover:from-yellow-500 hover:to-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 transition-all duration-200">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                 viewBox="0 0 24 24" stroke-width="1.5"
-                                                                stroke="currentColor" class="w-4 h-4 mr-1.5">
+                                                                stroke="currentColor" class="w-4 h-4 mr-1">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                                     d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                                             </svg>
@@ -477,10 +489,10 @@
 
                                                     @if ($this->canViewUser($user))
                                                         <a href="{{ route('users.view', $user->id) }}"
-                                                            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 border-2 border-blue-300 rounded-xl font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-blue-500 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200">
+                                                            class="inline-flex items-center justify-center px-2.5 py-1.5 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 border border-blue-300 rounded-lg font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-blue-500 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                 viewBox="0 0 24 24" stroke-width="1.5"
-                                                                stroke="currentColor" class="w-4 h-4 mr-1.5">
+                                                                stroke="currentColor" class="w-4 h-4 mr-1">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                                     d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -490,21 +502,20 @@
                                                         </a>
                                                     @endif
 
-
-
                                                     @can('delete', $user)
                                                         <button wire:click="confirmUserDeletion({{ $user->id }})"
                                                             type="button"
-                                                            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-400 via-red-500 to-red-600 border-2 border-red-300 rounded-xl font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-red-500 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition-all duration-200">
+                                                            class="inline-flex items-center justify-center px-2.5 py-1.5 bg-gradient-to-r from-red-400 via-red-500 to-red-600 border border-red-300 rounded-lg font-semibold text-xs text-white tracking-wide shadow-md hover:scale-105 hover:from-red-500 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition-all duration-200">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                 viewBox="0 0 24 24" stroke-width="1.5"
-                                                                stroke="currentColor" class="w-4 h-4 mr-1.5">
+                                                                stroke="currentColor" class="w-4 h-4 mr-1">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                                     d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                                             </svg>
                                                             حذف
                                                         </button>
                                                     @endcan
+                                                </div>
                                             @endif
                                         @endif
                                     </div>
