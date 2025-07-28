@@ -181,21 +181,26 @@ class AgentDashboard extends Component
             return in_array($safe['branch_id'] ?? $safe->branch_id, $this->selectedBranches);
         });
 
+        // Calculate total transactions in selected branches (all users) for today only
         $today = Carbon::today();
+        $this->totalTransactionsCount = Transaction::whereIn('branch_id', $this->selectedBranches)
+            ->whereDate('created_at', $today)
+            ->count()
+            + CashTransaction::whereHas('safe', function ($q) {
+                $q->whereIn('branch_id', $this->selectedBranches);
+            })->whereDate('created_at', $today)->count();
+
         $this->branchSafes = $safes->map(function ($safe) use ($today) {
             $safeId = $safe['id'] ?? $safe->id;
             $branchId = $safe['branch_id'] ?? $safe->branch_id;
-            $currentUserId = Auth::id();
 
-            // Filter cash transactions by current agent
+            // Count all cash transactions for this safe today
             $cashTransactions = CashTransaction::where('safe_id', $safeId)
-                ->where('agent_id', $currentUserId)
                 ->whereDate('created_at', $today)
                 ->count();
 
-            // Filter regular transactions by current agent
+            // Count all regular transactions for this branch today
             $regularTransactions = Transaction::where('branch_id', $branchId)
-                ->where('agent_id', $currentUserId)
                 ->whereDate('created_at', $today)
                 ->count();
 

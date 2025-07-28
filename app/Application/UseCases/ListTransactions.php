@@ -33,7 +33,13 @@ class ListTransactions
 
         // Branch Managers and Agents can see all transactions for their assigned branch
         elseif (Gate::forUser($user)->allows('view-own-branch-data') || Gate::forUser($user)->allows('view-agent-dashboard')) {
-            $filters['branch_id'] = $user->branch_id;
+            // For branch managers, show all transactions for their branch
+            if ($user->hasRole(Roles::BRANCH_MANAGER)) {
+                $filters['branch_id'] = $user->branch_id;
+            } else {
+                // For agents, you may want to restrict to their own transactions (if needed)
+                $filters['agent_id'] = $user->id;
+            }
             $result = $this->transactionRepository->allUnified($filters);
             return $result['transactions'] ?? [];
         }

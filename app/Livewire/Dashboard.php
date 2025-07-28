@@ -106,8 +106,13 @@ class Dashboard extends Component
             $this->startupSafeBalance = optional($branch->startupSafeBalance)->balance ?? 0;
             // Safes balance for this branch
             $this->safesBalance = $branch->safes->sum('current_balance');
-            // Total transactions count for this branch
-            $this->totalTransactionsCount = $branch->transactions()->count();
+            // Total transactions count for this branch (today only)
+            $today = Carbon::today();
+            $ordinaryQuery = $branch->transactions()->whereDate('created_at', $today);
+            $cashQuery = CashTransaction::whereHas('safe', function ($q) use ($branch) {
+                $q->where('branch_id', $branch->id);
+            })->whereDate('created_at', $today);
+            $this->totalTransactionsCount = $ordinaryQuery->count() + $cashQuery->count();
         } else {
             $this->startupSafeBalance = 0;
             $this->safesBalance = 0;
@@ -118,7 +123,7 @@ class Dashboard extends Component
     private function updateAuditorMetrics()
     {
         $branchId = $this->selectedBranchId;
-
+        $today = Carbon::today();
         // Safes
         $safes = collect($this->safeRepository->allWithBranch());
         if ($branchId !== 'all') {
@@ -131,10 +136,10 @@ class Dashboard extends Component
             ? collect($this->branches)->pluck('id')->all()
             : [$branchId];
         $this->startupSafeBalance = \App\Models\StartupSafeBalance::whereIn('branch_id', $branchIds)
-            ->where('date', Carbon::today()->toDateString())
+            ->where('date', $today->toDateString())
             ->sum('balance');
 
-        // Total Transactions (ordinary + cash) - NO DATE FILTER for auditors
+        // Total Transactions (ordinary + cash) for today only
         $ordinaryQuery = Transaction::query();
         $cashQuery = CashTransaction::query();
         if ($branchId !== 'all') {
@@ -143,7 +148,8 @@ class Dashboard extends Component
                 $q->where('branch_id', $branchId);
             });
         }
-        // NO date filter - count ALL transactions
+        $ordinaryQuery->whereDate('created_at', $today);
+        $cashQuery->whereDate('created_at', $today);
         $this->totalTransactionsCount = $ordinaryQuery->count() + $cashQuery->count();
         logger(['auditorTotalTransactionsCount' => $this->totalTransactionsCount]);
     }
@@ -394,10 +400,10 @@ class Dashboard extends Component
             $data['startupSafeBalance'] = $startup ? $startup->balance : 0;
             $safes = collect($this->safeRepository->allWithBranch())->where('branch_id', $branchId);
             $data['safesBalance'] = $safes->sum('current_balance');
-            $ordinaryQuery = Transaction::query()->where('branch_id', $branchId);
+            $ordinaryQuery = Transaction::query()->where('branch_id', $branchId)->whereDate('created_at', $today);
             $cashQuery = CashTransaction::query()->whereHas('safe', function ($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
-            });
+            })->whereDate('created_at', $today);
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
             $dashboardView = 'livewire.dashboard.branch_manager';
         } elseif ($user->hasRole('agent') || $user->hasRole('trainee')) {
@@ -467,23 +473,17 @@ class Dashboard extends Component
 
             // Safes for agent's branch (list)
             $branchSafes = collect($this->safeRepository->allWithBranch())->where('branch_id', $branchId)->values();
-            $data['branchSafes'] = $branchSafes->map(function ($safe) use ($branchStartupBalance, $today, $branchId, $user) {
-                // Count BOTH CashTransaction and regular Transaction records for this branch
+            $data['branchSafes'] = $branchSafes->map(function ($safe) use ($branchStartupBalance, $today, $branchId) {
+                // Count BOTH CashTransaction and regular Transaction records for this branch (all users)
                 $safeId = $safe['id'] ?? $safe->id;
-                $currentUserId = $user->id;
-                
-                // Only count transactions created by this agent
+
                 $cashTransactions = \App\Models\Domain\Entities\CashTransaction::where('safe_id', $safeId)
-                    ->where('agent_id', $currentUserId)
                     ->whereDate('created_at', $today)
                     ->count();
                 $regularTransactions = \App\Models\Domain\Entities\Transaction::where('branch_id', $branchId)
-                    ->where('agent_id', $currentUserId)
                     ->whereDate('created_at', $today)
                     ->count();
-                
                 $todaysTransactions = $cashTransactions + $regularTransactions;
-                
                 return [
                     'name' => $safe['name'] ?? $safe->name ?? '',
                     'current_balance' => $safe['current_balance'] ?? $safe->current_balance ?? 0,
@@ -494,10 +494,10 @@ class Dashboard extends Component
             $data['safesBalance'] = $branchSafes->sum('current_balance');
 
             // Total Transactions Count for agent's branch (not per user)
-            $ordinaryQuery = \App\Models\Domain\Entities\Transaction::query()->where('branch_id', $branchId);
+            $ordinaryQuery = \App\Models\Domain\Entities\Transaction::query()->where('branch_id', $branchId)->whereDate('created_at', $today);
             $cashQuery = \App\Models\Domain\Entities\CashTransaction::query()->whereHas('safe', function ($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
-            });
+            })->whereDate('created_at', $today);
             $data['totalTransactionsCount'] = $ordinaryQuery->count() + $cashQuery->count();
 
             // Today's transactions for this agent

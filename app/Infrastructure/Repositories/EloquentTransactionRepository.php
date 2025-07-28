@@ -78,8 +78,13 @@ class EloquentTransactionRepository implements TransactionRepository
             $query->where('agent_id', $filters['agent_id']);
         }
         if (isset($filters['branch_id'])) {
-            $query->whereHas('agent', function ($q) use ($filters) {
-                $q->where('branch_id', $filters['branch_id']);
+            $query->where(function($q) use ($filters) {
+                // Include transactions where the agent belongs to the branch
+                $q->whereHas('agent', function ($agentQuery) use ($filters) {
+                    $agentQuery->where('branch_id', $filters['branch_id']);
+                });
+                // OR include transactions that have the branch_id set directly
+                $q->orWhere('branch_id', $filters['branch_id']);
             });
         }
         if (isset($filters['customer_name'])) {
@@ -130,8 +135,13 @@ class EloquentTransactionRepository implements TransactionRepository
             $query->whereIn('agent_id', $filters['employee_ids']);
         }
         if (isset($filters['branch_ids']) && is_array($filters['branch_ids']) && count($filters['branch_ids']) > 0) {
-            $query->whereHas('agent', function ($q) use ($filters) {
-                $q->whereIn('branch_id', $filters['branch_ids']);
+            $query->where(function($q) use ($filters) {
+                // Include transactions where the agent belongs to one of the branches
+                $q->whereHas('agent', function ($agentQuery) use ($filters) {
+                    $agentQuery->whereIn('branch_id', $filters['branch_ids']);
+                });
+                // OR include transactions that have the branch_id set directly to one of the branches
+                $q->orWhereIn('branch_id', $filters['branch_ids']);
             });
         }
         // Add reference_number filter for regular transactions
@@ -315,8 +325,13 @@ class EloquentTransactionRepository implements TransactionRepository
             $ordinary->where('agent_id', $filters['agent_id']);
         }
         if (isset($filters['branch_id'])) {
-            $ordinary->whereHas('agent', function ($q) use ($filters) {
-                $q->where('branch_id', $filters['branch_id']);
+            $ordinary->where(function($q) use ($filters) {
+                // Include transactions where the agent belongs to the branch
+                $q->whereHas('agent', function ($agentQuery) use ($filters) {
+                    $agentQuery->where('branch_id', $filters['branch_id']);
+                });
+                // OR include transactions that have the branch_id set directly
+                $q->orWhere('branch_id', $filters['branch_id']);
             });
         }
         if (isset($filters['customer_name'])) {
@@ -367,8 +382,13 @@ class EloquentTransactionRepository implements TransactionRepository
             $ordinary->whereIn('agent_id', $filters['employee_ids']);
         }
         if (isset($filters['branch_ids']) && is_array($filters['branch_ids']) && count($filters['branch_ids']) > 0) {
-            $ordinary->whereHas('agent', function ($q) use ($filters) {
-                $q->whereIn('branch_id', $filters['branch_ids']);
+            $ordinary->where(function($q) use ($filters) {
+                // Include transactions where the agent belongs to one of the branches
+                $q->whereHas('agent', function ($agentQuery) use ($filters) {
+                    $agentQuery->whereIn('branch_id', $filters['branch_ids']);
+                });
+                // OR include transactions that have the branch_id set directly to one of the branches
+                $q->orWhereIn('branch_id', $filters['branch_ids']);
             });
         }
         if (isset($filters['reference_number']) && $filters['reference_number']) {
