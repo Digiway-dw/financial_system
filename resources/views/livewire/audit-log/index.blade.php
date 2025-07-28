@@ -1,4 +1,5 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50" dir="rtl"
+    style="direction: rtl; text-align: right;">
     <style>
         .sortable-header {
             cursor: pointer;
@@ -12,6 +13,73 @@
 
         .sortable-header:active {
             transform: translateY(0);
+        }
+
+        /* RTL fixes for table and flex layouts */
+        [dir="rtl"] .flex-row-reverse {
+            flex-direction: row-reverse;
+        }
+
+        [dir="rtl"] .space-x-3> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 1;
+            margin-left: calc(0.75rem * var(--tw-space-x-reverse));
+            margin-right: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)));
+        }
+
+        [dir="rtl"] .mr-3 {
+            margin-left: 0.75rem !important;
+            margin-right: 0 !important;
+        }
+
+        [dir="rtl"] .ml-2 {
+            margin-right: 0.5rem !important;
+            margin-left: 0 !important;
+        }
+
+        [dir="rtl"] .pr-4 {
+            padding-left: 1rem !important;
+            padding-right: 0 !important;
+        }
+
+        [dir="rtl"] .pl-10 {
+            padding-right: 2.5rem !important;
+            padding-left: 0 !important;
+        }
+
+        [dir="rtl"] .text-left {
+            text-align: right !important;
+        }
+
+        [dir="rtl"] .text-right {
+            text-align: left !important;
+        }
+
+        [dir="rtl"] .rounded-l-xl {
+            border-top-right-radius: 0.75rem !important;
+            border-bottom-right-radius: 0.75rem !important;
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+
+        [dir="rtl"] .rounded-r-xl {
+            border-top-left-radius: 0.75rem !important;
+            border-bottom-left-radius: 0.75rem !important;
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        [dir="rtl"] .left-3 {
+            right: 0.75rem !important;
+            left: auto !important;
+        }
+
+        [dir="rtl"] .right-3 {
+            left: 0.75rem !important;
+            right: auto !important;
+        }
+
+        [dir="rtl"] .text-xs {
+            font-size: 0.75rem;
         }
     </style>
     <!-- Header Section -->
@@ -28,7 +96,7 @@
                         </svg>
                     </div>
                 </div>
-                <div>
+                <div class="flex-1 p-2">
                     <h1 class="text-2xl font-bold text-gray-900">تتبع النشاط</h1>
                     <p class="text-sm text-gray-600">مراقبة نشاط النظام وتتبع الامتثال</p>
                 </div>
@@ -43,14 +111,14 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-6">
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4 ">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
                             </path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="flex-1 p-2">
                         <h3 class="text-sm font-medium text-gray-600">النشاطات الكلية</h3>
                         <p class="text-2xl font-bold text-gray-900">{{ $activities->total() }}</p>
                     </div>
@@ -65,7 +133,7 @@
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="flex-1 p-2"    >
                         <h3 class="text-sm font-medium text-gray-600">الأحداث اليومية</h3>
                         <p class="text-2xl font-bold text-gray-900">
                             {{ $activities->where('created_at', '>=', today())->count() }}</p>
@@ -81,7 +149,7 @@
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="flex-1 p-2">
                         <h3 class="text-sm font-medium text-gray-600">المستخدمون الفريدون</h3>
                         <p class="text-2xl font-bold text-gray-900">{{ $activities->groupBy('causer_id')->count() }}</p>
                     </div>
@@ -97,7 +165,7 @@
                             </path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="flex-1 p-2">
                         <h3 class="text-sm font-medium text-gray-600">أنواع الأحداث</h3>
                         <p class="text-2xl font-bold text-gray-900">{{ $eventTypes->count() }}</p>
                     </div>
@@ -250,7 +318,7 @@
                                 </path>
                             </svg>
                         </div>
-                        <div>
+                        <div class="p-2">
                             <h3 class="text-lg font-semibold text-gray-900">سجلات النشاط</h3>
                             <p class="text-sm text-gray-600">{{ $activities->total() }} إدخالات</p>
                         </div>
