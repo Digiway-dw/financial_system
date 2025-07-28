@@ -56,12 +56,12 @@
 
     <div class="summary">
         <h2>ملخص التقرير</h2>
-        <p><strong>تاريخ البداية:</strong> {{ $startDate }}</p>
-        <p><strong>تاريخ النهاية:</strong> {{ $endDate }}</p>
-        <p><strong>المبلغ المحول:</strong> {{ number_format($totalTransferred, 2) }} EGP</p>
-        <p><strong>العمولة:</strong> {{ number_format($totalCommission, 2) }} EGP</p>
-        <p><strong>الخصم:</strong> {{ number_format($totalDeductions, 2) }} EGP</p>
-        <p><strong>الأرباح:</strong> {{ number_format($netProfits, 2) }} EGP</p>
+        <p><strong>تاريخ البداية:</strong> {{ $startDate ?? '' }}</p>
+        <p><strong>تاريخ النهاية:</strong> {{ $endDate ?? '' }}</p>
+        <p><strong>المبلغ المحول:</strong> {{ number_format($totalTransferred ?? 0, 2) }} EGP</p>
+        <p><strong>العمولة:</strong> {{ number_format($totalCommission ?? 0, 2) }} EGP</p>
+        <p><strong>الخصم:</strong> {{ number_format($totalDeductions ?? 0, 2) }} EGP</p>
+        <p><strong>الأرباح:</strong> {{ number_format($netProfits ?? 0, 2) }} EGP</p>
     </div>
 
     <h2>تفاصيل المعاملات</h2>

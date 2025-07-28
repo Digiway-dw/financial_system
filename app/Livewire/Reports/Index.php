@@ -264,6 +264,13 @@ class Index extends Component
             'إجمالي العمولات' => $this->financialSummary['commission_earned'] ?? 0,
             'إجمالي الخصومات' => $this->financialSummary['total_discounts'] ?? 0,
             'صافي الربح' => $this->financialSummary['net_profit'] ?? 0,
+            // Add English keys for Blade compatibility
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+            'totalTransferred' => $this->financialSummary['total_transfer'] ?? 0,
+            'totalCommission' => $this->financialSummary['commission_earned'] ?? 0,
+            'totalDeductions' => $this->financialSummary['total_discounts'] ?? 0,
+            'netProfits' => $this->financialSummary['net_profit'] ?? 0,
         ];
         $html = view('reports.transactions_pdf', array_merge([
             'transactions' => $this->transactions
