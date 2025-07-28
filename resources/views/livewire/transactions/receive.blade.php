@@ -11,12 +11,16 @@
                     <p class="text-sm text-gray-500">الموظف: {{ Auth::user()->name }}</p>
                     <p class="text-sm text-gray-500">الفرع: {{ Auth::user()->branch->name ?? 'N/A' }}</p>
                     @php
-                        $branch = Auth::user()->branch;
+                        $user = Auth::user();
+                        $branch = $user->branch;
                         $isActive = $branch && $branch->is_active;
+                        $hasAssignedBranch = $user->branch_id && !$user->hasRole(['admin', 'general_supervisor', 'auditor']);
                     @endphp
-                    <p class="text-sm {{ $isActive ? 'text-green-600' : 'text-red-600' }} font-medium">
-                        حالة الفرع: {{ $isActive ? 'نشط' : 'غير نشط' }}
-                    </p>
+                    @if($hasAssignedBranch)
+                        <p class="text-sm {{ $isActive ? 'text-green-600' : 'text-red-600' }} font-medium">
+                            حالة الفرع: {{ $isActive ? 'نشط' : 'غير نشط' }}
+                        </p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -54,10 +58,12 @@
 
         <!-- Branch Inactive Warning -->
         @php
-            $branch = Auth::user()->branch;
+            $user = Auth::user();
+            $branch = $user->branch;
             $isActive = $branch && $branch->is_active;
+            $hasAssignedBranch = $user->branch_id && !$user->hasRole(['admin', 'general_supervisor', 'auditor']);
         @endphp
-        @if (!$isActive)
+        @if ($hasAssignedBranch && !$isActive)
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-center">
                 <div class="flex-shrink-0">
                     <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
