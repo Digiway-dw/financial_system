@@ -45,6 +45,12 @@ class CreateTransaction
         ?string $discountNotes = null,
         ?string $notes = null
     ): Transaction {
+        // Check if branch is active before proceeding
+        $line = $this->lineRepository->find($lineId);
+        if ($line && $line->branch_id) {
+            \App\Helpers\BranchStatusHelper::validateBranchActive($line->branch_id);
+        }
+
         // Validate amount: integer only, multiples of 5
         if (!is_int($amount) && !($amount == (int)$amount)) {
             throw new \InvalidArgumentException('Amount must be an integer.');

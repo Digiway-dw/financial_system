@@ -274,6 +274,15 @@ class Send extends Component
         $this->discount = abs((float) $this->discount);
         $this->validate();
 
+        // Check if branch is active before proceeding
+        try {
+            $branchId = $this->canSelectBranch && $this->selectedBranchId ? $this->selectedBranchId : Auth::user()->branch_id;
+            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
+        } catch (\Exception $e) {
+            $this->errorMessage = $e->getMessage();
+            return;
+        }
+
         // Cast to proper types for arithmetic operations
         $amount = (float) $this->amount;
         $commission = (float) $this->commission;

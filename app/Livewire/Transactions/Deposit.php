@@ -105,6 +105,11 @@ class Deposit extends Create
     {
         try {
             $agent = Auth::user();
+            
+            // Check if branch is active before proceeding
+            $branchId = $agent->branch_id;
+            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
+            
             $safeId = $this->safeId ?? 0;
             $transactionType = 'Deposit';
             $notes = $this->notes;

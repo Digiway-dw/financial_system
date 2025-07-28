@@ -206,6 +206,15 @@ class Create extends Component
     {
         $this->validate();
 
+        // Check if branch is active before proceeding
+        try {
+            $branchId = $this->branchId;
+            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+            return;
+        }
+
         // If this transaction is for a line and needs admin approval, check line limits before saving
         $needsApproval = $this->deduction > 0 || $this->transactionType === 'Receive' || $this->transactionType === 'Deposit';
         if ($this->lineId && $needsApproval) {

@@ -201,6 +201,16 @@ class Withdrawal extends Create
         }
         $this->validate($rules);
 
+        // Check if branch is active before proceeding
+        try {
+            $agent = Auth::user();
+            $branchId = $agent->branch_id;
+            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+            return;
+        }
+
         // Check safe balance for all withdrawal types
         $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
         if (!$safe) {

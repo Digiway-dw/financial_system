@@ -307,6 +307,15 @@ class Receive extends Component
 
         $this->validate();
 
+        // Check if branch is active before proceeding
+        try {
+            $branchId = $this->canSelectBranch && $this->selectedBranchId ? $this->selectedBranchId : Auth::user()->branch_id;
+            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
+        } catch (\Exception $e) {
+            $this->errorMessage = $e->getMessage();
+            return;
+        }
+
         // --- Customer creation or lookup logic ---
 
         $customer = Customer::where('mobile_number', $this->clientMobile)->first();

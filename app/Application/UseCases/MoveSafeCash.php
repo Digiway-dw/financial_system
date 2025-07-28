@@ -41,6 +41,14 @@ class MoveSafeCash
             throw new \Exception('Destination safe not found.');
         }
 
+        // Check if both branches are active before proceeding
+        if ($fromSafe->branch_id) {
+            \App\Helpers\BranchStatusHelper::validateBranchActive($fromSafe->branch_id);
+        }
+        if ($toSafe->branch_id) {
+            \App\Helpers\BranchStatusHelper::validateBranchActive($toSafe->branch_id);
+        }
+
         if ($fromSafe->current_balance < $amount) {
             throw new \Exception('Insufficient balance in source safe. Available: ' . number_format($fromSafe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
         }
