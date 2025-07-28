@@ -75,20 +75,21 @@
                                 placeholder="Search by name...">
                         </div>
                         <div>
-                            <label for="phone" class="block text-sm font-medium text-slate-700 mb-2">رقم الهاتف</label>
+                            <label for="phone" class="block text-sm font-medium text-slate-700 mb-2">رقم
+                                الهاتف</label>
                             <input type="text" id="phone" wire:model.defer="phone"
                                 class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
                                 placeholder="Search by phone...">
                         </div>
                         <div>
-                            <label for="code" class="block text-sm font-medium text-slate-700 mb-2">كود العميل</label>
+                            <label for="code" class="block text-sm font-medium text-slate-700 mb-2">كود
+                                العميل</label>
                             <input type="text" id="code" wire:model.defer="code"
                                 class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
                                 placeholder="Search by code...">
                         </div>
                         <div>
-                            <label for="region"
-                                class="block text-sm font-medium text-slate-700 mb-2">المنطقة</label>
+                            <label for="region" class="block text-sm font-medium text-slate-700 mb-2">المنطقة</label>
                             <input type="text" id="region" wire:model.defer="region"
                                 class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
                                 placeholder="Search by region...">
@@ -124,6 +125,16 @@
             <!-- Main Content -->
             <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
                 <div class="overflow-x-auto">
+                    <!-- Lazy Load Info and Load More Button -->
+                    <div class="flex justify-between items-center px-4 py-2">
+                        <div>
+                            عرض
+                            <span class="font-bold">{{ count($customers) }}</span>
+                            من أصل
+                            <span class="font-bold">{{ $totalCustomers }}</span>
+                            عميل
+                        </div>
+                    </div>
                     <table class="w-full">
                         <thead>
                             <tr class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
@@ -290,13 +301,25 @@
                                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                             </svg>
                                             <h3 class="text-sm font-medium text-slate-900 mb-1">لا يوجد عملاء</h3>
-                                            <p class="text-sm text-slate-500">حاول تعديل معايير البحث أو إضافة عميل جديد.</p>
+                                            <p class="text-sm text-slate-500">حاول تعديل معايير البحث أو إضافة عميل
+                                                جديد.</p>
                                         </div>
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
+                    @if (count($customers) < $totalCustomers)
+                        <div class="flex justify-center py-4">
+                            <button wire:click="loadMore"
+                                class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-base font-bold shadow">تحميل
+                                المزيد</button>
+                        </div>
+                    @elseif($totalCustomers > 0)
+                        <div class="flex justify-center py-4">
+                            <span class="text-xs text-gray-400">تم عرض جميع النتائج</span>
+                        </div>
+                    @endif
                 </div>
             </div>
 
