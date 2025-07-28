@@ -128,19 +128,7 @@
                 </div>
             </a>
 
-            <!-- Work Sessions -->
-            <a href="{{ route('work-sessions.index') }}"
-                class="bg-white border border-gray-200 rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 ease-in-out hover:shadow-xl">
-                <div class="flex items-center space-x-4">
-                    <div class="flex-shrink-0">
-                        <x-heroicon-o-clock class="h-10 w-10 text-teal-600" />
-                    </div>
-                    <div>
-                        <p class="text-gray-600 text-lg font-medium">جلسات العمل</p>
-                        <p class="text-gray-900 text-4xl font-extrabold mt-1">عرض</p>
-                </div>
-            </div>
-            </a>
+            
             <!-- Total Lines -->
             <a href="{{ route('lines.index') }}"
                 class="bg-white border border-gray-200 rounded-lg shadow-lg p-6 transform hover:scale-105 transition duration-300 ease-in-out hover:shadow-xl">
