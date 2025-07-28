@@ -46,7 +46,7 @@ class CreateTransaction
         ?string $notes = null
     ): Transaction {
         // Check if branch is active before proceeding
-        $line = $this->lineRepository->find($lineId);
+        $line = $this->lineRepository->findById($lineId);
         if ($line && $line->branch_id) {
             \App\Helpers\BranchStatusHelper::validateBranchActive($line->branch_id);
         }
