@@ -157,6 +157,12 @@
                             @endforelse
                         </tbody>
                     </table>
+                    @if($hasMore)
+                        <div class="flex justify-center mt-4">
+                            <button wire:click="loadMore" class="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">تحميل المزيد</button>
+                        </div>
+                    @endif
+                    </table>
                 </div>
             </div>
         </div>

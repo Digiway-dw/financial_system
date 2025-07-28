@@ -36,9 +36,16 @@ class ResetMonthlyUsage extends Command
             return 0;
         }
 
+        // Reset monthly_usage to 0 for all lines
         DB::table('lines')->update(['monthly_usage' => 0]);
+
+        // Update monthly_remaining = monthly_limit - current_balance for all lines
+        DB::table('lines')->update([
+            'monthly_remaining' => DB::raw('monthly_limit - current_balance')
+        ]);
+
         Cache::put('lines:last_monthly_reset', $firstOfMonth, now()->addMonth());
-        $this->info('monthly_usage reset to 0 for all lines.');
+        $this->info('monthly_usage reset to 0 and monthly_remaining recalculated for all lines.');
         return 0;
     }
 }

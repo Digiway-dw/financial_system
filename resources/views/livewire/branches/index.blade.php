@@ -43,14 +43,14 @@
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div class="flex items-center">
+                <div class="flex items-center ">
                     <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                     </div>
-                    <div >
+                    <div class="px-4"> 
                         <h3 class="text-lg font-semibold text-gray-900 ">إجمالي الفروع</h3>
                         <p class="text-3xl font-bold text-green-600">{{ count($branches) }}</p>
                     </div>
@@ -65,11 +65,11 @@
                                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                         </svg>
                     </div>
-                    <div>
+                    <div class="px-4">
                         <h3 class="text-lg font-semibold text-gray-900">إجمالي رصيد الخزائن</h3>
                         <p class="text-3xl font-bold text-blue-600">
                             {{ format_int((int) collect($branches)->sum(function ($branch) {return $branch['safe']['current_balance'] ?? 0;})) }}
-                            ج.م
+                           
                         </p>
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <div>
+                    <div class="px-4">
                         <h3 class="text-lg font-semibold text-gray-900">الفروع النشطة</h3>
                         <p class="text-3xl font-bold text-purple-600">
                             {{ collect($branches)->filter(function ($branch) {return isset($branch['safe']);})->count() }}
@@ -104,11 +104,8 @@
                     </div>
                     <div class="flex items-center space-x-2">
                         <div class="flex items-center text-sm text-gray-500">
-                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                            </svg>
-                            ترتيب حسب الاسم
+                            
+                           
                         </div>
                     </div>
                 </div>
@@ -121,7 +118,7 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
                                 wire:click="sortBy('name')">
-                                <div class="flex items-center space-x-1">
+                                <div class="flex items-center space-x-1 ">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -36,9 +36,16 @@ class ResetDailyUsage extends Command
             return 0;
         }
 
+        // Reset daily_usage to 0 for all lines
         DB::table('lines')->update(['daily_usage' => 0]);
+
+        // Update daily_remaining = daily_limit - current_balance for all lines
+        DB::table('lines')->update([
+            'daily_remaining' => DB::raw('daily_limit - current_balance')
+        ]);
+
         Cache::put('lines:last_daily_reset', $today, now()->addDay());
-        $this->info('daily_usage reset to 0 for all lines.');
+        $this->info('daily_usage reset to 0 and daily_remaining recalculated for all lines.');
         return 0;
     }
 }
