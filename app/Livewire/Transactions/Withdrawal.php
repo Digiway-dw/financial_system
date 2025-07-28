@@ -204,8 +204,10 @@ class Withdrawal extends Create
         // Check if branch is active before proceeding
         try {
             $agent = Auth::user();
-            $branchId = $agent->branch_id;
-            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
+            $safe = \App\Models\Domain\Entities\Safe::find($this->safeId);
+            if ($safe && $safe->branch_id) {
+                \App\Helpers\BranchStatusHelper::validateBranchActive($safe->branch_id);
+            }
         } catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
             return;
