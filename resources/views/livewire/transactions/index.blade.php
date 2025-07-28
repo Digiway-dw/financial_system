@@ -47,7 +47,7 @@
         @endphp
         @if (!auth()->user() || !auth()->user()->hasRole(Roles::AUDITOR))
             <!-- Transaction Actions Section -->
-            <div class="mb-8 bg-white rounded-2xl shadow border border-gray-200 p-6">
+            <div class="mb-10 bg-white rounded-2xl shadow border border-gray-200 px-8 py-8 md:px-12 md:py-10">
                 <div class="border-b border-gray-100 pb-4 mb-6">
                     <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
                         <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -60,41 +60,41 @@
                     </h2>
                     <p class="text-sm text-gray-500 mt-1">إنشاء معاملة جديدة أو الوصول إلى أدوات المعاملات</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
                     <a href="{{ route('transactions.send') }}"
-                        class="group flex items-center p-6 md:p-7 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-2xl transition-all duration-200 shadow-sm mb-2 md:mb-0">
+                        class="group flex items-center px-8 py-7 md:px-10 md:py-8 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-2xl transition-all duration-200 shadow-sm mb-2 md:mb-0">
                         <div
-                            class="w-14 h-14 bg-blue-100 group-hover:bg-blue-200 rounded-xl flex items-center justify-center mr-6">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="w-16 h-16 bg-blue-100 group-hover:bg-blue-200 rounded-xl flex items-center justify-center mr-8">
+                            <svg class="w-6 h-6 text-blue-600 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                             </svg>
                         </div>
-                        <div class="space-y-1">
+                        <div class="space-y-1 p-2">
                             <h3 class="font-semibold text-blue-900">إرسال أموال</h3>
                             <p class="text-sm text-blue-700">إنشاء تحويل صادر</p>
                         </div>
                     </a>
                     <a href="{{ route('transactions.receive') }}"
-                        class="group flex items-center p-6 md:p-7 bg-green-50 hover:bg-green-100 border border-green-100 rounded-2xl transition-all duration-200 shadow-sm mb-2 md:mb-0">
+                        class="group flex items-center px-8 py-7 md:px-10 md:py-8 bg-green-50 hover:bg-green-100 border border-green-100 rounded-2xl transition-all duration-200 shadow-sm mb-2 md:mb-0">
                         <div
-                            class="w-14 h-14 bg-green-100 group-hover:bg-green-200 rounded-xl flex items-center justify-center mr-6">
+                            class="w-16 h-16 bg-green-100 group-hover:bg-green-200 rounded-xl flex items-center justify-center mr-8">
                             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
                             </svg>
                         </div>
-                        <div class="space-y-1">
+                        <div class="space-y-1 p-2">
                             <h3 class="font-semibold text-green-900">استلام أموال</h3>
                             <p class="text-sm text-green-700">معالجة تحويل وارد</p>
                         </div>
                     </a>
                     @can('create-cash-transactions')
                         <a href="{{ route('transactions.cash') }}"
-                            class="group flex items-center p-6 md:p-7 bg-yellow-50 hover:bg-yellow-100 border border-yellow-100 rounded-2xl transition-all duration-200 shadow-sm mb-2 md:mb-0">
+                            class="group flex items-center px-8 py-7 md:px-10 md:py-8 bg-yellow-50 hover:bg-yellow-100 border border-yellow-100 rounded-2xl transition-all duration-200 shadow-sm mb-2 md:mb-0">
                             <div
-                                class="w-14 h-14 bg-yellow-100 group-hover:bg-yellow-200 rounded-xl flex items-center justify-center mr-6">
+                                class="w-16 h-16 bg-yellow-100 group-hover:bg-yellow-200 rounded-xl flex items-center justify-center mr-8">
                                 <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -102,7 +102,7 @@
                                     </path>
                                 </svg>
                             </div>
-                            <div class="space-y-1">
+                            <div class="space-y-1 p-2">
                                 <h3 class="font-semibold text-yellow-900">معاملة نقدية</h3>
                                 <p class="text-sm text-yellow-700">إدارة العمليات النقدية</p>
                             </div>
@@ -112,9 +112,9 @@
             </div>
         @endif
         <!-- Transaction Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10 mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-2 mb-5">
             <div class="bg-white rounded-2xl shadow border border-gray-200 p-8 md:p-10 mb-4 md:mb-0">
-                <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3">
                     <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mr-0">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -132,7 +132,7 @@
                 </div>
             </div>
             <div class="bg-white rounded-2xl shadow border border-gray-200 p-8 md:p-10 mb-4 md:mb-0">
-                <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3">
                     <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mr-0">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -151,7 +151,7 @@
                 </div>
             </div>
             <div class="bg-white rounded-2xl shadow border border-gray-200 p-8 md:p-10 mb-4 md:mb-0">
-                <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3">
                     <div class="w-14 h-14 bg-yellow-100 rounded-xl flex items-center justify-center mr-0">
                         <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -171,7 +171,7 @@
             </div>
             @can('view-commission-data')
                 <div class="bg-white rounded-2xl shadow border border-gray-200 p-8 md:p-10 mb-4 md:mb-0">
-                    <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-3">
                         <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mr-0">
                             <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -192,8 +192,8 @@
             @endcan
         </div>
         <!-- Advanced Filter Section -->
-        <div class="mb-10 bg-white rounded-2xl shadow border-2 border-blue-200 p-6 md:p-8">
-            <div class="border-b-2 border-blue-100 pb-6 mb-8">
+        <div class="mb-10 bg-white rounded-2xl shadow border-2 border-blue-200 p-3 md:p-4">
+            <div class="border-b-2 border-blue-100 pb-3 mb-8">
                 <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
                     <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
                         <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +206,7 @@
                 </h2>
                 <p class="text-sm text-gray-500 mt-1">تصفية المعاملات حسب معايير متعددة لتحليل مفصل</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
                 <!-- كود العميل -->
                 <div class="space-y-3">
                     <label for="customer_code" class="block text-sm font-medium text-gray-700">كود العميل</label>
@@ -236,13 +236,11 @@
                     <label class="block text-sm font-medium text-gray-700">نطاق المبلغ</label>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <input wire:model.defer="amount_from" id="amount_from" type="text"
-                                placeholder="من"
+                            <input wire:model.defer="amount_from" id="amount_from" type="text" placeholder="من"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                         </div>
                         <div>
-                            <input wire:model.defer="amount_to" id="amount_to" type="text"
-                                placeholder="إلى"
+                            <input wire:model.defer="amount_to" id="amount_to" type="text" placeholder="إلى"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                         </div>
                     </div>
@@ -251,8 +249,7 @@
                 <!-- العمولة -->
                 <div class="space-y-2">
                     <label for="commission" class="block text-sm font-medium text-gray-700">العمولة</label>
-                                                <input wire:model.defer="commission" id="commission" type="text"
-                        placeholder="0.00"
+                    <input wire:model.defer="commission" id="commission" type="text" placeholder="0.00"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" />
                 </div>
 
