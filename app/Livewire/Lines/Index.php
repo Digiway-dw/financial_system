@@ -45,8 +45,8 @@ class Index extends Component
         // Filter lines by branch for agents (non-admin, non-supervisor users)
         if ($user && $user->branch_id) {
             // Use Gate to check if user has admin permissions
-            // If they don't have manage-sim-lines permission, they're likely an agent
-            if (!Gate::allows('manage-sim-lines')) {
+            // If they don't have manage-sim-lines permission and are not an auditor, they're likely an agent
+            if (!Gate::allows('manage-sim-lines') && !$user->hasRole(\App\Constants\Roles::AUDITOR)) {
                 $userBranchId = $user->branch_id;
                 $lines = array_filter($lines, function ($line) use ($userBranchId) {
                     return isset($line['branch_id']) && $line['branch_id'] == $userBranchId;
