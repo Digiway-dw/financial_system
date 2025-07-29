@@ -252,6 +252,8 @@ class AgentDashboard extends Component
             'current_balance' => $selected->sum('current_balance'),
             'daily_limit' => $selected->sum('daily_limit'),
             'monthly_limit' => $selected->sum('monthly_limit'),
+            'daily_remaining' => $selected->sum('daily_remaining'),
+            'monthly_remaining' => $selected->sum('monthly_remaining'),
             'daily_usage' => $selected->sum(function ($line) {
                 $dailyStarting = $line->daily_starting_balance ?? 0;
                 $current = $line->current_balance ?? 0;

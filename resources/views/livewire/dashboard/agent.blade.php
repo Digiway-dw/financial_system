@@ -329,7 +329,7 @@
                     </tbody>
                     <tfoot>
                         <tr class="bg-gray-50 font-bold">
-                            <td class="px-2 py-3 text-center" colspan="2">Selected Total</td>
+                            <td class="px-2 py-3 text-center" colspan="2">المجموع المختار</td>
                             <td class="px-6 py-3 text-sm text-blue-700" id="selected-current-balance">0 EGP</td>
                             <td class="px-6 py-3 text-sm text-blue-700" id="selected-daily-remaining">0 EGP</td>
                             <td class="px-6 py-3 text-sm text-blue-700" id="selected-daily-usage">0 EGP</td>

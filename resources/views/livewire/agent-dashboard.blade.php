@@ -413,11 +413,11 @@
                             <td class="px-6 py-3 text-sm text-blue-700">
                                 {{ format_int($this->selectedTotals['current_balance'] ?? 0) }} EGP</td>
                             <td class="px-6 py-3 text-sm text-blue-700">
-                                {{ format_int($this->selectedTotals['daily_limit'] ?? 0) }} EGP</td>
+                                {{ format_int($this->selectedTotals['daily_remaining'] ?? 0) }} EGP</td>
                             <td class="px-6 py-3 text-sm text-blue-700">
                                 {{ format_int($this->selectedTotals['daily_usage'] ?? 0) }} EGP</td>
                             <td class="px-6 py-3 text-sm text-blue-700">
-                                {{ format_int($this->selectedTotals['monthly_limit'] ?? 0) }} EGP</td>
+                                {{ format_int($this->selectedTotals['monthly_remaining'] ?? 0) }} EGP</td>
                             <td class="px-6 py-3 text-sm text-blue-700">
                                 {{ format_int($this->selectedTotals['monthly_usage'] ?? 0) }} EGP</td>
                             <td colspan="2"></td>
