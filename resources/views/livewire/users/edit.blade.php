@@ -148,8 +148,7 @@
                                 class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">ج.م</span>
                             <input id="salary"
                                 class="block w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                                type="text" wire:model="salary"
-                                placeholder="ادخل الراتب بالجنيه المصري" />
+                                type="text" wire:model="salary" placeholder="ادخل الراتب بالجنيه المصري" />
                         </div>
                         <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('salary')" />
                     </div>
@@ -282,7 +281,7 @@
                                         </svg>
                                         تعيين الفرع <span class="text-red-500 ml-1">*</span>
                                     </x-input-label>
-                                    <select wire:model="branchId" id="branchId" 
+                                    <select wire:model="branchId" id="branchId"
                                         class="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
                                         <option value="">اختر الفرع</option>
                                         @foreach ($branches as $branch)
@@ -343,16 +342,17 @@
                 </div>
 
                 <!-- Ignore Work Hours Checkbox -->
-                @if(app()->make('livewire')->current()->canEditIgnoreWorkHours())
-                <div class="col-span-2">
-                    <label class="inline-flex items-center mt-3">
-                        <input type="checkbox" wire:model="ignore_work_hours" class="form-checkbox h-5 w-5 text-indigo-600">
-                        <span class="ml-2 text-gray-700">تجاهل أوقات العمل (يمكنه العمل في أي وقت)</span>
-                    </label>
-                    @error('ignore_work_hours')
-                        <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
-                    @enderror
-                </div>
+                @if (app()->make('livewire')->current()->canEditIgnoreWorkHours())
+                    <div class="col-span-2">
+                        <label class="inline-flex items-center mt-3">
+                            <input type="checkbox" wire:model="ignore_work_hours"
+                                class="form-checkbox h-5 w-5 text-indigo-600">
+                            <span class="ml-2 text-gray-700">تجاهل أوقات العمل (يمكنه العمل في أي وقت)</span>
+                        </label>
+                        @error('ignore_work_hours')
+                            <span class="text-sm text-red-600 mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
                 @endif
 
                 <!-- Submit Button -->
