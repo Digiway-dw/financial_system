@@ -82,25 +82,24 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach ($traineeLines as $line)
-                        @php
-                            $dailyLimit = $line->daily_limit ?? 0;
-                            $monthlyLimit = $line->monthly_limit ?? 0;
-                            $currentBalance = $line->current_balance ?? 0;
-                            $dailyStartingBalance = $line->daily_starting_balance ?? 0;
-                            $monthlyStartingBalance = $line->starting_balance ?? 0;
-                            $dailyRemaining = isset($line->daily_remaining) ? $line->daily_remaining : max(0, $dailyLimit - $currentBalance);
-                            $monthlyRemaining = max(0, $monthlyLimit - $currentBalance);
-                            // Use direct fields from the lines table for receive
-                            $dailyUsage = $line->daily_usage ?? 0;
-                            $monthlyUsage = $line->monthly_usage ?? 0;
-                            $circleColor = 'bg-green-400';
-                            if ($dailyRemaining <= 240) {
-                                $circleColor = 'bg-red-500';
-                            } elseif ($dailyRemaining <= 1800) {
-                                $circleColor = 'bg-yellow-400';
-                            }
-                        @endphp
+                @foreach ($traineeLines as $line)
+                            @php
+                                $dailyRemaining = $line->daily_remaining ?? 0;
+                                $monthlyRemaining = $line->monthly_remaining ?? 0;
+                                $dailyLimit = $line->daily_limit ?? 0;
+                                $monthlyLimit = $line->monthly_limit ?? 0;
+                                $currentBalance = $line->current_balance ?? 0;
+                                $dailyStartingBalance = $line->daily_starting_balance ?? 0;
+                                $monthlyStartingBalance = $line->starting_balance ?? 0;
+                                $dailyUsage = $line->daily_usage ?? max(0, $currentBalance - $dailyStartingBalance);
+                                $monthlyUsage = $line->monthly_usage ?? max(0, $currentBalance - $monthlyStartingBalance);
+                                $circleColor = 'bg-green-400';
+                                if ($dailyRemaining <= 240) {
+                                    $circleColor = 'bg-red-500';
+                                } elseif ($dailyRemaining <= 1800) {
+                                    $circleColor = 'bg-yellow-400';
+                                }
+                            @endphp
                         <tr>
                             <td class="px-2 py-4 text-center">
                                 <input type="checkbox" class="trainee-line-checkbox" value="{{ $line->id }}" onclick="updateTraineeLinesSum()" @if(isset($selectedTraineeLineIds) && in_array($line->id, $selectedTraineeLineIds)) checked @endif />
