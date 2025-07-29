@@ -94,6 +94,35 @@
                         <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('email')" />
                     </div>
 
+                    <!-- Password (Admin/Supervisor only) -->
+                    @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('general_supervisor'))
+                    <div>
+                        <x-input-label for="password" class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                            <svg class="w-4 h-4 text-gray-400 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.104.896-2 2-2s2 .896 2 2v1h-4v-1zm-6 4v-1a6 6 0 1112 0v1m-6 4h6" />
+                            </svg>
+                            كلمة المرور الجديدة (اختياري)
+                        </x-input-label>
+                        <input id="password"
+                            class="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                            type="password" wire:model.defer="password" autocomplete="new-password"
+                            placeholder="ادخل كلمة مرور جديدة إذا كنت تريد تغييرها" />
+                        <x-input-error class="mt-2 text-red-600 text-sm" :messages="$errors->get('password')" />
+                    </div>
+                    <div>
+                        <x-input-label for="password_confirmation" class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                            <svg class="w-4 h-4 text-gray-400 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.104.896-2 2-2s2 .896 2 2v1h-4v-1zm-6 4v-1a6 6 0 1112 0v1m-6 4h6" />
+                            </svg>
+                            تأكيد كلمة المرور الجديدة
+                        </x-input-label>
+                        <input id="password_confirmation"
+                            class="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                            type="password" wire:model.defer="password_confirmation" autocomplete="new-password"
+                            placeholder="اعد كتابة كلمة المرور الجديدة" />
+                    </div>
+                    @endif
+
                     <!-- Phone Number -->
                     <div>
                         <x-input-label for="phone_number"

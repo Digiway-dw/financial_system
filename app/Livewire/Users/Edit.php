@@ -30,6 +30,10 @@ class Edit extends Component
     public $branches = [];
     public $ignore_work_hours = false;
 
+    // Add password fields for admin password change
+    public $password = '';
+    public $password_confirmation = '';
+
     // Working hours properties
     public $workingHours = [];
     public $days = [
@@ -188,6 +192,8 @@ class Edit extends Component
             'startTime' => 'nullable|date_format:H:i',
             'endTime' => 'nullable|date_format:H:i|after:startTime',
             'isEnabled' => 'boolean',
+            // Password validation (optional, only if filled)
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ];
     }
 
@@ -202,20 +208,20 @@ class Edit extends Component
             abort(403, 'You are not authorized to edit the admin user.');
         }
         $this->validate();
-        
+
         // Check if role change is allowed
         if ($this->selectedRole !== $user->getRoleNames()->first()) {
             if (!$this->canEditRoles()) {
                 abort(403, 'You are not authorized to change user roles.');
             }
-            
+
             // Validate that the selected role is allowed for current user
             $availableRoles = $this->getAvailableRoles();
             if (!in_array($this->selectedRole, $availableRoles)) {
                 abort(403, 'You are not authorized to assign this role.');
             }
         }
-        
+
         $user->name = $this->name;
         $user->email = $this->email;
         $user->phone_number = $this->phone_number;
@@ -227,13 +233,17 @@ class Edit extends Component
         $user->notes = $this->notes;
         $user->branch_id = !in_array($this->selectedRole, ['admin']) ? $this->branchId : null;
         $user->ignore_work_hours = (bool) $this->ignore_work_hours;
+        // If password is filled, update it
+        if (!empty($this->password)) {
+            $user->password = bcrypt($this->password);
+        }
         $user->save();
-        
+
         // Only update role if user has permission and role has changed
         if ($this->canEditRoles() && $this->selectedRole !== $user->getRoleNames()->first()) {
             $user->syncRoles([$this->selectedRole]);
         }
-        
+
         session()->flash('message', 'User updated successfully.');
         return redirect()->route('users.index');
     }
