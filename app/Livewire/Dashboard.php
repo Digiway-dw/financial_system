@@ -43,6 +43,7 @@ class Dashboard extends Component
     public $totalTransactionsCount = 0;
     public $selectedTraineeLineIds = [];
     public $traineeLines = [];
+    public $searchedTransaction = null;
 
     // Sorting properties for line tables
     public $sortField = 'mobile_number';
@@ -94,6 +95,14 @@ class Dashboard extends Component
             $this->branches = collect($this->branchRepository->all());
             $this->selectedBranchId = request('branch', 'all');
             $this->updateSupervisorMetrics();
+        }
+        $ref = request()->query('reference_number');
+        if ($ref) {
+            $transaction = \App\Models\Domain\Entities\Transaction::where('reference_number', $ref)->first();
+            if (!$transaction) {
+                $transaction = \App\Models\Domain\Entities\CashTransaction::where('reference_number', $ref)->first();
+            }
+            $this->searchedTransaction = $transaction;
         }
     }
 
