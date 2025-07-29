@@ -160,7 +160,12 @@ class AgentDashboard extends Component
 
         // Enhance lines with usage data and color classes (standardized)
         $this->agentLines = $lines->map(function ($line) {
-            // Keep the line as an object to preserve relationships
+            $line->daily_usage = isset($line->current_balance, $line->daily_starting_balance)
+                ? max(0, $line->current_balance - $line->daily_starting_balance)
+                : 0;
+            $line->monthly_usage = isset($line->current_balance, $line->starting_balance)
+                ? max(0, $line->current_balance - $line->starting_balance)
+                : 0;
             $line->daily_remaining = $line->daily_remaining ?? 0;
             $line->daily_usage_class = '';
             if (
@@ -255,14 +260,10 @@ class AgentDashboard extends Component
             'daily_remaining' => $selected->sum('daily_remaining'),
             'monthly_remaining' => $selected->sum('monthly_remaining'),
             'daily_usage' => $selected->sum(function ($line) {
-                $dailyStarting = $line->daily_starting_balance ?? 0;
-                $current = $line->current_balance ?? 0;
-                return max(0, $current - $dailyStarting);
+                return $line->daily_usage ?? max(0, ($line->current_balance ?? 0) - ($line->daily_starting_balance ?? 0));
             }),
             'monthly_usage' => $selected->sum(function ($line) {
-                $monthlyStarting = $line->starting_balance ?? 0;
-                $current = $line->current_balance ?? 0;
-                return max(0, $current - $monthlyStarting);
+                return $line->monthly_usage ?? max(0, ($line->current_balance ?? 0) - ($line->starting_balance ?? 0));
             }),
         ];
     }
