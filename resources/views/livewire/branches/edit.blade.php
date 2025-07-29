@@ -105,10 +105,10 @@
                         </label>
                         <select wire:model="is_active" id="is_active" name="is_active"
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
-                            <option value="1" {{ $is_active == true || $is_active == '1' ? 'selected' : '' }}>نشط</option>
-                            <option value="0" {{ $is_active == false || $is_active == '0' ? 'selected' : '' }}>غير نشط</option>
+                            <option value="1">نشط</option>
+                            <option value="0">غير نشط</option>
                         </select>
-                        <p class="text-sm text-gray-500 mt-1">الحالة الحالية: {{ $is_active ? 'نشط' : 'غير نشط' }} (قيمة: {{ $is_active }})</p>
+                        <p class="text-sm text-gray-500 mt-1">الحالة الحالية: {{ $is_active === '1' ? 'نشط' : 'غير نشط' }} (قيمة: {{ $is_active }})</p>
                     </div>
                 </div>
 

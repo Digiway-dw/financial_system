@@ -21,11 +21,9 @@ class Edit extends Component
     #[Validate('nullable|string|max:1000')] 
     public $description = '';
 
-    public $is_active = true;
+    public $is_active = '1';
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
+
 
     public $safe;
     public $safeId;
@@ -61,25 +59,16 @@ class Edit extends Component
         
 
         
-        // Ensure proper boolean conversion
-        $rawValue = $this->branch->is_active;
-        if (is_string($rawValue)) {
-            $this->is_active = $rawValue === '1' || $rawValue === 'true';
-        } else {
-            $this->is_active = (bool)($rawValue ?? true);
-        }
+        // Set the is_active value as string for the select dropdown
+        $this->is_active = $this->branch->is_active ? '1' : '0';
         
         // Debug what's being loaded
         \Log::info('Branch edit form loaded', [
             'branch_id' => $this->branchId,
             'branch_name' => $this->branch->name,
-            'raw_is_active' => $rawValue,
-            'converted_is_active' => $this->is_active,
-            'is_active_type' => gettype($this->is_active),
+            'branch_is_active' => $this->branch->is_active,
+            'form_is_active' => $this->is_active,
         ]);
-        
-        // Force the value to be properly set
-        $this->dispatch('branch-status-loaded', ['is_active' => $this->is_active]);
 
         // Load the first associated safe (main safe)
         $safe = $this->branch->safes->first();
@@ -94,15 +83,27 @@ class Edit extends Component
 
     public function updateBranch()
     {
-        \Log::info('Form submitted', [
+        \Log::info('updateBranch method called', [
+            'name' => $this->name,
+            'description' => $this->description,
             'is_active_value' => $this->is_active,
             'is_active_type' => gettype($this->is_active),
+            'is_active_boolean' => $this->is_active === '1',
         ]);
         
         $this->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'is_active' => 'boolean',
+            'is_active' => 'in:0,1',
+        ]);
+        
+        \Log::info('Validation passed', [
+            'validated_data' => [
+                'name' => $this->name,
+                'description' => $this->description,
+                'is_active' => $this->is_active,
+                'is_active_boolean' => $this->is_active === '1',
+            ]
         ]);
 
         try {
@@ -112,7 +113,7 @@ class Edit extends Component
                 [
                     'name' => $this->name,
                     'description' => $this->description,
-                    'is_active' => $this->is_active,
+                    'is_active' => $this->is_active === '1',
                 ]
             );
             // Update safe if loaded
@@ -123,7 +124,7 @@ class Edit extends Component
                         'name' => $this->safe_name,
                         'current_balance' => (float) $this->safe_current_balance,
                         'description' => $this->safe_description,
-                        'is_active' => $this->is_active,
+                        'is_active' => $this->is_active === '1',
                     ]
                 );
             }
@@ -133,24 +134,25 @@ class Edit extends Component
                     if ($safe->id != $this->safeId) {
                         $this->updateSafeUseCase->execute(
                             $safe->id,
-                            ['is_active' => $this->is_active]
+                            ['is_active' => $this->is_active === '1']
                         );
                     }
                 }
             }
             session()->flash('message', 'Branch and safe updated successfully.');
-            $this->redirect(route('branches.index'), navigate: true); // Redirect after successful update
+            return $this->redirect(route('branches.index'));
         } catch (\Exception $e) {
+            \Log::error('Error updating branch', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             session()->flash('error', 'Failed to update branch or safe: ' . $e->getMessage());
         }
     }
 
 
 
-    public function updatedIsActive($value)
-    {
-        \Log::info('is_active updated', ['new_value' => $value, 'type' => gettype($value)]);
-    }
+
 
     public function render()
     {
