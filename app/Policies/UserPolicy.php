@@ -71,6 +71,10 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
+        // Prevent deletion of the main admin account
+        if ($model->email === 'admin@financial.system') {
+            return false;
+        }
         // Agents cannot delete any user, not even themselves
         if ($user->hasRole(Roles::AGENT)) {
             return false;
@@ -85,6 +89,10 @@ class UserPolicy
      */
     public function restore(User $user, User $model): bool
     {
+        // Prevent restoring the main admin account (if ever soft deleted)
+        if ($model->email === 'admin@financial.system') {
+            return false;
+        }
         // Agents cannot restore users
         if ($user->hasRole(Roles::AGENT)) {
             return false;
@@ -99,6 +107,10 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model): bool
     {
+        // Prevent force deleting the main admin account
+        if ($model->email === 'admin@financial.system') {
+            return false;
+        }
         // Agents cannot force delete users
         if ($user->hasRole(Roles::AGENT)) {
             return false;
