@@ -345,9 +345,9 @@
                                 @endif
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sortable-header"
-                                wire:click="sortBy('status')" style="cursor: pointer;">
-                                الحالة
-                                @if ($sortField === 'status')
+                                wire:click="sortBy('branch')" style="cursor: pointer;">
+                                الفرع
+                                @if ($sortField === 'branch')
                                     <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </th>
@@ -403,7 +403,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $line->network }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ ucfirst($line->status) }}</td>
+                                    {{ $line->branch->name ?? 'غير محدد' }}</td>
                             </tr>
                         @endforeach
                     </tbody>

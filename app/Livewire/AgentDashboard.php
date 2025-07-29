@@ -148,8 +148,10 @@ class AgentDashboard extends Component
             $lines = $lines->sortBy('monthly_usage');
         } elseif ($this->sortField === 'network') {
             $lines = $lines->sortBy('network');
-        } elseif ($this->sortField === 'status') {
-            $lines = $lines->sortBy('status');
+        } elseif ($this->sortField === 'branch') {
+            $lines = $lines->sortBy(function ($line) {
+                return $line->branch ? $line->branch->name : '';
+            });
         }
 
         if ($this->sortDirection === 'desc') {
@@ -158,20 +160,19 @@ class AgentDashboard extends Component
 
         // Enhance lines with usage data and color classes (standardized)
         $this->agentLines = $lines->map(function ($line) {
-            $lineArray = is_object($line) ? $line->toArray() : $line;
-            // Use daily_remaining from the database only
-            $lineArray['daily_remaining'] = $lineArray['daily_remaining'] ?? 0;
-            $lineArray['daily_usage_class'] = '';
+            // Keep the line as an object to preserve relationships
+            $line->daily_remaining = $line->daily_remaining ?? 0;
+            $line->daily_usage_class = '';
             if (
-                isset($lineArray['daily_limit'], $lineArray['daily_usage'], $lineArray['status']) &&
-                $lineArray['daily_limit'] > 0 &&
-                $lineArray['daily_usage'] >= $lineArray['daily_limit'] &&
-                $lineArray['status'] === 'frozen'
+                isset($line->daily_limit, $line->daily_usage, $line->status) &&
+                $line->daily_limit > 0 &&
+                $line->daily_usage >= $line->daily_limit &&
+                $line->status === 'frozen'
             ) {
-                $lineArray['daily_usage_class'] = 'bg-red-100 text-red-700 font-bold';
+                $line->daily_usage_class = 'bg-red-100 text-red-700 font-bold';
             }
             // monthly_usage is used directly for monthly receive
-            return (object) $lineArray;
+            return $line;
         });
 
         $this->agentLinesTotalBalance = $lines->sum('current_balance');
