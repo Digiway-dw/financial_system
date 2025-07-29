@@ -135,6 +135,7 @@
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                                 placeholder="ادخل اسم الخزينة" />
                         </div>
+                        @if(auth()->user()->hasRole('admin'))
                         <div>
                             <label for="safe_current_balance" class="block text-sm font-medium text-gray-700">الرصيد
                                 (ج.م)</label>
@@ -143,6 +144,7 @@
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                                 placeholder="٠.٠٠" />
                         </div>
+                        @endif
                         <div>
                             <label for="safe_description" class="block text-sm font-medium text-gray-700">وصف
                                 الخزينة</label>
