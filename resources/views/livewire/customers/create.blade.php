@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-6">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-6" dir="rtl" style="direction: rtl;">
 
     @if ($showStatusPage)
         <!-- Status Page -->
@@ -25,7 +25,7 @@
                         <div>
                             <h1
                                 class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                                {{ $creationStatus === 'success' ? 'Customer Created Successfully!' : 'Creation Failed' }}
+                                {{ $creationStatus === 'success' ? 'تـم الإنشاء بنجاح!' : 'فشل الإنشاء' }}
                             </h1>
                             <p class="text-slate-600 mt-2">{{ $statusMessage }}</p>
                         </div>
@@ -64,7 +64,7 @@
                                         <div class="flex justify-between">
                                             <span class="text-slate-600">الرصيد:</span>
                                             <span
-                                                class="font-medium text-slate-800">${{ format_int($createdCustomer->balance) }}</span>
+                                                class="font-medium text-slate-800">{{ format_int($createdCustomer->balance) }}</span>
                                         </div>
 
                                         <div class="flex justify-between">
@@ -81,12 +81,11 @@
                                     <div class="space-y-3">
                                         <div>
                                             <span class="text-slate-600">رقم الهاتف:</span>
-                                            <div class="mt-1 space-y-1">
+                                            <span class="font-medium text-slate-800">
                                                 @foreach ($createdCustomer->mobileNumbers as $mobile)
-                                                    <div class="font-medium text-slate-800">{{ $mobile->mobile_number }}
-                                                    </div>
+                                                    {{ $mobile->mobile_number }}@if(!$loop->last) ، @endif
                                                 @endforeach
-                                            </div>
+                                            </span>
                                         </div>
 
                                         @if ($createdCustomer->branch)
@@ -157,7 +156,7 @@
                                 d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                         </svg>
                     </div>
-                    <div>
+                    <div class="px-2">
                         <h1
                             class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                             إنشاء عميل جديد
@@ -343,7 +342,8 @@
 
                 <!-- Action Buttons -->
                 <div class="flex items-center justify-between pt-8 border-t border-slate-200 mt-8">
-                    <div class="flex space-x-4">
+                    <div class="flex space-x-4 px-9">
+                    <div class="pt-6">
                         <button type="submit"
                             class="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -352,10 +352,13 @@
                             </svg>
                             إنشاء عميل
                         </button>
+                    </div>
+                        <dev class="px-6 py-8 ">
                         <a href="{{ route('customers.index') }}"
                             class="px-6 py-3 bg-slate-200 text-slate-700 font-medium rounded-xl hover:bg-slate-300 transition-colors duration-150">
                             إلغاء
                         </a>
+                        </dev>
                     </div>
 
                     <!-- Status Messages -->
