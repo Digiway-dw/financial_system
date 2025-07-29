@@ -1,13 +1,5 @@
 <div>
-    <div class="mb-4">
-        <div class="text-lg font-bold text-gray-800">
-            {{ auth()->user()->name }}
-        </div>
-        <div class="text-sm text-gray-500">
-            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
-        </div>
-    </div>
-<!-- Trainee Summary Table: Safe Name, Safe Balance, Startup Balance, Today's Transactions -->
+    <!-- Trainee Summary Table: Safe Name, Safe Balance, Startup Balance, Today's Transactions -->
 
 
 <!-- Add Customer Quick Action for Trainee -->
@@ -28,42 +20,43 @@
 </a>
 @endcan
 
-@if(request()->query('search_transaction'))
-    <div class="mb-6 bg-white rounded-xl shadow p-6 flex flex-col items-center">
-        <form method="GET" action="{{ route('dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
-            <input type="hidden" name="search_transaction" value="1">
-            <label for="reference_number" class="block text-sm font-medium text-gray-700">بحث المعاملة برقم المرجع</label>
-            <div class="flex gap-2">
-                <input type="text" name="reference_number" id="reference_number" value="{{ request('reference_number') }}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200" placeholder="Enter reference number...">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Search</button>
+<!-- Transaction Search (same as agent dashboard) -->
+<div class="mb-6 bg-white rounded-xl shadow p-6 flex flex-col items-center">
+    <form method="GET" action="{{ route('dashboard') }}" class="w-full max-w-md flex flex-col gap-4">
+        <input type="hidden" name="search_transaction" value="1">
+        <label for="reference_number" class="block text-sm font-medium text-gray-700">بحث المعاملة برقم المرجع</label>
+        <div class="flex gap-2">
+            <input type="text" name="reference_number" id="reference_number" value="{{ request('reference_number') }}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200" placeholder="Enter reference number...">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Search</button>
+        </div>
+    </form>
+    @if(isset($searchedTransaction))
+        <div class="mt-6 w-full max-w-md bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 class="font-bold text-blue-800 mb-2">تفاصيل المعاملة</h4>
+            <div class="text-sm text-gray-700">
+                <div><span class="font-semibold">الرقم المرجعي:</span> {{ $searchedTransaction->reference_number }}</div>
+                <div><span class="font-semibold">المبلغ:</span> {{ format_int($searchedTransaction->amount) }}</div>
+                <div><span class="font-semibold">الحالة:</span> {{ $searchedTransaction->status }}</div>
+                @if (isset($searchedTransaction->transaction_date_time) && $searchedTransaction->transaction_date_time)
+                    <div><span class="font-semibold">تاريخ و وقت المعاملة:</span> {{ \Carbon\Carbon::parse($searchedTransaction->transaction_date_time)->format('d/m/y h:i A') }}</div>
+                @endif
+                <div><span class="font-semibold">تاريخ الانشاء:</span> {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
             </div>
-        </form>
-        @if(isset($searchedTransaction))
-            <div class="mt-6 w-full max-w-md bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 class="font-bold text-blue-800 mb-2">تفاصيل المعاملة</h4>
-                <div class="text-sm text-gray-700">
-                    <div><span class="font-semibold">Reference:</span> {{ $searchedTransaction->reference_number }}</div>
-                    <div><span class="font-semibold">Amount:</span> {{ number_format($searchedTransaction->amount, 2) }}</div>
-                    <div><span class="font-semibold">Status:</span> {{ $searchedTransaction->status }}</div>
-                    <div><span class="font-semibold">Date:</span> {{ $searchedTransaction->created_at }}</div>
-                </div>
-                <div class="mt-4 text-right">
-                    <a href="{{ route('transactions.print', $searchedTransaction->id) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
-                            <rect width="12" height="8" x="6" y="14" rx="2" />
-                        </svg>
-                        طباعة
-                    </a>
-                </div>
+            <div class="mt-4 text-right">
+                <a href="{{ route('transactions.print', $searchedTransaction->id) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18H4a2 2 0 01-2-2V7a2 2 0 012-2h16a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
+                        <rect width="12" height="8" x="6" y="14" rx="2" />
+                    </svg>
+                    طباعة
+                </a>
             </div>
-        @elseif(request('reference_number'))
-            <div class="mt-4 text-red-600 font-semibold">لا يوجد معاملة بهذا الرقم المرجعي.</div>
-        @endif
-    </div>
-@endif
-@include('livewire.dashboard.agent', $data ?? [])
+        </div>
+    @elseif(request('reference_number'))
+        <div class="mt-4 text-red-600 font-semibold">لا يوجد معاملة بهذا الرقم المرجعي.</div>
+    @endif
+</div>
 @if(isset($traineeLines) && count($traineeLines))
     <div class="mt-10 bg-white p-6 shadow-xl sm:rounded-lg">
         <h4 class="text-xl font-bold text-gray-900 mb-4">جميع الخطوط في فرعك</h4>
