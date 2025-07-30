@@ -293,8 +293,10 @@
                                 $currentBalance = $line->current_balance ?? 0;
                                 $dailyStartingBalance = $line->daily_starting_balance ?? 0;
                                 $monthlyStartingBalance = $line->starting_balance ?? 0;
-                                $dailyUsage = $line->daily_usage ?? max(0, $currentBalance - $dailyStartingBalance);
-                                $monthlyUsage = $line->monthly_usage ?? max(0, $currentBalance - $monthlyStartingBalance);
+                                // Use the stored daily_usage and monthly_usage values from the database
+                                // These are only updated by Receive transactions, not Send transactions
+                                $dailyUsage = $line->daily_usage ?? 0;
+                                $monthlyUsage = $line->monthly_usage ?? 0;
                                 $circleColor = 'bg-green-400';
                                 if ($dailyRemaining <= 240) {
                                     $circleColor = 'bg-red-500';

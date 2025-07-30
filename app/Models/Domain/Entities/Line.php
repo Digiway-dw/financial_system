@@ -31,6 +31,8 @@ class Line extends Model
         'monthly_usage',
         'daily_remaining',
         'monthly_remaining',
+        'last_daily_reset',
+        'last_monthly_reset',
     ];
 
     protected $casts = [

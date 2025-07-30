@@ -25,6 +25,9 @@ class CreateLine
         $lineData['monthly_usage'] = 0;
         $lineData['daily_remaining'] = ($lineData['daily_limit'] ?? 0) - ($lineData['current_balance'] ?? 0);
         $lineData['monthly_remaining'] = ($lineData['monthly_limit'] ?? 0) - ($lineData['current_balance'] ?? 0);
+        // Initialize reset tracking fields
+        $lineData['last_daily_reset'] = now()->toDateString();
+        $lineData['last_monthly_reset'] = now()->toDateString();
         return $this->lineRepository->create($lineData);
     }
 } 

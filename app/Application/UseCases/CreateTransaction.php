@@ -168,32 +168,57 @@ class CreateTransaction
             }
         }
 
-        // --- Monthly Starting Balance Logic ---
-        $now = now();
-        $currentMonth = $now->format('Y-m');
-        $lastSetMonth = $line->updated_at ? $line->updated_at->format('Y-m') : null;
-        if ($lastSetMonth !== $currentMonth) {
-            // Set starting_balance to the current balance at the start of the month
-            $this->lineRepository->update($lineId, [
-                'starting_balance' => $line->current_balance,
-                'monthly_usage' => 0,
-                'monthly_remaining' => ($line->monthly_limit ?? 0) - $line->current_balance,
-            ]);
-            $line->refresh();
+        // --- Monthly Starting Balance Logic (Only for Receive transactions) ---
+        if (in_array($transactionType, ['Receive', 'Deposit'])) {
+            $today = now()->toDateString();
+            $currentMonth = now()->format('Y-m');
+            
+            // Check if we need to reset monthly usage (new month or first time)
+            $shouldResetMonthly = false;
+            if ($line->last_monthly_reset === null) {
+                $shouldResetMonthly = true;
+            } else {
+                $lastResetMonth = \Carbon\Carbon::parse($line->last_monthly_reset)->format('Y-m');
+                if ($lastResetMonth !== $currentMonth) {
+                    $shouldResetMonthly = true;
+                }
+            }
+            
+            if ($shouldResetMonthly) {
+                $this->lineRepository->update($lineId, [
+                    'starting_balance' => $line->current_balance,
+                    'monthly_usage' => 0,
+                    'monthly_remaining' => ($line->monthly_limit ?? 0) - $line->current_balance,
+                    'last_monthly_reset' => $today,
+                ]);
+                $line->refresh();
+            }
         }
         // --- End Monthly Starting Balance Logic ---
 
-        // --- Daily Starting Balance Logic ---
-        $today = now()->format('Y-m-d');
-        $lastSetDay = $line->updated_at ? $line->updated_at->format('Y-m-d') : null;
-        if ($lastSetDay !== $today) {
-            // Set daily_starting_balance to the current balance at the start of the day
-            $this->lineRepository->update($lineId, [
-                'daily_starting_balance' => $line->current_balance,
-                'daily_usage' => 0,
-                'daily_remaining' => ($line->daily_limit ?? 0) - $line->current_balance,
-            ]);
-            $line->refresh();
+        // --- Daily Starting Balance Logic (Only for Receive transactions) ---
+        if (in_array($transactionType, ['Receive', 'Deposit'])) {
+            $today = now()->toDateString();
+            
+            // Check if we need to reset daily usage (new day or first time)
+            $shouldResetDaily = false;
+            if ($line->last_daily_reset === null) {
+                $shouldResetDaily = true;
+            } else {
+                if ($line->last_daily_reset !== $today) {
+                    $shouldResetDaily = true;
+                }
+            }
+            
+            if ($shouldResetDaily) {
+                $this->lineRepository->update($lineId, [
+                    'daily_starting_balance' => $line->current_balance,
+                    'daily_usage' => 0,
+                    'daily_remaining' => ($line->daily_limit ?? 0) - $line->current_balance,
+                    'last_daily_reset' => $today,
+                ]);
+                $line->refresh();
+            }
         }
         // --- End Daily Starting Balance Logic ---
 
@@ -334,7 +359,7 @@ class CreateTransaction
                 'daily_usage' => ($line->daily_usage ?? 0) + $amount,
                 'monthly_usage' => ($line->monthly_usage ?? 0) + $amount,
                 'daily_remaining' => ($line->daily_remaining ?? (($line->daily_limit ?? 0) - ($line->current_balance ?? 0))) - $amount,
-                'monthly_remaining' => ($line->monthly_remaining ?? $line->monthly_limit) - $amount,
+                'monthly_remaining' => ($line->monthly_remaining ?? (($line->monthly_limit ?? 0) - ($line->current_balance ?? 0))) - $amount,
             ]);
             $line->refresh();
 

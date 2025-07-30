@@ -50,12 +50,15 @@ class UnfreezeLinesAndResetDailyBalance extends Command
             }
             
             // Reset daily_starting_balance for all lines
+            $today = $today->toDateString();
             foreach (Line::all() as $line) {
                 $line->daily_starting_balance = $line->current_balance;
+                $line->last_daily_reset = $today;
                 
                 // If it's the first day of the month, also reset starting_balance
                 if ($isStartOfMonth) {
                     $line->starting_balance = $line->current_balance;
+                    $line->last_monthly_reset = $today;
                 }
                 
                 $line->save();
