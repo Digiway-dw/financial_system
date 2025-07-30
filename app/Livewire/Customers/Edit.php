@@ -9,7 +9,9 @@ use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Gate;
 use App\Domain\Interfaces\UserRepository;
 use App\Domain\Interfaces\BranchRepository;
+use App\Domain\Interfaces\SafeRepository;
 use App\Domain\Entities\User;
+use App\Models\Domain\Entities\Safe;
 use Illuminate\Database\Eloquent\Collection;
 
 class Edit extends Component
@@ -33,17 +35,20 @@ class Edit extends Component
     private UpdateCustomer $updateCustomerUseCase;
     private UserRepository $userRepository;
     private BranchRepository $branchRepository;
+    private SafeRepository $safeRepository;
 
     public function boot(
         CustomerRepository $customerRepository,
         UpdateCustomer $updateCustomerUseCase,
         UserRepository $userRepository,
-        BranchRepository $branchRepository
+        BranchRepository $branchRepository,
+        SafeRepository $safeRepository
     ) {
         $this->customerRepository = $customerRepository;
         $this->updateCustomerUseCase = $updateCustomerUseCase;
         $this->userRepository = $userRepository;
         $this->branchRepository = $branchRepository;
+        $this->safeRepository = $safeRepository;
     }
 
     protected function rules(): array
@@ -82,6 +87,34 @@ class Edit extends Component
     {
         // No one can edit the agent field
         return false;
+    }
+
+    private function findBranchSafe(int $branchId): ?Safe
+    {
+        $safes = $this->safeRepository->allWithBranch();
+        foreach ($safes as $safe) {
+            if (($safe['branch_id'] ?? $safe->branch_id) == $branchId) {
+                return is_array($safe) ? Safe::find($safe['id']) : $safe;
+            }
+        }
+        return null;
+    }
+
+    private function updateSafeBalance(int $branchId, float $amount, string $operation = 'add'): void
+    {
+        $safe = $this->findBranchSafe($branchId);
+        if (!$safe) {
+            throw new \Exception("No safe found for branch ID: {$branchId}");
+        }
+
+        $currentBalance = (float) $safe->current_balance;
+        $newBalance = $operation === 'add' ? $currentBalance + $amount : $currentBalance - $amount;
+
+        if ($newBalance < 0) {
+            throw new \Exception("Insufficient funds in safe. Current balance: {$currentBalance}, Required: {$amount}");
+        }
+
+        $this->safeRepository->update($safe->id, ['current_balance' => $newBalance]);
     }
 
     protected function validationAttributes(): array
@@ -181,13 +214,27 @@ class Edit extends Component
                 $this->customer->mobileNumbers()->create(['mobile_number' => $number]);
             }
             
-            // If admin changed balance, record a transaction
+            // Handle safe balance updates when customer balance changes
             if ($this->canEditBalance() && $originalCustomer->balance != $this->balance) {
+                $oldBalance = (float) $originalCustomer->balance;
+                $newBalance = (float) $this->balance;
+
+                // Step 1: Deduct the current customer balance from the safe
+                if ($oldBalance > 0) {
+                    $this->updateSafeBalance($this->customer->branch_id, $oldBalance, 'subtract');
+                }
+
+                // Step 2: Add the new customer balance to the safe
+                if ($newBalance > 0) {
+                    $this->updateSafeBalance($this->customer->branch_id, $newBalance, 'add');
+                }
+
+                // Record a transaction for audit
                 \App\Models\Domain\Entities\Transaction::create([
                     'customer_name' => $this->customer->name,
                     'customer_mobile_number' => $this->customer->mobile_number,
                     'customer_code' => $this->customer->customer_code,
-                    'amount' => abs($this->balance - $originalCustomer->balance),
+                    'amount' => abs($newBalance - $oldBalance),
                     'commission' => 0,
                     'deduction' => 0,
                     'transaction_type' => 'Adjustment',
@@ -196,7 +243,7 @@ class Edit extends Component
                     'status' => 'completed',
                     'branch_id' => $this->customer->branch_id,
                     'reference_number' => uniqid('BAL-'),
-                    'notes' => 'Admin balance adjustment',
+                    'notes' => ($newBalance > $oldBalance) ? 'Admin balance increase' : 'Admin balance decrease',
                 ]);
             }
             
