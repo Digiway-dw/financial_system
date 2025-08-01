@@ -4,7 +4,7 @@
             {{ auth()->user()->name }}
         </div>
         <div class="text-sm text-gray-500">
-            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
+            المشرف العام
         </div>
     </div>
     <div class="mb-4 text-right">

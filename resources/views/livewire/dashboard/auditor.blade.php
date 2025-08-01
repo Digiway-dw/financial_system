@@ -25,8 +25,8 @@
             {{ auth()->user()->name }}
         </div>
         <div class="text-sm text-gray-500">
-            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
-        </div>
+            مراجع
+         </div>
     </div>
     <!-- Auditor Summary Table: Safe Name, Safe Balance, Today's Transactions -->
     <table class="min-w-max w-full table-auto border border-gray-300 mb-6">

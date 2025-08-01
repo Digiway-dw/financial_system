@@ -19,8 +19,7 @@
             {{ auth()->user()->name }}
         </div>
         <div class="text-sm text-gray-500">
-            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
-        </div>
+موظف        </div>
     </div>
     @if (isset($showAdminAgentToggle) && $showAdminAgentToggle && request()->query('as_agent'))
         <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

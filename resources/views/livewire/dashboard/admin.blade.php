@@ -4,7 +4,7 @@
             {{ auth()->user()->name }}
         </div>
         <div class="text-sm text-gray-500">
-            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
+            ادمن
         </div>
     </div>
     @if (isset($showAdminAgentToggle) && $showAdminAgentToggle)

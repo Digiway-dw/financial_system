@@ -23,7 +23,7 @@
             {{ auth()->user()->name }}
         </div>
         <div class="text-sm text-gray-500">
-            {{ \App\Helpers\RoleUiHelper::getRolesDisplayInfo()[auth()->user()->getRoleNames()->first()]['label'] ?? '' }}
+            مدير فرع
         </div>
     </div>
     <!-- Remove branch selector and branch details section -->
