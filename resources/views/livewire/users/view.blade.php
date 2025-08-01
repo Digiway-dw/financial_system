@@ -91,13 +91,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-900">
                             <!-- Ignore Work Hours Status -->
                             <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3" />
                                 </svg>
                                 <div>
                                     <span class="block text-sm text-gray-500">تجاهل أوقات العمل</span>
                                     <span class="font-medium">
-                                        @if($user->ignore_work_hours)
+                                        @if ($user->ignore_work_hours)
                                             نعم (يمكنه العمل في أي وقت)
                                         @else
                                             لا (يخضع لأوقات العمل المحددة)
@@ -254,27 +256,28 @@
             </div>
             <div class="p-8">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 text-center">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     اليوم</th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     وقت البدء</th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     وقت الانتهاء</th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     الحالة</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse ($workingHours as $workingHour)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
                                         {{ __(
                                             match ($workingHour->day_of_week) {
                                                 'saturday' => 'السبت',
@@ -288,13 +291,13 @@
                                             },
                                         ) }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         {{ \Carbon\Carbon::parse($workingHour->start_time)->format('h:i A') }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         {{ \Carbon\Carbon::parse($workingHour->end_time)->format('h:i A') }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                         @if ($workingHour->is_enabled)
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -334,37 +337,44 @@
             </div>
             <div class="p-8">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 text-center">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     #</th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     النوع</th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
+                                    النوع العملية</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     المبلغ</th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     الحالة</th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     التاريخ</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse ($transactions as $transaction)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
                                         {{ $transaction->id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         {{ $transaction->type ?? '-' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
+                                        {{ $transaction->transaction_type ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         {{ $transaction->amount ? number_format($transaction->amount, 2) . ' ج.م' : '-' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                         @if ($transaction->status == 'completed')
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -384,7 +394,7 @@
                                             {{ $transaction->status ?? '-' }}
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         {{ $transaction->created_at ? $transaction->created_at->format('d/m/y h:i A') : '-' }}
                                     </td>
                                 </tr>
@@ -418,26 +428,26 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     وقت الدخول</th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     وقت الخروج</th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     مدة الجلسة</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse ($loginHistories as $history)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         {{ $history->login_at ? \Carbon\Carbon::parse($history->login_at)->format('d/m/y h:i A') : '-' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         {{ $history->logout_at ? \Carbon\Carbon::parse($history->logout_at)->format('d/m/y h:i A') : '-' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         @if ($history->session_duration)
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">

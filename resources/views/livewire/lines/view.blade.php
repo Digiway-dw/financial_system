@@ -31,7 +31,7 @@
                     <div class="text-sm text-gray-500">الحالة</div>
                     <div
                         class="text-lg font-semibold {{ $line->status === 'active' ? 'text-green-700' : 'text-red-700' }}">
-                        {{ ucfirst($line->status) }}
+                        {{ ucfirst($line->status === 'active' ? 'مفعل' : 'معطل') }}
                     </div>
                 </div>
             </div>
