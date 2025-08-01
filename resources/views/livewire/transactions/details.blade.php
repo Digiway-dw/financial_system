@@ -42,7 +42,7 @@
                                     @elseif($transaction->status === 'pending') bg-yellow-100 text-yellow-800
                                     @elseif($transaction->status === 'rejected') bg-red-100 text-red-800
                                     @else bg-gray-100 text-gray-800 @endif">
-                                    {{ $transaction->status === 'completed' ? 'مكتملة' : ($transaction->status === 'pending' ? 'قيد الانتظار' : ($transaction->status === 'rejected' ? 'مرفوضة' : 'غير معروف')) }}
+                                    {{ $transaction->status === 'Completed' ? 'مكتملة' : ($transaction->status === 'Pending' ? 'قيد الانتظار' : ($transaction->status === 'Rejected' ? 'مرفوضة' : 'غير معروف')) }}
                                 </span>
                             </div>
                         </div>
