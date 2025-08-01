@@ -134,8 +134,7 @@
                     <!-- Confirm Password -->
                     <div>
                         <label for="password_confirmation"
-                            class="block text-sm font-medium text-gray-700 mb-1">Confirm
-                            كلمة المرور</label>
+                            class="block text-sm font-medium text-gray-700 mb-1">تأكيد كلمة المرور</label>
                         <div class="relative rounded-md shadow-sm">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
