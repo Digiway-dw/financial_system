@@ -343,9 +343,9 @@
                                 <th scope="col"
                                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     #</th>
-                                <th scope="col"
+                                {{-- <th scope="col"
                                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
-                                    النوع</th>
+                                    النوع</th> --}}
                                 <th scope="col"
                                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     النوع العملية</th>
@@ -361,13 +361,14 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse ($transactions as $transaction)
+                            @php $displayedTransactions = $transactions->forPage(1, 20); @endphp
+                            @foreach ($displayedTransactions as $transaction)
                                 <tr class="hover:bg-gray-50">
                                     <td
                                         class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
                                         {{ $transaction->id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
-                                        {{ $transaction->type ?? '-' }}</td>
+                                    {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
+                                        {{ $transaction->type ?? '-' }}</td> --}}
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         {{ $transaction->transaction_type ?? '-' }}
                                     </td>
@@ -377,19 +378,14 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                         @if ($transaction->status == 'completed')
                                             <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                مكتمل
-                                            </span>
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">مكتمل</span>
                                         @elseif($transaction->status == 'pending')
                                             <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                قيد الانتظار
-                                            </span>
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">قيد
+                                                الانتظار</span>
                                         @elseif($transaction->status == 'failed')
                                             <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                فشل
-                                            </span>
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">فشل</span>
                                         @else
                                             {{ $transaction->status ?? '-' }}
                                         @endif
@@ -398,13 +394,43 @@
                                         {{ $transaction->created_at ? $transaction->created_at->format('d/m/y h:i A') : '-' }}
                                     </td>
                                 </tr>
-                            @empty
+                            @endforeach
+                            @if ($transactions->count() === 0)
                                 <tr>
-                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد
+                                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد
                                         معاملات.</td>
                                 </tr>
-                            @endforelse
+                            @endif
                         </tbody>
+                    </table>
+                    @if ($transactions->count() > 20)
+                        <div class="flex justify-center mt-4">
+                            <button id="loadMoreBtn"
+                                class="px-6 py-2 bg-indigo-600 text-white rounded-md font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                تحميل المزيد
+                            </button>
+                        </div>
+                        <script>
+                            let currentPage = 1;
+                            const perPage = 20;
+                            const allRows = Array.from(document.querySelectorAll('tbody tr'));
+
+                            function showRows(page) {
+                                allRows.forEach((row, idx) => {
+                                    row.style.display = (idx < page * perPage) ? '' : 'none';
+                                });
+                            }
+                            showRows(currentPage);
+                            document.getElementById('loadMoreBtn').addEventListener('click', function() {
+                                currentPage++;
+                                showRows(currentPage);
+                                if (currentPage * perPage >= allRows.length) {
+                                    this.style.display = 'none';
+                                }
+                            });
+                        </script>
+                    @endif
+                    </tbody>
                     </table>
                 </div>
             </div>
