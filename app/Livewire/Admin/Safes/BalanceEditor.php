@@ -131,14 +131,15 @@ class BalanceEditor extends Component
                 'amount' => abs($difference),
                 'commission' => 0,
                 'deduction' => 0,
-                'transaction_type' => $difference > 0 ? 'Admin Deposit' : 'Admin Withdrawal',
+                'transaction_type' => 'Adjustment',
                 'agent_id' => Auth::id(),
                 'transaction_date_time' => now(),
                 'status' => 'completed',
                 'safe_id' => $safe->id,
-                'notes' => "Balance adjustment by " . Auth::user()->name . ". Reason: " . $this->adjustmentReason,
+                'notes' => ($difference > 0 ? 'Safe balance increase' : 'Safe balance decrease') . " by " . Auth::user()->name . ". Reason: " . $this->adjustmentReason,
                 'approved_at' => now(),
                 'approved_by' => Auth::id(),
+                'reference_number' => generate_reference_number($safe->branch->name ?? 'ADMIN'),
             ]);
 
             // Log the activity

@@ -108,6 +108,27 @@ class Transaction extends Model
                 return 'إيداع أموال';
             case 'Withdrawal':
                 return 'سحب أموال';
+            case 'Adjustment':
+                // Check if this is a customer balance adjustment
+                if ($this->customer_name && $this->customer_name !== 'ADMIN BALANCE ADJUSTMENT') {
+                    // This is a customer balance adjustment
+                    if ($this->notes && str_contains($this->notes, 'increase')) {
+                        return 'إيداع رصيد العميل';
+                    } elseif ($this->notes && str_contains($this->notes, 'decrease')) {
+                        return 'سحب رصيد العميل';
+                    } else {
+                        return 'تعديل رصيد العميل';
+                    }
+                } else {
+                    // This is a safe balance adjustment
+                    if ($this->notes && str_contains($this->notes, 'increase')) {
+                        return 'إيداع رصيد الخزنة';
+                    } elseif ($this->notes && str_contains($this->notes, 'decrease')) {
+                        return 'سحب رصيد الخزنة';
+                    } else {
+                        return 'تعديل رصيد الخزنة';
+                    }
+                }
             default:
                 return ucfirst($type);
         }

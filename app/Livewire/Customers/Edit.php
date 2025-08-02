@@ -242,7 +242,7 @@ class Edit extends Component
                     'transaction_date_time' => now(),
                     'status' => 'completed',
                     'branch_id' => $this->customer->branch_id,
-                    'reference_number' => uniqid('BAL-'),
+                    'reference_number' => generate_reference_number($this->customer->branch->name ?? 'ADMIN'),
                     'notes' => ($newBalance > $oldBalance) ? 'Admin balance increase' : 'Admin balance decrease',
                 ]);
             }

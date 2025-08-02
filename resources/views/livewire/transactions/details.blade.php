@@ -38,11 +38,19 @@
                             <div class="text-right">
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
-                                    @if ($transaction->status === 'completed') bg-green-100 text-green-800
-                                    @elseif($transaction->status === 'pending') bg-yellow-100 text-yellow-800
-                                    @elseif($transaction->status === 'rejected') bg-red-100 text-red-800
+                                    @if (strtolower($transaction->status) === 'completed') bg-green-100 text-green-800
+                                    @elseif(strtolower($transaction->status) === 'pending') bg-yellow-100 text-yellow-800
+                                    @elseif(strtolower($transaction->status) === 'rejected') bg-red-100 text-red-800
                                     @else bg-gray-100 text-gray-800 @endif">
-                                    {{ $transaction->status === 'Completed' ? 'مكتملة' : ($transaction->status === 'Pending' ? 'قيد الانتظار' : ($transaction->status === 'Rejected' ? 'مرفوضة' : 'غير معروف')) }}
+                                    @if (strtolower($transaction->status) === 'completed')
+                                        مكتملة
+                                    @elseif(strtolower($transaction->status) === 'pending')
+                                        قيد الانتظار
+                                    @elseif(strtolower($transaction->status) === 'rejected')
+                                        مرفوضة
+                                    @else
+                                        {{ $transaction->status ?? 'غير معروف' }}
+                                    @endif
                                 </span>
                             </div>
                         </div>
@@ -257,11 +265,19 @@
                             <div class="text-right">
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
-                                    @if ($cashTransaction->status === 'completed') bg-green-100 text-green-800
-                                    @elseif($cashTransaction->status === 'pending') bg-yellow-100 text-yellow-800
-                                    @elseif($cashTransaction->status === 'rejected') bg-red-100 text-red-800
+                                    @if (strtolower($cashTransaction->status) === 'completed') bg-green-100 text-green-800
+                                    @elseif(strtolower($cashTransaction->status) === 'pending') bg-yellow-100 text-yellow-800
+                                    @elseif(strtolower($cashTransaction->status) === 'rejected') bg-red-100 text-red-800
                                     @else bg-gray-100 text-gray-800 @endif">
-                                    {{ ucfirst($cashTransaction->status) }}
+                                    @if (strtolower($cashTransaction->status) === 'completed')
+                                        مكتملة
+                                    @elseif(strtolower($cashTransaction->status) === 'pending')
+                                        قيد الانتظار
+                                    @elseif(strtolower($cashTransaction->status) === 'rejected')
+                                        مرفوضة
+                                    @else
+                                        {{ $cashTransaction->status ?? 'غير معروف' }}
+                                    @endif
                                 </span>
                             </div>
                         </div>

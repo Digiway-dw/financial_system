@@ -183,12 +183,20 @@
                                     {{ $transaction->line->mobile_number ?? '-' }}</td>
                                 <td class="px-6 py-4">
                                     <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $transaction->status === 'completed'
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ strtolower($transaction->status) === 'completed'
                                             ? 'bg-green-100 text-green-700'
-                                            : ($transaction->status === 'pending'
+                                            : (strtolower($transaction->status) === 'pending'
                                                 ? 'bg-yellow-100 text-yellow-700'
                                                 : 'bg-red-100 text-red-700') }}">
-                                        {{ ucfirst($transaction->status) }}
+                                        @if (strtolower($transaction->status) === 'completed')
+                                            مكتملة
+                                        @elseif(strtolower($transaction->status) === 'pending')
+                                            قيد الانتظار
+                                        @elseif(strtolower($transaction->status) === 'rejected')
+                                            مرفوضة
+                                        @else
+                                            {{ $transaction->status ?? 'غير معروف' }}
+                                        @endif
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">

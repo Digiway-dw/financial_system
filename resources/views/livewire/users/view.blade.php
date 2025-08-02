@@ -342,7 +342,7 @@
                             <tr>
                                 <th scope="col"
                                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
-                                    #</th>
+                                    رقم المرجع</th>
                                 {{-- <th scope="col"
                                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
                                     النوع</th> --}}
@@ -366,24 +366,27 @@
                                 <tr class="hover:bg-gray-50">
                                     <td
                                         class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
-                                        {{ $transaction->id }}</td>
+                                        {{ $transaction->reference_number ?? '#' . $transaction->id }}</td>
                                     {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         {{ $transaction->type ?? '-' }}</td> --}}
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
-                                        {{ $transaction->transaction_type ?? '-' }}
+                                        {{ $transaction->descriptive_transaction_name ?? $transaction->transaction_type ?? '-' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                         {{ $transaction->amount ? number_format($transaction->amount, 2) . ' ج.م' : '-' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
-                                        @if ($transaction->status == 'completed')
+                                        @if (strtolower($transaction->status) === 'completed')
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">مكتمل</span>
-                                        @elseif($transaction->status == 'pending')
+                                        @elseif(strtolower($transaction->status) === 'pending')
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">قيد
                                                 الانتظار</span>
-                                        @elseif($transaction->status == 'failed')
+                                        @elseif(strtolower($transaction->status) === 'rejected')
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">مرفوض</span>
+                                        @elseif(strtolower($transaction->status) === 'failed')
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">فشل</span>
                                         @else
