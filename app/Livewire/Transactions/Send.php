@@ -17,7 +17,6 @@ use App\Notifications\AdminNotification;
 class Send extends Component
 {
     // Client Information
-    #[Validate('required|digits:11')]
     public $clientMobile = '';
 
     #[Validate('required|string|max:255')]
@@ -31,7 +30,6 @@ class Send extends Component
     public $clientBalance = 0;
 
     // Receiver Information
-    #[Validate('required|digits:11')]
     public $receiverMobile = '';
 
     // Transaction Details
@@ -67,6 +65,7 @@ class Send extends Component
     public $lowBalanceWarning = '';
     public $successMessage = '';
     public $errorMessage = '';
+    public $mobileFilledFromDropdown = false;
 
     // Form validation messages
     protected $messages = [
@@ -89,6 +88,9 @@ class Send extends Component
 
     public function updatedClientMobile()
     {
+        // Reset the dropdown flag when user manually types
+        $this->mobileFilledFromDropdown = false;
+        
         $this->searchClient();
 
         // If the mobile number does not match the selected client, clear selection
@@ -171,6 +173,7 @@ class Send extends Component
             $this->clientBalance = $client->balance;
             $this->clientHasActiveWallet = $client->is_client;
             $this->clientSuggestions = [];
+            $this->mobileFilledFromDropdown = true;
         }
     }
 
@@ -292,6 +295,10 @@ class Send extends Component
     public function submitTransaction()
     {
         $this->discount = abs((float) $this->discount);
+        
+        // Custom validation for mobile numbers (only on submit, not while typing)
+        $this->validateMobileNumbers();
+        
         $this->validate();
 
         // Branch validation is handled in CreateTransaction use case based on the selected line's branch
@@ -460,7 +467,8 @@ class Send extends Component
             'deductFromLineOnly',
             'clientSuggestions',
             'lowBalanceWarning',
-            'errorMessage'
+            'errorMessage',
+            'mobileFilledFromDropdown'
         ]);
         $this->deductFromLineOnly = true;
         $this->loadAvailableLines();
@@ -475,8 +483,37 @@ class Send extends Component
             'clientCode',
             'clientGender',
             'clientBalance',
-            'clientSuggestions'
+            'clientSuggestions',
+            'mobileFilledFromDropdown'
         ]);
+    }
+
+    /**
+     * Validate mobile numbers only when submitting (not while typing)
+     */
+    private function validateMobileNumbers()
+    {
+        // Validate client mobile number
+        if (empty($this->clientMobile)) {
+            $this->addError('clientMobile', 'رقم هاتف العميل مطلوب.');
+            return;
+        }
+        
+        if (!preg_match('/^\d{11}$/', $this->clientMobile)) {
+            $this->addError('clientMobile', 'رقم هاتف العميل يجب أن يكون 11 رقم.');
+            return;
+        }
+
+        // Validate receiver mobile number
+        if (empty($this->receiverMobile)) {
+            $this->addError('receiverMobile', 'رقم هاتف المستلم مطلوب.');
+            return;
+        }
+        
+        if (!preg_match('/^\d{11}$/', $this->receiverMobile)) {
+            $this->addError('receiverMobile', 'رقم هاتف المستلم يجب أن يكون 11 رقم.');
+            return;
+        }
     }
 
     public function render()

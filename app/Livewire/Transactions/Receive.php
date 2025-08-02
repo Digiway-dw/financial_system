@@ -16,7 +16,6 @@ use App\Notifications\AdminNotification;
 class Receive extends Component
 {
     // Client Information
-    #[Validate('required|digits:11')]
     public $clientMobile = '';
 
     #[Validate('required|string|max:255')]
@@ -30,7 +29,6 @@ class Receive extends Component
     public $clientBalance = null;
 
     // Sender Information
-    #[Validate('required|digits:11')]
     public $senderMobile = '';
 
     // Transaction Details
@@ -61,6 +59,7 @@ class Receive extends Component
     public $safeBalanceWarning = '';
     public $successMessage = '';
     public $errorMessage = '';
+    public $mobileFilledFromDropdown = false;
 
     // Form validation messages
     protected $messages = [
@@ -82,6 +81,9 @@ class Receive extends Component
 
     public function updatedClientMobile()
     {
+        // Reset the dropdown flag when user manually types
+        $this->mobileFilledFromDropdown = false;
+        
         $this->searchClient();
 
         // If the mobile number does not match the selected client, clear selection
@@ -150,6 +152,7 @@ class Receive extends Component
             $this->clientGender = $client->gender;
             $this->clientBalance = $client->balance;
             $this->clientSuggestions = [];
+            $this->mobileFilledFromDropdown = true;
         }
     }
 
@@ -321,6 +324,8 @@ class Receive extends Component
 
     public function submitTransaction()
     {
+        // Custom validation for mobile numbers (only on submit, not while typing)
+        $this->validateMobileNumbers();
 
         $this->validate();
 
@@ -494,7 +499,8 @@ class Receive extends Component
             'selectedLineId',
             'clientSuggestions',
             'safeBalanceWarning',
-            'errorMessage'
+            'errorMessage',
+            'mobileFilledFromDropdown'
         ]);
         $this->loadAvailableLines();
     }
@@ -514,8 +520,37 @@ class Receive extends Component
             'clientCode',
             'clientGender',
             'clientBalance',
-            'clientSuggestions'
+            'clientSuggestions',
+            'mobileFilledFromDropdown'
         ]);
+    }
+
+    /**
+     * Validate mobile numbers only when submitting (not while typing)
+     */
+    private function validateMobileNumbers()
+    {
+        // Validate client mobile number
+        if (empty($this->clientMobile)) {
+            $this->addError('clientMobile', 'رقم هاتف العميل مطلوب.');
+            return;
+        }
+        
+        if (!preg_match('/^\d{11}$/', $this->clientMobile)) {
+            $this->addError('clientMobile', 'رقم هاتف العميل يجب أن يكون 11 رقم.');
+            return;
+        }
+
+        // Validate sender mobile number
+        if (empty($this->senderMobile)) {
+            $this->addError('senderMobile', 'رقم هاتف المرسل مطلوب.');
+            return;
+        }
+        
+        if (!preg_match('/^\d{11}$/', $this->senderMobile)) {
+            $this->addError('senderMobile', 'رقم هاتف المرسل يجب أن يكون 11 رقم.');
+            return;
+        }
     }
 
     public function render()
