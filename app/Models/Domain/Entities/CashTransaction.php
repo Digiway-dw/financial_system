@@ -40,5 +40,47 @@ class CashTransaction extends Model
         return $this->belongsTo(\App\Models\Domain\Entities\Safe::class, 'safe_id');
     }
 
+    /**
+     * Get a descriptive transaction name based on the transaction type and customer information
+     */
+    public function getDescriptiveTransactionNameAttribute()
+    {
+        $type = $this->transaction_type;
+        $customerName = $this->customer_name;
+        
+        // Determine the deposit/withdrawal type based on customer name and other indicators
+        if ($type === 'Deposit') {
+            if ($customerName === 'اداري') {
+                return 'إيداع نقدي إداري';
+            } elseif ($this->customer_code) {
+                return 'إيداع نقدي لمحفظة العميل';
+            } elseif ($this->depositor_national_id || $this->depositor_mobile_number) {
+                return 'إيداع نقدي مباشر';
+            } else {
+                // Check if it's a user deposit by looking at the customer name pattern
+                $user = \App\Domain\Entities\User::where('name', $customerName)->first();
+                if ($user) {
+                    return 'إيداع نقدي للمستخدم';
+                }
+                return 'إيداع نقدي';
+            }
+        } elseif ($type === 'Withdrawal') {
+            if ($customerName === 'اداري') {
+                return 'سحب نقدي إداري';
+            } elseif ($this->customer_code) {
+                return 'سحب نقدي من محفظة العميل';
+            } else {
+                // Check if it's a user withdrawal
+                $user = \App\Domain\Entities\User::where('name', $customerName)->first();
+                if ($user) {
+                    return 'سحب نقدي من المستخدم';
+                }
+                return 'سحب نقدي';
+            }
+        }
+        
+        return ucfirst($type);
+    }
+
     // Future relationships and methods can be added here
 } 

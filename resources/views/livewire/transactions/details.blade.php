@@ -64,7 +64,7 @@
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">نوع المعاملة:</span>
                                     <span
-                                        class="text-sm text-gray-900">{{ $transaction->transaction_type === 'Transfer' ? 'تحويل' : ($transaction->transaction_type === 'Deposit' ? 'إيداع' : ($transaction->transaction_type === 'Withdrawal' ? 'سحب' : $transaction->transaction_type)) }}</span>
+                                        class="text-sm text-gray-900">{{ $transaction->descriptive_transaction_name }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">المبلغ:</span>
@@ -252,7 +252,7 @@
                                     {{ $cashTransaction->reference_number ?? 'Cash Transaction #' . $cashTransaction->id }}
                                 </h2>
                                 <p class="text-sm text-gray-600 mt-1">Type:
-                                    {{ ucfirst($cashTransaction->transaction_type) }}</p>
+                                    {{ $cashTransaction->descriptive_transaction_name }}</p>
                             </div>
                             <div class="text-right">
                                 <span
@@ -284,7 +284,7 @@
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Transaction Type:</span>
                                     <span
-                                        class="text-sm text-gray-900">{{ ucfirst($cashTransaction->transaction_type) }}</span>
+                                        class="text-sm text-gray-900">{{ $cashTransaction->descriptive_transaction_name }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Amount:</span>
