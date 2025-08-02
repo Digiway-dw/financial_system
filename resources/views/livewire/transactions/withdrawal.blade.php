@@ -804,7 +804,7 @@
                                         </svg>
                                         نوع المصروف
                                     </label>
-                                    <select id="selectedExpenseItem" wire:model="selectedExpenseItem"
+                                    <select id="selectedExpenseItem" wire:model.live="selectedExpenseItem"
                                         class="w-full rounded-lg border-slate-300 shadow-sm focus:border-red-500 focus:ring-red-500 transition-all duration-200 bg-white text-slate-900">
                                         <option value="">اختر نوع المصروف</option>
                                         @foreach ($expenseItems as $item)

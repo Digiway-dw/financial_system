@@ -70,6 +70,14 @@ class Withdrawal extends Create
         }
     }
 
+    public function updatedSelectedExpenseItem($value)
+    {
+        // Clear custom expense item when a different option is selected
+        if ($value !== 'other') {
+            $this->customExpenseItem = '';
+        }
+    }
+
     public function mount()
     {
         // $this->authorize('withdraw-cash'); // Removed to allow all users
@@ -320,7 +328,7 @@ class Withdrawal extends Create
                 return;
             }
 
-            if ($this->selectedExpenseItem === 'other' && empty($this->customExpenseItem)) {
+            if ($this->selectedExpenseItem === 'other' && empty(trim($this->customExpenseItem))) {
                 session()->flash('error', 'يرجى تحديد نوع المصروف المخصص.');
                 return;
             }
@@ -735,6 +743,12 @@ class Withdrawal extends Create
             $rules['withdrawalToName'] = 'required|string';
             $rules['withdrawalNationalId'] = 'required|string|digits:14';
             $rules['clientMobile'] = 'required|digits:11';
+        }
+        if ($this->withdrawalType === 'expense') {
+            $rules['selectedExpenseItem'] = 'required|string';
+            if ($this->selectedExpenseItem === 'other') {
+                $rules['customExpenseItem'] = 'required|string|min:2';
+            }
         }
         return $rules;
     }
