@@ -223,7 +223,7 @@
                                         </svg>
                                     </div>
                                     <span
-                                        class="text-sm font-medium {{ $withdrawalType === 'expense' ? 'text-amber-700' : 'text-slate-700' }}">Expense</span>
+                                        class="text-sm font-medium {{ $withdrawalType === 'expense' ? 'text-amber-700' : 'text-slate-700' }}">مصروفات</span>
                                 </div>
                             </button>
                         @endif
@@ -808,12 +808,26 @@
                                         class="w-full rounded-lg border-slate-300 shadow-sm focus:border-red-500 focus:ring-red-500 transition-all duration-200 bg-white text-slate-900">
                                         <option value="">اختر نوع المصروف</option>
                                         @foreach ($expenseItems as $item)
-                                            <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                            @if (isset($item['is_custom']) && $item['is_custom'])
+                                                <option value="{{ $item['id'] }}" class="text-blue-600">
+                                                    📝 {{ $item['name'] }} (مخصص)
+                                                </option>
+                                            @else
+                                                <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                            @endif
                                         @endforeach
                                     </select>
                                     @error('selectedExpenseItem')
                                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                                     @enderror
+                                    <p class="text-blue-600 text-xs mt-1">
+                                        النوع المخصص سيتم حفظه تلقائياً للاستخدام المستقبلي
+                                        @if (Auth::user()->hasRole('admin') || Auth::user()->hasRole('general_supervisor'))
+                                            <a href="{{ route('admin.custom-expense-types') }}" class="text-blue-800 hover:underline">
+                                                (إدارة الأنواع المخصصة)
+                                            </a>
+                                        @endif
+                                    </p>
                                 </div>
 
                                 @if ($selectedExpenseItem === 'other')

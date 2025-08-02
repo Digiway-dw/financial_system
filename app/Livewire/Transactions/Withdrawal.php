@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Domain\Entities\Transaction;
 use App\Models\Domain\Entities\Safe;
 use App\Helpers\helpers;
+use App\Models\CustomExpenseType;
 
 class Withdrawal extends Create
 {
@@ -78,6 +79,13 @@ class Withdrawal extends Create
         }
     }
 
+    public function addCustomExpenseType()
+    {
+        // This method will be called when a custom expense type is submitted
+        // Refresh the expense items list to include the new custom type
+        $this->expenseItems = CustomExpenseType::getAllExpenseTypes();
+    }
+
     public function mount()
     {
         // $this->authorize('withdraw-cash'); // Removed to allow all users
@@ -102,17 +110,8 @@ class Withdrawal extends Create
             })->toArray();
         }
 
-        // Load expense items
-        $this->expenseItems = [
-            ['id' => 'electricity', 'name' => 'كهرباء'],
-            ['id' => 'water', 'name' => 'مياه'],
-            ['id' => 'internet', 'name' => 'إنترنت'],
-            ['id' => 'phone', 'name' => 'هاتف'],
-            ['id' => 'maintenance', 'name' => 'صيانة'],
-            ['id' => 'cleaning', 'name' => 'تنظيف'],
-            ['id' => 'security', 'name' => 'أمن'],
-            ['id' => 'other', 'name' => 'أخرى'],
-        ];
+        // Load expense items (built-in + custom)
+        $this->expenseItems = CustomExpenseType::getAllExpenseTypes();
 
         $user = Auth::user();
         // Fix: Only admins/supervisors see all safes, others see only their branch's safes
@@ -650,10 +649,25 @@ class Withdrawal extends Create
                 $branch = collect($this->branches)->firstWhere('id', $this->selectedBranchId);
                 $branchName = $branch['name'] ?? 'Unknown Branch';
 
-                // Get expense item name
+                // Get expense item name and save custom types
                 $expenseItemName = '';
                 if ($this->selectedExpenseItem === 'other') {
                     $expenseItemName = $this->customExpenseItem;
+                    // Save the custom expense type for future use
+                    CustomExpenseType::addOrUpdateType($this->customExpenseItem, $this->customExpenseItem);
+                    // Refresh the expense items list
+                    $this->addCustomExpenseType();
+                } elseif (str_starts_with($this->selectedExpenseItem, 'custom_')) {
+                    // Handle custom expense type selection
+                    $customId = str_replace('custom_', '', $this->selectedExpenseItem);
+                    $customType = CustomExpenseType::getCustomTypeById($customId);
+                    if ($customType) {
+                        $expenseItemName = $customType->name_ar;
+                        // Increment usage count
+                        $customType->increment('usage_count');
+                    } else {
+                        $expenseItemName = 'Unknown Custom Expense';
+                    }
                 } else {
                     $expenseItem = collect($this->expenseItems)->firstWhere('id', $this->selectedExpenseItem);
                     $expenseItemName = $expenseItem['name'] ?? 'Unknown Expense';
