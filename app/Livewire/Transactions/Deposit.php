@@ -50,12 +50,9 @@ class Deposit extends Create
         $this->depositType = 'direct';
 
         $user = Auth::user();
-        // Load users based on role - admin/supervisor can see all users, others see only branch users
-        if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
-            $this->branchUsers = User::all();
-        } else {
-            $this->branchUsers = User::where('branch_id', $user->branch_id ?? null)->get();
-        }
+        // Load users for deposit - all users should be available for user deposits
+        // For user deposits, show all users regardless of role or branch
+        $this->branchUsers = User::with(['roles', 'branch'])->get();
 
         if ($user->hasRole('admin') || $user->hasRole('general_supervisor')) {
             $this->branchSafes = \App\Models\Domain\Entities\Safe::with('branch')->get();
