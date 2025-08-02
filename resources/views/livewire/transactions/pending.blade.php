@@ -169,7 +169,9 @@
                                     <td class="px-6 py-4 text-sm">
                                         <span
                                             class="px-3 py-1 rounded-full text-xs font-medium
-                                            @if ($transaction['transaction_type'] === 'Transfer') bg-blue-100 text-blue-800
+                                            @if ($transaction['transaction_type'] === 'transfer') bg-blue-100 text-blue-800
+                                            @elseif($transaction['transaction_type'] === 'send') bg-purple-100 text-purple-800
+                                            @elseif($transaction['transaction_type'] === 'receive') bg-green-100 text-green-800
                                             @elseif($transaction['transaction_type'] === 'Withdrawal') bg-red-100 text-red-800
                                             @elseif($transaction['transaction_type'] === 'Deposit') bg-green-100 text-green-800
                                             @else bg-gray-100 text-gray-800 @endif">

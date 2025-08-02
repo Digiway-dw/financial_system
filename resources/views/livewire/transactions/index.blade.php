@@ -272,7 +272,8 @@
                     <select wire:model.defer="transaction_type" id="transaction_type"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                         <option value="">كل الأنواع</option>
-                        <option value="Transfer">تحويل</option>
+                        <option value="transfer">تحويل</option>
+                        <option value="receive">استلام</option>
                         <option value="Deposit">إيداع</option>
                         <option value="Withdrawal">سحب</option>
                     </select>
