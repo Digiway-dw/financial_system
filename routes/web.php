@@ -98,6 +98,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('branches.create');
     Route::get('branches/{branchId}/edit', \App\Livewire\Branches\Edit::class)
         ->name('branches.edit');
+
+    // Custom Expense Types Management
+    Route::get('admin/custom-expense-types', \App\Livewire\Admin\CustomExpenseTypes::class)
+        ->name('admin.custom-expense-types')
+        ->middleware('can:manage-custom-expense-types');
     Route::get('branches/{branchId}/show', \App\Livewire\Branches\Show::class)->name('branches.show');
 
     // User Management Routes

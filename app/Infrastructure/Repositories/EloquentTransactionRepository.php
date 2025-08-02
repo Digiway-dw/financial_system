@@ -156,7 +156,7 @@ class EloquentTransactionRepository implements TransactionRepository
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
             $transactionArray['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
-            $transactionArray['commission'] = $transaction->commission ?? 0;
+            $transactionArray['commission'] = ($transaction->commission ?? 0) - ($transaction->deduction ?? 0); // Net commission after discount
             $transactionArray['deduction'] = $transaction->deduction ?? 0;
             $transactionArray['source_table'] = 'transactions';
             return $transactionArray;
@@ -402,7 +402,7 @@ class EloquentTransactionRepository implements TransactionRepository
             $arr = $transaction->toArray();
             $arr['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
             $arr['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
-            $arr['commission'] = $transaction->commission ?? 0;
+            $arr['commission'] = ($transaction->commission ?? 0) - ($transaction->deduction ?? 0); // Net commission after discount
             $arr['deduction'] = $transaction->deduction ?? 0;
             $arr['source_table'] = 'transactions';
             $arr['descriptive_transaction_name'] = $transaction->descriptive_transaction_name;
@@ -541,9 +541,9 @@ class EloquentTransactionRepository implements TransactionRepository
         $all = $all->values();
 
         $totalTransferred = $all->sum('amount');
-        $totalCommission = $all->sum('commission');
+        $totalCommission = $all->sum('commission'); // This is now net commission (after deduction)
         $totalDeductions = $all->sum('deduction');
-        $netProfit = $totalCommission - $totalDeductions;
+        $netProfit = $totalCommission; // Net profit is the same as net commission since commission already includes deduction
 
         return [
             'transactions' => $all->toArray(),
