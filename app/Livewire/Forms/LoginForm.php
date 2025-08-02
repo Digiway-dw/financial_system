@@ -45,8 +45,15 @@ class LoginForm extends Form
 
         RateLimiter::clear($this->throttleKey());
 
-        // Check working hours for non-admin users
+        // Get the authenticated user
         $user = Auth::user();
+        
+        // Check branch status for users with assigned branches
+        if ($user->hasRole(['agent', 'branch_manager', 'trainee']) && $user->branch_id) {
+            $this->validateBranchStatus($user);
+        }
+
+        // Check working hours for non-admin users
         if (! $user->hasRole('admin')) {
             $this->validateWorkingHours($user);
         }
@@ -219,6 +226,72 @@ class LoginForm extends Form
     }
 
     /**
+     * Validate if user's assigned branch is active
+     *
+     * @param \App\Domain\Entities\User $user
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function validateBranchStatus($user): void
+    {
+        // Check if user has an assigned branch
+        if (!$user->branch_id) {
+            return; // No branch assigned, allow login
+        }
+
+        // Load the branch with its status
+        $branch = \App\Models\Domain\Entities\Branch::find($user->branch_id);
+        
+        if (!$branch) {
+            // Branch not found, log error but allow login
+            Log::error('User assigned to non-existent branch', [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'branch_id' => $user->branch_id,
+            ]);
+            return;
+        }
+
+        // Check if branch is inactive
+        if (!$branch->is_active) {
+            // Log the branch status violation
+            Log::warning('User attempted login with inactive branch', [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'user_name' => $user->name,
+                'branch_id' => $branch->id,
+                'branch_name' => $branch->name,
+                'branch_status' => $branch->is_active,
+                'ip_address' => request()->ip(),
+                'timestamp' => now()->toDateTimeString(),
+            ]);
+
+            // Send notification to admin users about inactive branch login attempt
+            $this->notifyAdminOfInactiveBranchAttempt($user, $branch);
+
+            // Logout the user immediately
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+
+            // Prepare error message
+            $errorMessage = "لا يمكن تسجيل الدخول. الفرع المخصص لك غير نشط. يرجى الاتصال بالإدارة.";
+
+            // Throw validation exception to prevent login
+            throw ValidationException::withMessages([
+                'form.email' => $errorMessage,
+            ]);
+        }
+
+        // Log successful branch validation
+        Log::info("User {$user->id} ({$user->email}) login validated with active branch", [
+            'user_id' => $user->id,
+            'branch_id' => $branch->id,
+            'branch_name' => $branch->name,
+            'branch_status' => $branch->is_active,
+        ]);
+    }
+
+    /**
      * Parse time string with multiple format attempts
      *
      * @param string $timeString
@@ -325,6 +398,65 @@ class LoginForm extends Form
             Log::error('Failed to send admin notification for working hours violation', [
                 'error' => $e->getMessage(),
                 'user_id' => $user->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+    }
+
+    /**
+     * Send notification to admin users about inactive branch login attempt
+     *
+     * @param \App\Domain\Entities\User $user
+     * @param \App\Models\Domain\Entities\Branch $branch
+     */
+    private function notifyAdminOfInactiveBranchAttempt($user, $branch): void
+    {
+        $userId = $user->id;
+        $cacheKey = "inactive_branch_notification_sent_{$userId}";
+        if (cache()->has($cacheKey)) {
+            return; // Already sent recently
+        }
+        cache()->put($cacheKey, true, 60); // 1 minute debounce
+        
+        try {
+            // Get current time for notification
+            $now = Carbon::now();
+            
+            // Prepare notification message
+            $message = "🚨 Inactive Branch Login Attempt Alert\n\n";
+            $message .= "User: {$user->name} (ID: {$user->id})\n";
+            $message .= "Email: {$user->email}\n";
+            $message .= "Role: " . $user->roles->first()->name ?? 'Unknown' . "\n";
+            $message .= "Attempted login with inactive branch\n\n";
+            $message .= "🏢 Branch: {$branch->name} (ID: {$branch->id})\n";
+            $message .= "📍 IP Address: " . request()->ip() . "\n";
+            $message .= "📊 Timestamp: {$now->format('Y-m-d H:i:s')}\n\n";
+            $message .= "⚠️ Action Required: Please activate the branch or reassign the user to an active branch.";
+            
+            // Get all admin users
+            $admins = \App\Domain\Entities\User::role('admin')->get();
+            if ($admins->count() > 0) {
+                // Send notification to all admins
+                Notification::send($admins, new AdminNotification(
+                    $message,
+                    url('/admin/branches') // URL to manage branches
+                ));
+                Log::info('Admin notification sent for inactive branch login attempt', [
+                    'user_id' => $user->id,
+                    'branch_id' => $branch->id,
+                    'admin_count' => $admins->count(),
+                ]);
+            } else {
+                Log::warning('No admin users found to notify about inactive branch login attempt', [
+                    'user_id' => $user->id,
+                    'branch_id' => $branch->id,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to send admin notification for inactive branch login attempt', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id,
+                'branch_id' => $branch->id,
                 'trace' => $e->getTraceAsString(),
             ]);
         }
