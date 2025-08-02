@@ -16,10 +16,10 @@ class Index extends Component
 
     public function loadMore()
     {
-        $this->perPage += 10;
+        $this->perPage += 30;
         $this->generateReport();
     }
-    public $perPage = 10;
+    public $perPage = 30;
     public $hasMore = false;
     public $startDate;
     public $endDate;

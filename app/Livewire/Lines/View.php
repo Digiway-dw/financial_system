@@ -14,7 +14,7 @@ class View extends Component
 
     public $lineId;
     public $line;
-    public $perPage = 10;
+    public $perPage = 30;
 
     protected $paginationTheme = 'tailwind';
 
@@ -26,7 +26,7 @@ class View extends Component
 
     public function loadMore()
     {
-        $this->perPage += 10;
+        $this->perPage += 30;
     }
 
     public function render()

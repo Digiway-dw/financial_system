@@ -14,7 +14,7 @@ class Show extends Component
     public $branch;
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
-    public $perPage = 10;
+    public $perPage = 30;
     public $page = 1;
     public $branchId;
 
@@ -37,7 +37,7 @@ class Show extends Component
 
     public function loadMore()
     {
-        $this->perPage += 10;
+        $this->perPage += 30;
     }
 
     public function getBranchTransactionsProperty()
@@ -77,6 +77,6 @@ class Show extends Component
 
     public function resetPage()
     {
-        $this->perPage = 10;
+        $this->perPage = 30;
     }
 }

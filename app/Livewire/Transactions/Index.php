@@ -28,7 +28,7 @@ class Index extends Component
     public $branch_ids = [];
     public $reference_number;
 
-    public $perPage = 10; // Default rows per page
+    public $perPage = 30; // Default rows per page
     public $currentPage = 1;
     public $lazyLoading = false;
 
