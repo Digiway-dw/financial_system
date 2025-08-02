@@ -172,7 +172,7 @@
                                             : ($transaction->transaction_type === 'receive'
                                                 ? 'bg-green-100 text-green-700'
                                                 : 'bg-blue-100 text-blue-700') }}">
-                                        {{ ucfirst($transaction->transaction_type) }}
+                                        {{ $transaction->descriptive_transaction_name }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-sm font-mono text-slate-900">

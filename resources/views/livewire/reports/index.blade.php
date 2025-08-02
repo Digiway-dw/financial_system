@@ -353,7 +353,7 @@
                                     @endif
                                 </td> --}}
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">
-                                    {{ $transaction['transaction_type'] }}</td>
+                                    {{ $transaction['descriptive_transaction_name'] ?? $transaction['transaction_type'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['agent_name'] }}
                                 </td>
                                 <td class="px-3 py-2 whitespace-nowrap text-gray-700">{{ $transaction['status'] }}
