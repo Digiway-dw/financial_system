@@ -70,7 +70,7 @@ class Send extends Component
 
     // Form validation messages
     protected $messages = [
-        'amount.multiple_of' => 'Amount must be a multiple of 5 EGP.',
+                    'amount.min' => 'Amount must be greater than 0.',
         'amount.min' => 'Minimum amount is 5 EGP.',
         'clientMobile.required' => 'Client mobile number is required.',
         'clientName.required' => 'Client name is required.',
@@ -187,12 +187,30 @@ class Send extends Component
     private function calculateCommission()
     {
         $amount = (float) $this->amount;
-        // Commission: 5 EGP per 500 EGP increment
+        // Commission calculation based on ranges
         if ($amount <= 0) {
             $this->commission = null;
             return;
         }
-        $this->commission = ceil($amount / 500) * 5;
+        
+        $this->commission = $this->calculateBaseCommission($amount);
+    }
+
+    private function calculateBaseCommission($amount)
+    {
+        // Calculate commission based on ranges
+        if ($amount <= 500) {
+            return 5;
+        } elseif ($amount <= 1000) {
+            return 10;
+        } elseif ($amount <= 1500) {
+            return 15;
+        } elseif ($amount <= 2000) {
+            return 20;
+        } else {
+            // For amounts over 2000, add 5 EGP for each additional 500 EGP
+            return 20 + (ceil(($amount - 2000) / 500) * 5);
+        }
     }
 
     private function initializeBranchSelection()
@@ -291,7 +309,7 @@ class Send extends Component
         }
 
         // Check discount against base commission (before discount)
-        $baseCommission = ceil($amount / 500) * 5;
+        $baseCommission = $this->calculateBaseCommission($amount);
         if ($discount > $baseCommission) {
             $this->errorMessage = 'الخصم لا يمكن أن يكون أكبر من العمولة.';
             return;

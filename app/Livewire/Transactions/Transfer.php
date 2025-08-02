@@ -96,7 +96,24 @@ class Transfer extends Component
 
     public function updatedAmount()
     {
-        $this->commission = ceil($this->amount / 500) * 5;
+        $this->commission = $this->calculateBaseCommission($this->amount);
+    }
+
+    private function calculateBaseCommission($amount)
+    {
+        // Calculate commission based on ranges
+        if ($amount <= 500) {
+            return 5;
+        } elseif ($amount <= 1000) {
+            return 10;
+        } elseif ($amount <= 1500) {
+            return 15;
+        } elseif ($amount <= 2000) {
+            return 20;
+        } else {
+            // For amounts over 2000, add 5 EGP for each additional 500 EGP
+            return 20 + (ceil(($amount - 2000) / 500) * 5);
+        }
     }
 
     public function addTransaction()

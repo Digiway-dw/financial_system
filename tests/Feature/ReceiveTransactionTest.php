@@ -135,11 +135,11 @@ test('validation works correctly', function () {
         ]);
 });
 
-test('amount validation requires multiple of 5', function () {
+test('amount validation requires positive number', function () {
     Livewire::test(Receive::class)
-        ->set('amount', 7)
+        ->set('amount', -5)
         ->call('submitTransaction')
-        ->assertHasErrors(['amount' => 'multiple_of']);
+        ->assertHasErrors(['amount' => 'min']);
 });
 
 test('discount notes required when discount is provided', function () {

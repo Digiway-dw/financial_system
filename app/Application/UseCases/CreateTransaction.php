@@ -51,12 +51,9 @@ class CreateTransaction
             \App\Helpers\BranchStatusHelper::validateBranchActive($line->branch_id);
         }
 
-        // Validate amount: integer only, multiples of 5
-        if (!is_int($amount) && !($amount == (int)$amount)) {
-            throw new \InvalidArgumentException('Amount must be an integer.');
-        }
-        if ($amount % 5 !== 0) {
-            throw new \InvalidArgumentException('Amount must be a multiple of 5.');
+        // Validate amount: must be a positive number
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException('Amount must be a positive number.');
         }
 
         // Fetch the agent to check role for status setting and get branch info
