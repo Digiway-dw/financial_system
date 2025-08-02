@@ -206,7 +206,88 @@ class Index extends Component
 
     public function exportExcel()
     {
-        $export = new \App\Exports\AutoSizeTransactionsExport(collect($this->transactions));
+        // Fetch ALL transactions matching the filters (not just paginated)
+        $ordinary = Transaction::query();
+        $cash = CashTransaction::query();
+
+        // Date filter
+        if ($this->startDate) {
+            $ordinary->whereDate('transaction_date_time', '>=', $this->startDate);
+            $cash->whereDate('transaction_date_time', '>=', $this->startDate);
+        }
+        if ($this->endDate) {
+            $ordinary->whereDate('transaction_date_time', '<=', $this->endDate);
+            $cash->whereDate('transaction_date_time', '<=', $this->endDate);
+        }
+        // Agent filter
+        if ($this->selectedUser) {
+            $ordinary->where('agent_id', $this->selectedUser);
+            $cash->where('agent_id', $this->selectedUser);
+        }
+        // Branch filter
+        if ($this->selectedBranch) {
+            $ordinary->where('branch_id', $this->selectedBranch);
+            $cash->whereHas('safe', function ($q) {
+                $q->where('branch_id', $this->selectedBranch);
+            });
+        }
+        // Customer name filter
+        if ($this->selectedCustomer) {
+            $ordinary->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
+            $cash->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
+        }
+        // Customer code filter
+        if ($this->selectedCustomerCode) {
+            $ordinary->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
+            $cash->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
+        }
+        // Type filter
+        if ($this->selectedTransactionType) {
+            $ordinary->where('transaction_type', $this->selectedTransactionType);
+            $cash->where('transaction_type', $this->selectedTransactionType);
+        }
+
+        $ordinaryTxs = $ordinary->with(['agent', 'branch'])->get()->map(function ($tx) {
+            return [
+                'id' => $tx->id,
+                'customer_name' => $tx->customer_name,
+                'customer_code' => $tx->customer_code,
+                'amount' => $tx->amount,
+                'commission' => $tx->commission ?? 0,
+                'deduction' => $tx->deduction ?? 0,
+                'transaction_type' => $tx->transaction_type,
+                'agent_name' => $tx->agent ? $tx->agent->name : '-',
+                'status' => $tx->status,
+                'transaction_date_time' => $tx->transaction_date_time,
+                'reference_number' => $tx->reference_number,
+                'branch_name' => $tx->branch ? $tx->branch->name : 'N/A',
+                'source' => 'ordinary',
+            ];
+        });
+        $cashTxs = $cash->with(['agent', 'safe.branch'])->get()->map(function ($tx) {
+            return [
+                'id' => $tx->id,
+                'customer_name' => $tx->customer_name,
+                'customer_code' => $tx->customer_code,
+                'amount' => $tx->amount,
+                'commission' => 0,
+                'deduction' => 0,
+                'transaction_type' => $tx->transaction_type,
+                'agent_name' => $tx->agent ? $tx->agent->name : '-',
+                'status' => $tx->status,
+                'transaction_date_time' => $tx->transaction_date_time,
+                'reference_number' => $tx->reference_number,
+                'branch_name' => ($tx->safe && $tx->safe->branch) ? $tx->safe->branch->name : 'N/A',
+                'source' => 'cash',
+            ];
+        });
+        $all = collect($ordinaryTxs)->merge($cashTxs);
+        $all = $all->sortBy(function ($tx) {
+            return $tx[$this->sortField] ?? null;
+        }, SORT_REGULAR, $this->sortDirection === 'desc');
+        $all = $all->values();
+
+        $export = new \App\Exports\AutoSizeTransactionsExport($all);
         return \Maatwebsite\Excel\Facades\Excel::download($export, 'transactions_report.xlsx');
     }
 
