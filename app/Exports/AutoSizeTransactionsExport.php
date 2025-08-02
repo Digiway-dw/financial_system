@@ -22,13 +22,16 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
     public function collection()
     {
         return $this->transactions->map(function ($transaction) {
+            $commission = $transaction['commission'] ?? 0;
+            $deduction = $transaction['deduction'] ?? 0;
+            $finalCommission = $commission - $deduction;
             return [
                 'Reference Number' => $transaction['reference_number'] ?? '',
                 'Customer Name' => $transaction['customer_name'] ?? '',
                 'Customer Code' => $transaction['customer_code'] ?? '',
                 'Amount (EGP)' => $transaction['amount'] ?? '',
-                'Commission (EGP)' => $transaction['commission'] ?? '',
-                'Deduction (EGP)' => $transaction['deduction'] ?? '',
+                'Final Commission (EGP)' => $finalCommission,
+                'Deduction (EGP)' => $deduction,
                 'Transaction Type' => $transaction['transaction_type'] ?? '',
                 'Status' => $transaction['status'] ?? '',
                 'Agent Name' => $transaction['agent_name'] ?? '',
@@ -48,7 +51,7 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
             'Customer Name',
             'Customer Code',
             'Amount (EGP)',
-            'Commission (EGP)',
+            'Final Commission (EGP)',
             'Deduction (EGP)',
             'Transaction Type',
             'Status',
