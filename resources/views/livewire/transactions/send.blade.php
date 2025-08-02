@@ -444,7 +444,7 @@
 
                             <div class="space-y-3">
                                 <!-- Collect From Customer Wallet -->
-                                @if ($clientBalance > 0)
+                                @if ($clientHasActiveWallet)
                                     <label
                                         class="flex items-center p-3 bg-purple-50 rounded-xl cursor-pointer hover:bg-purple-100 transition-colors">
                                         <input wire:model.live="collectFromCustomerWallet" type="checkbox"

@@ -307,14 +307,7 @@ class Receive extends Component
 
         $this->validate();
 
-        // Check if branch is active before proceeding
-        try {
-            $branchId = $this->canSelectBranch && $this->selectedBranchId ? $this->selectedBranchId : Auth::user()->branch_id;
-            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
-        } catch (\Exception $e) {
-            $this->errorMessage = $e->getMessage();
-            return;
-        }
+        // Branch validation is handled in CreateTransaction use case based on the selected line's branch
 
         // --- Customer creation or lookup logic ---
 

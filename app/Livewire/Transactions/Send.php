@@ -60,6 +60,7 @@ class Send extends Component
     // Payment Options
     public $collectFromCustomerWallet = false;
     public $deductFromLineOnly = true;
+    public $clientHasActiveWallet = false;
 
     // UI State
     public $clientSuggestions = [];
@@ -168,6 +169,7 @@ class Send extends Component
             $this->clientCode = $client->customer_code ?: $this->generateClientCode();
             $this->clientGender = $client->gender;
             $this->clientBalance = $client->balance;
+            $this->clientHasActiveWallet = $client->is_client;
             $this->clientSuggestions = [];
         }
     }
@@ -274,14 +276,7 @@ class Send extends Component
         $this->discount = abs((float) $this->discount);
         $this->validate();
 
-        // Check if branch is active before proceeding
-        try {
-            $branchId = $this->canSelectBranch && $this->selectedBranchId ? $this->selectedBranchId : Auth::user()->branch_id;
-            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
-        } catch (\Exception $e) {
-            $this->errorMessage = $e->getMessage();
-            return;
-        }
+        // Branch validation is handled in CreateTransaction use case based on the selected line's branch
 
         // Cast to proper types for arithmetic operations
         $amount = (float) $this->amount;
@@ -436,6 +431,7 @@ class Send extends Component
             'clientCode',
             'clientId',
             'clientBalance',
+            'clientHasActiveWallet',
             'receiverMobile',
             'amount',
             'commission',
