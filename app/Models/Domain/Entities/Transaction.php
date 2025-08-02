@@ -89,4 +89,27 @@ class Transaction extends Model
             ->logFillable()
             ->logOnlyDirty();
     }
+
+    /**
+     * Get a descriptive transaction name based on the transaction type and context
+     */
+    public function getDescriptiveTransactionNameAttribute()
+    {
+        $type = $this->transaction_type;
+        
+        switch ($type) {
+            case 'send':
+                return 'إرسال أموال';
+            case 'receive':
+                return 'استلام أموال';
+            case 'transfer':
+                return 'تحويل أموال';
+            case 'Deposit':
+                return 'إيداع أموال';
+            case 'Withdrawal':
+                return 'سحب أموال';
+            default:
+                return ucfirst($type);
+        }
+    }
 }

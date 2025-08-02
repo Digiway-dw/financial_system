@@ -502,7 +502,7 @@
                                 <!-- Transaction Type -->
                                 <td
                                     class="px-2 py-2 whitespace-nowrap text-center text-blue-700 font-bold border-l border-blue-200">
-                                    {{ $transaction['transaction_type'] }}</td>
+                                    {{ $transaction['descriptive_transaction_name'] ?? $transaction['transaction_type'] }}</td>
                                 <!-- Customer Name -->
                                 <td
                                     class="px-2 py-2 whitespace-nowrap text-center font-bold text-gray-900 border-l border-blue-200">

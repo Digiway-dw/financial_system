@@ -173,7 +173,7 @@
                                             @elseif($transaction['transaction_type'] === 'Withdrawal') bg-red-100 text-red-800
                                             @elseif($transaction['transaction_type'] === 'Deposit') bg-green-100 text-green-800
                                             @else bg-gray-100 text-gray-800 @endif">
-                                            {{ $transaction['transaction_type'] }}
+                                            {{ $transaction['descriptive_transaction_name'] ?? $transaction['transaction_type'] }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-600">

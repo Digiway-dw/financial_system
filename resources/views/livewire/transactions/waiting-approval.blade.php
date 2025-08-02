@@ -45,7 +45,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <p class="text-sm font-medium text-gray-500">نوع المعاملة</p>
-                        <p class="text-lg text-gray-900">{{ $transaction->transaction_type }}</p>
+                        <p class="text-lg text-gray-900">{{ $transaction->descriptive_transaction_name }}</p>
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">المبلغ</p>
@@ -70,7 +70,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <p class="text-sm font-medium text-gray-500">نوع المعاملة</p>
-                        <p class="text-lg text-gray-900">{{ $cashTransaction->transaction_type }}</p>
+                        <p class="text-lg text-gray-900">{{ $cashTransaction->descriptive_transaction_name }}</p>
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">المبلغ</p>

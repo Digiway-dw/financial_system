@@ -405,6 +405,7 @@ class EloquentTransactionRepository implements TransactionRepository
             $arr['commission'] = $transaction->commission ?? 0;
             $arr['deduction'] = $transaction->deduction ?? 0;
             $arr['source_table'] = 'transactions';
+            $arr['descriptive_transaction_name'] = $transaction->descriptive_transaction_name;
             return $arr;
         });
 
@@ -485,6 +486,7 @@ class EloquentTransactionRepository implements TransactionRepository
                     'discount_notes' => null,
                     'notes' => $transaction->notes,
                     'transaction_type' => $transaction->transaction_type,
+                    'descriptive_transaction_name' => $transaction->descriptive_transaction_name,
                     'agent_id' => $transaction->agent_id,
                     'agent_name' => $transaction->agent ? $transaction->agent->name : 'N/A',
                     'branch_name' => $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A',
