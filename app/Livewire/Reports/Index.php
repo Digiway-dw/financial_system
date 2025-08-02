@@ -140,9 +140,9 @@ class Index extends Component
         // Financial summary
         $this->financialSummary = [
             'total_transfer' => $all->sum('amount'),
-            'commission_earned' => $all->sum('commission'),
+            'commission_earned' => $all->sum('commission'), // This is now net commission (after deduction)
             'total_discounts' => $all->sum('deduction'),
-            'net_profit' => $all->sum('commission') - $all->sum('deduction'),
+            'net_profit' => $all->sum('commission'), // Net profit is the same as net commission since commission already includes deduction
         ];
 
         // Safe balances by branch
@@ -362,7 +362,7 @@ class Index extends Component
                 'customer_name' => $tx->customer_name,
                 'customer_code' => $tx->customer_code,
                 'amount' => $tx->amount,
-                'commission' => $tx->commission ?? 0,
+                'commission' => ($tx->commission ?? 0) - ($tx->deduction ?? 0), // Net commission after discount
                 'deduction' => $tx->deduction ?? 0,
                 'transaction_type' => $tx->transaction_type,
                 'agent_name' => $tx->agent ? $tx->agent->name : '-',
@@ -402,7 +402,7 @@ class Index extends Component
             'totalTransferred' => $all->sum('amount'),
             'totalCommission' => $all->sum('commission'),
             'totalDeductions' => $all->sum('deduction'),
-            'netProfits' => $all->sum('commission') - $all->sum('deduction'),
+            'netProfits' => $all->sum('commission'), // Net profit is the same as net commission since commission already includes deduction
             'financialSummary' => $this->financialSummary,
             'customerBalances' => $this->customerBalances,
             'safeBalances' => $this->safeBalances,
