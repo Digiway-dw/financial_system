@@ -51,12 +51,9 @@ class CreateTransaction
             \App\Helpers\BranchStatusHelper::validateBranchActive($line->branch_id);
         }
 
-        // Validate amount: integer only, multiples of 5
-        if (!is_int($amount) && !($amount == (int)$amount)) {
-            throw new \InvalidArgumentException('Amount must be an integer.');
-        }
-        if ($amount % 5 !== 0) {
-            throw new \InvalidArgumentException('Amount must be a multiple of 5.');
+        // Validate amount: must be a positive number
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException('Amount must be a positive number.');
         }
 
         // Fetch the agent to check role for status setting and get branch info
@@ -278,6 +275,11 @@ class CreateTransaction
         // Check current balance for transfer type only
         if ($shouldApplyBalances && $transactionType === 'Transfer') {
             if ($paymentMethod === 'client wallet') {
+                // Check if customer has an active wallet (is_client = true)
+                if (!$customer->is_client) {
+                    throw new \Exception('لا يمكن خصم المبلغ من محفظة العميل. العميل ليس لديه محفظة نشطة.');
+                }
+                
                 // Decrease client balance by (amount + final commission - deduction)
                 $clientDeduction = $amount + $finalCommission - $deduction;
                 if (($customer->balance - $clientDeduction) < 0) {
@@ -338,6 +340,11 @@ class CreateTransaction
         }
 
         if ($shouldApplyBalances && $paymentMethod === 'client wallet') {
+            // Check if customer has an active wallet (is_client = true)
+            if (!$customer->is_client) {
+                throw new \Exception('لا يمكن خصم المبلغ من محفظة العميل. العميل ليس لديه محفظة نشطة.');
+            }
+            
             if ($transactionType === 'Withdrawal') {
                 if (($customer->balance - $amount) < 0) {
                     throw new \Exception('Insufficient balance in client wallet for this transaction. Available: ' . number_format($customer->balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');

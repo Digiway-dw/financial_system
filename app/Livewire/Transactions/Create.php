@@ -206,14 +206,7 @@ class Create extends Component
     {
         $this->validate();
 
-        // Check if branch is active before proceeding
-        try {
-            $branchId = $this->branchId;
-            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
-        } catch (\Exception $e) {
-            session()->flash('error', $e->getMessage());
-            return;
-        }
+        // Branch validation is handled in CreateTransaction use case based on the selected line's branch
 
         // If this transaction is for a line and needs admin approval, check line limits before saving
         $needsApproval = $this->deduction > 0 || $this->transactionType === 'Receive' || $this->transactionType === 'Deposit';
@@ -331,13 +324,8 @@ class Create extends Component
             'customerMobileNumber' => 'required|string|max:20',
             'amount' => [
                 'required',
-                'integer',
-                'min:5',
-                function ($attribute, $value, $fail) {
-                    if ($value % 5 !== 0) {
-                        $fail('The ' . $attribute . ' must be a multiple of 5.');
-                    }
-                },
+                'numeric',
+                'min:1',
             ],
             'deduction' => 'nullable|numeric|min:0',
         ];
@@ -371,12 +359,27 @@ class Create extends Component
 
     private function calculateCommission()
     {
-        // Example: 5 EGP per 500 EGP, with a minimum of 5 EGP
         if ($this->amount > 0) {
-            $calculatedCommission = (floor($this->amount / 500) * 5);
-            $this->commission = max(5, $calculatedCommission); // Ensure minimum 5 EGP commission
+            $this->commission = $this->calculateBaseCommission($this->amount);
         } else {
             $this->commission = 0.00;
+        }
+    }
+
+    private function calculateBaseCommission($amount)
+    {
+        // Calculate commission based on ranges
+        if ($amount <= 500) {
+            return 5;
+        } elseif ($amount <= 1000) {
+            return 10;
+        } elseif ($amount <= 1500) {
+            return 15;
+        } elseif ($amount <= 2000) {
+            return 20;
+        } else {
+            // For amounts over 2000, add 5 EGP for each additional 500 EGP
+            return 20 + (ceil(($amount - 2000) / 500) * 5);
         }
     }
 }

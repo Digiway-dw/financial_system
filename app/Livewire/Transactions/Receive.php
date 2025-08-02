@@ -64,7 +64,7 @@ class Receive extends Component
 
     // Form validation messages
     protected $messages = [
-        'amount.multiple_of' => 'Amount must be a multiple of 5 EGP.',
+                    'amount.min' => 'Amount must be greater than 0.',
         'amount.min' => 'Minimum amount is 5 EGP.',
         'clientMobile.required' => 'Client mobile number is required.',
         'clientName.required' => 'Client name is required.',
@@ -170,8 +170,25 @@ class Receive extends Component
             $this->commission = 0;
             return;
         }
-        // Commission: 5 EGP per 500 EGP increment
-        $this->commission = ceil($amount / 500) * 5;
+        // Commission calculation based on ranges
+        $this->commission = $this->calculateBaseCommission($amount);
+    }
+
+    private function calculateBaseCommission($amount)
+    {
+        // Calculate commission based on ranges
+        if ($amount <= 500) {
+            return 5;
+        } elseif ($amount <= 1000) {
+            return 10;
+        } elseif ($amount <= 1500) {
+            return 15;
+        } elseif ($amount <= 2000) {
+            return 20;
+        } else {
+            // For amounts over 2000, add 5 EGP for each additional 500 EGP
+            return 20 + (ceil(($amount - 2000) / 500) * 5);
+        }
     }
 
     private function initializeBranchSelection()
@@ -307,14 +324,7 @@ class Receive extends Component
 
         $this->validate();
 
-        // Check if branch is active before proceeding
-        try {
-            $branchId = $this->canSelectBranch && $this->selectedBranchId ? $this->selectedBranchId : Auth::user()->branch_id;
-            \App\Helpers\BranchStatusHelper::validateBranchActive($branchId);
-        } catch (\Exception $e) {
-            $this->errorMessage = $e->getMessage();
-            return;
-        }
+        // Branch validation is handled in CreateTransaction use case based on the selected line's branch
 
         // --- Customer creation or lookup logic ---
 
@@ -354,7 +364,7 @@ class Receive extends Component
         // Discount must not exceed commission
         $amount = (float) $this->amount;
         $discount = (float) $this->discount;
-        $baseCommission = ceil($amount / 500) * 5;
+        $baseCommission = $this->calculateBaseCommission($amount);
         if ($discount > $baseCommission) {
             $this->errorMessage = "الخصم ({$discount} EGP) لا يمكن أن يكون أكبر من العمولة المسموح بها ({$baseCommission} EGP). يرجى إدخال خصم أقل من أو يساوي العمولة.";
             return;
