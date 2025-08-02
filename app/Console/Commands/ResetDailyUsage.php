@@ -31,10 +31,10 @@ class ResetDailyUsage extends Command
         $today = Carbon::now()->toDateString();
         $lastDailyReset = Cache::get('lines:last_daily_reset');
 
-        if ($lastDailyReset === $today) {
-            $this->info('Daily reset already performed today.');
-            return 0;
-        }
+        // if ($lastDailyReset === $today) {
+        //     $this->info('Daily reset already performed today.');
+        //     return 0;
+        // }
 
         // Reset daily_usage to 0 for all lines
         DB::table('lines')->update(['daily_usage' => 0]);
