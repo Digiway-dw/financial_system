@@ -131,7 +131,7 @@
                 <div class="flex items-end gap-2">
                     <div class="flex flex-wrap gap-3 w-full">
                         <button type="submit"
-                            class="min-w-[160px] px-6 py-3 bg-blue-600 text-white rounded-2xl font-semibold hover:bg-blue-700 transition shadow-md">توليد
+                            class="min-w-[160px] px-6 py-3 bg-blue-600 text-white rounded-2xl font-semibold hover:bg-blue-700 transition shadow-md">اصدار
                             التقرير</button>
                         <button type="button" wire:click="exportSummaryPdf"
                             class="min-w-[160px] px-6 py-3 bg-indigo-600 text-white rounded-2xl font-semibold hover:bg-indigo-700 transition shadow-md">تصدير
@@ -139,12 +139,12 @@
                         <button type="button" wire:click="exportExcel"
                             class="min-w-[160px] px-6 py-3 bg-green-600 text-white rounded-2xl font-semibold hover:bg-green-700 transition shadow-md">تصدير
                             الـ Excel</button>
-                        <button type="button" wire:click="exportPdf"
+                        <button type="button" wire:click="exportAllPdf"
                             class="min-w-[160px] px-6 py-3 bg-red-600 text-white rounded-2xl font-semibold hover:bg-red-700 transition shadow-md">تصدير
                             ألPDF</button>
-                        <button type="button" wire:click="exportAllPdf"
+                        {{-- <button type="button" wire:click="exportAllPdf"
                             class="min-w-[160px] px-6 py-3 bg-purple-600 text-white rounded-2xl font-semibold hover:bg-purple-700 transition shadow-md">تصدير
-                            الكل</button>
+                            الكل</button> --}}
                     </div>
                 </div>
             </form>

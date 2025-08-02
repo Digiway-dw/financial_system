@@ -234,18 +234,99 @@ class Index extends Component
 
     public function exportAllPdf()
     {
+        // Fetch ALL transactions matching the filters (not just paginated)
+        $ordinary = Transaction::query();
+        $cash = CashTransaction::query();
+
+        // Date filter
+        if ($this->startDate) {
+            $ordinary->whereDate('transaction_date_time', '>=', $this->startDate);
+            $cash->whereDate('transaction_date_time', '>=', $this->startDate);
+        }
+        if ($this->endDate) {
+            $ordinary->whereDate('transaction_date_time', '<=', $this->endDate);
+            $cash->whereDate('transaction_date_time', '<=', $this->endDate);
+        }
+        // Agent filter
+        if ($this->selectedUser) {
+            $ordinary->where('agent_id', $this->selectedUser);
+            $cash->where('agent_id', $this->selectedUser);
+        }
+        // Branch filter
+        if ($this->selectedBranch) {
+            $ordinary->where('branch_id', $this->selectedBranch);
+            $cash->whereHas('safe', function ($q) {
+                $q->where('branch_id', $this->selectedBranch);
+            });
+        }
+        // Customer name filter
+        if ($this->selectedCustomer) {
+            $ordinary->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
+            $cash->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
+        }
+        // Customer code filter
+        if ($this->selectedCustomerCode) {
+            $ordinary->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
+            $cash->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
+        }
+        // Type filter
+        if ($this->selectedTransactionType) {
+            $ordinary->where('transaction_type', $this->selectedTransactionType);
+            $cash->where('transaction_type', $this->selectedTransactionType);
+        }
+
+        $ordinaryTxs = $ordinary->with(['agent', 'branch'])->get()->map(function ($tx) {
+            return [
+                'id' => $tx->id,
+                'customer_name' => $tx->customer_name,
+                'customer_code' => $tx->customer_code,
+                'amount' => $tx->amount,
+                'commission' => $tx->commission ?? 0,
+                'deduction' => $tx->deduction ?? 0,
+                'transaction_type' => $tx->transaction_type,
+                'agent_name' => $tx->agent ? $tx->agent->name : '-',
+                'status' => $tx->status,
+                'transaction_date_time' => $tx->transaction_date_time,
+                'reference_number' => $tx->reference_number,
+                'branch_name' => $tx->branch ? $tx->branch->name : 'N/A',
+                'source' => 'ordinary',
+            ];
+        });
+        $cashTxs = $cash->with(['agent', 'safe.branch'])->get()->map(function ($tx) {
+            return [
+                'id' => $tx->id,
+                'customer_name' => $tx->customer_name,
+                'customer_code' => $tx->customer_code,
+                'amount' => $tx->amount,
+                'commission' => 0,
+                'deduction' => 0,
+                'transaction_type' => $tx->transaction_type,
+                'agent_name' => $tx->agent ? $tx->agent->name : '-',
+                'status' => $tx->status,
+                'transaction_date_time' => $tx->transaction_date_time,
+                'reference_number' => $tx->reference_number,
+                'branch_name' => ($tx->safe && $tx->safe->branch) ? $tx->safe->branch->name : 'N/A',
+                'source' => 'cash',
+            ];
+        });
+        $all = collect($ordinaryTxs)->merge($cashTxs);
+        $all = $all->sortBy(function ($tx) {
+            return $tx[$this->sortField] ?? null;
+        }, SORT_REGULAR, $this->sortDirection === 'desc');
+        $all = $all->values();
+
         $summary = [
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
-            'totalTransferred' => $this->financialSummary['total_transfer'] ?? 0,
-            'totalCommission' => $this->financialSummary['commission_earned'] ?? 0,
-            'totalDeductions' => $this->financialSummary['total_discounts'] ?? 0,
-            'netProfits' => $this->financialSummary['net_profit'] ?? 0,
+            'totalTransferred' => $all->sum('amount'),
+            'totalCommission' => $all->sum('commission'),
+            'totalDeductions' => $all->sum('deduction'),
+            'netProfits' => $all->sum('commission') - $all->sum('deduction'),
             'financialSummary' => $this->financialSummary,
             'customerBalances' => $this->customerBalances,
             'safeBalances' => $this->safeBalances,
             'lineBalances' => $this->lineBalances,
-            'transactions' => $this->transactions,
+            'transactions' => $all->all(),
         ];
         $html = view('reports.all_pdf', $summary)->render();
         $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4', 'default_font' => 'dejavusans']);
