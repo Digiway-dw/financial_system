@@ -70,7 +70,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <span class="text-lg mr-2">📝</span>
-                                                <div>
+<div>
                                                     <div class="text-sm font-medium text-slate-900">{{ $type['name_ar'] }}</div>
                                                     <div class="text-sm text-slate-500">{{ $type['name'] }}</div>
                                                 </div>

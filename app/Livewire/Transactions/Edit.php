@@ -55,9 +55,18 @@ class Edit extends Component
     #[Validate('required|exists:safes,id')]
     public $safeId = '';
 
+    #[Validate('required|string')]
+    public $paymentMethod = 'branch safe';
+
     public $branches;
     public $lines;
     public $safes;
+
+    // Computed property for net commission
+    public function getNetCommissionProperty()
+    {
+        return max(0, (float) $this->commission - (float) $this->deduction);
+    }
 
     private TransactionRepository $transactionRepository;
     private UpdateTransaction $updateTransactionUseCase;
@@ -103,6 +112,7 @@ class Edit extends Component
         $this->branchId = $this->transaction->branch_id;
         $this->lineId = $this->transaction->line_id;
         $this->safeId = $this->transaction->safe_id;
+        $this->paymentMethod = $this->transaction->payment_method ?? 'branch safe';
 
         $this->branches = Branch::all();
         $this->lines = Line::all();
@@ -131,6 +141,7 @@ class Edit extends Component
                     'branch_id' => $this->branchId,
                     'line_id' => $this->lineId,
                     'safe_id' => $this->safeId,
+                    'payment_method' => $this->paymentMethod,
                 ]
             );
 
@@ -139,6 +150,59 @@ class Edit extends Component
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update transaction: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Calculate commission based on amount using the same logic as other transaction components
+     */
+    public function calculateCommission()
+    {
+        $amount = (float) $this->amount;
+        if ($amount <= 0) {
+            $this->commission = 0;
+            return;
+        }
+        
+        $this->commission = $this->calculateBaseCommission($amount);
+    }
+
+    /**
+     * Calculate base commission based on amount ranges
+     */
+    private function calculateBaseCommission($amount)
+    {
+        // Calculate commission based on ranges
+        if ($amount <= 500) {
+            return 5;
+        } elseif ($amount <= 1000) {
+            return 10;
+        } elseif ($amount <= 1500) {
+            return 15;
+        } elseif ($amount <= 2000) {
+            return 20;
+        } else {
+            // For amounts over 2000, add 5 EGP for each additional 500 EGP
+            return 20 + (ceil(($amount - 2000) / 500) * 5);
+        }
+    }
+
+    /**
+     * Handle amount changes and recalculate commission
+     */
+    public function updatedAmount()
+    {
+        $this->calculateCommission();
+    }
+
+    /**
+     * Handle deduction changes and recalculate commission
+     */
+    public function updatedDeduction()
+    {
+        if (empty($this->deduction)) {
+            $this->deduction = 0;
+        }
+        $this->calculateCommission();
     }
 
     public function render()

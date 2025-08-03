@@ -810,7 +810,7 @@
                                         @foreach ($expenseItems as $item)
                                             @if (isset($item['is_custom']) && $item['is_custom'])
                                                 <option value="{{ $item['id'] }}" class="text-blue-600">
-                                                    📝 {{ $item['name'] }} (مخصص)
+                                                    {{ $item['name'] }}
                                                 </option>
                                             @else
                                                 <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
