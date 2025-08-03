@@ -222,6 +222,18 @@ class EloquentTransactionRepository implements TransactionRepository
                 });
             }
             $cashTxs = $cash->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
+                // Handle expense withdrawals - they should be deducted from net profit
+                $commission = 0;
+                $deduction = 0;
+                
+                // If this is an expense withdrawal, treat it as a negative profit (expense)
+                if ($transaction->transaction_type === 'Withdrawal' && 
+                    str_contains($transaction->customer_name, 'Expense:')) {
+                    // Expense withdrawals are treated as negative profit
+                    $commission = -$transaction->amount; // Negative commission = expense
+                    $deduction = 0;
+                }
+                
                 return [
                     'id' => $transaction->id,
                     'customer_name' => $transaction->customer_name,
@@ -229,8 +241,8 @@ class EloquentTransactionRepository implements TransactionRepository
                     'receiver_mobile_number' => $transaction->depositor_mobile_number ?? null,
                     'customer_code' => $transaction->customer_code ?? null,
                     'amount' => $transaction->amount,
-                    'commission' => 0,
-                    'deduction' => 0,
+                    'commission' => $commission,
+                    'deduction' => $deduction,
                     'discount_notes' => null,
                     'notes' => $transaction->notes,
                     'transaction_type' => $transaction->transaction_type,
@@ -260,9 +272,9 @@ class EloquentTransactionRepository implements TransactionRepository
         }, SORT_REGULAR, $sortDirection === 'desc');
 
         $totalTransferred = $all->sum('amount');
-        $totalCommission = $all->sum('commission');
+        $totalCommission = $all->sum('commission'); // This includes positive commissions and negative expenses
         $totalDeductions = $all->sum('deduction');
-        $netProfit = $totalCommission - $totalDeductions;
+        $netProfit = $totalCommission; // Net profit = commissions - expenses (expenses are negative commissions)
 
         return [
             'transactions' => $all->values()->all(),
@@ -474,6 +486,18 @@ class EloquentTransactionRepository implements TransactionRepository
                 });
             }
             $cashTxs = $cash->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
+                // Handle expense withdrawals - they should be deducted from net profit
+                $commission = 0;
+                $deduction = 0;
+                
+                // If this is an expense withdrawal, treat it as a negative profit (expense)
+                if ($transaction->transaction_type === 'Withdrawal' && 
+                    str_contains($transaction->customer_name, 'Expense:')) {
+                    // Expense withdrawals are treated as negative profit
+                    $commission = -$transaction->amount; // Negative commission = expense
+                    $deduction = 0;
+                }
+                
                 return [
                     'id' => $transaction->id,
                     'customer_name' => $transaction->customer_name,
@@ -481,8 +505,8 @@ class EloquentTransactionRepository implements TransactionRepository
                     'receiver_mobile_number' => $transaction->depositor_mobile_number ?? null,
                     'customer_code' => $transaction->customer_code ?? null,
                     'amount' => $transaction->amount,
-                    'commission' => 0,
-                    'deduction' => 0,
+                    'commission' => $commission,
+                    'deduction' => $deduction,
                     'discount_notes' => null,
                     'notes' => $transaction->notes,
                     'transaction_type' => $transaction->transaction_type,
@@ -541,9 +565,9 @@ class EloquentTransactionRepository implements TransactionRepository
         $all = $all->values();
 
         $totalTransferred = $all->sum('amount');
-        $totalCommission = $all->sum('commission'); // This is now net commission (after deduction)
+        $totalCommission = $all->sum('commission'); // This includes positive commissions and negative expenses
         $totalDeductions = $all->sum('deduction');
-        $netProfit = $totalCommission; // Net profit is the same as net commission since commission already includes deduction
+        $netProfit = $totalCommission; // Net profit = commissions - expenses (expenses are negative commissions)
 
         return [
             'transactions' => $all->toArray(),
