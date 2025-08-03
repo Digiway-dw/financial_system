@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lines', function (Blueprint $table) {
-            $table->date('last_daily_reset')->nullable()->after('monthly_remaining');
+            $table->date('last_daily_reset')->nullable()->after('current_balance');
             $table->date('last_monthly_reset')->nullable()->after('last_daily_reset');
         });
     }
