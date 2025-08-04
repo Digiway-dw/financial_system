@@ -91,7 +91,7 @@ class SafeTransfer extends Component
             $this->destinationSafe = null;
 
             // Redirect to transaction details
-            return redirect()->route('transactions.show', $transaction->id);
+            return redirect()->route('transactions.details', $transaction->reference_number);
         } catch (\Exception $e) {
             session()->flash('error', 'Error: ' . $e->getMessage());
         }

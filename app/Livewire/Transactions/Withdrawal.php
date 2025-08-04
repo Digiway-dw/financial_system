@@ -417,7 +417,7 @@ class Withdrawal extends Create
                 
                 if ($isAdminOrSupervisor) {
                     // For admin/supervisor, redirect to receipt
-                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
                 } else {
                     // For regular users, show waiting approval screen
                     return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
@@ -499,7 +499,7 @@ class Withdrawal extends Create
                 
                 if ($isAdminOrSupervisor) {
                     // For admin/supervisor, redirect to receipt
-                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
                 } else {
                     // For regular users, show waiting approval screen
                     return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
@@ -538,7 +538,7 @@ class Withdrawal extends Create
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
                 if ($isAdminOrSupervisor) {
                     // For admin/supervisor, redirect to receipt
-                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
                 } else {
                     // For regular users, show waiting approval screen
                     return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
@@ -578,7 +578,7 @@ class Withdrawal extends Create
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
                 if ($isAdminOrSupervisor) {
                     // For admin/supervisor, redirect to receipt
-                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
                 } else {
                     // For regular users, show waiting approval screen
                     return redirect()->route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id]);
@@ -634,7 +634,7 @@ class Withdrawal extends Create
                     // For admin/supervisor, redirect to receipt
                     session()->flash('message', 'Branch withdrawal created successfully!');
                     $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId', 'destinationBranchId']);
-                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
                 } else {
                     // For regular users, show waiting approval screen
                     session()->flash('message', 'Branch withdrawal submitted for admin approval!');
@@ -684,6 +684,7 @@ class Withdrawal extends Create
                     'agent_id' => $user->id,
                     'destination_branch_id' => $this->selectedBranchId,
                     'destination_safe_id' => $this->safeId, // Same safe for expense
+                    'reference_number' => generate_reference_number($branchName),
                 ]);
                 // Deduct from safe balance immediately if admin or supervisor
                 if ($status === 'completed' && $safe) {
@@ -706,7 +707,7 @@ class Withdrawal extends Create
                     // For admin/supervisor, redirect to receipt
                     session()->flash('message', 'Expense withdrawal created successfully!');
                     $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId', 'selectedExpenseItem', 'customExpenseItem']);
-                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                    $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
                 } else {
                     // For regular users, show waiting approval screen
                     session()->flash('message', 'Expense withdrawal request submitted for admin approval!');

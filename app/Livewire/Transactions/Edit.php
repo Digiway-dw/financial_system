@@ -7,6 +7,7 @@ use App\Domain\Interfaces\TransactionRepository;
 use App\Models\Domain\Entities\Branch;
 use App\Models\Domain\Entities\Line;
 use App\Models\Domain\Entities\Safe;
+use App\Models\Domain\Entities\Transaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
@@ -77,10 +78,11 @@ class Edit extends Component
         $this->updateTransactionUseCase = $updateTransactionUseCase;
     }
 
-    public function mount($transactionId)
+    public function mount($referenceNumber)
     {
-        $this->transactionId = $transactionId;
-        $this->transaction = $this->transactionRepository->findById($transactionId);
+        $this->transactionId = $referenceNumber;
+        // Find transaction by reference number instead of ID
+        $this->transaction = Transaction::where('reference_number', $referenceNumber)->first();
 
         if (!$this->transaction) {
             abort(404);

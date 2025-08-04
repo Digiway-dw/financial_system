@@ -424,14 +424,14 @@ class Send extends Component
                     $admins = User::role('admin')->get();
                     $supervisors = User::role('general_supervisor')->get();
                     $recipients = $admins->merge($supervisors)->unique('id');
-                    Notification::send($recipients, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
+                    Notification::send($recipients, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->reference_number)));
                 }
 
                 // Print receipt
                 app(\App\Services\ReceiptPrinterService::class)->printReceipt($transaction, 'html');
 
                 // Redirect to receipt page after successful transaction
-                return redirect()->route('transactions.receipt', ['transaction' => $transaction->id]);
+                return redirect()->route('transactions.receipt', ['referenceNumber' => $transaction->reference_number]);
             });
         } catch (\Exception $e) {
             $this->errorMessage = 'فشل إنشاء المعاملة: ' . $e->getMessage();

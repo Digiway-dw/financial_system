@@ -58,15 +58,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('transactions.waiting-approval');
     Route::get('transactions/cash/waiting-approval/{cashTransaction}', \App\Livewire\Transactions\WaitingApproval::class)
         ->name('transactions.cash.waiting-approval');
-    Route::get('transactions/{transactionId}/edit', \App\Livewire\Transactions\Edit::class)
+    Route::get('transactions/{referenceNumber}/edit', \App\Livewire\Transactions\Edit::class)
         ->name('transactions.edit');
-    Route::get('transactions/{transaction}/receipt', [\App\Http\Controllers\TransactionController::class, 'receipt'])->name('transactions.receipt');
-    Route::get('transactions/{transaction}/print', [\App\Http\Controllers\TransactionController::class, 'receipt'])->name('transactions.print');
-    Route::get('transactions/{transactionId}/details', \App\Livewire\Transactions\Details::class)->name('transactions.details');
-    Route::get('cash-transactions/{cashTransaction}/receipt', [\App\Http\Controllers\TransactionController::class, 'cashReceipt'])->name('cash-transactions.receipt');
-    Route::get('cash-transactions/{cashTransactionId}/details', \App\Livewire\Transactions\Details::class)->name('cash-transactions.details');
-    Route::get('transactions/cash/{cashTransactionId}/details', \App\Livewire\Transactions\Details::class)->name('transactions.cash.details');
-    Route::get('cash-transactions/{cashTransactionId}/edit', \App\Livewire\Transactions\EditCash::class)
+    Route::get('transactions/{referenceNumber}/receipt', [\App\Http\Controllers\TransactionController::class, 'receipt'])->name('transactions.receipt');
+    Route::get('transactions/{referenceNumber}/print', [\App\Http\Controllers\TransactionController::class, 'receipt'])->name('transactions.print');
+    Route::get('transactions/{referenceNumber}/details', \App\Livewire\Transactions\Details::class)->name('transactions.details');
+    Route::get('cash-transactions/{referenceNumber}/receipt', [\App\Http\Controllers\TransactionController::class, 'cashReceipt'])->name('cash-transactions.receipt');
+    Route::get('cash-transactions/{referenceNumber}/details', \App\Livewire\Transactions\Details::class)->name('cash-transactions.details');
+    Route::get('transactions/cash/{referenceNumber}/details', \App\Livewire\Transactions\Details::class)->name('transactions.cash.details');
+    Route::get('cash-transactions/{referenceNumber}/edit', \App\Livewire\Transactions\EditCash::class)
         ->name('cash-transactions.edit');
 
     // Line Management Routes

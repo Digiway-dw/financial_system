@@ -274,7 +274,7 @@
                     </form>
                     <!-- Print Receipt Button -->
                     <div class="mt-6 text-right" style="direction: rtl;">
-                        <a href="{{ route('transactions.receipt', $transaction->id) }}"
+                        <a href="{{ route('transactions.receipt', $transaction->reference_number) }}"
                             class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded-xl shadow transition text-base">
                             طباعة الإيصال
                         </a>

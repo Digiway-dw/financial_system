@@ -186,7 +186,7 @@ class Deposit extends Create
                 // Send notification to admins and supervisors
                 $this->sendDepositNotification($cashTx, $agent);
                 $this->reset(['userId', 'amount', 'notes', 'customerName', 'clientCode', 'clientNumber', 'clientNationalNumber']);
-                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
                 return;
             }
             if ($this->depositType === 'client_wallet') {
@@ -237,7 +237,7 @@ class Deposit extends Create
                 // Send notification to admins and supervisors
                 $this->sendDepositNotification($cashTx, $agent);
                 $this->reset(['clientId', 'clientName', 'clientMobile', 'clientCode', 'clientBalance', 'clientSearch', 'amount', 'notes', 'userId', 'customerName', 'clientNumber', 'clientNationalNumber', 'depositorNationalId', 'depositorMobileNumber']);
-                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
                 return;
             }
             if ($this->depositType === 'admin') {
@@ -261,7 +261,7 @@ class Deposit extends Create
                 // Send notification to admins and supervisors
                 $this->sendDepositNotification($cashTx, $agent);
                 $this->reset(['amount', 'notes', 'userId', 'customerName', 'clientCode', 'clientNumber', 'clientNationalNumber']);
-                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
                 return;
             }
             if ($this->depositType === 'direct') {
@@ -285,7 +285,7 @@ class Deposit extends Create
                 // Send notification to admins and supervisors
                 $this->sendDepositNotification($cashTx, $agent);
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber']);
-                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]) . '"');
+                $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
                 return;
             }
         } catch (\Exception $e) {
@@ -311,7 +311,7 @@ class Deposit extends Create
         $recipients = $admins->merge($supervisors)->unique('id');
         $safe = $cashTx->safe;
         $branch = $safe ? $safe->branch : null;
-        $url = route('cash-transactions.receipt', ['cashTransaction' => $cashTx->id]);
+        $url = route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]);
         $customerCode = $cashTx->customer_code ?: 'N/A';
         $message = "New Deposit Transaction\n" .
             "Reference: {$cashTx->reference_number}\n" .

@@ -129,7 +129,7 @@
             </div>
             @if (!empty($notification->data['transaction_id']))
                 <div class="mb-4">
-                    <a href="{{ route('transactions.edit', $notification->data['transaction_id']) }}"
+                    <a href="{{ route('transactions.edit', $notification->data['reference_number']) }}"
                         class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

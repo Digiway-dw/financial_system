@@ -303,7 +303,7 @@ class Receive extends Component
                 'message' => $adminNotificationMessage
             ]);
             
-            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id)));
+                            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->reference_number)));
             
             // Log success
             \Illuminate\Support\Facades\Log::info('Receive transaction notification sent successfully', [
@@ -460,15 +460,15 @@ class Receive extends Component
                     $admins = \App\Domain\Entities\User::role('admin')->get();
                     $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
                     $recipients = $admins->merge($supervisors)->unique('id');
-                    \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $createdTransaction->id)));
+                    \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $createdTransaction->reference_number)));
                     
                     DB::commit();
                     // Print receipt and redirect to receipt page for transactions with discount
                     app(\App\Services\ReceiptPrinterService::class)->printReceipt($createdTransaction, 'html');
-                    return redirect()->route('transactions.receipt', ['transaction' => $createdTransaction->id]);
+                    return redirect()->route('transactions.receipt', ['referenceNumber' => $createdTransaction->reference_number]);
                 } else {
                     DB::commit();
-                    return redirect()->route('transactions.receipt', ['transaction' => $createdTransaction->id]);
+                    return redirect()->route('transactions.receipt', ['referenceNumber' => $createdTransaction->reference_number]);
                 }
             } else {
                 DB::rollBack();

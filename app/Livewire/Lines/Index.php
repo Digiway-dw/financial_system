@@ -63,25 +63,23 @@ class Index extends Component
             });
         }
 
-        // Add color classes for each line
+        // Add color classes for each line based on remaining amounts
         foreach ($lines as &$line) {
-            $line['daily_usage_class'] = '';
+            $line['daily_remaining_class'] = '';
             if (
-                isset($line['daily_limit'], $line['daily_usage'], $line['status']) &&
-                $line['daily_limit'] > 0 &&
-                $line['daily_usage'] >= $line['daily_limit'] &&
-                $line['status'] === 'frozen'
+                isset($line['daily_remaining'], $line['status']) &&
+                $line['daily_remaining'] <= 0 &&
+                $line['status'] === 'active'
             ) {
-                $line['daily_usage_class'] = 'bg-red-100 text-red-700 font-bold';
+                $line['daily_remaining_class'] = 'bg-red-100 text-red-700 font-bold';
             }
-            $line['monthly_limit_row_class'] = '';
+            $line['monthly_remaining_row_class'] = '';
             if (
-                isset($line['monthly_limit'], $line['monthly_usage'], $line['status']) &&
-                $line['monthly_limit'] > 0 &&
-                $line['monthly_usage'] >= $line['monthly_limit'] &&
-                $line['status'] === 'frozen'
+                isset($line['monthly_remaining'], $line['status']) &&
+                $line['monthly_remaining'] <= 0 &&
+                $line['status'] === 'active'
             ) {
-                $line['monthly_limit_row_class'] = 'bg-red-50';
+                $line['monthly_remaining_row_class'] = 'bg-red-50';
             }
         }
         $this->lines = $lines;

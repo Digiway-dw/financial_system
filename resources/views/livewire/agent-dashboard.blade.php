@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div class="mt-4 text-right">
-                            <a href="{{ route('transactions.print', $searchedTransaction->id) }}"
+                            <a href="{{ route('transactions.print', $searchedTransaction->reference_number) }}"
                                 class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -61,7 +61,7 @@
                                 </svg>
                                 طباعة
                             </a>
-                            <a href="{{ $searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? route('transactions.details', $searchedTransaction->id) : route('transactions.cash.details', $searchedTransaction->id) }}"
+                            <a href="{{ $searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? route('transactions.details', $searchedTransaction->reference_number) : route('transactions.cash.details', $searchedTransaction->reference_number) }}"
                                 class="ml-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -133,7 +133,7 @@
                             {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
                     </div>
                     <div class="mt-4 text-right">
-                        <a href="{{ route('transactions.print', $searchedTransaction->id) }}"
+                        <a href="{{ route('transactions.print', $searchedTransaction->reference_number) }}"
                             class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -144,7 +144,7 @@
                             </svg>
                             طباعة
                         </a>
-                        <a href="{{ $searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? route('transactions.details', $searchedTransaction->id) : route('transactions.cash.details', $searchedTransaction->id) }}"
+                        <a href="{{ $searchedTransaction instanceof \App\Models\Domain\Entities\Transaction ? route('transactions.details', $searchedTransaction->reference_number) : route('transactions.cash.details', $searchedTransaction->reference_number) }}"
                             class="ml-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

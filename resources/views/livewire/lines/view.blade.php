@@ -2,7 +2,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-8 mb-8">
             <h1 class="text-2xl font-bold text-blue-900 mb-2">تفاصيل الخط</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Basic Information -->
                 <div>
                     <div class="text-sm text-gray-500">رقم الهاتف</div>
                     <div class="text-lg font-semibold text-gray-900">{{ $line->mobile_number }}</div>
@@ -12,26 +13,83 @@
                     <div class="text-lg font-semibold text-gray-900">{{ $line->network }}</div>
                 </div>
                 <div>
+                    <div class="text-sm text-gray-500">الفرع</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ $line->branch->name ?? 'N/A' }}</div>
+                </div>
+                
+                <!-- Balance Information -->
+                <div>
                     <div class="text-sm text-gray-500">الرصيد الحالي</div>
                     <div class="text-lg font-semibold text-blue-700">{{ format_int($line->current_balance) }} EGP</div>
                 </div>
                 <div>
-                    <div class="text-sm text-gray-500">الفرع</div>
-                    <div class="text-lg font-semibold text-gray-900">{{ $line->branch->name ?? 'N/A' }}</div>
+                    <div class="text-sm text-gray-500">الرصيد الابتدائي</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ format_int($line->starting_balance) }} EGP</div>
                 </div>
+                <div>
+                    <div class="text-sm text-gray-500">الرصيد الابتدائي اليومي</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ format_int($line->daily_starting_balance) }} EGP</div>
+                </div>
+                
+                <!-- Daily Limits and Usage -->
                 <div>
                     <div class="text-sm text-gray-500">الحد اليومي</div>
                     <div class="text-lg font-semibold text-gray-900">{{ format_int($line->daily_limit) }} EGP</div>
                 </div>
                 <div>
+                    <div class="text-sm text-gray-500">الاستخدام اليومي</div>
+                    <div class="text-lg font-semibold text-orange-600">{{ format_int($line->daily_usage) }} EGP</div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">المتبقي اليومي</div>
+                    <div class="text-lg font-semibold {{ $line->daily_remaining > 0 ? 'text-green-600' : 'text-red-600' }}">
+                        {{ format_int($line->daily_remaining) }} EGP
+                    </div>
+                </div>
+                
+                <!-- Monthly Limits and Usage -->
+                <div>
                     <div class="text-sm text-gray-500">الحد الشهري</div>
                     <div class="text-lg font-semibold text-gray-900">{{ format_int($line->monthly_limit) }} EGP</div>
                 </div>
                 <div>
+                    <div class="text-sm text-gray-500">الاستخدام الشهري</div>
+                    <div class="text-lg font-semibold text-orange-600">{{ format_int($line->monthly_usage) }} EGP</div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">المتبقي الشهري</div>
+                    <div class="text-lg font-semibold {{ $line->monthly_remaining > 0 ? 'text-green-600' : 'text-red-600' }}">
+                        {{ format_int($line->monthly_remaining) }} EGP
+                    </div>
+                </div>
+                
+                <!-- Receive Amounts -->
+                <div>
+                    <div class="text-sm text-gray-500">المستلم اليوم</div>
+                    <div class="text-lg font-semibold text-green-600">{{ format_int($dailyReceive) }} EGP</div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">المستلم هذا الشهر</div>
+                    <div class="text-lg font-semibold text-green-600">{{ format_int($monthlyReceive) }} EGP</div>
+                </div>
+                <div>
                     <div class="text-sm text-gray-500">الحالة</div>
-                    <div
-                        class="text-lg font-semibold {{ $line->status === 'active' ? 'text-green-700' : 'text-red-700' }}">
+                    <div class="text-lg font-semibold {{ $line->status === 'active' ? 'text-green-700' : 'text-red-700' }}">
                         {{ ucfirst($line->status === 'active' ? 'مفعل' : 'معطل') }}
+                    </div>
+                </div>
+                
+                <!-- Reset Information -->
+                <div>
+                    <div class="text-sm text-gray-500">آخر إعادة تعيين يومي</div>
+                    <div class="text-sm font-semibold text-gray-700">
+                        {{ $line->last_daily_reset ? \Carbon\Carbon::parse($line->last_daily_reset)->format('d/m/Y H:i') : 'غير محدد' }}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">آخر إعادة تعيين شهري</div>
+                    <div class="text-sm font-semibold text-gray-700">
+                        {{ $line->last_monthly_reset ? \Carbon\Carbon::parse($line->last_monthly_reset)->format('d/m/Y H:i') : 'غير محدد' }}
                     </div>
                 </div>
             </div>

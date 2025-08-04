@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">العمولة:</span>
-                                    <span class="text-sm text-gray-900">{{ format_int($transaction->commission) }}
+                                    <span class="text-sm text-gray-900">{{ format_int($transaction->commission ?? 0) }}
                                         ج.م</span>
                                 </div>
                                 <div class="flex justify-between">
@@ -230,7 +230,7 @@
                     <!-- Action Buttons -->
                     <div class="flex items-center justify-between pt-8 border-t border-gray-200 mt-6">
                         <div class="flex flex-row-reverse gap-4">
-                            <a href="{{ route('transactions.receipt', $transaction->id) }}"
+                            <a href="{{ route('transactions.receipt', $transaction->reference_number) }}"
                                 class="inline-flex items-center px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-2xl shadow transition-colors duration-200 text-base">
                                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -240,7 +240,7 @@
                                 طباعة الإيصال
                             </a>
                             @can('edit-all-transactions')
-                                <a href="{{ route('transactions.edit', $transaction->id) }}"
+                                <a href="{{ route('transactions.edit', $transaction->reference_number) }}"
                                     class="inline-flex items-center px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow transition-colors duration-200 text-base">
                                     
                                     تعديل المعاملة
@@ -307,6 +307,10 @@
                                     <span
                                         class="text-sm font-bold text-gray-900">{{ format_int($cashTransaction->amount) }}
                                         EGP</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-600">Commission:</span>
+                                    <span class="text-sm text-gray-900">0 EGP</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Customer Code:</span>
@@ -442,7 +446,7 @@
                     <!-- Action Buttons -->
                     <div class="flex items-center justify-between pt-6 border-t border-gray-200">
                         <div class="flex space-x-3">
-                            <a href="{{ route('cash-transactions.receipt', $cashTransaction->id) }}"
+                            <a href="{{ route('cash-transactions.receipt', $cashTransaction->reference_number) }}"
                                 class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

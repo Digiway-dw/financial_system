@@ -25,10 +25,10 @@ class EditCash extends Component
     public $branches = [];
     public $safes = [];
 
-    public function mount($cashTransactionId)
+    public function mount($referenceNumber)
     {
-        $this->cashTransactionId = $cashTransactionId;
-        $this->cashTransaction = CashTransaction::find($cashTransactionId);
+        $this->cashTransactionId = $referenceNumber;
+        $this->cashTransaction = CashTransaction::where('reference_number', $referenceNumber)->first();
         if (!$this->cashTransaction) {
             abort(404);
         }

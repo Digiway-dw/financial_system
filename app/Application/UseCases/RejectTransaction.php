@@ -69,21 +69,21 @@ class RejectTransaction
 
             $message = "Cash transfer of " . $transaction->amount . " EGP from safe " . $sourceSafeName . " to safe " . $destinationSafeName . " has been rejected. Amount re-credited to source safe.";
             
-            Notification::send($admins, new AdminNotification($message, route('transactions.edit', $transaction->id, false)));
+            Notification::send($admins, new AdminNotification($message, route('transactions.edit', $transaction->reference_number, false)));
             if ($sourceBranchUsers->count() > 0) {
-                Notification::send($sourceBranchUsers, new AdminNotification($message, route('transactions.edit', $transaction->id, false)));
+                Notification::send($sourceBranchUsers, new AdminNotification($message, route('transactions.edit', $transaction->reference_number, false)));
             }
         }
 
         $agent = User::find($reviewerId);
         if ($agent) {
             $agentMessage = "Transaction " . $transaction->customer_name . " with amount " . $transaction->amount . " EGP has been rejected by " . $agent->name . ". Reason: " . $rejectionReason . ".";
-            Notification::send($agent, new AdminNotification($agentMessage, route('transactions.edit', $transaction->id, false)));
+            Notification::send($agent, new AdminNotification($agentMessage, route('transactions.edit', $transaction->reference_number, false)));
         }
 
         $admins = User::role('admin')->get();
         $adminMessage = "Transaction " . $transaction->customer_name . " with amount " . $transaction->amount . " EGP has been rejected by " . User::find($reviewerId)->name . ". Reason: " . $rejectionReason . ".";
-        Notification::send($admins, new AdminNotification($adminMessage, route('transactions.edit', $transaction->id, false)));
+        Notification::send($admins, new AdminNotification($adminMessage, route('transactions.edit', $transaction->reference_number, false)));
 
         return $transaction;
     }

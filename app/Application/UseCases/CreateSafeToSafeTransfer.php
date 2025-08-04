@@ -201,7 +201,7 @@ class CreateSafeToSafeTransfer
 
         Notification::send($recipients, new AdminNotification(
             $message,
-            route('transactions.show', $transaction->id)
+            route('transactions.details', $transaction->reference_number)
         ));
     }
 
@@ -229,7 +229,7 @@ class CreateSafeToSafeTransfer
 
         Notification::send($approvers, new AdminNotification(
             $message,
-            route('transactions.approve', $transaction->id)
+            route('transactions.pending')
         ));
     }
 }

@@ -531,7 +531,7 @@
                                     {{ $transaction['agent_name'] }}</td>
                                 <td
                                     class="px-1 py-2 whitespace-nowrap text-center text-xs font-bold flex flex-row flex-nowrap gap-1 justify-center items-center border-l border-blue-200">
-                                    <a href="{{ route('transactions.details', $transaction['id']) }}"
+                                    <a href="{{ route('transactions.details', $transaction['reference_number']) }}"
                                         class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-200 transition-colors duration-150 mb-1">
                                         <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -544,7 +544,7 @@
                                     </a>
                                     @can('edit-all-transactions')
                                         @if (isset($transaction['source_table']) && $transaction['source_table'] === 'cash_transactions')
-                                            <a href="{{ route('cash-transactions.edit', $transaction['id']) }}"
+                                            <a href="{{ route('cash-transactions.edit', $transaction['reference_number']) }}"
                                                 class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-200 transition-colors duration-150 mb-1">
                                                 <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -554,7 +554,7 @@
                                                 تعديل
                                             </a>
                                         @elseif(empty($transaction['source_table']) || $transaction['source_table'] === 'transactions')
-                                            <a href="{{ route('transactions.edit', $transaction['id']) }}"
+                                            <a href="{{ route('transactions.edit', $transaction['reference_number']) }}"
                                                 class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-200 transition-colors duration-150 mb-1">
                                                 <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -565,7 +565,7 @@
                                             </a>
                                         @endif
                                     @endcan
-                                    <a href="{{ route('transactions.receipt', $transaction['id']) }}"
+                                    <a href="{{ route('transactions.receipt', $transaction['reference_number']) }}"
                                         class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 text-xs font-bold rounded-lg hover:bg-green-200 transition-colors duration-150 mb-1"
                                         title="طباعة الإيصال">
                                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
@@ -577,7 +577,7 @@
                                     </a>
                                     @can('delete-transactions')
                                         <button x-data
-                                            @click="if(confirm('هل أنت متأكد أنك تريد حذف هذه المعاملة؟')) { $wire.deleteTransaction('{{ $transaction['id'] }}') }"
+                                            @click="if(confirm('هل أنت متأكد أنك تريد حذف هذه المعاملة؟')) { $wire.deleteTransaction('{{ $transaction['reference_number'] }}') }"
                                             class="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 text-xs font-bold rounded-lg hover:bg-red-200 transition-colors duration-150 mb-1">حذف</button>
                                     @endcan
                                 </td>

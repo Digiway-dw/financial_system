@@ -48,8 +48,10 @@ class ApproveTransaction
 
             if ($transaction->transaction_type === 'Transfer') {
                 if ($line) {
+                    // Add 1 EGP fee for send transactions
+                    $lineDeduction = $amount + 1;
                     $this->lineRepository->update($line->id, [
-                        'current_balance' => $line->current_balance - $amount
+                        'current_balance' => $line->current_balance - $lineDeduction
                     ]);
                 }
             } elseif ($transaction->transaction_type === 'Withdrawal') {
@@ -98,9 +100,9 @@ class ApproveTransaction
 
             $message = "Cash transfer of " . $transaction->amount . " EGP from safe " . $sourceSafeName . " to safe " . $destinationSafeName . " has been approved and completed.";
             
-            Notification::send($admins, new AdminNotification($message, route('transactions.edit', $transaction->id, false)));
+            Notification::send($admins, new AdminNotification($message, route('transactions.edit', $transaction->reference_number, false)));
             if ($sourceBranchUsers->count() > 0) {
-                Notification::send($sourceBranchUsers, new AdminNotification($message, route('transactions.edit', $transaction->id, false)));
+                Notification::send($sourceBranchUsers, new AdminNotification($message, route('transactions.edit', $transaction->reference_number, false)));
             }
         } elseif ($transaction->transaction_type === 'Withdrawal' && $transaction->line_id) {
             $line = $this->lineRepository->findById($transaction->line_id);
@@ -119,12 +121,12 @@ class ApproveTransaction
 
             $message = "SIM withdrawal of " . $transaction->amount . " EGP from line " . $line->mobile_number . " has been approved.";
             
-            Notification::send($agentUsers, new AdminNotification($message, route('transactions.edit', $transaction->id, false)));
+            Notification::send($agentUsers, new AdminNotification($message, route('transactions.edit', $transaction->reference_number, false)));
         }
 
         $admins = User::role('admin')->get();
         $adminMessage = "Transaction " . $transaction->customer_name . " with amount " . $transaction->amount . " EGP has been approved by " . User::find($reviewerId)->name . ".";
-        Notification::send($admins, new AdminNotification($adminMessage, route('transactions.edit', $transaction->id, false)));
+                    Notification::send($admins, new AdminNotification($adminMessage, route('transactions.edit', $transaction->reference_number, false)));
 
         // Additional notification for admins on transactions from safe type 'cashbox'
         if ($transaction->safe_id) {
@@ -132,7 +134,7 @@ class ApproveTransaction
             if ($safe && $safe->type === 'cashbox') {
                 $admins = User::role('admin')->get();
                 $adminNotificationMessage = "A transaction of " . $transaction->amount . " EGP from cashbox safe: " . $safe->name . " has been approved by " . User::find($reviewerId)->name . ".";
-                Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->id, false)));
+                Notification::send($admins, new AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->reference_number, false)));
             }
         }
 

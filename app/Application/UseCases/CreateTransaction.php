@@ -144,7 +144,7 @@ class CreateTransaction
                 $status = 'Pending'; // Override status to Pending for client safe withdrawals needing approval
                 $notificationMessage = "A withdrawal of " . $amount . " EGP from Client Safe '" . $safe->name . "' by " . $agent->name . " requires your approval.";
                 // Pass transaction ID if available after creation
-                $this->notifyRelevantUsers($notificationMessage, route('transactions.edit', $createdTransaction->id ?? null), $safe->branch_id);
+                $this->notifyRelevantUsers($notificationMessage, route('transactions.edit', $createdTransaction->reference_number ?? null), $safe->branch_id);
             }
         }
 
@@ -158,10 +158,10 @@ class CreateTransaction
         // Prevent Receive transaction if amount exceeds daily or monthly remaining
         if ($transactionType === 'Receive') {
             if ($amount > ($line->daily_remaining ?? 0)) {
-                throw new \Exception('Transaction amount exceeds daily remaining for this line.');
+                throw new \Exception('لا يمكن ان يتم انشاء المعاملة بمبلغ اكبر من المتاح للخط اليومي');
             }
             if ($amount > ($line->monthly_remaining ?? 0)) {
-                throw new \Exception('Transaction amount exceeds monthly remaining for this line.');
+                throw new \Exception('لا يمكن ان يتم انشاء المعاملة بمبلغ اكبر من المتاح للخط الشهري');
             }
         }
 
@@ -289,11 +289,15 @@ class CreateTransaction
                 $this->customerRepository->save($customer);
                 // Refresh customer object to ensure we have the latest data
                 $customer = $this->customerRepository->findByMobileNumber($customer->mobile_number);
-                // Decrease line balance by amount
-                if (($line->current_balance - $amount) < 0) {
-                    throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                // Decrease line balance by amount + 1 EGP fee for send transactions
+                $lineDeduction = $amount;
+                if ($transactionType === 'Transfer') {
+                    $lineDeduction += 1; // Add 1 EGP fee for send transactions
                 }
-                $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance - $amount]);
+                if (($line->current_balance - $lineDeduction) < 0) {
+                    throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($lineDeduction, 2) . ' EGP');
+                }
+                $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance - $lineDeduction]);
                 $line->refresh();
                 if ($line->current_balance < 500) {
                     $notificationMessage = "Warning: Line " . $line->mobile_number . " balance is low ( " . $line->current_balance . " EGP). Please top up.";
@@ -302,10 +306,14 @@ class CreateTransaction
                 // Do NOT change safe balance
             } else {
                 // Default: Deduct from line, increase safe
-                if (($line->current_balance - $amount) < 0) {
-                    throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                $lineDeduction = $amount;
+                if ($transactionType === 'Transfer') {
+                    $lineDeduction += 1; // Add 1 EGP fee for send transactions
                 }
-                $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance - $amount]);
+                if (($line->current_balance - $lineDeduction) < 0) {
+                    throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($lineDeduction, 2) . ' EGP');
+                }
+                $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance - $lineDeduction]);
                 $line->refresh();
                 if ($line->current_balance < 500) {
                     $notificationMessage = "Warning: Line " . $line->mobile_number . " balance is low ( " . $line->current_balance . " EGP). Please top up.";
@@ -419,8 +427,8 @@ class CreateTransaction
         $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
         // if ($deduction > 0) {
         //     $message = "A new transaction with a deduction of " . $deduction . " EGP has been created by " . $agent->name . ".";
-        //     \Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
-        //     \Notification::send($supervisors, new \App\Notifications\AdminNotification($message, route('transactions.edit', $createdTransaction->id, false)));
+        //     \Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.edit', $createdTransaction->reference_number, false)));
+        //     \Notification::send($supervisors, new \App\Notifications\AdminNotification($message, route('transactions.edit', $createdTransaction->reference_number, false)));
         // }
 
         return $createdTransaction;

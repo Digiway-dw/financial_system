@@ -36,26 +36,53 @@ class EloquentTransactionRepository implements TransactionRepository
 
     public function all(): array
     {
-        return EloquentTransaction::with('agent')->get()->map(function ($transaction) {
+        return EloquentTransaction::with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
+            
+            // Use branch_id from transaction if available, otherwise fall back to agent's branch
+            if ($transaction->branch_id) {
+                $branch = \App\Models\Domain\Entities\Branch::find($transaction->branch_id);
+                $transactionArray['branch_name'] = $branch ? $branch->name : 'N/A';
+                $transactionArray['branch_id'] = $transaction->branch_id;
+            } else {
+                $transactionArray['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
+                $transactionArray['branch_id'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->id : null;
+            }
+            
             return $transactionArray;
         })->toArray();
     }
 
     public function findByStatus(string $status, ?int $branchId = null): array
     {
-        $query = EloquentTransaction::where('status', $status)->with('agent');
+        $query = EloquentTransaction::where('status', $status)->with(['agent', 'agent.branch']);
 
         if ($branchId) {
-            $query->whereHas('agent', function ($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
+            $query->where(function($q) use ($branchId) {
+                // Include transactions where the agent belongs to the specific branch
+                $q->whereHas('agent', function ($agentQuery) use ($branchId) {
+                    $agentQuery->where('branch_id', $branchId);
+                });
+                // OR include transactions that have the branch_id set directly to the specific branch
+                $q->orWhere('branch_id', $branchId);
             });
         }
 
         return $query->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
+            
+            // Use branch_id from transaction if available, otherwise fall back to agent's branch
+            if ($transaction->branch_id) {
+                $branch = \App\Models\Domain\Entities\Branch::find($transaction->branch_id);
+                $transactionArray['branch_name'] = $branch ? $branch->name : 'N/A';
+                $transactionArray['branch_id'] = $transaction->branch_id;
+            } else {
+                $transactionArray['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
+                $transactionArray['branch_id'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->id : null;
+            }
+            
             return $transactionArray;
         })->toArray();
     }
@@ -152,11 +179,27 @@ class EloquentTransactionRepository implements TransactionRepository
                 $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
             });
         }
-        $ordinaryTxs = $query->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
+        $ordinaryTxs = $query->with(['agent', 'agent.branch', 'line', 'line.branch'])->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
-            $transactionArray['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
+            
+            // Use branch_id from transaction if available, otherwise fall back to agent's branch
+            if ($transaction->branch_id) {
+                $branch = \App\Models\Domain\Entities\Branch::find($transaction->branch_id);
+                $transactionArray['branch_name'] = $branch ? $branch->name : 'N/A';
+                $transactionArray['branch_id'] = $transaction->branch_id;
+            } else {
+                $transactionArray['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
+                $transactionArray['branch_id'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->id : null;
+            }
+            
             $transactionArray['commission'] = ($transaction->commission ?? 0) - ($transaction->deduction ?? 0); // Net commission after discount
+            
+            // Add 1 EGP fee as negative profit for send transactions
+            if ($transaction->transaction_type === 'Transfer') {
+                $transactionArray['commission'] -= 1; // Deduct 1 EGP fee from net profit
+            }
+            
             $transactionArray['deduction'] = $transaction->deduction ?? 0;
             $transactionArray['source_table'] = 'transactions';
             return $transactionArray;
@@ -221,17 +264,17 @@ class EloquentTransactionRepository implements TransactionRepository
                     $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
                 });
             }
-            $cashTxs = $cash->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
-                // Handle expense withdrawals - they should be deducted from net profit
-                $commission = 0;
+            $cashTxs = $cash->with(['agent', 'agent.branch', 'safe', 'safe.branch'])->get()->map(function ($transaction) {
+                // Handle expense withdrawals - they should be deducted from branch-specific profit
+                $commission = 0; // Cash transactions have no commission
                 $deduction = 0;
+                $profitContribution = 0; // For profit calculations
                 
-                // If this is an expense withdrawal, treat it as a negative profit (expense)
+                // If this is an expense withdrawal, treat it as a negative profit (expense) for the specific branch
                 if ($transaction->transaction_type === 'Withdrawal' && 
                     str_contains($transaction->customer_name, 'Expense:')) {
-                    // Expense withdrawals are treated as negative profit
-                    $commission = -$transaction->amount; // Negative commission = expense
-                    $deduction = 0;
+                    // Expense withdrawals are treated as negative profit for the specific branch
+                    $profitContribution = -$transaction->amount; // Negative profit contribution = expense
                 }
                 
                 return [
@@ -241,14 +284,16 @@ class EloquentTransactionRepository implements TransactionRepository
                     'receiver_mobile_number' => $transaction->depositor_mobile_number ?? null,
                     'customer_code' => $transaction->customer_code ?? null,
                     'amount' => $transaction->amount,
-                    'commission' => $commission,
+                    'commission' => $commission, // Always 0 for cash transactions
                     'deduction' => $deduction,
+                    'profit_contribution' => $profitContribution, // For profit calculations
                     'discount_notes' => null,
                     'notes' => $transaction->notes,
                     'transaction_type' => $transaction->transaction_type,
                     'agent_id' => $transaction->agent_id,
                     'agent_name' => $transaction->agent ? $transaction->agent->name : 'N/A',
-                    'branch_name' => $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A',
+                    'branch_name' => $transaction->safe && $transaction->safe->branch ? $transaction->safe->branch->name : 'N/A',
+                    'branch_id' => $transaction->safe && $transaction->safe->branch ? $transaction->safe->branch->id : null,
                     'status' => $transaction->status,
                     'transaction_date_time' => $transaction->transaction_date_time,
                     'line_id' => null,
@@ -272,9 +317,27 @@ class EloquentTransactionRepository implements TransactionRepository
         }, SORT_REGULAR, $sortDirection === 'desc');
 
         $totalTransferred = $all->sum('amount');
-        $totalCommission = $all->sum('commission'); // This includes positive commissions and negative expenses
+        $totalCommission = $all->sum('commission'); // Regular commissions only
         $totalDeductions = $all->sum('deduction');
-        $netProfit = $totalCommission; // Net profit = commissions - expenses (expenses are negative commissions)
+        
+        // Calculate profit per branch and then sum them up
+        $branchProfits = [];
+        $totalProfitContribution = 0;
+        
+        // Group transactions by branch
+        $transactionsByBranch = $all->groupBy('branch_id');
+        
+        foreach ($transactionsByBranch as $branchId => $branchTransactions) {
+            $branchCommission = $branchTransactions->sum('commission');
+            $branchExpenses = $branchTransactions->where('profit_contribution', '<', 0)->sum('profit_contribution');
+            $branchProfit = $branchCommission + $branchExpenses; // Commission + negative expenses
+            
+            $branchProfits[$branchId] = $branchProfit;
+            $totalProfitContribution += $branchExpenses; // Only add the negative expenses
+        }
+        
+        // Overall net profit is the sum of all branch profits
+        $netProfit = $totalCommission + $totalProfitContribution; // This should equal sum of all branch profits
 
         return [
             'transactions' => $all->values()->all(),
@@ -283,6 +346,7 @@ class EloquentTransactionRepository implements TransactionRepository
                 'total_commission' => $totalCommission,
                 'total_deductions' => $totalDeductions,
                 'net_profit' => $netProfit,
+                'branch_profits' => $branchProfits, // Add branch-specific profits for debugging
             ],
         ];
     }
@@ -338,11 +402,11 @@ class EloquentTransactionRepository implements TransactionRepository
         }
         if (isset($filters['branch_id'])) {
             $ordinary->where(function($q) use ($filters) {
-                // Include transactions where the agent belongs to the branch
+                // Include transactions where the agent belongs to the specific branch
                 $q->whereHas('agent', function ($agentQuery) use ($filters) {
                     $agentQuery->where('branch_id', $filters['branch_id']);
                 });
-                // OR include transactions that have the branch_id set directly
+                // OR include transactions that have the branch_id set directly to the specific branch
                 $q->orWhere('branch_id', $filters['branch_id']);
             });
         }
@@ -410,11 +474,27 @@ class EloquentTransactionRepository implements TransactionRepository
                 $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
             });
         }
-        $ordinaryTxs = $ordinary->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
+        $ordinaryTxs = $ordinary->with(['agent', 'agent.branch', 'line', 'line.branch'])->get()->map(function ($transaction) {
             $arr = $transaction->toArray();
             $arr['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
-            $arr['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
+            
+            // Use branch_id from transaction if available, otherwise fall back to agent's branch
+            if ($transaction->branch_id) {
+                $branch = \App\Models\Domain\Entities\Branch::find($transaction->branch_id);
+                $arr['branch_name'] = $branch ? $branch->name : 'N/A';
+                $arr['branch_id'] = $transaction->branch_id;
+            } else {
+                $arr['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
+                $arr['branch_id'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->id : null;
+            }
+            
             $arr['commission'] = ($transaction->commission ?? 0) - ($transaction->deduction ?? 0); // Net commission after discount
+            
+            // Add 1 EGP fee as negative profit for send transactions
+            if ($transaction->transaction_type === 'Transfer') {
+                $arr['commission'] -= 1; // Deduct 1 EGP fee from net profit
+            }
+            
             $arr['deduction'] = $transaction->deduction ?? 0;
             $arr['source_table'] = 'transactions';
             $arr['descriptive_transaction_name'] = $transaction->descriptive_transaction_name;
@@ -461,8 +541,21 @@ class EloquentTransactionRepository implements TransactionRepository
             }
             // Add branch filtering for cash transactions
             if (isset($filters['branch_id'])) {
-                $cash->whereHas('agent', function ($agentQuery) use ($filters) {
-                    $agentQuery->where('branch_id', $filters['branch_id']);
+                $cash->where(function($q) use ($filters) {
+                    // Include transactions where the agent belongs to the specific branch
+                    $q->whereHas('agent', function ($agentQuery) use ($filters) {
+                        $agentQuery->where('branch_id', $filters['branch_id']);
+                    });
+                    // OR include expense withdrawals that have the destination_branch_id set to the specific branch
+                    $q->orWhere(function($expenseQuery) use ($filters) {
+                        $expenseQuery->where('transaction_type', 'Withdrawal')
+                                    ->where('customer_name', 'like', 'Expense:%')
+                                    ->where('destination_branch_id', $filters['branch_id']);
+                    });
+                    // OR include transactions where the safe belongs to the specific branch
+                    $q->orWhereHas('safe', function ($safeQuery) use ($filters) {
+                        $safeQuery->where('branch_id', $filters['branch_id']);
+                    });
                 });
             }
             if (isset($filters['branch_ids']) && is_array($filters['branch_ids']) && count($filters['branch_ids']) > 0) {
@@ -485,17 +578,37 @@ class EloquentTransactionRepository implements TransactionRepository
                     $q->whereRaw("REPLACE(REPLACE(REPLACE(depositor_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
                 });
             }
-            $cashTxs = $cash->with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
-                // Handle expense withdrawals - they should be deducted from net profit
-                $commission = 0;
+            $cashTxs = $cash->with(['agent', 'agent.branch', 'safe.branch'])->get()->map(function ($transaction) {
+                // Handle expense withdrawals - they should be deducted from branch-specific profit
+                $commission = 0; // Cash transactions have no commission
                 $deduction = 0;
+                $profitContribution = 0; // For profit calculations
                 
-                // If this is an expense withdrawal, treat it as a negative profit (expense)
+                // Determine the correct branch for this transaction
+                $branchId = null;
+                $branchName = 'N/A';
+                
+                // For expense withdrawals, use the destination_branch_id or safe's branch
                 if ($transaction->transaction_type === 'Withdrawal' && 
                     str_contains($transaction->customer_name, 'Expense:')) {
-                    // Expense withdrawals are treated as negative profit
-                    $commission = -$transaction->amount; // Negative commission = expense
-                    $deduction = 0;
+                    // Expense withdrawals should be attributed to the branch where the expense occurred
+                    if ($transaction->destination_branch_id) {
+                        $branchId = $transaction->destination_branch_id;
+                        // Get branch name from the destination branch
+                        $branch = \App\Models\Domain\Entities\Branch::find($branchId);
+                        $branchName = $branch ? $branch->name : 'N/A';
+                    } elseif ($transaction->safe && $transaction->safe->branch) {
+                        $branchId = $transaction->safe->branch->id;
+                        $branchName = $transaction->safe->branch->name;
+                    }
+                    // Expense withdrawals are treated as negative profit for the specific branch
+                    $profitContribution = -$transaction->amount; // Negative profit contribution = expense
+                } else {
+                    // For other cash transactions, use safe's branch
+                    if ($transaction->safe && $transaction->safe->branch) {
+                        $branchId = $transaction->safe->branch->id;
+                        $branchName = $transaction->safe->branch->name;
+                    }
                 }
                 
                 return [
@@ -505,15 +618,17 @@ class EloquentTransactionRepository implements TransactionRepository
                     'receiver_mobile_number' => $transaction->depositor_mobile_number ?? null,
                     'customer_code' => $transaction->customer_code ?? null,
                     'amount' => $transaction->amount,
-                    'commission' => $commission,
+                    'commission' => $commission, // Always 0 for cash transactions
                     'deduction' => $deduction,
+                    'profit_contribution' => $profitContribution, // For profit calculations
                     'discount_notes' => null,
                     'notes' => $transaction->notes,
                     'transaction_type' => $transaction->transaction_type,
                     'descriptive_transaction_name' => $transaction->descriptive_transaction_name,
                     'agent_id' => $transaction->agent_id,
                     'agent_name' => $transaction->agent ? $transaction->agent->name : 'N/A',
-                    'branch_name' => $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A',
+                    'branch_name' => $branchName,
+                    'branch_id' => $branchId,
                     'status' => $transaction->status,
                     'transaction_date_time' => $transaction->transaction_date_time,
                     'line_id' => null,
@@ -565,9 +680,27 @@ class EloquentTransactionRepository implements TransactionRepository
         $all = $all->values();
 
         $totalTransferred = $all->sum('amount');
-        $totalCommission = $all->sum('commission'); // This includes positive commissions and negative expenses
+        $totalCommission = $all->sum('commission'); // Regular commissions only
         $totalDeductions = $all->sum('deduction');
-        $netProfit = $totalCommission; // Net profit = commissions - expenses (expenses are negative commissions)
+        
+        // Calculate profit per branch and then sum them up
+        $branchProfits = [];
+        $totalProfitContribution = 0;
+        
+        // Group transactions by branch
+        $transactionsByBranch = $all->groupBy('branch_id');
+        
+        foreach ($transactionsByBranch as $branchId => $branchTransactions) {
+            $branchCommission = $branchTransactions->sum('commission');
+            $branchExpenses = $branchTransactions->where('profit_contribution', '<', 0)->sum('profit_contribution');
+            $branchProfit = $branchCommission + $branchExpenses; // Commission + negative expenses
+            
+            $branchProfits[$branchId] = $branchProfit;
+            $totalProfitContribution += $branchExpenses; // Only add the negative expenses
+        }
+        
+        // Overall net profit is the sum of all branch profits
+        $netProfit = $totalCommission + $totalProfitContribution; // This should equal sum of all branch profits
 
         return [
             'transactions' => $all->toArray(),
@@ -576,6 +709,7 @@ class EloquentTransactionRepository implements TransactionRepository
                 'total_commission' => $totalCommission,
                 'total_deductions' => $totalDeductions,
                 'net_profit' => $netProfit,
+                'branch_profits' => $branchProfits, // Add branch-specific profits for debugging
             ],
         ];
     }

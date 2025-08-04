@@ -19,6 +19,8 @@ class Edit extends Component
     public $currentBalance = 0.00;
     public $dailyLimit = 0.00;
     public $monthlyLimit = 0.00;
+    public $dailyRemaining = 0.00;
+    public $monthlyRemaining = 0.00;
     public $network = 'vodafone';
     public $status = 'active';
     public $branchId = '';
@@ -39,6 +41,8 @@ class Edit extends Component
             ],
             'dailyLimit' => 'required|numeric|min:0',
             'monthlyLimit' => 'required|numeric|min:0',
+            'dailyRemaining' => 'required|numeric|min:0',
+            'monthlyRemaining' => 'required|numeric|min:0',
             'network' => 'required|in:vodafone,orange,etisalat,we,fawry',
             'status' => 'required|string|in:active,inactive',
             'branchId' => 'required|exists:branches,id',
@@ -77,6 +81,8 @@ class Edit extends Component
             $this->currentBalance = (int) $this->line->current_balance;
             $this->dailyLimit = (int) $this->line->daily_limit;
             $this->monthlyLimit = (int) $this->line->monthly_limit;
+            $this->dailyRemaining = (int) $this->line->daily_remaining;
+            $this->monthlyRemaining = (int) $this->line->monthly_remaining;
             $this->network = $this->line->network;
             $this->status = $this->line->status;
             $this->branchId = $this->line->branch_id;
@@ -102,6 +108,8 @@ class Edit extends Component
                     'current_balance' => $balanceToUpdate,
                     'daily_limit' => (float) $this->dailyLimit,
                     'monthly_limit' => (float) $this->monthlyLimit,
+                    'daily_remaining' => (float) $this->dailyRemaining,
+                    'monthly_remaining' => (float) $this->monthlyRemaining,
                     'network' => $this->network,
                     'status' => $this->status,
                     'branch_id' => $this->branchId,

@@ -201,7 +201,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     @if ($transaction instanceof \App\Models\Domain\Entities\CashTransaction)
-                                        <a href="{{ route('cash-transactions.details', $transaction->id) }}"
+                                        <a href="{{ route('cash-transactions.details', $transaction->reference_number) }}"
                                             class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors duration-150">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
@@ -213,7 +213,7 @@
                                             عرض
                                         </a>
                                     @else
-                                        <a href="{{ route('transactions.details', $transaction->id) }}"
+                                        <a href="{{ route('transactions.details', $transaction->reference_number) }}"
                                             class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors duration-150">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">

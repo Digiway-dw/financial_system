@@ -64,6 +64,36 @@
                     <p class="text-xs text-gray-500 mt-1">أرقام صحيحة فقط (بدون كسور عشرية)</p>
                 </div>
 
+                <!-- المتبقي اليومي -->
+                <div>
+                    <x-input-label for="dailyRemaining" :value="'المتبقي اليومي'" />
+                    <div class="relative">
+                        <x-text-input wire:model="dailyRemaining" id="dailyRemaining" name="dailyRemaining" type="text"
+                            class="mt-1 block w-full pl-16" required
+                            x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-base">ج.م</span>
+                        </div>
+                    </div>
+                    <x-input-error class="mt-2" :messages="$errors->get('dailyRemaining')" />
+                    <p class="text-xs text-gray-500 mt-1">أرقام صحيحة فقط (بدون كسور عشرية)</p>
+                </div>
+
+                <!-- المتبقي الشهري -->
+                <div>
+                    <x-input-label for="monthlyRemaining" :value="'المتبقي الشهري'" />
+                    <div class="relative">
+                        <x-text-input wire:model="monthlyRemaining" id="monthlyRemaining" name="monthlyRemaining" type="text"
+                            class="mt-1 block w-full pl-16" required
+                            x-on:input="event.target.value = event.target.value.replace(/[^\d]/g, '')" />
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-base">ج.م</span>
+                        </div>
+                    </div>
+                    <x-input-error class="mt-2" :messages="$errors->get('monthlyRemaining')" />
+                    <p class="text-xs text-gray-500 mt-1">أرقام صحيحة فقط (بدون كسور عشرية)</p>
+                </div>
+
                 <!-- مزود الشبكة -->
                 <div>
                     <x-input-label for="network" :value="'مزود الشبكة'" />

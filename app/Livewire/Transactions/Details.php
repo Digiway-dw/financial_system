@@ -15,53 +15,36 @@ class Details extends Component
     public $cashTransaction;
     public $transactionType; // 'transaction' or 'cash_transaction'
 
-    public function mount($transactionId = null, $cashTransactionId = null)
+    public function mount($referenceNumber = null)
     {
-        // Handle both parameter names
-        if ($transactionId) {
-            $this->transactionId = $transactionId;
-        } elseif ($cashTransactionId) {
-            $this->cashTransactionId = $cashTransactionId;
+        // The parameter is now directly the reference number
+        
+        if (!$referenceNumber) {
+            abort(404, 'Transaction reference number not provided');
         }
         
-        // Try to find regular transaction first
-        if ($this->transactionId) {
-            $this->transaction = Transaction::with(['agent', 'branch', 'line', 'safe'])->find($this->transactionId);
-            if ($this->transaction) {
-                $this->transactionType = 'transaction';
-                return;
-            }
+        // Try to find regular transaction by reference number first
+        $this->transaction = Transaction::with(['agent', 'branch', 'line', 'safe'])
+            ->where('reference_number', $referenceNumber)
+            ->first();
+            
+        if ($this->transaction) {
+            $this->transactionType = 'transaction';
+            return;
         }
         
-        // Try to find cash transaction
-        if ($this->cashTransactionId) {
-            $this->cashTransaction = CashTransaction::with(['agent', 'safe.branch'])->find($this->cashTransactionId);
-            if ($this->cashTransaction) {
-                $this->transactionType = 'cash_transaction';
-                return;
-            }
-        }
-        
-        // If we have a transactionId but no cashTransactionId, try cash transaction with that ID
-        if ($this->transactionId && !$this->transaction) {
-            $this->cashTransaction = CashTransaction::with(['agent', 'safe.branch'])->find($this->transactionId);
-            if ($this->cashTransaction) {
-                $this->transactionType = 'cash_transaction';
-                return;
-            }
-        }
-        
-        // If we have a cashTransactionId but no transactionId, try regular transaction with that ID
-        if ($this->cashTransactionId && !$this->cashTransaction) {
-            $this->transaction = Transaction::with(['agent', 'branch', 'line', 'safe'])->find($this->cashTransactionId);
-            if ($this->transaction) {
-                $this->transactionType = 'transaction';
-                return;
-            }
+        // Try to find cash transaction by reference number
+        $this->cashTransaction = CashTransaction::with(['agent', 'safe.branch'])
+            ->where('reference_number', $referenceNumber)
+            ->first();
+            
+        if ($this->cashTransaction) {
+            $this->transactionType = 'cash_transaction';
+            return;
         }
         
         // If we still haven't found anything, abort
-        abort(404, 'Transaction not found');
+        abort(404, 'Transaction not found with reference number: ' . $referenceNumber);
     }
 
     public function render()

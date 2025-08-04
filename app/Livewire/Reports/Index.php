@@ -52,97 +52,64 @@ class Index extends Component
 
     public function generateReport()
     {
-        $ordinary = Transaction::query();
-        $cash = CashTransaction::query();
-
+        // Use the unified transaction repository for accurate calculations
+        $repository = new \App\Infrastructure\Repositories\EloquentTransactionRepository();
+        
+        // Build filters for the repository
+        $filters = [];
+        
         // Date filter
         if ($this->startDate) {
-            $ordinary->whereDate('transaction_date_time', '>=', $this->startDate);
-            $cash->whereDate('transaction_date_time', '>=', $this->startDate);
+            $filters['start_date'] = $this->startDate;
         }
         if ($this->endDate) {
-            $ordinary->whereDate('transaction_date_time', '<=', $this->endDate);
-            $cash->whereDate('transaction_date_time', '<=', $this->endDate);
+            $filters['end_date'] = $this->endDate;
         }
+        
         // Agent filter
         if ($this->selectedUser) {
-            $ordinary->where('agent_id', $this->selectedUser);
-            $cash->where('agent_id', $this->selectedUser);
+            $filters['agent_id'] = $this->selectedUser;
         }
+        
         // Branch filter
         if ($this->selectedBranch) {
-            $ordinary->where('branch_id', $this->selectedBranch);
-            $cash->whereHas('safe', function ($q) {
-                $q->where('branch_id', $this->selectedBranch);
-            });
+            $filters['branch_id'] = $this->selectedBranch;
         }
+        
         // Customer name filter
         if ($this->selectedCustomer) {
-            $ordinary->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
-            $cash->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
+            $filters['customer_name'] = $this->selectedCustomer;
         }
+        
         // Customer code filter
         if ($this->selectedCustomerCode) {
-            $ordinary->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
-            $cash->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
+            $filters['customer_code'] = $this->selectedCustomerCode;
         }
+        
         // Type filter
         if ($this->selectedTransactionType) {
-            $ordinary->where('transaction_type', $this->selectedTransactionType);
-            $cash->where('transaction_type', $this->selectedTransactionType);
+            $filters['transaction_type'] = $this->selectedTransactionType;
         }
-
-        $ordinaryTxs = $ordinary->with(['agent', 'branch'])->take($this->perPage + 1)->get()->map(function ($tx) {
-            return [
-                'id' => $tx->id,
-                'customer_name' => $tx->customer_name,
-                'customer_code' => $tx->customer_code,
-                'amount' => $tx->amount,
-                'commission' => $tx->commission ?? 0,
-                'deduction' => $tx->deduction ?? 0,
-                'transaction_type' => $tx->transaction_type,
-                'agent_name' => $tx->agent ? $tx->agent->name : '-',
-                'status' => $tx->status,
-                'transaction_date_time' => $tx->transaction_date_time,
-                'reference_number' => $tx->reference_number,
-                'branch_name' => $tx->branch ? $tx->branch->name : 'N/A',
-                'source' => 'ordinary',
-            ];
-        });
-        $cashTxs = $cash->with(['agent', 'safe.branch'])->take($this->perPage + 1)->get()->map(function ($tx) {
-            return [
-                'id' => $tx->id,
-                'customer_name' => $tx->customer_name,
-                'customer_code' => $tx->customer_code,
-                'amount' => $tx->amount,
-                'commission' => 0,
-                'deduction' => 0,
-                'transaction_type' => $tx->transaction_type,
-                'agent_name' => $tx->agent ? $tx->agent->name : '-',
-                'status' => $tx->status,
-                'transaction_date_time' => $tx->transaction_date_time,
-                'reference_number' => $tx->reference_number,
-                'branch_name' => ($tx->safe && $tx->safe->branch) ? $tx->safe->branch->name : 'N/A',
-                'source' => 'cash',
-            ];
-        });
-        $all = collect($ordinaryTxs)->merge($cashTxs);
-
-        $all = $all->sortBy(function ($tx) {
-            return $tx[$this->sortField] ?? null;
-        }, SORT_REGULAR, $this->sortDirection === 'desc');
-        $all = $all->values();
+        
+        // Sorting
+        $filters['sortField'] = $this->sortField;
+        $filters['sortDirection'] = $this->sortDirection;
+        
+        // Get unified transactions with proper calculations
+        $result = $repository->allUnified($filters);
+        $all = collect($result['transactions']);
+        
+        // Apply pagination
         $this->totalCount = $all->count();
         $this->hasMore = $all->count() > $this->perPage;
         $this->transactions = $all->take($this->perPage)->all();
 
-
-        // Financial summary
+        // Use the accurate financial summary from the repository
         $this->financialSummary = [
-            'total_transfer' => $all->sum('amount'),
-            'commission_earned' => $all->sum('commission'), // This is now net commission (after deduction)
-            'total_discounts' => $all->sum('deduction'),
-            'net_profit' => $all->sum('commission'), // Net profit is the same as net commission since commission already includes deduction
+            'total_transfer' => $result['totals']['total_transferred'],
+            'commission_earned' => $result['totals']['total_commission'],
+            'total_discounts' => $result['totals']['total_deductions'],
+            'net_profit' => $result['totals']['net_profit'],
         ];
 
         // Safe balances by branch
@@ -206,86 +173,52 @@ class Index extends Component
 
     public function exportExcel()
     {
-        // Fetch ALL transactions matching the filters (not just paginated)
-        $ordinary = Transaction::query();
-        $cash = CashTransaction::query();
-
+        // Use the unified transaction repository for accurate calculations
+        $repository = new \App\Infrastructure\Repositories\EloquentTransactionRepository();
+        
+        // Build filters for the repository
+        $filters = [];
+        
         // Date filter
         if ($this->startDate) {
-            $ordinary->whereDate('transaction_date_time', '>=', $this->startDate);
-            $cash->whereDate('transaction_date_time', '>=', $this->startDate);
+            $filters['start_date'] = $this->startDate;
         }
         if ($this->endDate) {
-            $ordinary->whereDate('transaction_date_time', '<=', $this->endDate);
-            $cash->whereDate('transaction_date_time', '<=', $this->endDate);
+            $filters['end_date'] = $this->endDate;
         }
+        
         // Agent filter
         if ($this->selectedUser) {
-            $ordinary->where('agent_id', $this->selectedUser);
-            $cash->where('agent_id', $this->selectedUser);
+            $filters['agent_id'] = $this->selectedUser;
         }
+        
         // Branch filter
         if ($this->selectedBranch) {
-            $ordinary->where('branch_id', $this->selectedBranch);
-            $cash->whereHas('safe', function ($q) {
-                $q->where('branch_id', $this->selectedBranch);
-            });
+            $filters['branch_id'] = $this->selectedBranch;
         }
+        
         // Customer name filter
         if ($this->selectedCustomer) {
-            $ordinary->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
-            $cash->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
+            $filters['customer_name'] = $this->selectedCustomer;
         }
+        
         // Customer code filter
         if ($this->selectedCustomerCode) {
-            $ordinary->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
-            $cash->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
+            $filters['customer_code'] = $this->selectedCustomerCode;
         }
+        
         // Type filter
         if ($this->selectedTransactionType) {
-            $ordinary->where('transaction_type', $this->selectedTransactionType);
-            $cash->where('transaction_type', $this->selectedTransactionType);
+            $filters['transaction_type'] = $this->selectedTransactionType;
         }
-
-        $ordinaryTxs = $ordinary->with(['agent', 'branch'])->get()->map(function ($tx) {
-            return [
-                'id' => $tx->id,
-                'customer_name' => $tx->customer_name,
-                'customer_code' => $tx->customer_code,
-                'amount' => $tx->amount,
-                'commission' => $tx->commission ?? 0,
-                'deduction' => $tx->deduction ?? 0,
-                'transaction_type' => $tx->transaction_type,
-                'agent_name' => $tx->agent ? $tx->agent->name : '-',
-                'status' => $tx->status,
-                'transaction_date_time' => $tx->transaction_date_time,
-                'reference_number' => $tx->reference_number,
-                'branch_name' => $tx->branch ? $tx->branch->name : 'N/A',
-                'source' => 'ordinary',
-            ];
-        });
-        $cashTxs = $cash->with(['agent', 'safe.branch'])->get()->map(function ($tx) {
-            return [
-                'id' => $tx->id,
-                'customer_name' => $tx->customer_name,
-                'customer_code' => $tx->customer_code,
-                'amount' => $tx->amount,
-                'commission' => 0,
-                'deduction' => 0,
-                'transaction_type' => $tx->transaction_type,
-                'agent_name' => $tx->agent ? $tx->agent->name : '-',
-                'status' => $tx->status,
-                'transaction_date_time' => $tx->transaction_date_time,
-                'reference_number' => $tx->reference_number,
-                'branch_name' => ($tx->safe && $tx->safe->branch) ? $tx->safe->branch->name : 'N/A',
-                'source' => 'cash',
-            ];
-        });
-        $all = collect($ordinaryTxs)->merge($cashTxs);
-        $all = $all->sortBy(function ($tx) {
-            return $tx[$this->sortField] ?? null;
-        }, SORT_REGULAR, $this->sortDirection === 'desc');
-        $all = $all->values();
+        
+        // Sorting
+        $filters['sortField'] = $this->sortField;
+        $filters['sortDirection'] = $this->sortDirection;
+        
+        // Get unified transactions with proper calculations
+        $result = $repository->allUnified($filters);
+        $all = collect($result['transactions']);
 
         $export = new \App\Exports\AutoSizeTransactionsExport($all);
         return \Maatwebsite\Excel\Facades\Excel::download($export, 'transactions_report.xlsx');
@@ -315,94 +248,60 @@ class Index extends Component
 
     public function exportAllPdf()
     {
-        // Fetch ALL transactions matching the filters (not just paginated)
-        $ordinary = Transaction::query();
-        $cash = CashTransaction::query();
-
+        // Use the unified transaction repository for accurate calculations
+        $repository = new \App\Infrastructure\Repositories\EloquentTransactionRepository();
+        
+        // Build filters for the repository
+        $filters = [];
+        
         // Date filter
         if ($this->startDate) {
-            $ordinary->whereDate('transaction_date_time', '>=', $this->startDate);
-            $cash->whereDate('transaction_date_time', '>=', $this->startDate);
+            $filters['start_date'] = $this->startDate;
         }
         if ($this->endDate) {
-            $ordinary->whereDate('transaction_date_time', '<=', $this->endDate);
-            $cash->whereDate('transaction_date_time', '<=', $this->endDate);
+            $filters['end_date'] = $this->endDate;
         }
+        
         // Agent filter
         if ($this->selectedUser) {
-            $ordinary->where('agent_id', $this->selectedUser);
-            $cash->where('agent_id', $this->selectedUser);
+            $filters['agent_id'] = $this->selectedUser;
         }
+        
         // Branch filter
         if ($this->selectedBranch) {
-            $ordinary->where('branch_id', $this->selectedBranch);
-            $cash->whereHas('safe', function ($q) {
-                $q->where('branch_id', $this->selectedBranch);
-            });
+            $filters['branch_id'] = $this->selectedBranch;
         }
+        
         // Customer name filter
         if ($this->selectedCustomer) {
-            $ordinary->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
-            $cash->where('customer_name', 'like', '%' . $this->selectedCustomer . '%');
+            $filters['customer_name'] = $this->selectedCustomer;
         }
+        
         // Customer code filter
         if ($this->selectedCustomerCode) {
-            $ordinary->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
-            $cash->where('customer_code', 'like', '%' . $this->selectedCustomerCode . '%');
+            $filters['customer_code'] = $this->selectedCustomerCode;
         }
+        
         // Type filter
         if ($this->selectedTransactionType) {
-            $ordinary->where('transaction_type', $this->selectedTransactionType);
-            $cash->where('transaction_type', $this->selectedTransactionType);
+            $filters['transaction_type'] = $this->selectedTransactionType;
         }
-
-        $ordinaryTxs = $ordinary->with(['agent', 'branch'])->get()->map(function ($tx) {
-            return [
-                'id' => $tx->id,
-                'customer_name' => $tx->customer_name,
-                'customer_code' => $tx->customer_code,
-                'amount' => $tx->amount,
-                'commission' => ($tx->commission ?? 0) - ($tx->deduction ?? 0), // Net commission after discount
-                'deduction' => $tx->deduction ?? 0,
-                'transaction_type' => $tx->transaction_type,
-                'agent_name' => $tx->agent ? $tx->agent->name : '-',
-                'status' => $tx->status,
-                'transaction_date_time' => $tx->transaction_date_time,
-                'reference_number' => $tx->reference_number,
-                'branch_name' => $tx->branch ? $tx->branch->name : 'N/A',
-                'source' => 'ordinary',
-            ];
-        });
-        $cashTxs = $cash->with(['agent', 'safe.branch'])->get()->map(function ($tx) {
-            return [
-                'id' => $tx->id,
-                'customer_name' => $tx->customer_name,
-                'customer_code' => $tx->customer_code,
-                'amount' => $tx->amount,
-                'commission' => 0,
-                'deduction' => 0,
-                'transaction_type' => $tx->transaction_type,
-                'agent_name' => $tx->agent ? $tx->agent->name : '-',
-                'status' => $tx->status,
-                'transaction_date_time' => $tx->transaction_date_time,
-                'reference_number' => $tx->reference_number,
-                'branch_name' => ($tx->safe && $tx->safe->branch) ? $tx->safe->branch->name : 'N/A',
-                'source' => 'cash',
-            ];
-        });
-        $all = collect($ordinaryTxs)->merge($cashTxs);
-        $all = $all->sortBy(function ($tx) {
-            return $tx[$this->sortField] ?? null;
-        }, SORT_REGULAR, $this->sortDirection === 'desc');
-        $all = $all->values();
+        
+        // Sorting
+        $filters['sortField'] = $this->sortField;
+        $filters['sortDirection'] = $this->sortDirection;
+        
+        // Get unified transactions with proper calculations
+        $result = $repository->allUnified($filters);
+        $all = collect($result['transactions']);
 
         $summary = [
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
-            'totalTransferred' => $all->sum('amount'),
-            'totalCommission' => $all->sum('commission'),
-            'totalDeductions' => $all->sum('deduction'),
-            'netProfits' => $all->sum('commission'), // Net profit is the same as net commission since commission already includes deduction
+            'totalTransferred' => $result['totals']['total_transferred'],
+            'totalCommission' => $result['totals']['total_commission'],
+            'totalDeductions' => $result['totals']['total_deductions'],
+            'netProfits' => $result['totals']['net_profit'],
             'financialSummary' => $this->financialSummary,
             'customerBalances' => $this->customerBalances,
             'safeBalances' => $this->safeBalances,

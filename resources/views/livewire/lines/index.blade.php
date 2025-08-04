@@ -121,19 +121,19 @@
                                 </div>
                             </th>
                             <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[80px] sortable-header"
-                                wire:click="sortBy('daily_usage')">
+                                wire:click="sortBy('daily_remaining')">
                                 <div class="flex items-center space-x-reverse space-x-1">
-                                    <span>إجمالي الاستلام اليومي</span>
-                                    @if ($sortField === 'daily_usage')
+                                    <span>المتبقي اليومي</span>
+                                    @if ($sortField === 'daily_remaining')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
                             </th>
                             <th class="px-3 py-2 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] sortable-header"
-                                wire:click="sortBy('monthly_usage')">
+                                wire:click="sortBy('monthly_remaining')">
                                 <div class="flex items-center space-x-reverse space-x-1">
-                                    <span>إجمالي الاستلام الشهري</span>
-                                    @if ($sortField === 'monthly_usage')
+                                    <span>المتبقي الشهري</span>
+                                    @if ($sortField === 'monthly_remaining')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
@@ -173,7 +173,7 @@
                     <tbody class="bg-white divide-y divide-gray-200 text-xs">
                         @forelse ($lines as $line)
                             <tr
-                                class="hover:bg-gray-50 transition-colors duration-150 {{ $line['monthly_limit_row_class'] }}">
+                                class="hover:bg-gray-50 transition-colors duration-150 {{ $line['monthly_remaining_row_class'] }}">
                                 <td class="px-3 py-2 whitespace-nowrap">
                                     <div class="flex items-center">
                                         @if ($line['status'] === 'active')
@@ -206,15 +206,15 @@
                                     </div>
                                     <div class="text-xs text-gray-500">ج.م</div>
                                 </td>
-                                <td class="px-3 py-2 whitespace-nowrap {{ $line['daily_usage_class'] }}">
-                                    <div class="text-sm text-gray-900">{{ format_int($line['daily_usage']) }}
+                                <td class="px-3 py-2 whitespace-nowrap {{ $line['daily_remaining_class'] }}">
+                                    <div class="text-sm text-gray-900">{{ format_int($line['daily_remaining']) }}
                                     </div>
                                     <div class="text-xs text-gray-500">ج.م</div>
                                 </td>
                                 <td class="px-3 py-2 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ format_int($line['monthly_usage']) }}
+                                    <div class="text-sm text-gray-900">{{ format_int($line['monthly_remaining']) }}
                                     </div>
-                                    <div class="text-xs text-gray-500">EGP</div>
+                                    <div class="text-xs text-gray-500">ج.م</div>
                                 </td>
                                 <td class="px-3 py-2 whitespace-nowrap">
                                     <span

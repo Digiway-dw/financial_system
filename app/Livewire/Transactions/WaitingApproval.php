@@ -84,9 +84,9 @@ class WaitingApproval extends Component
     public function goToReceipt()
     {
         if ($this->transactionType === 'transaction' && $this->transaction) {
-            return redirect()->route('transactions.receipt', ['transaction' => $this->transaction->id]);
+            return redirect()->route('transactions.receipt', ['referenceNumber' => $this->transaction->reference_number]);
         } elseif ($this->transactionType === 'cash_transaction' && $this->cashTransaction) {
-            return redirect()->route('cash-transactions.receipt', ['cashTransaction' => $this->cashTransaction->id]);
+            return redirect()->route('cash-transactions.receipt', ['referenceNumber' => $this->cashTransaction->reference_number]);
         }
     }
 

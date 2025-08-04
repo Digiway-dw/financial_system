@@ -133,9 +133,10 @@ class UpdateTransaction
         // Reverse Transfer (Send) transaction effects
         if ($transactionType === 'Transfer') {
             if ($line) {
-                // Reverse line balance deduction
+                // Reverse line balance deduction (amount + 1 EGP fee)
+                $lineReversal = $amount + 1;
                 $this->lineRepository->update($line->id, [
-                    'current_balance' => $line->current_balance + $amount
+                    'current_balance' => $line->current_balance + $lineReversal
                 ]);
             }
 
@@ -236,14 +237,17 @@ class UpdateTransaction
         // Apply Transfer (Send) transaction effects
         if ($transactionType === 'Transfer') {
             if ($line) {
+                // Add 1 EGP fee for send transactions
+                $lineDeduction = $amount + 1;
+                
                 // Check line balance sufficiency
-                if (($line->current_balance - $amount) < 0) {
-                    throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                if (($line->current_balance - $lineDeduction) < 0) {
+                    throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($lineDeduction, 2) . ' EGP');
                 }
                 
-                // Deduct from line balance
+                // Deduct from line balance (amount + 1 EGP fee)
                 $this->lineRepository->update($line->id, [
-                    'current_balance' => $line->current_balance - $amount
+                    'current_balance' => $line->current_balance - $lineDeduction
                 ]);
             }
 
