@@ -25,12 +25,9 @@ class DeleteTransaction
             return false;
         }
 
-        // Convert to Transaction model instance to use policies
-        $transactionModel = Transaction::find($transactionId);
-
-        // Check if user is authorized to delete this transaction
-        if (!Gate::allows('deleteTransaction', $transactionModel)) {
-            throw new AuthorizationException('You are not authorized to delete this transaction.');
+        // Check if user is authorized to delete transactions (same as view authorization)
+        if (!Gate::allows('delete-transactions')) {
+            throw new AuthorizationException('You are not authorized to delete transactions.');
         }
 
         $this->transactionRepository->delete($transactionId);

@@ -261,7 +261,7 @@ class Edit extends Component
             return;
         }
         $this->is_client = true;
-        $this->updateCustomer();
+        session()->flash('message', 'Wallet activated. Click "تعديل العميل" to save changes.');
     }
 
     public function deactivateWallet()
@@ -271,7 +271,7 @@ class Edit extends Component
             return;
         }
         $this->is_client = false;
-        $this->updateCustomer();
+        session()->flash('message', 'Wallet deactivated. Click "تعديل العميل" to save changes.');
     }
 
     public function render()

@@ -15,9 +15,10 @@
             <select wire:model="transactionType" id="transactionType" name="transactionType"
                 class="w-full px-4 py-3 bg-white/70 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
                 required>
-                <option value="Transfer">تحويل</option>
-                <option value="Withdrawal">سحب</option>
+                <option value="Transfer">إرسال</option>
+                <option value="Receive">استقبال</option>
                 <option value="Deposit">إيداع</option>
+                <option value="Withdrawal">سحب</option>
                 <option value="Adjustment">تعديل</option>
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('transactionType')" />

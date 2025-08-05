@@ -39,7 +39,7 @@ class Create extends Component
     #[Validate('required|numeric|min:0')]
     public $deduction = 0.00;
 
-    #[Validate('required|string|in:Transfer,Withdrawal,Deposit,Adjustment')]
+    #[Validate('required|string|in:Transfer,Receive,Withdrawal,Deposit,Adjustment')]
     public $transactionType = 'Transfer';
 
     public $agentName = '';
@@ -259,7 +259,7 @@ class Create extends Component
                 (float) $this->amount,
                 (float) $this->commission,
                 (float) $this->deduction,
-                $this->transactionType,
+                $this->mapTransactionTypeForDB($this->transactionType),
                 Auth::user()->id, // agentId
                 $this->lineId,
                 $this->safeId,
@@ -381,5 +381,14 @@ class Create extends Component
             // For amounts over 2000, add 5 EGP for each additional 500 EGP
             return 20 + (ceil(($amount - 2000) / 500) * 5);
         }
+    }
+
+    /**
+     * Map UI transaction type to database type
+     */
+    private function mapTransactionTypeForDB($uiType)
+    {
+        // No mapping needed since we're using the same values
+        return $uiType;
     }
 }

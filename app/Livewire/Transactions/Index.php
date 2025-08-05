@@ -170,17 +170,25 @@ class Index extends Component
         $this->loadTransactions();
     }
 
-    public function deleteTransaction(string $transactionId)
+    public function deleteTransaction(string $referenceNumber)
     {
         // Find the transaction in the list to determine its source
-        $transaction = collect($this->transactions)->firstWhere('id', $transactionId);
-        if (isset($transaction['source_table']) && $transaction['source_table'] === 'cash_transactions') {
-            $this->deleteCashTransaction($transactionId);
+        $transaction = collect($this->transactions)->firstWhere('reference_number', $referenceNumber);
+        
+        if (!$transaction) {
+            session()->flash('error', 'Transaction not found.');
             return;
         }
-        Gate::authorize('edit-all-data'); // Only admin can delete transactions
+
+        // Check if it's a cash transaction
+        if (isset($transaction['source_table']) && $transaction['source_table'] === 'cash_transactions') {
+            $this->deleteCashTransaction($transaction['id']);
+            return;
+        }
+
+        // For ordinary transactions
         try {
-            $this->deleteTransactionUseCase->execute($transactionId);
+            $this->deleteTransactionUseCase->execute($transaction['id']);
             session()->flash('message', 'Transaction deleted successfully.');
             $this->loadTransactions();
         } catch (\Exception $e) {
@@ -190,7 +198,17 @@ class Index extends Component
 
     public function deleteCashTransaction(string $cashTransactionId)
     {
-        \App\Models\Domain\Entities\CashTransaction::find($cashTransactionId)?->delete();
+        try {
+            $cashTransaction = \App\Models\Domain\Entities\CashTransaction::find($cashTransactionId);
+            if ($cashTransaction) {
+                $cashTransaction->delete();
+                session()->flash('message', 'Cash transaction deleted successfully.');
+            } else {
+                session()->flash('error', 'Cash transaction not found.');
+            }
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to delete cash transaction: ' . $e->getMessage());
+        }
         $this->loadTransactions();
     }
 

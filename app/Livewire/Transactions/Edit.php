@@ -38,7 +38,7 @@ class Edit extends Component
     #[Validate('required|numeric|min:0')]
     public $deduction = 0.00;
 
-    #[Validate('required|string|in:Transfer,Withdrawal,Deposit,Adjustment')]
+    #[Validate('required|string|in:Transfer,Receive,Withdrawal,Deposit,Adjustment')]
     public $transactionType = 'Transfer';
 
     #[Validate('required|string|max:255')]
@@ -69,6 +69,24 @@ class Edit extends Component
         return max(0, (float) $this->commission - (float) $this->deduction);
     }
 
+    /**
+     * Map database transaction type to UI display type
+     */
+    private function mapTransactionTypeForUI($dbType)
+    {
+        // No mapping needed since we're using the same values
+        return $dbType;
+    }
+
+    /**
+     * Map UI transaction type back to database type
+     */
+    private function mapTransactionTypeForDB($uiType)
+    {
+        // No mapping needed since we're using the same values
+        return $uiType;
+    }
+
     private TransactionRepository $transactionRepository;
     private UpdateTransaction $updateTransactionUseCase;
 
@@ -80,13 +98,15 @@ class Edit extends Component
 
     public function mount($referenceNumber)
     {
-        $this->transactionId = $referenceNumber;
         // Find transaction by reference number instead of ID
         $this->transaction = Transaction::where('reference_number', $referenceNumber)->first();
 
         if (!$this->transaction) {
             abort(404);
         }
+
+        // Store the actual transaction ID for the update operation
+        $this->transactionId = $this->transaction->id;
 
         // Authorization check for editing transactions
         $user = Auth::user();
@@ -107,7 +127,8 @@ class Edit extends Component
         $this->amount = $this->transaction->amount;
         $this->commission = $this->transaction->commission;
         $this->deduction = $this->transaction->deduction;
-        $this->transactionType = $this->transaction->transaction_type;
+        // Map database transaction type to UI display type
+        $this->transactionType = $this->mapTransactionTypeForUI($this->transaction->transaction_type);
         // Get agent name from the agent relationship instead of a non-existent column
         $this->agentName = $this->transaction->agent ? $this->transaction->agent->name : '';
         $this->status = $this->transaction->status;
@@ -136,7 +157,7 @@ class Edit extends Component
                     'amount' => (float) $this->amount,
                     'commission' => (float) $this->commission,
                     'deduction' => (float) $this->deduction,
-                    'transaction_type' => $this->transactionType,
+                    'transaction_type' => $this->mapTransactionTypeForDB($this->transactionType),
                     // Remove agent_name as it doesn't exist in the transactions table
                     // The agent is linked via agent_id
                     'status' => $this->status,
