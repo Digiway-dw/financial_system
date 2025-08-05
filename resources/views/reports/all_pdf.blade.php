@@ -56,7 +56,7 @@
         <h2>ملخص مالي</h2>
         <table class="summary-table">
             <tr>
-                <th>المبلغ المستلم</th>
+                <th>المبالغ المنقولة </th>
                 <td>{{ number_format($financialSummary['total_transfer'] ?? 0, 2) }} EGP</td>
             </tr>
             <tr>

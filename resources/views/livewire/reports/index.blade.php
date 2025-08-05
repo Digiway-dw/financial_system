@@ -154,7 +154,7 @@
             <h3 class="text-lg font-semibold mb-4">ملخص مالي</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="p-4 bg-blue-50 rounded-xl">
-                    <div class="text-xs text-gray-500">المبلغ المستلم</div>
+                    <div class="text-xs text-gray-500"> المبالغ المنقولة </div>
                     <div class="text-lg font-bold">
                         {{ $financialSummary['total_transfer'] == 0 ? '0' : number_format($financialSummary['total_transfer'], 0) }}
                         EGP</div>

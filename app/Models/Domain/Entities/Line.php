@@ -20,6 +20,7 @@ class Line extends Model
     protected $fillable = [
         'mobile_number',
         'network',
+        'line_type',
         'current_balance',
         'daily_limit',
         'monthly_limit',

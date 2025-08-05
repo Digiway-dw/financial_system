@@ -109,6 +109,8 @@
                     <x-input-error class="mt-2" :messages="$errors->get('network')" />
                 </div>
 
+
+
                 <!-- الحالة -->
                 <div>
                     <x-input-label for="status" :value="'الحالة'" />

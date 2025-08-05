@@ -164,14 +164,16 @@
                             class="block w-full rounded-xl border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
                             required>
                             <option value="">اختر مزود الشبكة</option>
-                            <option value="Vodafone">فودافون</option>
-                            <option value="Orange">أورانج</option>
-                            <option value="Etisalat">اتصالات</option>
-                            <option value="We">وي</option>
-                            <option value="Fawry">فوري</option>
+                            <option value="vodafone">فودافون</option>
+                            <option value="orange">أورانج</option>
+                            <option value="etisalat">اتصالات</option>
+                            <option value="we">وي</option>
+                            <option value="fawry">فوري</option>
                         </select>
                         <x-input-error class="mt-2" :messages="$errors->get('network')" />
                     </div>
+
+
 
                     <!-- Assigned Branch -->
                     <div>
