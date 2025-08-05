@@ -95,6 +95,7 @@ class Pending extends Component
                 session()->flash('message', 'Transaction approved and balances updated!');
                 $this->loadPendingTransactions();
                 $this->dispatch('$refresh');
+                $this->dispatch('refreshPendingCount');
                 return;
             } catch (\Exception $e) {
                 session()->flash('error', 'Failed to approve transaction: ' . $e->getMessage());
@@ -181,6 +182,7 @@ class Pending extends Component
             session()->flash('message', 'Cash withdrawal approved and balances updated!');
             $this->loadPendingTransactions();
             $this->dispatch('$refresh');
+            $this->dispatch('refreshPendingCount');
             return;
         }
 
@@ -239,6 +241,7 @@ class Pending extends Component
                 session()->flash('message', 'Cash withdrawal rejected successfully.');
                 $this->loadPendingTransactions();
                 $this->dispatch('$refresh');
+                $this->dispatch('refreshPendingCount');
                 return;
             } else {
                 session()->flash('error', 'You can only reject pending cash withdrawals as admin or supervisor.');
@@ -272,6 +275,7 @@ class Pending extends Component
             session()->flash('message', 'Transaction rejected successfully.');
             $this->loadPendingTransactions();
             $this->dispatch('$refresh');
+            $this->dispatch('refreshPendingCount');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to reject transaction: ' . $e->getMessage());
         }
