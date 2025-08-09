@@ -131,8 +131,9 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
             // Clean the mobile number to ensure it only contains digits
             $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
-            $query->where(function($q) use ($mobileNumber) {
-                $q->whereRaw("REPLACE(REPLACE(REPLACE(receiver_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
+            $ordinary->where(function($q) use ($mobileNumber) {
+                $q->whereRaw("REPLACE(REPLACE(REPLACE(receiver_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%'])
+                  ->orWhereRaw("REPLACE(REPLACE(REPLACE(customer_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
             });
         }
         
@@ -140,12 +141,9 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['transfer_line']) && $filters['transfer_line'] && !empty($filters['transfer_line'])) {
             // Set flag to skip cash transactions
             $skipCashTransactions = true;
-            
-            // For regular transactions, search by joining with lines table
-            $transferLine = trim($filters['transfer_line']);
-            $query->whereHas('line', function($q) use ($transferLine) {
-                $q->where('mobile_number', 'like', '%' . $transferLine . '%');
-            });
+            // For regular transactions, filter by line_id
+            $transferLineId = $filters['transfer_line'];
+            $ordinary->where('line_id', $transferLineId);
         }
         
         // Handle amount range filtering
@@ -248,9 +246,8 @@ class EloquentTransactionRepository implements TransactionRepository
                     $q->where('branch_id', $filters['branch_id']);
                 });
             }
-            // Add filter for receiver_mobile_number (using depositor_mobile_number)
+            // Add filter for receiver_mobile_number (using depositor_mobile_number) for cash transactions
             if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
-                // Clean the mobile number to ensure it only contains digits
                 $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
                 $cash->where(function($q) use ($mobileNumber) {
                     $q->whereRaw("REPLACE(REPLACE(REPLACE(depositor_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
@@ -428,7 +425,8 @@ class EloquentTransactionRepository implements TransactionRepository
             // Clean the mobile number to ensure it only contains digits
             $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
             $ordinary->where(function($q) use ($mobileNumber) {
-                $q->whereRaw("REPLACE(REPLACE(REPLACE(receiver_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
+                $q->whereRaw("REPLACE(REPLACE(REPLACE(receiver_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%'])
+                  ->orWhereRaw("REPLACE(REPLACE(REPLACE(customer_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
             });
         }
         
@@ -436,12 +434,9 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['transfer_line']) && $filters['transfer_line'] && !empty($filters['transfer_line'])) {
             // Set flag to skip cash transactions
             $skipCashTransactions = true;
-            
-            // For regular transactions, search by joining with lines table
-            $transferLine = trim($filters['transfer_line']);
-            $ordinary->whereHas('line', function($q) use ($transferLine) {
-                $q->where('mobile_number', 'like', '%' . $transferLine . '%');
-            });
+            // For regular transactions, filter by line_id
+            $transferLineId = $filters['transfer_line'];
+            $ordinary->where('line_id', $transferLineId);
         }
         
         // Handle amount range filtering
@@ -572,7 +567,6 @@ class EloquentTransactionRepository implements TransactionRepository
             }
             // Add filter for receiver_mobile_number (using depositor_mobile_number)
             if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
-                // Clean the mobile number to ensure it only contains digits
                 $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
                 $cash->where(function($q) use ($mobileNumber) {
                     $q->whereRaw("REPLACE(REPLACE(REPLACE(depositor_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);

@@ -119,12 +119,26 @@
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="ادخل كود العميل" />
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700">رقم جوال العميل</label>
+                    <input wire:model="customerMobileNumber" type="text"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl" placeholder="ادخل رقم جوال العميل" />
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700">نوع المعاملة</label>
                     <select wire:model="selectedTransactionType"
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl">
                         <option value="">جميع</option>
                         @foreach ($transactionTypes as $type)
                             <option value="{{ $type }}">{{ $type }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">الخط</label>
+                    <select wire:model="selectedLine" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
+                        <option value="">جميع</option>
+                        @foreach (\App\Models\Domain\Entities\Line::all() as $line)
+                            <option value="{{ $line->id }}">{{ $line->mobile_number }} - {{ $line->network }}</option>
                         @endforeach
                     </select>
                 </div>

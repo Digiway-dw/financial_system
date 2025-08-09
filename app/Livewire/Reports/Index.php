@@ -33,8 +33,10 @@ class Index extends Component
     public $users = [];
     public $branches = [];
     public $customers = [];
-    public $transactionTypes = ['Transfer', 'Withdrawal', 'Deposit', 'Adjustment'];
+    public $transactionTypes = ['Transfer', 'Receive', 'Withdrawal', 'Deposit', 'Adjustment'];
     public $selectedCustomerCode;
+    public $customerMobileNumber;
+    public $selectedLine;
     public $financialSummary = [];
     public $safeBalances = [];
     public $lineBalances = [];
@@ -85,7 +87,14 @@ class Index extends Component
         if ($this->selectedCustomerCode) {
             $filters['customer_code'] = $this->selectedCustomerCode;
         }
-        
+        // Customer mobile number filter
+        if ($this->customerMobileNumber) {
+            $filters['receiver_mobile_number'] = $this->customerMobileNumber;
+        }
+        // Line filter
+        if ($this->selectedLine) {
+            $filters['transfer_line'] = $this->selectedLine;
+        }
         // Type filter
         if ($this->selectedTransactionType) {
             $filters['transaction_type'] = $this->selectedTransactionType;
@@ -206,7 +215,14 @@ class Index extends Component
         if ($this->selectedCustomerCode) {
             $filters['customer_code'] = $this->selectedCustomerCode;
         }
-        
+        // Customer mobile number filter
+        if ($this->customerMobileNumber) {
+            $filters['receiver_mobile_number'] = $this->customerMobileNumber;
+        }
+        // Line filter
+        if ($this->selectedLine) {
+            $filters['transfer_line'] = $this->selectedLine;
+        }
         // Type filter
         if ($this->selectedTransactionType) {
             $filters['transaction_type'] = $this->selectedTransactionType;
@@ -281,7 +297,14 @@ class Index extends Component
         if ($this->selectedCustomerCode) {
             $filters['customer_code'] = $this->selectedCustomerCode;
         }
-        
+        // Customer mobile number filter
+        if ($this->customerMobileNumber) {
+            $filters['receiver_mobile_number'] = $this->customerMobileNumber;
+        }
+        // Line filter
+        if ($this->selectedLine) {
+            $filters['transfer_line'] = $this->selectedLine;
+        }
         // Type filter
         if ($this->selectedTransactionType) {
             $filters['transaction_type'] = $this->selectedTransactionType;
