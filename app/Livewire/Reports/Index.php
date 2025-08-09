@@ -24,7 +24,7 @@ class Index extends Component
     public $startDate;
     public $endDate;
     public $selectedUser;
-    public $selectedBranch;
+    public $selectedBranches = [];
     public $selectedCustomer;
     public $selectedTransactionType = '';
     public $sortField = 'transaction_date_time';
@@ -44,13 +44,15 @@ class Index extends Component
 
     public function mount()
     {
-        $this->startDate = now()->subDays(30)->format('Y-m-d');
-        $this->endDate = now()->format('Y-m-d');
-        $this->users = User::all();
-        $this->branches = Branch::all();
-        $this->customers = Customer::all();
-        $this->generateReport();
+    $this->startDate = now()->subDays(30)->format('Y-m-d');
+    $this->endDate = now()->format('Y-m-d');
+    $this->users = User::all();
+    $this->branches = Branch::all();
+    $this->customers = Customer::all();
+    $this->selectedBranches = [];
+    $this->generateReport();
     }
+
 
     public function generateReport()
     {
@@ -73,9 +75,19 @@ class Index extends Component
             $filters['agent_id'] = $this->selectedUser;
         }
         
-        // Branch filter
-        if ($this->selectedBranch) {
-            $filters['branch_id'] = $this->selectedBranch;
+        // Branch filter (multi-select)
+        $selectedBranches = $this->selectedBranches;
+        if (is_array($selectedBranches)) {
+            // If 'all' is selected, use all branch IDs
+            if (in_array('all', $selectedBranches)) {
+                $filters['branch_ids'] = $this->branches->pluck('id')->map(fn($id) => (string)$id)->toArray();
+            } else {
+                $filters['branch_ids'] = array_map('strval', $selectedBranches);
+            }
+        } elseif ($selectedBranches === 'all' || empty($selectedBranches)) {
+            $filters['branch_ids'] = $this->branches->pluck('id')->map(fn($id) => (string)$id)->toArray();
+        } else {
+            $filters['branch_ids'] = [(string)$selectedBranches];
         }
         
         // Customer name filter
@@ -172,7 +184,7 @@ class Index extends Component
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
             'selectedUser' => $this->selectedUser,
-            'selectedBranch' => $this->selectedBranch,
+            'selectedBranch' => $this->selectedBranches,
             'selectedCustomer' => $this->selectedCustomer,
             'selectedTransactionType' => $this->selectedTransactionType,
             'hasMore' => $this->hasMore,
@@ -201,9 +213,21 @@ class Index extends Component
             $filters['agent_id'] = $this->selectedUser;
         }
         
-        // Branch filter
-        if ($this->selectedBranch) {
-            $filters['branch_id'] = $this->selectedBranch;
+        // Branch filter (multi-select)
+        $selectedBranches = $this->selectedBranches;
+        if (!is_array($selectedBranches)) {
+            if ($selectedBranches === 'all' || empty($selectedBranches)) {
+                $selectedBranches = $this->branches->pluck('id')->map(fn($id) => (string)$id)->toArray();
+            } else {
+                $selectedBranches = [(string)$selectedBranches];
+            }
+        } else {
+            $selectedBranches = array_map('strval', $selectedBranches);
+        }
+        if (empty($selectedBranches) || count($selectedBranches) === count($this->branches)) {
+            $filters['branch_ids'] = $this->branches->pluck('id')->map(fn($id) => (string)$id)->toArray();
+        } else {
+            $filters['branch_ids'] = $selectedBranches;
         }
         
         // Customer name filter
@@ -283,9 +307,21 @@ class Index extends Component
             $filters['agent_id'] = $this->selectedUser;
         }
         
-        // Branch filter
-        if ($this->selectedBranch) {
-            $filters['branch_id'] = $this->selectedBranch;
+        // Branch filter (multi-select)
+        $selectedBranches = $this->selectedBranches;
+        if (!is_array($selectedBranches)) {
+            if ($selectedBranches === 'all' || empty($selectedBranches)) {
+                $selectedBranches = $this->branches->pluck('id')->map(fn($id) => (string)$id)->toArray();
+            } else {
+                $selectedBranches = [(string)$selectedBranches];
+            }
+        } else {
+            $selectedBranches = array_map('strval', $selectedBranches);
+        }
+        if (empty($selectedBranches) || count($selectedBranches) === count($this->branches)) {
+            $filters['branch_ids'] = $this->branches->pluck('id')->map(fn($id) => (string)$id)->toArray();
+        } else {
+            $filters['branch_ids'] = $selectedBranches;
         }
         
         // Customer name filter

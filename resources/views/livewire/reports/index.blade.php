@@ -100,13 +100,16 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">الفرع</label>
-                    <select wire:model="selectedBranch" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
-                        <option value="">جميع</option>
+                    <label class="block text-sm font-medium text-gray-700">الفروع</label>
+                    <select id="branches-select" wire:model="selectedBranches" name="selectedBranches[]" multiple class="w-full px-4 py-3 border border-gray-300 rounded-xl">
+                        <option value="all">كل الفروع</option>
                         @foreach ($branches as $branch)
                             <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                         @endforeach
                     </select>
+                    </select>
+                    <small class="text-gray-500">يمكنك اختيار فرع واحد أو أكثر أو اختيار "كل الفروع" لعرض جميع الفروع</small>
+                    <!-- Removed duplicate/conflicting JS. Native multi-select will work for multiple branches. -->
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">اسم العميل</label>
@@ -245,15 +248,6 @@
                                 d="M3 7v4a1 1 0 001 1h3m10-5v4a1 1 0 01-1 1h-3m-4 4h6m2 4H7a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2z" />
                         </svg>
                     </div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-800">جميع المعاملات</h3>
-                        <p class="text-sm text-gray-500 mt-1">جدول تفصيلي لكل المعاملات المالية مع خيارات الفرز والبحث
-                        </p>
-                    </div>
-                </div>
-                <div class="hidden md:block">
-                    <span
-                        class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-4 py-2 rounded-full shadow"></span>
                 </div>
             </div>
             <div class="overflow-x-auto px-8 pb-8">
