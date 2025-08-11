@@ -103,7 +103,7 @@ class Transaction extends Model
 
         return $query->where(function ($q) use ($cleanMobile) {
             $q->whereRaw('REGEXP_REPLACE(customer_mobile_number, "[^0-9]", "") LIKE ?', ["%{$cleanMobile}%"])
-              ->orWhereRaw('REGEXP_REPLACE(receiver_mobile_number, "[^0-9]", "") LIKE ?', ["%{$cleanMobile}%"]);
+                ->orWhereRaw('REGEXP_REPLACE(receiver_mobile_number, "[^0-9]", "") LIKE ?', ["%{$cleanMobile}%"]);
         });
     }
 
@@ -181,7 +181,7 @@ class Transaction extends Model
     public function getDescriptiveTransactionNameAttribute()
     {
         $type = $this->transaction_type;
-        
+
         switch ($type) {
             case 'send':
                 return 'إرسال أموال';

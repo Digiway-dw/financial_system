@@ -121,7 +121,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Reports Routes
     Route::get('reports', \App\Livewire\Reports\Index::class)
         ->name('reports.index');
-    
+
     // Enhanced Reports Route
     Route::get('reports/enhanced', \App\Livewire\Reports\Enhanced::class)
         ->name('reports.enhanced')

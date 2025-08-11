@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Gate;
 class Enhanced extends Component
 {
     // Universal filter properties
+    public $showLoading = false;
     public $mobileNumber = '';
     public $referenceNumber = '';
     public $amountFrom = '';
@@ -34,7 +35,7 @@ class Enhanced extends Component
     public $customers = [];
     public $employees = [];
     public $branches = [];
-    
+
     // Table state
     public $sortField = 'transaction_date_time';
     public $sortDirection = 'desc';
@@ -84,7 +85,7 @@ class Enhanced extends Component
     public function loadReferenceData()
     {
         $user = Auth::user();
-        
+
         // Load branches based on user permissions
         if (Gate::forUser($user)->allows('view-all-branches-data')) {
             $this->branches = Branch::all();
@@ -112,10 +113,18 @@ class Enhanced extends Component
     public function resetFilters()
     {
         $this->reset([
-            'mobileNumber', 'referenceNumber', 'amountFrom', 'amountTo',
-            'selectedBranches', 'selectedEmployee', 'customerSearch',
-            'filterCustomerName', 'filterTransactionType', 'filterStatus',
-            'filterEmployee', 'filterBranch'
+            'mobileNumber',
+            'referenceNumber',
+            'amountFrom',
+            'amountTo',
+            'selectedBranches',
+            'selectedEmployee',
+            'customerSearch',
+            'filterCustomerName',
+            'filterTransactionType',
+            'filterStatus',
+            'filterEmployee',
+            'filterBranch'
         ]);
     }
 
@@ -269,7 +278,7 @@ class Enhanced extends Component
     {
         // Get branch details
         $branchIds = !empty($this->selectedBranches) ? $this->selectedBranches : $this->branches->pluck('id')->toArray();
-        
+
         $this->branchDetails = [
             'safe_balances' => $this->totalsService->getSafeBalances($branchIds),
             'line_balances' => $this->totalsService->getLineBalances($branchIds),
@@ -286,7 +295,7 @@ class Enhanced extends Component
         $safe = \App\Models\Domain\Entities\Safe::where('type', 'client')
             ->where('name', 'like', "%{$customer->name}%")
             ->first();
-            
+
         return $safe ? $safe->current_balance : null;
     }
 
@@ -312,7 +321,7 @@ class Enhanced extends Component
         $filters = $this->buildFilters();
         $result = $this->transactionRepository->allUnified($filters);
         $export = new AutoSizeTransactionsExport(collect($result['transactions']));
-        
+
         $filename = $this->reportType . '_report_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
         return \Maatwebsite\Excel\Facades\Excel::download($export, $filename);
     }
@@ -321,7 +330,7 @@ class Enhanced extends Component
     {
         $filters = $this->buildFilters();
         $result = $this->transactionRepository->allUnified($filters);
-        
+
         $data = [
             'reportType' => $this->reportType,
             'startDate' => $this->startDate,
@@ -336,7 +345,7 @@ class Enhanced extends Component
         $html = view('reports.enhanced_pdf', $data)->render();
         $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4', 'default_font' => 'dejavusans']);
         $mpdf->WriteHTML($html);
-        
+
         $filename = $this->reportType . '_report_' . now()->format('Y-m-d_H-i-s') . '.pdf';
         return response()->streamDownload(function () use ($mpdf) {
             echo $mpdf->Output('', 'S');

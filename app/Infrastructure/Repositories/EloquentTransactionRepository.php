@@ -39,7 +39,7 @@ class EloquentTransactionRepository implements TransactionRepository
         return EloquentTransaction::with(['agent', 'agent.branch'])->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
-            
+
             // Use branch_id from transaction if available, otherwise fall back to agent's branch
             if ($transaction->branch_id) {
                 $branch = \App\Models\Domain\Entities\Branch::find($transaction->branch_id);
@@ -49,7 +49,7 @@ class EloquentTransactionRepository implements TransactionRepository
                 $transactionArray['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
                 $transactionArray['branch_id'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->id : null;
             }
-            
+
             return $transactionArray;
         })->toArray();
     }
@@ -59,7 +59,7 @@ class EloquentTransactionRepository implements TransactionRepository
         $query = EloquentTransaction::where('status', $status)->with(['agent', 'agent.branch']);
 
         if ($branchId) {
-            $query->where(function($q) use ($branchId) {
+            $query->where(function ($q) use ($branchId) {
                 // Include transactions where the agent belongs to the specific branch
                 $q->whereHas('agent', function ($agentQuery) use ($branchId) {
                     $agentQuery->where('branch_id', $branchId);
@@ -72,7 +72,7 @@ class EloquentTransactionRepository implements TransactionRepository
         return $query->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
-            
+
             // Use branch_id from transaction if available, otherwise fall back to agent's branch
             if ($transaction->branch_id) {
                 $branch = \App\Models\Domain\Entities\Branch::find($transaction->branch_id);
@@ -82,7 +82,7 @@ class EloquentTransactionRepository implements TransactionRepository
                 $transactionArray['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
                 $transactionArray['branch_id'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->id : null;
             }
-            
+
             return $transactionArray;
         })->toArray();
     }
@@ -93,7 +93,7 @@ class EloquentTransactionRepository implements TransactionRepository
         $query = EloquentTransaction::query();
         // Flag to skip cash transactions if filtering by transfer line
         $skipCashTransactions = false;
-        
+
         // Date filters re-enabled
         if (isset($filters['start_date']) && $filters['start_date']) {
             $query->whereDate('created_at', '>=', $filters['start_date']);
@@ -105,7 +105,7 @@ class EloquentTransactionRepository implements TransactionRepository
             $query->where('agent_id', $filters['agent_id']);
         }
         if (isset($filters['branch_id'])) {
-            $query->where(function($q) use ($filters) {
+            $query->where(function ($q) use ($filters) {
                 // Include transactions where the agent belongs to the branch
                 $q->whereHas('agent', function ($agentQuery) use ($filters) {
                     $agentQuery->where('branch_id', $filters['branch_id']);
@@ -124,19 +124,19 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['customer_code']) && $filters['customer_code']) {
             // Standardize the customer code format - remove spaces and make case-insensitive
             $customerCode = trim($filters['customer_code']);
-            $query->where(function($q) use ($customerCode) {
+            $query->where(function ($q) use ($customerCode) {
                 $q->whereRaw('LOWER(customer_code) LIKE ?', ['%' . strtolower($customerCode) . '%']);
             });
         }
         if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
             // Clean the mobile number to ensure it only contains digits
             $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
-            $ordinary->where(function($q) use ($mobileNumber) {
+            $ordinary->where(function ($q) use ($mobileNumber) {
                 $q->whereRaw("REPLACE(REPLACE(REPLACE(receiver_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%'])
-                  ->orWhereRaw("REPLACE(REPLACE(REPLACE(customer_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
+                    ->orWhereRaw("REPLACE(REPLACE(REPLACE(customer_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
             });
         }
-        
+
         // When filtering by transfer_line, we should exclude cash transactions since they don't have line_id
         if (isset($filters['transfer_line']) && $filters['transfer_line'] && !empty($filters['transfer_line'])) {
             // Set flag to skip cash transactions
@@ -145,7 +145,7 @@ class EloquentTransactionRepository implements TransactionRepository
             $transferLineId = $filters['transfer_line'];
             $ordinary->where('line_id', $transferLineId);
         }
-        
+
         // Handle amount range filtering
         if (isset($filters['amount_from']) && $filters['amount_from'] !== '') {
             $query->where('amount', '>=', $filters['amount_from']);
@@ -160,7 +160,7 @@ class EloquentTransactionRepository implements TransactionRepository
             $query->whereIn('agent_id', $filters['employee_ids']);
         }
         if (isset($filters['branch_ids']) && is_array($filters['branch_ids']) && count($filters['branch_ids']) > 0) {
-            $query->where(function($q) use ($filters) {
+            $query->where(function ($q) use ($filters) {
                 // Include transactions where the agent belongs to one of the branches
                 $q->whereHas('agent', function ($agentQuery) use ($filters) {
                     $agentQuery->whereIn('branch_id', $filters['branch_ids']);
@@ -173,14 +173,14 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['reference_number']) && $filters['reference_number']) {
             // Standardize the reference number format - remove spaces and make case-insensitive
             $refNumber = trim($filters['reference_number']);
-            $query->where(function($q) use ($refNumber) {
+            $query->where(function ($q) use ($refNumber) {
                 $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
             });
         }
         $ordinaryTxs = $query->with(['agent', 'agent.branch', 'line', 'line.branch'])->get()->map(function ($transaction) {
             $transactionArray = $transaction->toArray();
             $transactionArray['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
-            
+
             // Use branch_id from transaction if available, otherwise fall back to agent's branch
             if ($transaction->branch_id) {
                 $branch = \App\Models\Domain\Entities\Branch::find($transaction->branch_id);
@@ -190,14 +190,14 @@ class EloquentTransactionRepository implements TransactionRepository
                 $transactionArray['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
                 $transactionArray['branch_id'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->id : null;
             }
-            
+
             $transactionArray['commission'] = ($transaction->commission ?? 0) - ($transaction->deduction ?? 0); // Net commission after discount
-            
+
             // Add 1 EGP fee as negative profit for send transactions
             if ($transaction->transaction_type === 'Transfer') {
                 $transactionArray['commission'] -= 1; // Deduct 1 EGP fee from net profit
             }
-            
+
             $transactionArray['deduction'] = $transaction->deduction ?? 0;
             $transactionArray['source_table'] = 'transactions';
             return $transactionArray;
@@ -224,7 +224,7 @@ class EloquentTransactionRepository implements TransactionRepository
             if (isset($filters['customer_code']) && $filters['customer_code']) {
                 // Standardize the customer code format - remove spaces and make case-insensitive
                 $customerCode = trim($filters['customer_code']);
-                $cash->where(function($q) use ($customerCode) {
+                $cash->where(function ($q) use ($customerCode) {
                     $q->whereRaw('LOWER(customer_code) LIKE ?', ['%' . strtolower($customerCode) . '%']);
                 });
             }
@@ -249,7 +249,7 @@ class EloquentTransactionRepository implements TransactionRepository
             // Add filter for receiver_mobile_number (using depositor_mobile_number) for cash transactions
             if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
                 $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
-                $cash->where(function($q) use ($mobileNumber) {
+                $cash->where(function ($q) use ($mobileNumber) {
                     $q->whereRaw("REPLACE(REPLACE(REPLACE(depositor_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
                 });
             }
@@ -257,7 +257,7 @@ class EloquentTransactionRepository implements TransactionRepository
             if (isset($filters['reference_number']) && $filters['reference_number']) {
                 // Standardize the reference number format - remove spaces and make case-insensitive
                 $refNumber = trim($filters['reference_number']);
-                $cash->where(function($q) use ($refNumber) {
+                $cash->where(function ($q) use ($refNumber) {
                     $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
                 });
             }
@@ -266,14 +266,16 @@ class EloquentTransactionRepository implements TransactionRepository
                 $commission = 0; // Cash transactions have no commission
                 $deduction = 0;
                 $profitContribution = 0; // For profit calculations
-                
+
                 // If this is an expense withdrawal, treat it as a negative profit (expense) for the specific branch
-                if ($transaction->transaction_type === 'Withdrawal' && 
-                    str_contains($transaction->customer_name, 'Expense:')) {
+                if (
+                    $transaction->transaction_type === 'Withdrawal' &&
+                    str_contains($transaction->customer_name, 'Expense:')
+                ) {
                     // Expense withdrawals are treated as negative profit for the specific branch
                     $profitContribution = -$transaction->amount; // Negative profit contribution = expense
                 }
-                
+
                 return [
                     'id' => $transaction->id,
                     'customer_name' => $transaction->customer_name,
@@ -309,30 +311,30 @@ class EloquentTransactionRepository implements TransactionRepository
         $all = collect(array_merge($ordinaryTxs->toArray(), $cashTxs->toArray()));
         $sortField = $filters['sortField'] ?? 'transaction_date_time';
         $sortDirection = $filters['sortDirection'] ?? 'desc';
-        $all = $all->sortBy(function($tx) use ($sortField) {
+        $all = $all->sortBy(function ($tx) use ($sortField) {
             return $tx[$sortField] ?? $tx['transaction_date_time'] ?? $tx['created_at'] ?? null;
         }, SORT_REGULAR, $sortDirection === 'desc');
 
         $totalTransferred = $all->sum('amount');
         $totalCommission = $all->sum('commission'); // Regular commissions only
         $totalDeductions = $all->sum('deduction');
-        
+
         // Calculate profit per branch and then sum them up
         $branchProfits = [];
         $totalProfitContribution = 0;
-        
+
         // Group transactions by branch
         $transactionsByBranch = $all->groupBy('branch_id');
-        
+
         foreach ($transactionsByBranch as $branchId => $branchTransactions) {
             $branchCommission = $branchTransactions->sum('commission');
             $branchExpenses = $branchTransactions->where('profit_contribution', '<', 0)->sum('profit_contribution');
             $branchProfit = $branchCommission + $branchExpenses; // Commission + negative expenses
-            
+
             $branchProfits[$branchId] = $branchProfit;
             $totalProfitContribution += $branchExpenses; // Only add the negative expenses
         }
-        
+
         // Overall net profit is the sum of all branch profits
         $netProfit = $totalCommission + $totalProfitContribution; // This should equal sum of all branch profits
 
@@ -384,7 +386,7 @@ class EloquentTransactionRepository implements TransactionRepository
     {
         // Flag to skip cash transactions if filtering by transfer line
         $skipCashTransactions = false;
-        
+
         // Fetch ordinary transactions
         $ordinary = EloquentTransaction::query();
         // Apply filters as in filter() method (copy relevant filter logic)
@@ -398,7 +400,7 @@ class EloquentTransactionRepository implements TransactionRepository
             $ordinary->where('agent_id', $filters['agent_id']);
         }
         if (isset($filters['branch_id'])) {
-            $ordinary->where(function($q) use ($filters) {
+            $ordinary->where(function ($q) use ($filters) {
                 // Include transactions where the agent belongs to the specific branch
                 $q->whereHas('agent', function ($agentQuery) use ($filters) {
                     $agentQuery->where('branch_id', $filters['branch_id']);
@@ -417,19 +419,19 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['customer_code']) && $filters['customer_code']) {
             // Standardize the customer code format - remove spaces and make case-insensitive
             $customerCode = trim($filters['customer_code']);
-            $ordinary->where(function($q) use ($customerCode) {
+            $ordinary->where(function ($q) use ($customerCode) {
                 $q->whereRaw('LOWER(customer_code) LIKE ?', ['%' . strtolower($customerCode) . '%']);
             });
         }
         if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
             // Clean the mobile number to ensure it only contains digits
             $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
-            $ordinary->where(function($q) use ($mobileNumber) {
+            $ordinary->where(function ($q) use ($mobileNumber) {
                 $q->whereRaw("REPLACE(REPLACE(REPLACE(receiver_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%'])
-                  ->orWhereRaw("REPLACE(REPLACE(REPLACE(customer_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
+                    ->orWhereRaw("REPLACE(REPLACE(REPLACE(customer_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
             });
         }
-        
+
         // When filtering by transfer_line, exclude cash transactions since they don't have line_id
         if (isset($filters['transfer_line']) && $filters['transfer_line'] && !empty($filters['transfer_line'])) {
             // Set flag to skip cash transactions
@@ -438,7 +440,7 @@ class EloquentTransactionRepository implements TransactionRepository
             $transferLineId = $filters['transfer_line'];
             $ordinary->where('line_id', $transferLineId);
         }
-        
+
         // Handle amount range filtering
         if (isset($filters['amount_from']) && $filters['amount_from'] !== '') {
             $ordinary->where('amount', '>=', $filters['amount_from']);
@@ -453,7 +455,7 @@ class EloquentTransactionRepository implements TransactionRepository
             $ordinary->whereIn('agent_id', $filters['employee_ids']);
         }
         if (isset($filters['branch_ids']) && is_array($filters['branch_ids']) && count($filters['branch_ids']) > 0) {
-            $ordinary->where(function($q) use ($filters) {
+            $ordinary->where(function ($q) use ($filters) {
                 // Include transactions where the agent belongs to one of the branches
                 $q->whereHas('agent', function ($agentQuery) use ($filters) {
                     $agentQuery->whereIn('branch_id', $filters['branch_ids']);
@@ -465,14 +467,14 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['reference_number']) && $filters['reference_number']) {
             // Standardize the reference number format - remove spaces and make case-insensitive
             $refNumber = trim($filters['reference_number']);
-            $ordinary->where(function($q) use ($refNumber) {
+            $ordinary->where(function ($q) use ($refNumber) {
                 $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
             });
         }
         $ordinaryTxs = $ordinary->with(['agent', 'agent.branch', 'line', 'line.branch'])->get()->map(function ($transaction) {
             $arr = $transaction->toArray();
             $arr['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
-            
+
             // Use branch_id from transaction if available, otherwise fall back to agent's branch
             if ($transaction->branch_id) {
                 $branch = \App\Models\Domain\Entities\Branch::find($transaction->branch_id);
@@ -482,14 +484,14 @@ class EloquentTransactionRepository implements TransactionRepository
                 $arr['branch_name'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A';
                 $arr['branch_id'] = $transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->id : null;
             }
-            
+
             $arr['commission'] = ($transaction->commission ?? 0) - ($transaction->deduction ?? 0); // Net commission after discount
-            
+
             // Add 1 EGP fee as negative profit for send transactions
             if ($transaction->transaction_type === 'Transfer') {
                 $arr['commission'] -= 1; // Deduct 1 EGP fee from net profit
             }
-            
+
             $arr['deduction'] = $transaction->deduction ?? 0;
             $arr['source_table'] = 'transactions';
             $arr['descriptive_transaction_name'] = $transaction->descriptive_transaction_name;
@@ -516,7 +518,7 @@ class EloquentTransactionRepository implements TransactionRepository
             if (isset($filters['customer_code']) && $filters['customer_code']) {
                 // Standardize the customer code format - remove spaces and make case-insensitive
                 $customerCode = trim($filters['customer_code']);
-                $cash->where(function($q) use ($customerCode) {
+                $cash->where(function ($q) use ($customerCode) {
                     $q->whereRaw('LOWER(customer_code) LIKE ?', ['%' . strtolower($customerCode) . '%']);
                 });
             }
@@ -536,16 +538,16 @@ class EloquentTransactionRepository implements TransactionRepository
             }
             // Add branch filtering for cash transactions
             if (isset($filters['branch_id'])) {
-                $cash->where(function($q) use ($filters) {
+                $cash->where(function ($q) use ($filters) {
                     // Include transactions where the agent belongs to the specific branch
                     $q->whereHas('agent', function ($agentQuery) use ($filters) {
                         $agentQuery->where('branch_id', $filters['branch_id']);
                     });
                     // OR include expense withdrawals that have the destination_branch_id set to the specific branch
-                    $q->orWhere(function($expenseQuery) use ($filters) {
+                    $q->orWhere(function ($expenseQuery) use ($filters) {
                         $expenseQuery->where('transaction_type', 'Withdrawal')
-                                    ->where('customer_name', 'like', 'Expense:%')
-                                    ->where('destination_branch_id', $filters['branch_id']);
+                            ->where('customer_name', 'like', 'Expense:%')
+                            ->where('destination_branch_id', $filters['branch_id']);
                     });
                     // OR include transactions where the safe belongs to the specific branch
                     $q->orWhereHas('safe', function ($safeQuery) use ($filters) {
@@ -561,14 +563,14 @@ class EloquentTransactionRepository implements TransactionRepository
             if (isset($filters['reference_number']) && $filters['reference_number']) {
                 // Standardize the reference number format - remove spaces and make case-insensitive
                 $refNumber = trim($filters['reference_number']);
-                $cash->where(function($q) use ($refNumber) {
+                $cash->where(function ($q) use ($refNumber) {
                     $q->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower($refNumber) . '%']);
                 });
             }
             // Add filter for receiver_mobile_number (using depositor_mobile_number)
             if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
                 $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
-                $cash->where(function($q) use ($mobileNumber) {
+                $cash->where(function ($q) use ($mobileNumber) {
                     $q->whereRaw("REPLACE(REPLACE(REPLACE(depositor_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
                 });
             }
@@ -577,14 +579,16 @@ class EloquentTransactionRepository implements TransactionRepository
                 $commission = 0; // Cash transactions have no commission
                 $deduction = 0;
                 $profitContribution = 0; // For profit calculations
-                
+
                 // Determine the correct branch for this transaction
                 $branchId = null;
                 $branchName = 'N/A';
-                
+
                 // For expense withdrawals, use the destination_branch_id or safe's branch
-                if ($transaction->transaction_type === 'Withdrawal' && 
-                    str_contains($transaction->customer_name, 'Expense:')) {
+                if (
+                    $transaction->transaction_type === 'Withdrawal' &&
+                    str_contains($transaction->customer_name, 'Expense:')
+                ) {
                     // Expense withdrawals should be attributed to the branch where the expense occurred
                     if ($transaction->destination_branch_id) {
                         $branchId = $transaction->destination_branch_id;
@@ -604,7 +608,7 @@ class EloquentTransactionRepository implements TransactionRepository
                         $branchName = $transaction->safe->branch->name;
                     }
                 }
-                
+
                 return [
                     'id' => $transaction->id,
                     'customer_name' => $transaction->customer_name,
@@ -646,7 +650,7 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['sortField']) && isset($filters['sortDirection'])) {
             $sortField = $filters['sortField'];
             $sortDirection = $filters['sortDirection'];
-            
+
             // Map frontend field names to actual database field names
             $fieldMapping = [
                 'customer_name' => 'customer_name',
@@ -658,9 +662,9 @@ class EloquentTransactionRepository implements TransactionRepository
                 'created_at' => 'created_at',
                 'reference_number' => 'reference_number',
             ];
-            
+
             $actualField = $fieldMapping[$sortField] ?? 'created_at';
-            
+
             if ($sortDirection === 'asc') {
                 $all = $all->sortBy($actualField);
             } else {
@@ -676,23 +680,23 @@ class EloquentTransactionRepository implements TransactionRepository
         $totalTransferred = $all->sum('amount');
         $totalCommission = $all->sum('commission'); // Regular commissions only
         $totalDeductions = $all->sum('deduction');
-        
+
         // Calculate profit per branch and then sum them up
         $branchProfits = [];
         $totalProfitContribution = 0;
-        
+
         // Group transactions by branch
         $transactionsByBranch = $all->groupBy('branch_id');
-        
+
         foreach ($transactionsByBranch as $branchId => $branchTransactions) {
             $branchCommission = $branchTransactions->sum('commission');
             $branchExpenses = $branchTransactions->where('profit_contribution', '<', 0)->sum('profit_contribution');
             $branchProfit = $branchCommission + $branchExpenses; // Commission + negative expenses
-            
+
             $branchProfits[$branchId] = $branchProfit;
             $totalProfitContribution += $branchExpenses; // Only add the negative expenses
         }
-        
+
         // Overall net profit is the sum of all branch profits
         $netProfit = $totalCommission + $totalProfitContribution; // This should equal sum of all branch profits
 
@@ -750,8 +754,7 @@ class EloquentTransactionRepository implements TransactionRepository
         return $query->get()->map(function ($transaction) {
             $arr = $transaction->toArray();
             $arr['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
-            $arr['branch_name'] = $transaction->branch ? $transaction->branch->name : 
-                                ($transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A');
+            $arr['branch_name'] = $transaction->branch ? $transaction->branch->name : ($transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A');
             return $arr;
         })->toArray();
     }

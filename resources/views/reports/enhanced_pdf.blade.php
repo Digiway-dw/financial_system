@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html dir="rtl">
+
 <head>
     <title>{{ ucfirst($reportType) }} Report</title>
     <style>
@@ -9,48 +10,67 @@
             direction: rtl;
             text-align: right;
         }
-        h1, h2, h3 {
+
+        h1,
+        h2,
+        h3 {
             color: #222;
         }
+
         .header {
             text-align: center;
             margin-bottom: 30px;
             border-bottom: 2px solid #333;
             padding-bottom: 15px;
         }
+
         .section {
             margin-bottom: 24px;
         }
-        .summary-table, .balances-table, .transactions-table {
+
+        .summary-table,
+        .balances-table,
+        .transactions-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
-        .summary-table th, .summary-table td,
-        .balances-table th, .balances-table td,
-        .transactions-table th, .transactions-table td {
+
+        .summary-table th,
+        .summary-table td,
+        .balances-table th,
+        .balances-table td,
+        .transactions-table th,
+        .transactions-table td {
             border: 1px solid #ddd;
             padding: 6px 8px;
             text-align: right;
         }
-        .summary-table th, .balances-table th, .transactions-table th {
+
+        .summary-table th,
+        .balances-table th,
+        .transactions-table th {
             background: #f2f2f2;
             font-weight: bold;
         }
+
         .info-grid {
             display: table;
             width: 100%;
             margin-bottom: 20px;
         }
+
         .info-row {
             display: table-row;
         }
+
         .info-cell {
             display: table-cell;
             padding: 8px;
             border: 1px solid #ddd;
             background: #f9f9f9;
         }
+
         .totals-section {
             background: #f8f9fa;
             padding: 15px;
@@ -58,14 +78,25 @@
             border-radius: 5px;
             margin: 20px 0;
         }
+
         .page-break {
             page-break-before: always;
         }
-        .status-completed { color: #28a745; }
-        .status-pending { color: #ffc107; }
-        .status-rejected { color: #dc3545; }
+
+        .status-completed {
+            color: #28a745;
+        }
+
+        .status-pending {
+            color: #ffc107;
+        }
+
+        .status-rejected {
+            color: #dc3545;
+        }
     </style>
 </head>
+
 <body>
     {{-- Header --}}
     <div class="header">
@@ -73,13 +104,16 @@
             @switch($reportType)
                 @case('employee')
                     تقرير الموظف
-                    @break
+                @break
+
                 @case('customer')
                     تقرير العميل
-                    @break
+                @break
+
                 @case('branch')
                     تقرير الفرع
-                    @break
+                @break
+
                 @default
                     تقرير المعاملات المالية
             @endswitch
@@ -89,7 +123,7 @@
     </div>
 
     {{-- Employee Details --}}
-    @if($reportType === 'employee' && isset($employeeDetails))
+    @if ($reportType === 'employee' && isset($employeeDetails))
         <div class="section">
             <h2>معلومات الموظف</h2>
             <div class="info-grid">
@@ -99,14 +133,15 @@
                 </div>
                 <div class="info-row">
                     <div class="info-cell"><strong>الفرع:</strong> {{ $employeeDetails['branch'] }}</div>
-                    <div class="info-cell"><strong>تاريخ التوظيف:</strong> {{ $employeeDetails['employment_start_date'] ?? 'غير محدد' }}</div>
+                    <div class="info-cell"><strong>تاريخ التوظيف:</strong>
+                        {{ $employeeDetails['employment_start_date'] ?? 'غير محدد' }}</div>
                 </div>
             </div>
         </div>
     @endif
 
     {{-- Customer Details --}}
-    @if($reportType === 'customer' && isset($customerDetails))
+    @if ($reportType === 'customer' && isset($customerDetails))
         <div class="section">
             <h2>معلومات العميل</h2>
             <div class="info-grid">
@@ -116,25 +151,26 @@
                 </div>
                 <div class="info-row">
                     <div class="info-cell"><strong>رقم الجوال:</strong> {{ $customerDetails['mobile_number'] }}</div>
-                    <div class="info-cell"><strong>رصيد المحفظة:</strong> 
-                        @if($customerDetails['is_client'])
+                    <div class="info-cell"><strong>رصيد المحفظة:</strong>
+                        @if ($customerDetails['is_client'])
                             {{ number_format($customerDetails['balance'], 2) }} EGP
                         @else
                             غير متاح
                         @endif
                     </div>
                 </div>
-                @if(isset($customerDetails['safe_balance']) && $customerDetails['safe_balance'] !== null)
-                <div class="info-row">
-                    <div class="info-cell" colspan="2"><strong>رصيد الخزينة المربوطة:</strong> {{ number_format($customerDetails['safe_balance'], 2) }} EGP</div>
-                </div>
+                @if (isset($customerDetails['safe_balance']) && $customerDetails['safe_balance'] !== null)
+                    <div class="info-row">
+                        <div class="info-cell" colspan="2"><strong>رصيد الخزينة المربوطة:</strong>
+                            {{ number_format($customerDetails['safe_balance'], 2) }} EGP</div>
+                    </div>
                 @endif
             </div>
         </div>
     @endif
 
     {{-- Branch Balances --}}
-    @if($reportType === 'branch' && isset($branchDetails))
+    @if ($reportType === 'branch' && isset($branchDetails))
         <div class="section">
             <h2>أرصدة الخزائن بالفروع</h2>
             <table class="balances-table">
@@ -145,7 +181,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($branchDetails['safe_balances'] as $safe)
+                    @foreach ($branchDetails['safe_balances'] as $safe)
                         <tr>
                             <td>{{ $safe['branch'] }}</td>
                             <td>{{ number_format($safe['balance'], 2) }} EGP</td>
@@ -165,7 +201,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($branchDetails['line_balances'] as $line)
+                    @foreach ($branchDetails['line_balances'] as $line)
                         <tr>
                             <td>{{ $line['branch'] }}</td>
                             <td>{{ number_format($line['balance'], 2) }} EGP</td>
@@ -177,7 +213,7 @@
     @endif
 
     {{-- Financial Summary --}}
-    @if(isset($totals) && !empty($totals))
+    @if (isset($totals) && !empty($totals))
         <div class="totals-section">
             <h2>الملخص المالي</h2>
             <table class="summary-table">
@@ -193,20 +229,21 @@
                     <th>إجمالي الخصومات</th>
                     <td>{{ number_format($totals['total_deductions'] ?? 0, 2) }} EGP</td>
                 </tr>
-                @if($reportType === 'branch' && isset($totals['total_expenses']))
-                <tr>
-                    <th>مصاريف الفروع</th>
-                    <td>{{ number_format($totals['total_expenses'], 2) }} EGP</td>
-                </tr>
-                <tr>
-                    <th>صافي الربح (بعد المصاريف)</th>
-                    <td>{{ number_format(($totals['net_profit'] ?? 0) - ($totals['total_expenses'] ?? 0), 2) }} EGP</td>
-                </tr>
+                @if ($reportType === 'branch' && isset($totals['total_expenses']))
+                    <tr>
+                        <th>مصاريف الفروع</th>
+                        <td>{{ number_format($totals['total_expenses'], 2) }} EGP</td>
+                    </tr>
+                    <tr>
+                        <th>صافي الربح (بعد المصاريف)</th>
+                        <td>{{ number_format(($totals['net_profit'] ?? 0) - ($totals['total_expenses'] ?? 0), 2) }} EGP
+                        </td>
+                    </tr>
                 @else
-                <tr>
-                    <th>صافي الربح</th>
-                    <td>{{ number_format($totals['net_profit'] ?? 0, 2) }} EGP</td>
-                </tr>
+                    <tr>
+                        <th>صافي الربح</th>
+                        <td>{{ number_format($totals['net_profit'] ?? 0, 2) }} EGP</td>
+                    </tr>
                 @endif
                 <tr>
                     <th>عدد المعاملات</th>
@@ -217,7 +254,7 @@
     @endif
 
     {{-- Transactions Table --}}
-    @if(isset($transactions) && !empty($transactions))
+    @if (isset($transactions) && !empty($transactions))
         <div class="page-break">
             <div class="section">
                 <h2>تفاصيل المعاملات</h2>
@@ -238,7 +275,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($transactions as $index => $transaction)
+                        @foreach ($transactions as $index => $transaction)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $transaction['reference_number'] ?? 'N/A' }}</td>
@@ -253,7 +290,7 @@
                                 <td>{{ $transaction['agent_name'] ?? 'N/A' }}</td>
                                 <td>{{ $transaction['branch_name'] ?? 'N/A' }}</td>
                                 <td>
-                                    @if(isset($transaction['transaction_date_time']))
+                                    @if (isset($transaction['transaction_date_time']))
                                         {{ \Carbon\Carbon::parse($transaction['transaction_date_time'])->format('d/m/Y H:i') }}
                                     @else
                                         N/A
@@ -272,4 +309,5 @@
         تم إنشاء هذا التقرير بواسطة النظام المالي - {{ now()->format('Y/m/d H:i:s') }}
     </div>
 </body>
+
 </html>

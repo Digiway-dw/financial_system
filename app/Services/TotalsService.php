@@ -22,7 +22,7 @@ class TotalsService
     {
         $repository = new \App\Infrastructure\Repositories\EloquentTransactionRepository();
         $result = $repository->allUnified($filters);
-        
+
         return [
             'total_turnover' => $result['totals']['total_transferred'] ?? 0,
             'total_commissions' => $result['totals']['total_commission'] ?? 0,
@@ -103,7 +103,7 @@ class TotalsService
     public function getSafeBalances(array $branchIds = []): array
     {
         $query = \App\Models\Domain\Entities\Safe::with('branch');
-        
+
         if (!empty($branchIds)) {
             $query->whereIn('branch_id', $branchIds);
         }
@@ -129,7 +129,7 @@ class TotalsService
     public function getLineBalances(array $branchIds = []): array
     {
         $query = \App\Models\Domain\Entities\Line::with('branch');
-        
+
         if (!empty($branchIds)) {
             $query->whereIn('branch_id', $branchIds);
         }
