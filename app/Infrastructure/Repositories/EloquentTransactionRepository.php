@@ -708,6 +708,95 @@ class EloquentTransactionRepository implements TransactionRepository
         ];
     }
 
+    /**
+     * Enhanced query method using Transaction model scopes
+     */
+    public function getFilteredTransactions(array $filters = []): array
+    {
+        $query = EloquentTransaction::query()->with(['agent', 'branch', 'line', 'safe']);
+
+        // Apply scopes
+        if (isset($filters['mobile_number'])) {
+            $query->filterByMobile($filters['mobile_number']);
+        }
+
+        if (isset($filters['reference_number'])) {
+            $query->filterByReference($filters['reference_number']);
+        }
+
+        if (isset($filters['amount_from']) || isset($filters['amount_to'])) {
+            $query->amountBetween($filters['amount_from'] ?? null, $filters['amount_to'] ?? null);
+        }
+
+        if (isset($filters['start_date']) || isset($filters['end_date'])) {
+            $query->dateBetween($filters['start_date'] ?? null, $filters['end_date'] ?? null);
+        }
+
+        if (isset($filters['branch_ids'])) {
+            $query->branches($filters['branch_ids']);
+        } elseif (isset($filters['branch_id'])) {
+            $query->branches($filters['branch_id']);
+        }
+
+        if (isset($filters['agent_id'])) {
+            $query->agent($filters['agent_id']);
+        }
+
+        // Apply sorting
+        $sortField = $filters['sort_field'] ?? 'transaction_date_time';
+        $sortDirection = $filters['sort_direction'] ?? 'desc';
+        $query->orderBy($sortField, $sortDirection);
+
+        return $query->get()->map(function ($transaction) {
+            $arr = $transaction->toArray();
+            $arr['agent_name'] = $transaction->agent ? $transaction->agent->name : 'N/A';
+            $arr['branch_name'] = $transaction->branch ? $transaction->branch->name : 
+                                ($transaction->agent && $transaction->agent->branch ? $transaction->agent->branch->name : 'N/A');
+            return $arr;
+        })->toArray();
+    }
+
+    /**
+     * Get employee transactions with employment date consideration
+     */
+    public function getEmployeeTransactions(int $employeeId, array $filters = []): array
+    {
+        $employee = \App\Domain\Entities\User::find($employeeId);
+        if (!$employee) {
+            return [];
+        }
+
+        // Use employment start date if no start date provided
+        if (!isset($filters['start_date']) && $employee->employment_start_date) {
+            $filters['start_date'] = $employee->employment_start_date;
+        }
+
+        $filters['agent_id'] = $employeeId;
+        return $this->getFilteredTransactions($filters);
+    }
+
+    /**
+     * Get customer transactions by customer identifier
+     */
+    public function getCustomerTransactions(string $customerIdentifier, array $filters = []): array
+    {
+        // Try to find customer by code, name, or mobile
+        $customer = \App\Models\Domain\Entities\Customer::where('customer_code', 'like', "%{$customerIdentifier}%")
+            ->orWhere('name', 'like', "%{$customerIdentifier}%")
+            ->orWhere('mobile_number', 'like', "%{$customerIdentifier}%")
+            ->first();
+
+        if ($customer) {
+            // Filter by customer code for exact matches
+            $filters['customer_code'] = $customer->customer_code;
+        } else {
+            // Try mobile number search in transactions
+            $filters['mobile_number'] = $customerIdentifier;
+        }
+
+        return $this->getFilteredTransactions($filters);
+    }
+
     public function countAllPending(): int
     {
         $ordinaryCount = EloquentTransaction::where('status', 'Pending')->count();

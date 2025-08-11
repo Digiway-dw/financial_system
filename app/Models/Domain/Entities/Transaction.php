@@ -91,6 +91,91 @@ class Transaction extends Model
     }
 
     /**
+     * Scope for filtering by mobile number (customer or receiver)
+     */
+    public function scopeFilterByMobile($query, $mobileNumber)
+    {
+        if (!$mobileNumber) {
+            return $query;
+        }
+
+        $cleanMobile = preg_replace('/\D/', '', $mobileNumber); // Remove non-digits
+
+        return $query->where(function ($q) use ($cleanMobile) {
+            $q->whereRaw('REGEXP_REPLACE(customer_mobile_number, "[^0-9]", "") LIKE ?', ["%{$cleanMobile}%"])
+              ->orWhereRaw('REGEXP_REPLACE(receiver_mobile_number, "[^0-9]", "") LIKE ?', ["%{$cleanMobile}%"]);
+        });
+    }
+
+    /**
+     * Scope for filtering by reference number
+     */
+    public function scopeFilterByReference($query, $referenceNumber)
+    {
+        if (!$referenceNumber) {
+            return $query;
+        }
+
+        return $query->whereRaw('LOWER(reference_number) LIKE ?', ['%' . strtolower(trim($referenceNumber)) . '%']);
+    }
+
+    /**
+     * Scope for filtering by amount range
+     */
+    public function scopeAmountBetween($query, $minAmount = null, $maxAmount = null)
+    {
+        if ($minAmount !== null) {
+            $query->where('amount', '>=', $minAmount);
+        }
+        if ($maxAmount !== null) {
+            $query->where('amount', '<=', $maxAmount);
+        }
+        return $query;
+    }
+
+    /**
+     * Scope for filtering by date range
+     */
+    public function scopeDateBetween($query, $startDate = null, $endDate = null)
+    {
+        if ($startDate) {
+            $query->whereDate('transaction_date_time', '>=', $startDate);
+        }
+        if ($endDate) {
+            $query->whereDate('transaction_date_time', '<=', $endDate);
+        }
+        return $query;
+    }
+
+    /**
+     * Scope for filtering by branch(es)
+     */
+    public function scopeBranches($query, $branchIds)
+    {
+        if (empty($branchIds)) {
+            return $query;
+        }
+
+        if (is_array($branchIds)) {
+            return $query->whereIn('branch_id', $branchIds);
+        }
+
+        return $query->where('branch_id', $branchIds);
+    }
+
+    /**
+     * Scope for filtering by agent
+     */
+    public function scopeAgent($query, $agentId)
+    {
+        if (!$agentId) {
+            return $query;
+        }
+
+        return $query->where('agent_id', $agentId);
+    }
+
+    /**
      * Get a descriptive transaction name based on the transaction type and context
      */
     public function getDescriptiveTransactionNameAttribute()
