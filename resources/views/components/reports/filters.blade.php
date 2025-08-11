@@ -9,12 +9,18 @@
     </h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {{-- Mobile Number Filter --}}
+        {{-- Line Filter --}}
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">البحث برقم الجوال</label>
-            <input wire:model.live.debounce.500ms="mobileNumber" type="text"
-                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="أدخل رقم الجوال (11 رقم)" maxlength="11">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                اختيار الخط
+            </label>
+            <select wire:model.live="selectedLine"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">اختر خط</option>
+                @foreach ($lines as $lineId => $lineName)
+                    <option value="{{ $lineId }}">{{ $lineName }}</option>
+                @endforeach
+            </select>
         </div>
 
         {{-- Reference Number Filter --}}

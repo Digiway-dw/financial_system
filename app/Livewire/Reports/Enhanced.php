@@ -13,12 +13,13 @@ use App\Infrastructure\Repositories\EloquentTransactionRepository;
 use App\Exports\AutoSizeTransactionsExport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Models\Domain\Entities\Safe; // Correct import for Safe model
+use App\Models\Domain\Entities\Line;
 
 class Enhanced extends Component
 {
     // Universal filter properties
     public $showLoading = false;
-    public $mobileNumber = '';
     public $referenceNumber = '';
     public $amountFrom = '';
     public $amountTo = '';
@@ -56,6 +57,10 @@ class Enhanced extends Component
     public $employeeDetails = null;
     public $branchDetails = [];
 
+    // New properties for line filtering
+    public $selectedLine = ''; // New property for line filter
+    public $lines = []; // Store lines for dropdown
+
     // Services
     private TotalsService $totalsService;
     private EloquentTransactionRepository $transactionRepository;
@@ -88,10 +93,13 @@ class Enhanced extends Component
 
         // Load branches based on user permissions
         if (Gate::forUser($user)->allows('view-all-branches-data')) {
-            $this->branches = Branch::all();
+            $this->branches = Branch::where('is_active', true)->get();
         } else {
-            $this->branches = Branch::where('id', $user->branch_id)->get();
+            $this->branches = Branch::where('id', $user->branch_id)->where('is_active', true)->get();
         }
+
+        // Load all lines for the dropdown
+        $this->lines = Line::all()->pluck('mobile_number', 'id')->toArray();
 
         // Load employees based on user permissions
         if (Gate::forUser($user)->allows('view-all-branches-data')) {
@@ -113,7 +121,6 @@ class Enhanced extends Component
     public function resetFilters()
     {
         $this->reset([
-            'mobileNumber',
             'referenceNumber',
             'amountFrom',
             'amountTo',
@@ -124,7 +131,8 @@ class Enhanced extends Component
             'filterTransactionType',
             'filterStatus',
             'filterEmployee',
-            'filterBranch'
+            'filterBranch',
+            'selectedLine' // Reset selected line
         ]);
     }
 
@@ -158,9 +166,6 @@ class Enhanced extends Component
         if ($this->endDate) {
             $filters['end_date'] = $this->endDate;
         }
-        if ($this->mobileNumber) {
-            $filters['receiver_mobile_number'] = $this->mobileNumber;
-        }
         if ($this->referenceNumber) {
             $filters['reference_number'] = $this->referenceNumber;
         }
@@ -175,6 +180,9 @@ class Enhanced extends Component
         }
         if ($this->selectedEmployee) {
             $filters['employee_ids'] = [$this->selectedEmployee];
+        }
+        if ($this->selectedLine) {
+            $filters['transfer_line'] = $this->selectedLine;
         }
 
         // Column filters
@@ -201,23 +209,25 @@ class Enhanced extends Component
         $result = $this->transactionRepository->allUnified($filters);
         $ordinaryTransactions = collect($result['transactions']);
 
-        // Fetch cash transactions with branch filtering
-        $cashTransactions = CashTransaction::query()
-            ->join('safes', 'cash_transactions.safe_id', '=', 'safes.id')
-            ->when(!empty($filters['branch_ids']), function ($query) use ($filters) {
-                $query->whereIn('safes.branch_id', $filters['branch_ids']);
-            })
-            ->when(!empty($filters['start_date']), function ($query) use ($filters) {
-                $query->whereDate('cash_transactions.transaction_date_time', '>=', $filters['start_date']);
-            })
-            ->when(!empty($filters['end_date']), function ($query) use ($filters) {
-                $query->whereDate('cash_transactions.transaction_date_time', '<=', $filters['end_date']);
-            })
-            ->select('cash_transactions.*')
-            ->get();
+        $allTransactions = $ordinaryTransactions;
 
-        // Merge ordinary and cash transactions
-        $allTransactions = $ordinaryTransactions->merge($cashTransactions);
+        // Only include cash transactions if not filtering by line
+        if (empty($filters['transfer_line'])) {
+            $cashTransactions = CashTransaction::query()
+                ->join('safes', 'cash_transactions.safe_id', '=', 'safes.id')
+                ->when(!empty($filters['branch_ids']), function ($query) use ($filters) {
+                    $query->whereIn('safes.branch_id', $filters['branch_ids']);
+                })
+                ->when(!empty($filters['start_date']), function ($query) use ($filters) {
+                    $query->whereDate('cash_transactions.transaction_date_time', '>=', $filters['start_date']);
+                })
+                ->when(!empty($filters['end_date']), function ($query) use ($filters) {
+                    $query->whereDate('cash_transactions.transaction_date_time', '<=', $filters['end_date']);
+                })
+                ->select('cash_transactions.*')
+                ->get();
+            $allTransactions = $ordinaryTransactions->merge($cashTransactions);
+        }
 
         // Apply pagination
         $this->transactions = $allTransactions->take($this->perPage)->all();
@@ -392,6 +402,7 @@ class Enhanced extends Component
     public function render()
     {
         return view('livewire.reports.enhanced', [
+            'lines' => $this->lines,
             'showEmployeeFilter' => in_array($this->reportType, ['transactions', 'employee']),
             'showCustomerFilter' => in_array($this->reportType, ['transactions', 'customer']),
             'showExpenses' => $this->reportType === 'branch',
