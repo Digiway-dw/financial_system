@@ -152,9 +152,9 @@
                                     <select wire:model="status" id="status" name="status"
                                         class="w-full px-4 py-3 bg-white/70 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 text-gray-900"
                                         required>
-                                        <option value="Completed">مكتملة</option>
-                                        <option value="Pending">معلقة</option>
-                                        <option value="Rejected">مرفوضة</option>
+                                        <option value="completed">مكتملة</option>
+                                        <option value="pending">معلقة</option>
+                                        <option value="rejected">مرفوضة</option>
                                     </select>
                                     <x-input-error class="mt-2" :messages="$errors->get('status')" />
                                 </div>
