@@ -240,10 +240,10 @@ class Enhanced extends Component
 
     private function generateEmployeeReport($filters)
     {
+        // If no employee selected, show all transactions
         if (!$this->selectedEmployee) {
-            $this->transactions = [];
-            $this->totals = [];
             $this->employeeDetails = null;
+            $this->generateTransactionReport($filters);
             return;
         }
 
@@ -275,10 +275,10 @@ class Enhanced extends Component
 
     private function generateCustomerReport($filters)
     {
+        // If no customer search, show all transactions
         if (!$this->customerSearch) {
-            $this->transactions = [];
-            $this->totals = [];
             $this->customerDetails = null;
+            $this->generateTransactionReport($filters);
             return;
         }
 
