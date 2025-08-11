@@ -16,7 +16,7 @@
         {{-- Column Header Filters --}}
         <div class="mb-4 p-4 bg-gray-50 rounded-lg">
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <input wire:model.live.debounce.500ms="filterCustomerName" type="text"
+                {{-- <input wire:model.live.debounce.500ms="filterCustomerName" type="text"
                     class="px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="اسم العميل">
 
                 <input wire:model.live.debounce.500ms="filterTransactionType" type="text"
@@ -35,7 +35,7 @@
                 <input wire:model.live.debounce.500ms="filterBranch" type="text"
                     class="px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="الفرع">
             </div>
-        </div>
+        </div> --}}
     </div>
 
     {{-- Table --}}
