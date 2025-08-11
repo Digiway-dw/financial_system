@@ -197,10 +197,34 @@ class Enhanced extends Component
 
     private function generateTransactionReport($filters)
     {
+        // Fetch ordinary transactions
         $result = $this->transactionRepository->allUnified($filters);
-        $this->transactions = collect($result['transactions'])->take($this->perPage)->all();
-        $this->totalCount = count($result['transactions']);
+        $ordinaryTransactions = collect($result['transactions']);
+
+        // Fetch cash transactions with branch filtering
+        $cashTransactions = CashTransaction::query()
+            ->join('safes', 'cash_transactions.safe_id', '=', 'safes.id')
+            ->when(!empty($filters['branch_ids']), function ($query) use ($filters) {
+                $query->whereIn('safes.branch_id', $filters['branch_ids']);
+            })
+            ->when(!empty($filters['start_date']), function ($query) use ($filters) {
+                $query->whereDate('cash_transactions.transaction_date_time', '>=', $filters['start_date']);
+            })
+            ->when(!empty($filters['end_date']), function ($query) use ($filters) {
+                $query->whereDate('cash_transactions.transaction_date_time', '<=', $filters['end_date']);
+            })
+            ->select('cash_transactions.*')
+            ->get();
+
+        // Merge ordinary and cash transactions
+        $allTransactions = $ordinaryTransactions->merge($cashTransactions);
+
+        // Apply pagination
+        $this->transactions = $allTransactions->take($this->perPage)->all();
+        $this->totalCount = $allTransactions->count();
         $this->hasMore = $this->totalCount > $this->perPage;
+
+        // Calculate totals
         $this->totals = $this->totalsService->calculateTotals($filters);
     }
 
@@ -254,10 +278,7 @@ class Enhanced extends Component
             ->orWhere('mobile_number', 'like', "%{$this->customerSearch}%")
             ->first();
 
-        if (!$customer) {
-            // Try to find by transaction mobile numbers
-            $filters['receiver_mobile_number'] = $this->customerSearch;
-        } else {
+        if ($customer) {
             $this->customerDetails = [
                 'name' => $customer->name,
                 'customer_code' => $customer->customer_code,
@@ -269,6 +290,22 @@ class Enhanced extends Component
 
             // Filter by customer
             $filters['customer_code'] = $customer->customer_code;
+        } else {
+            // Try to find by transaction mobile numbers
+            $filters['receiver_mobile_number'] = $this->customerSearch;
+        }
+
+        // Ensure cash transactions are filtered by mobile number
+        if (isset($filters['receiver_mobile_number'])) {
+            $filters['cash_transaction_mobile_number'] = $filters['receiver_mobile_number'];
+        }
+
+        // If no transactions match, return empty results
+        $result = $this->transactionRepository->allUnified($filters);
+        if (empty($result['transactions'])) {
+            $this->transactions = [];
+            $this->totals = [];
+            return;
         }
 
         $this->generateTransactionReport($filters);
