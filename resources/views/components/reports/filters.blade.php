@@ -88,7 +88,7 @@
         @endif
 
         {{-- Customer Filter --}}
-        @if (isset($showCustomerFilter) && $showCustomerFilter)
+        @if (isset($showCustomerFilter) && $showCustomerFilter && $reportType === 'customer')
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">العميل</label>
                 <input wire:model.live.debounce.500ms="customerSearch" type="text"
@@ -96,6 +96,14 @@
                     placeholder="اسم أو كود أو رقم العميل">
             </div>
         @endif
+
+        {{-- Mobile Number Filter --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">رقم الجوال (إرسال أو استقبال أو رقم العميل)</label>
+            <input wire:model.live.debounce.500ms="filterMobileNumber" type="text"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="أدخل رقم الجوال للبحث في الإرسال أو الاستقبال أو رقم العميل">
+        </div>
     </div>
 
     {{-- Action Buttons --}}

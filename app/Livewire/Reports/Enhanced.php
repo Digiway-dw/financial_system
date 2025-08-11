@@ -50,6 +50,7 @@ class Enhanced extends Component
     public $filterStatus = '';
     public $filterEmployee = '';
     public $filterBranch = '';
+    public $filterMobileNumber = ''; // New mobile number filter
 
     // Report-specific properties
     public $selectedCustomer = null;
@@ -195,6 +196,9 @@ class Enhanced extends Component
         if ($this->filterStatus) {
             $filters['status'] = $this->filterStatus;
         }
+        if ($this->filterMobileNumber) {
+            $filters['receiver_mobile_number'] = $this->filterMobileNumber;
+        }
 
         // Sorting
         $filters['sortField'] = $this->sortField;
@@ -211,31 +215,41 @@ class Enhanced extends Component
 
         $allTransactions = $ordinaryTransactions;
 
-        // Only include cash transactions if not filtering by line
-        if (empty($filters['transfer_line'])) {
+        // Only include cash transactions if not filtering by mobile number or line
+        if (empty($filters['receiver_mobile_number']) && empty($filters['transfer_line'])) {
             $cashTransactions = CashTransaction::query()
-                ->join('safes', 'cash_transactions.safe_id', '=', 'safes.id')
-                ->when(!empty($filters['branch_ids']), function ($query) use ($filters) {
-                    $query->whereIn('safes.branch_id', $filters['branch_ids']);
-                })
-                ->when(!empty($filters['start_date']), function ($query) use ($filters) {
-                    $query->whereDate('cash_transactions.transaction_date_time', '>=', $filters['start_date']);
-                })
-                ->when(!empty($filters['end_date']), function ($query) use ($filters) {
-                    $query->whereDate('cash_transactions.transaction_date_time', '<=', $filters['end_date']);
-                })
-                ->select('cash_transactions.*')
+                ->with(['safe.branch'])
                 ->get();
-            $allTransactions = $ordinaryTransactions->merge($cashTransactions);
+            // Filter cash transactions by selected branch
+            if (!empty($filters['branch_ids'])) {
+                $branchIds = $filters['branch_ids'];
+                $cashTransactions = $cashTransactions->filter(function ($transaction) use ($branchIds) {
+                    return $transaction->safe && $transaction->safe->branch && in_array($transaction->safe->branch->id, $branchIds);
+                });
+            }
+            foreach ($cashTransactions as $transaction) {
+                $transaction->branch_name = $transaction->safe && $transaction->safe->branch ? $transaction->safe->branch->name : 'N/A';
+                $transaction->branch_id = $transaction->safe && $transaction->safe->branch ? $transaction->safe->branch->id : null;
+            }
+            // Remove duplicates by reference_number
+            $allTransactions = $ordinaryTransactions->merge($cashTransactions)->unique('reference_number');
         }
 
         // Apply pagination
-        $this->transactions = $allTransactions->take($this->perPage)->all();
+        $paginatedTransactions = $allTransactions->take($this->perPage)->all();
+        $this->transactions = $paginatedTransactions;
         $this->totalCount = $allTransactions->count();
         $this->hasMore = $this->totalCount > $this->perPage;
 
-        // Calculate totals
-        $this->totals = $this->totalsService->calculateTotals($filters);
+        // Calculate totals using only the displayed transactions
+        $displayed = collect($paginatedTransactions);
+        $this->totals = [
+            'total_turnover' => $displayed->sum('amount'),
+            'total_commissions' => $displayed->sum('commission'),
+            'total_deductions' => $displayed->sum('deduction'),
+            'net_profit' => $displayed->sum('commission') + $displayed->where('profit_contribution', '<', 0)->sum('profit_contribution'),
+            'transactions_count' => $displayed->count(),
+        ];
     }
 
     private function generateEmployeeReport($filters)

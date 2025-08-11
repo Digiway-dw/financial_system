@@ -31,7 +31,7 @@
         </div>
 
         {{-- Universal Filters --}}
-        <x-reports.filters :branches="$branches" :employees="$employees" :showEmployeeFilter="$showEmployeeFilter" :showCustomerFilter="$showCustomerFilter" :lines="$lines" />
+        <x-reports.filters :branches="$branches" :employees="$employees" :showEmployeeFilter="$showEmployeeFilter" :showCustomerFilter="$showCustomerFilter" :lines="$lines" :reportType="$reportType" />
 
         {{-- Employee Summary Card --}}
         @if ($reportType === 'employee' && $employeeDetails)
