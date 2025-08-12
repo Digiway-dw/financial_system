@@ -50,7 +50,7 @@ class Enhanced extends Component
     public $filterStatus = '';
     public $filterEmployee = '';
     public $filterBranch = '';
-    public $filterMobileNumber = ''; // New mobile number filter
+    public $filterMobileNumber = '';
 
     // Report-specific properties
     public $selectedCustomer = null;
@@ -203,7 +203,14 @@ class Enhanced extends Component
             $filters['customer_name'] = $this->filterCustomerName;
         }
         if ($this->filterTransactionType) {
-            $filters['transaction_type'] = $this->filterTransactionType;
+            // Normalize to match DB values: Receive, Transfer, Deposit, Withdrawal
+            $typeMap = [
+                'receive' => 'Receive',
+                'transfer' => 'Transfer',
+                'Deposit' => 'Deposit',
+                'Withdrawal' => 'Withdrawal',
+            ];
+            $filters['transaction_type'] = $typeMap[$this->filterTransactionType] ?? $this->filterTransactionType;
         }
         if ($this->filterStatus) {
             $filters['status'] = $this->filterStatus;
@@ -221,96 +228,9 @@ class Enhanced extends Component
 
     private function generateTransactionReport($filters)
     {
-        // Fetch ordinary transactions
+        // Fetch all filtered transactions (ordinary + cash) from repository
         $result = $this->transactionRepository->allUnified($filters);
-        $ordinaryTransactions = collect($result['transactions']);
-
-        $allTransactions = $ordinaryTransactions;
-
-        // Only include cash transactions if not filtering by mobile number or line
-        if (empty($filters['receiver_mobile_number']) && empty($filters['transfer_line'])) {
-            $cashTransactions = CashTransaction::query()
-                ->with(['safe.branch'])
-                ->get();
-            
-            // Set branch_name and branch_id for all cash transactions BEFORE filtering
-            foreach ($cashTransactions as $transaction) {
-                $branchName = null;
-                $branchId = null;
-                
-                // First try safe->branch relationship
-                if ($transaction->safe && $transaction->safe->branch) {
-                    $branchName = $transaction->safe->branch->name;
-                    $branchId = $transaction->safe->branch->id;
-                }
-                // Then try destination_branch_id
-                elseif ($transaction->destination_branch_id) {
-                    $branch = \App\Models\Domain\Entities\Branch::find($transaction->destination_branch_id);
-                    if ($branch) {
-                        $branchName = $branch->name;
-                        $branchId = $transaction->destination_branch_id;
-                    }
-                }
-                // Fallback: try safe->branch_id if safe exists but no branch loaded
-                elseif ($transaction->safe && $transaction->safe->branch_id) {
-                    $branch = \App\Models\Domain\Entities\Branch::find($transaction->safe->branch_id);
-                    if ($branch) {
-                        $branchName = $branch->name;
-                        $branchId = $transaction->safe->branch_id;
-                    }
-                }
-                
-                $transaction->branch_name = $branchName ?? 'N/A';
-                $transaction->branch_id = $branchId;
-                
-                // Ensure cash transactions have a source field for export consistency
-                if (!isset($transaction->source)) {
-                    $transaction->source = 'cash_transaction';
-                }
-            }
-            
-            // Now filter cash transactions by selected branch AFTER setting branch names
-            if (!empty($filters['branch_ids'])) {
-                $branchIds = $filters['branch_ids'];
-                $cashTransactions = $cashTransactions->filter(function ($transaction) use ($branchIds) {
-                    return $transaction->branch_id && in_array($transaction->branch_id, $branchIds);
-                });
-            }
-            // Apply amount range filter to cash transactions
-            if (isset($filters['amount_from']) && is_numeric($filters['amount_from'])) {
-                $cashTransactions = $cashTransactions->filter(function ($transaction) use ($filters) {
-                    return $transaction->amount >= $filters['amount_from'];
-                });
-            }
-            if (isset($filters['amount_to']) && is_numeric($filters['amount_to'])) {
-                $cashTransactions = $cashTransactions->filter(function ($transaction) use ($filters) {
-                    return $transaction->amount <= $filters['amount_to'];
-                });
-            }
-            
-            // Convert cash transactions to array format to match ordinary transactions
-            $cashTransactionsArray = $cashTransactions->map(function ($transaction) {
-                return [
-                    'id' => $transaction->id,
-                    'reference_number' => $transaction->reference_number,
-                    'customer_name' => $transaction->customer_name,
-                    'customer_code' => $transaction->customer_code,
-                    'amount' => $transaction->amount,
-                    'commission' => 0, // Cash transactions don't have commission
-                    'deduction' => 0, // Cash transactions don't have deduction
-                    'transaction_type' => $transaction->transaction_type,
-                    'status' => $transaction->status,
-                    'agent_name' => $transaction->agent ? $transaction->agent->name : '',
-                    'transaction_date_time' => $transaction->transaction_date_time,
-                    'branch_name' => $transaction->branch_name,
-                    'branch_id' => $transaction->branch_id,
-                    'source' => 'cash_transaction',
-                ];
-            });
-            
-            // Remove duplicates by reference_number
-            $allTransactions = $ordinaryTransactions->merge($cashTransactionsArray)->unique('reference_number');
-        }
+        $allTransactions = collect($result['transactions']);
 
         // Apply pagination
         $paginatedTransactions = $allTransactions->take($this->perPage)->all();

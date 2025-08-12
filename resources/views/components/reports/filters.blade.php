@@ -9,6 +9,19 @@
     </h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {{-- Transaction Type Filter --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">نوع العملية</label>
+            <select wire:model.live="filterTransactionType"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">كل الأنواع</option>
+                <option value="receive">استلام</option>
+                <option value="transfer">تحويل</option>
+                <option value="Deposit">إيداع</option>
+                <option value="Withdrawal">سحب</option>
+                <!-- adjustment removed -->
+            </select>
+        </div>
         {{-- Line Filter --}}
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
