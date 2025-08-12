@@ -21,7 +21,7 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
      */
     public function collection()
     {
-        return $this->transactions->map(function ($transaction) {
+        $transactionRows = $this->transactions->map(function ($transaction) {
             $commission = $transaction['commission'] ?? $transaction->commission ?? 0;
             $deduction = $transaction['deduction'] ?? $transaction->deduction ?? 0;
             $finalCommission = $commission - $deduction;
@@ -57,7 +57,7 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
                 'Reference Number' => $transaction['reference_number'] ?? $transaction->reference_number ?? '',
                 'Customer Name' => $transaction['customer_name'] ?? $transaction->customer_name ?? '',
                 'Customer Code' => $transaction['customer_code'] ?? $transaction->customer_code ?? '',
-                'Amount (EGP)' => $transaction['amount'] ?? $transaction->amount ?? '',
+                'Amount (EGP)' => $transaction['amount'] ?? $transaction->amount ?? 0,
                 'Final Commission (EGP)' => $finalCommission,
                 'Deduction (EGP)' => $deduction,
                 'Transaction Type' => $transaction['transaction_type'] ?? $transaction->transaction_type ?? '',
@@ -68,6 +68,32 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
                 'Source' => $transaction['source'] ?? $transaction->source ?? '',
             ];
         });
+        
+        // Calculate totals
+        $totalAmount = $transactionRows->sum('Amount (EGP)');
+        $totalCommission = $transactionRows->sum('Final Commission (EGP)');
+        $totalDeduction = $transactionRows->sum('Deduction (EGP)');
+        
+        // Add totals row
+        $totalsRow = [
+            'Reference Number' => 'الإجمالي (Total)',
+            'Customer Name' => '',
+            'Customer Code' => '',
+            'Amount (EGP)' => $totalAmount,
+            'Final Commission (EGP)' => $totalCommission,
+            'Deduction (EGP)' => $totalDeduction,
+            'Transaction Type' => '',
+            'Status' => '',
+            'Agent Name' => '',
+            'Transaction Date/Time' => '',
+            'Branch' => '',
+            'Source' => '',
+        ];
+        
+        // Add the totals row to the collection
+        $transactionRows->push($totalsRow);
+        
+        return $transactionRows;
     }
 
     /**

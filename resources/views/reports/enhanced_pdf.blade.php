@@ -54,6 +54,12 @@
             font-weight: bold;
         }
 
+        .totals-row {
+            background-color: #e3f2fd !important;
+            font-weight: bold !important;
+            border-top: 2px solid #1976d2 !important;
+        }
+
         .info-grid {
             display: table;
             width: 100%;
@@ -298,6 +304,28 @@
                                 </td>
                             </tr>
                         @endforeach
+                        
+                        {{-- Totals Row --}}
+                        @if (!empty($transactions))
+                            @php
+                                $totalAmount = collect($transactions)->sum('amount');
+                                $totalCommission = collect($transactions)->sum('commission');
+                                $totalDeduction = collect($transactions)->sum('deduction');
+                            @endphp
+                            <tr class="totals-row">
+                                <td style="font-weight: bold;">الإجمالي</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="font-weight: bold;">{{ number_format($totalAmount, 2) }} EGP</td>
+                                <td style="font-weight: bold;">{{ number_format($totalCommission, 2) }} EGP</td>
+                                <td style="font-weight: bold;">{{ number_format($totalDeduction, 2) }} EGP</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>

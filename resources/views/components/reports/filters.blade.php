@@ -64,7 +64,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">الفروع</label>
             <select wire:model.live="selectedBranches" multiple
                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">جميع الفروع</option>
+                <option value="all">جميع الفروع</option>
                 @foreach ($branches as $branch)
                     <option value="{{ $branch['id'] ?? $branch->id }}">{{ $branch['name'] ?? $branch->name }}</option>
                 @endforeach

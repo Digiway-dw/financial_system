@@ -184,6 +184,53 @@
                         </td>
                     </tr>
                 @endforelse
+                
+                {{-- Totals Row --}}
+                @if (!empty($transactions))
+                    @php
+                        $totalAmount = collect($transactions)->sum('amount');
+                        $totalCommission = collect($transactions)->sum('commission');
+                        $totalDeduction = collect($transactions)->sum('deduction');
+                    @endphp
+                    <tr class="bg-blue-50 border-t-2 border-blue-200 font-semibold">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900 font-bold">
+                            الإجمالي
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
+                            -
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900 font-bold">
+                            {{ number_format($totalAmount, 2) }} EGP
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900 font-bold">
+                            {{ number_format($totalCommission, 2) }} EGP
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900 font-bold">
+                            {{ number_format($totalDeduction, 2) }} EGP
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
+                            -
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
+                            -
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
+                            -
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
+                            -
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
+                            -
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
+                            -
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
+                            -
+                        </td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>

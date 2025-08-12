@@ -177,7 +177,19 @@ class Enhanced extends Component
             $filters['amount_to'] = $this->amountTo;
         }
         if (!empty($this->selectedBranches)) {
-            $filters['branch_ids'] = $this->selectedBranches;
+            // Check if "all" is selected (show all branches)
+            if (in_array('all', $this->selectedBranches)) {
+                // Don't apply branch filter when "all" is selected
+                // This will show data from all branches
+            } else {
+                // Filter out empty values and apply specific branch filter
+                $validBranches = array_filter($this->selectedBranches, function($branchId) {
+                    return !empty($branchId);
+                });
+                if (!empty($validBranches)) {
+                    $filters['branch_ids'] = $validBranches;
+                }
+            }
         }
         if ($this->selectedEmployee) {
             $filters['employee_ids'] = [$this->selectedEmployee];
