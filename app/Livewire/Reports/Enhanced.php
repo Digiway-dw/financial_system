@@ -220,19 +220,73 @@ class Enhanced extends Component
             $cashTransactions = CashTransaction::query()
                 ->with(['safe.branch'])
                 ->get();
-            // Filter cash transactions by selected branch
+            
+            // Set branch_name and branch_id for all cash transactions BEFORE filtering
+            foreach ($cashTransactions as $transaction) {
+                $branchName = null;
+                $branchId = null;
+                
+                // First try safe->branch relationship
+                if ($transaction->safe && $transaction->safe->branch) {
+                    $branchName = $transaction->safe->branch->name;
+                    $branchId = $transaction->safe->branch->id;
+                }
+                // Then try destination_branch_id
+                elseif ($transaction->destination_branch_id) {
+                    $branch = \App\Models\Domain\Entities\Branch::find($transaction->destination_branch_id);
+                    if ($branch) {
+                        $branchName = $branch->name;
+                        $branchId = $transaction->destination_branch_id;
+                    }
+                }
+                // Fallback: try safe->branch_id if safe exists but no branch loaded
+                elseif ($transaction->safe && $transaction->safe->branch_id) {
+                    $branch = \App\Models\Domain\Entities\Branch::find($transaction->safe->branch_id);
+                    if ($branch) {
+                        $branchName = $branch->name;
+                        $branchId = $transaction->safe->branch_id;
+                    }
+                }
+                
+                $transaction->branch_name = $branchName ?? 'N/A';
+                $transaction->branch_id = $branchId;
+                
+                // Ensure cash transactions have a source field for export consistency
+                if (!isset($transaction->source)) {
+                    $transaction->source = 'cash_transaction';
+                }
+            }
+            
+            // Now filter cash transactions by selected branch AFTER setting branch names
             if (!empty($filters['branch_ids'])) {
                 $branchIds = $filters['branch_ids'];
                 $cashTransactions = $cashTransactions->filter(function ($transaction) use ($branchIds) {
-                    return $transaction->safe && $transaction->safe->branch && in_array($transaction->safe->branch->id, $branchIds);
+                    return $transaction->branch_id && in_array($transaction->branch_id, $branchIds);
                 });
             }
-            foreach ($cashTransactions as $transaction) {
-                $transaction->branch_name = $transaction->safe && $transaction->safe->branch ? $transaction->safe->branch->name : 'N/A';
-                $transaction->branch_id = $transaction->safe && $transaction->safe->branch ? $transaction->safe->branch->id : null;
-            }
+            
+            // Convert cash transactions to array format to match ordinary transactions
+            $cashTransactionsArray = $cashTransactions->map(function ($transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'reference_number' => $transaction->reference_number,
+                    'customer_name' => $transaction->customer_name,
+                    'customer_code' => $transaction->customer_code,
+                    'amount' => $transaction->amount,
+                    'commission' => 0, // Cash transactions don't have commission
+                    'deduction' => 0, // Cash transactions don't have deduction
+                    'transaction_type' => $transaction->transaction_type,
+                    'status' => $transaction->status,
+                    'agent_name' => $transaction->agent ? $transaction->agent->name : '',
+                    'transaction_date_time' => $transaction->transaction_date_time,
+                    'branch_name' => $transaction->branch_name,
+                    'branch_id' => $transaction->branch_id,
+                    'source' => 'cash_transaction',
+                ];
+            });
+            
             // Remove duplicates by reference_number
-            $allTransactions = $ordinaryTransactions->merge($cashTransactions)->unique('reference_number');
+            $allTransactions = $ordinaryTransactions->merge($cashTransactionsArray)->unique('reference_number');
         }
 
         // Apply pagination
@@ -379,34 +433,28 @@ class Enhanced extends Component
 
     public function exportExcel()
     {
-        $filters = $this->buildFilters();
-        $result = $this->transactionRepository->allUnified($filters);
-        $export = new AutoSizeTransactionsExport(collect($result['transactions']));
-
+        // Use the same transactions as displayed in the UI, with branch_name already set
+        $export = new AutoSizeTransactionsExport(collect($this->transactions));
         $filename = $this->reportType . '_report_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
         return \Maatwebsite\Excel\Facades\Excel::download($export, $filename);
     }
 
     public function exportPdf()
     {
-        $filters = $this->buildFilters();
-        $result = $this->transactionRepository->allUnified($filters);
-
+        // Use the same transactions as displayed in the UI, with branch_name already set
         $data = [
             'reportType' => $this->reportType,
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
-            'transactions' => $result['transactions'],
+            'transactions' => $this->transactions,
             'totals' => $this->totals,
             'customerDetails' => $this->customerDetails,
             'employeeDetails' => $this->employeeDetails,
             'branchDetails' => $this->branchDetails,
         ];
-
         $html = view('reports.enhanced_pdf', $data)->render();
         $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4', 'default_font' => 'dejavusans']);
         $mpdf->WriteHTML($html);
-
         $filename = $this->reportType . '_report_' . now()->format('Y-m-d_H-i-s') . '.pdf';
         return response()->streamDownload(function () use ($mpdf) {
             echo $mpdf->Output('', 'S');
