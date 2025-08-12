@@ -119,12 +119,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('users.view');
 
     // Reports Routes
-    Route::get('reports', \App\Livewire\Reports\Index::class)
-        ->name('reports.index');
-
-    // Enhanced Reports Route
-    Route::get('reports/enhanced', \App\Livewire\Reports\Enhanced::class)
-        ->name('reports.enhanced')
+    // Reports Route (now using Enhanced)
+    Route::get('reports', \App\Livewire\Reports\Enhanced::class)
+        ->name('reports.index')
         ->middleware('can:view-all-reports');
 
     // Audit Log Routes
