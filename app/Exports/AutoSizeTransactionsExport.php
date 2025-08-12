@@ -24,19 +24,14 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
         $transactionRows = $this->transactions->map(function ($transaction) {
             $commission = $transaction['commission'] ?? $transaction->commission ?? 0;
             $deduction = $transaction['deduction'] ?? $transaction->deduction ?? 0;
-            $finalCommission = $commission - $deduction;
-            
             // Robust branch name extraction
             $branchName = null;
-            // Try array key first
             if (is_array($transaction)) {
                 $branchName = $transaction['branch_name'] ?? null;
             }
-            // Try object property
             if (!$branchName && is_object($transaction)) {
                 $branchName = $transaction->branch_name ?? null;
             }
-            // Try branch_id lookup if still missing
             if (!$branchName && (isset($transaction['branch_id']) || isset($transaction->branch_id))) {
                 $branchId = $transaction['branch_id'] ?? $transaction->branch_id ?? null;
                 if ($branchId) {
@@ -46,7 +41,6 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
                     }
                 }
             }
-            // Try safe->branch if still missing
             if (!$branchName && isset($transaction->safe) && isset($transaction->safe->branch)) {
                 $branchName = $transaction->safe->branch->name;
             }
@@ -58,7 +52,7 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
                 'Customer Name' => $transaction['customer_name'] ?? $transaction->customer_name ?? '',
                 'Customer Code' => $transaction['customer_code'] ?? $transaction->customer_code ?? '',
                 'Amount (EGP)' => $transaction['amount'] ?? $transaction->amount ?? 0,
-                'Final Commission (EGP)' => $finalCommission,
+                'Commission (EGP)' => $commission,
                 'Deduction (EGP)' => $deduction,
                 'Transaction Type' => $transaction['transaction_type'] ?? $transaction->transaction_type ?? '',
                 'Status' => $transaction['status'] ?? $transaction->status ?? '',
@@ -68,19 +62,17 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
                 'Source' => $transaction['source'] ?? $transaction->source ?? '',
             ];
         });
-        
         // Calculate totals
         $totalAmount = $transactionRows->sum('Amount (EGP)');
-        $totalCommission = $transactionRows->sum('Final Commission (EGP)');
+        $totalCommission = $transactionRows->sum('Commission (EGP)');
         $totalDeduction = $transactionRows->sum('Deduction (EGP)');
-        
         // Add totals row
         $totalsRow = [
             'Reference Number' => 'الإجمالي (Total)',
             'Customer Name' => '',
             'Customer Code' => '',
             'Amount (EGP)' => $totalAmount,
-            'Final Commission (EGP)' => $totalCommission,
+            'Commission (EGP)' => $totalCommission,
             'Deduction (EGP)' => $totalDeduction,
             'Transaction Type' => '',
             'Status' => '',
@@ -89,10 +81,7 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
             'Branch' => '',
             'Source' => '',
         ];
-        
-        // Add the totals row to the collection
         $transactionRows->push($totalsRow);
-        
         return $transactionRows;
     }
 
@@ -106,7 +95,7 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
             'Customer Name',
             'Customer Code',
             'Amount (EGP)',
-            'Final Commission (EGP)',
+            'Commission (EGP)',
             'Deduction (EGP)',
             'Transaction Type',
             'Status',

@@ -556,8 +556,21 @@ class EloquentTransactionRepository implements TransactionRepository
                 });
             }
             if (isset($filters['branch_ids']) && is_array($filters['branch_ids']) && count($filters['branch_ids']) > 0) {
-                $cash->whereHas('agent', function ($agentQuery) use ($filters) {
-                    $agentQuery->whereIn('branch_id', $filters['branch_ids']);
+                $cash->where(function ($q) use ($filters) {
+                    // Include transactions where the agent belongs to one of the branches
+                    $q->whereHas('agent', function ($agentQuery) use ($filters) {
+                        $agentQuery->whereIn('branch_id', $filters['branch_ids']);
+                    });
+                    // OR include expense withdrawals that have destination_branch_id in the filtered branches
+                    $q->orWhere(function ($expenseQuery) use ($filters) {
+                        $expenseQuery->where('transaction_type', 'Withdrawal')
+                            ->where('customer_name', 'like', 'Expense:%')
+                            ->whereIn('destination_branch_id', $filters['branch_ids']);
+                    });
+                    // OR include transactions where the safe belongs to one of the branches
+                    $q->orWhereHas('safe', function ($safeQuery) use ($filters) {
+                        $safeQuery->whereIn('branch_id', $filters['branch_ids']);
+                    });
                 });
             }
             if (isset($filters['reference_number']) && $filters['reference_number']) {

@@ -170,11 +170,11 @@ class Enhanced extends Component
         if ($this->referenceNumber) {
             $filters['reference_number'] = $this->referenceNumber;
         }
-        if ($this->amountFrom) {
-            $filters['amount_from'] = $this->amountFrom;
+        if ($this->amountFrom !== '' && $this->amountFrom !== null && is_numeric($this->amountFrom)) {
+            $filters['amount_from'] = (float)$this->amountFrom;
         }
-        if ($this->amountTo) {
-            $filters['amount_to'] = $this->amountTo;
+        if ($this->amountTo !== '' && $this->amountTo !== null && is_numeric($this->amountTo)) {
+            $filters['amount_to'] = (float)$this->amountTo;
         }
         if (!empty($this->selectedBranches)) {
             // Check if "all" is selected (show all branches)
@@ -276,6 +276,17 @@ class Enhanced extends Component
                     return $transaction->branch_id && in_array($transaction->branch_id, $branchIds);
                 });
             }
+            // Apply amount range filter to cash transactions
+            if (isset($filters['amount_from']) && is_numeric($filters['amount_from'])) {
+                $cashTransactions = $cashTransactions->filter(function ($transaction) use ($filters) {
+                    return $transaction->amount >= $filters['amount_from'];
+                });
+            }
+            if (isset($filters['amount_to']) && is_numeric($filters['amount_to'])) {
+                $cashTransactions = $cashTransactions->filter(function ($transaction) use ($filters) {
+                    return $transaction->amount <= $filters['amount_to'];
+                });
+            }
             
             // Convert cash transactions to array format to match ordinary transactions
             $cashTransactionsArray = $cashTransactions->map(function ($transaction) {
@@ -308,13 +319,15 @@ class Enhanced extends Component
         $this->hasMore = $this->totalCount > $this->perPage;
 
         // Calculate totals using only the displayed transactions
-        $displayed = collect($paginatedTransactions);
+        // Use TotalsService for net profit to match system backend exactly
+        $totalsServiceTotals = $this->totalsService->calculateTotals($filters);
         $this->totals = [
-            'total_turnover' => $displayed->sum('amount'),
-            'total_commissions' => $displayed->sum('commission'),
-            'total_deductions' => $displayed->sum('deduction'),
-            'net_profit' => $displayed->sum('commission') + $displayed->where('profit_contribution', '<', 0)->sum('profit_contribution'),
-            'transactions_count' => $displayed->count(),
+            'total_turnover' => $totalsServiceTotals['total_turnover'],
+            'total_commissions' => $totalsServiceTotals['total_commissions'],
+            'total_deductions' => $totalsServiceTotals['total_deductions'],
+            'total_expenses' => $totalsServiceTotals['total_expenses'],
+            'net_profit' => $totalsServiceTotals['net_profit'],
+            'transactions_count' => $totalsServiceTotals['transactions_count'],
         ];
     }
 
@@ -414,6 +427,9 @@ class Enhanced extends Component
         // Generate transaction report with branch expenses
         $this->generateTransactionReport($filters);
         $this->totals['total_expenses'] = $this->totalsService->calculateBranchExpenses($filters);
+
+        // Always use backend logic for net profit with expenses for branch report
+        $this->totals['net_profit'] = $this->totalsService->calculateNetProfitWithExpenses($filters);
     }
 
     private function getCustomerSafeBalance($customer)
