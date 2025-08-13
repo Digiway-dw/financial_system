@@ -228,7 +228,7 @@
                     <td>{{ number_format($totals['total_turnover'] ?? 0, 2) }} EGP</td>
                 </tr>
                 <tr>
-                    <th>إجمالي العمولات</th>
+                    <th>إجمالي العمولات (بعد الخصم)</th>
                     <td>{{ number_format($totals['total_commissions'] ?? 0, 2) }} EGP</td>
                 </tr>
                 <tr>
