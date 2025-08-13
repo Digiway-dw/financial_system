@@ -465,14 +465,14 @@ class Withdrawal extends Create
                 $branchName = $safe && $safe->branch ? $safe->branch->name : 'Unknown';
                 $referenceNumber = generate_reference_number($branchName);
 
-                // Update customer balance immediately (decrease by withdrawal amount)
-                $client->balance -= $this->amount;
-                $client->save();
-
-                // Deduct from safe balance immediately
-                if ($safe) {
-                    $safe->current_balance -= $this->amount;
-                    $safe->save();
+                // Only deduct balances if admin or supervisor
+                if ($isAdminOrSupervisor) {
+                    $client->balance -= $this->amount;
+                    $client->save();
+                    if ($safe) {
+                        $safe->current_balance -= $this->amount;
+                        $safe->save();
+                    }
                 }
 
                 $cashTx = \App\Models\Domain\Entities\CashTransaction::create([

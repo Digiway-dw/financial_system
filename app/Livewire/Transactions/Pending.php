@@ -130,9 +130,24 @@ class Pending extends Component
                 // Regular withdrawal logic
                 // Check if this is a client wallet withdrawal (identified by the notes)
                 if (str_contains($cashTransaction->notes, 'CLIENT_WALLET_WITHDRAWAL')) {
-                    // For client wallet withdrawals, the customer balance was already deducted
-                    // when the transaction was created, so no safe balance deduction needed
-                    // Just update the status to completed
+                    // Deduct from client wallet and safe on approval
+                    $client = \App\Models\Domain\Entities\Customer::where('customer_code', $cashTransaction->customer_code)->first();
+                    if ($client) {
+                        if (($client->balance - $amount) < 0) {
+                            session()->flash('error', 'Insufficient client balance. Available: ' . number_format($client->balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                            return;
+                        }
+                        $client->balance -= $amount;
+                        $client->save();
+                    }
+                    if ($safe) {
+                        if (($safe->current_balance - $amount) < 0) {
+                            session()->flash('error', 'Insufficient safe balance. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                            return;
+                        }
+                        $safe->current_balance -= $amount;
+                        $safe->save();
+                    }
                 } elseif ($cashTransaction->customer_code) {
                     // For non-client wallet withdrawals, deduct from client wallet if applicable
                     $client = \App\Models\Domain\Entities\Customer::where('customer_code', $cashTransaction->customer_code)->first();
