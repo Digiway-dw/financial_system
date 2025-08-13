@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">إجمالي العمولات</p>
+                    <p class="text-sm font-medium text-gray-500">إجمالي العمولات (بعد الخصم)</p>
                     <p class="text-lg font-semibold text-gray-900">
                         {{ number_format($totals['total_commissions'] ?? 0, 2) }} <span
                             class="text-sm text-gray-500">EGP</span></p>
