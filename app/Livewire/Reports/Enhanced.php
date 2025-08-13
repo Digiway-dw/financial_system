@@ -339,9 +339,17 @@ class Enhanced extends Component
         // Get branch details
         $branchIds = !empty($this->selectedBranches) ? $this->selectedBranches : $this->branches->pluck('id')->toArray();
 
+        // Calculate sum of clients' wallet balances for selected branches
+        $clientsQuery = Customer::query()->where('is_client', true);
+        if (!empty($branchIds)) {
+            $clientsQuery->whereIn('branch_id', $branchIds);
+        }
+        $clientsWalletSum = $clientsQuery->sum('balance');
+
         $this->branchDetails = [
             'safe_balances' => $this->totalsService->getSafeBalances($branchIds),
             'line_balances' => $this->totalsService->getLineBalances($branchIds),
+            'clients_wallet_sum' => $clientsWalletSum,
         ];
 
         // Generate transaction report with branch expenses

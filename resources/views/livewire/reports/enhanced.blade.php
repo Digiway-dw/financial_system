@@ -109,7 +109,7 @@
         @if ($reportType === 'branch' && !empty($branchDetails))
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 {{-- Safe Balances --}}
-                <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-4">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                         <svg class="w-5 h-5 mr-2 text-yellow-600" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -127,6 +127,10 @@
                                     EGP</span>
                             </div>
                         @endforeach
+                    </div>
+                    <div class="mt-4 p-3 bg-emerald-50 rounded-lg flex justify-between items-center">
+                        <span class="font-medium text-emerald-800">إجمالي أرصدة محافظ العملاء</span>
+                        <span class="text-lg font-bold text-emerald-700">{{ number_format($branchDetails['clients_wallet_sum'], 2) }} EGP</span>
                     </div>
                 </div>
 
