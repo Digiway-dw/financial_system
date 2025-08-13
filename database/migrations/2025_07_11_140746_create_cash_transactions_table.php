@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('transaction_type', ['Deposit', 'Withdrawal']);
             $table->string('status')->default('Completed');
             $table->timestamp('transaction_date_time')->useCurrent();
+            $table->unsignedBigInteger('branch_id')->nullable(); // Added for reporting indexes
             $table->string('depositor_national_id', 14)->nullable();
             $table->string('depositor_mobile_number', 15)->nullable();
             $table->unsignedBigInteger('agent_id')->nullable();

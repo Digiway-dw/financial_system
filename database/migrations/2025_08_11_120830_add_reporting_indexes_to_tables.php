@@ -72,13 +72,13 @@ return new class extends Migration
             }
 
             try {
-                $table->index(['transaction_date', 'branch_id'], 'idx_cash_transactions_date_branch');
+                $table->index(['transaction_date_time', 'branch_id'], 'idx_cash_transactions_date_branch');
             } catch (\Exception $e) {
                 // Index might already exist
             }
 
             try {
-                $table->index(['customer_name', 'transaction_date', 'branch_id'], 'idx_cash_transactions_expense');
+                $table->index(['customer_name', 'transaction_date_time', 'branch_id'], 'idx_cash_transactions_expense');
             } catch (\Exception $e) {
                 // Index might already exist
             }
@@ -100,11 +100,7 @@ return new class extends Migration
                 // Index might already exist
             }
 
-            try {
-                $table->index('customer_code', 'idx_customers_code');
-            } catch (\Exception $e) {
-                // Index might already exist
-            }
+            // Index for customer_code removed because it is already unique
         });
 
         Schema::table('users', function (Blueprint $table) {
