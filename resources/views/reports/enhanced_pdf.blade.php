@@ -242,7 +242,7 @@
                     </tr>
                     <tr>
                         <th>صافي الربح (بعد المصاريف)</th>
-                        <td>{{ number_format(($totals['net_profit'] ?? 0) - ($totals['total_expenses'] ?? 0), 2) }} EGP
+                        <td>{{ number_format(($totals['net_profit'] ?? 0) + ($totals['total_expenses'] ?? 0), 2) }} EGP
                         </td>
                     </tr>
                 @else
