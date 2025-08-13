@@ -91,7 +91,7 @@
                     @php
                         $netProfit = $totals['net_profit'] ?? 0;
                         if (isset($showExpenses) && $showExpenses) {
-                            $netProfit -= $totals['total_expenses'] ?? 0;
+                            $netProfit += $totals['total_expenses'] ?? 0;
                         }
                         $profitClass = $netProfit >= 0 ? 'text-green-600' : 'text-red-600';
                     @endphp
