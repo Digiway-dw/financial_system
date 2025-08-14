@@ -113,9 +113,10 @@
         {{-- Mobile Number Filter --}}
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">رقم الجوال (إرسال أو استقبال أو رقم العميل)</label>
-            <input wire:model.live.debounce.500ms="filterMobileNumber" type="text"
+            <input wire:model.live.debounce.500ms="filterMobileNumber" type="text" maxlength="11" pattern="[0-9]{11}"
                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="أدخل رقم الجوال للبحث في الإرسال أو الاستقبال أو رقم العميل">
+                placeholder="أدخل رقم الجوال للبحث في الإرسال أو الاستقبال أو رقم العميل"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)">
         </div>
     </div>
 
