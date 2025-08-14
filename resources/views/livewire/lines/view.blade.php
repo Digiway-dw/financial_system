@@ -3,10 +3,16 @@
         <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-8 mb-8">
             <h1 class="text-2xl font-bold text-blue-900 mb-2">تفاصيل الخط</h1>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- الرقم التسلسلي (Serial Number) -->
+                
                 <!-- Basic Information -->
                 <div>
                     <div class="text-sm text-gray-500">رقم الهاتف</div>
                     <div class="text-lg font-semibold text-gray-900">{{ $line->mobile_number }}</div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">الرقم التسلسلي</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ $line->serial_number ?? '—' }}</div>
                 </div>
                 <div>
                     <div class="text-sm text-gray-500">الشبكة</div>
@@ -77,6 +83,11 @@
                     <div class="text-lg font-semibold {{ $line->status === 'active' ? 'text-green-700' : 'text-red-700' }}">
                         {{ ucfirst($line->status === 'active' ? 'مفعل' : 'معطل') }}
                     </div>
+                </div>
+                <!-- ملاحظة (Note) -->
+                <div class="col-span-3">
+                    <div class="text-sm text-gray-500">ملاحظة</div>
+                    <div class="text-base text-gray-800">{{ $line->note ?? '—' }}</div>
                 </div>
                 
                 <!-- Reset Information -->

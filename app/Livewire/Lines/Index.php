@@ -15,6 +15,7 @@ class Index extends Component
     public $sortDirection = 'asc';
     public array $lines = [];
     public $number = ''; // Filter by line number
+    public $serialNumber = ''; // Filter by serial number
 
     private ListLines $listLinesUseCase;
     private DeleteLine $deleteLineUseCase;
@@ -62,6 +63,14 @@ class Index extends Component
                 return stripos($lineNumber, $search) !== false;
             });
         }
+        // Filter by serial number if provided
+        if (!empty($this->serialNumber)) {
+            $searchSerial = $this->serialNumber;
+            $lines = array_filter($lines, function ($line) use ($searchSerial) {
+                $serial = isset($line['serial_number']) ? $line['serial_number'] : '';
+                return stripos($serial, $searchSerial) !== false;
+            });
+        }
 
         // Add color classes for each line based on remaining amounts
         foreach ($lines as &$line) {
@@ -92,8 +101,9 @@ class Index extends Component
 
     public function resetFilter()
     {
-        $this->number = '';
-        $this->loadLines();
+    $this->number = '';
+    $this->serialNumber = '';
+    $this->loadLines();
     }
 
     public function sortBy($field)

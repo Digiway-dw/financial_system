@@ -58,6 +58,7 @@
             <form wire:submit.prevent="createLine" class="p-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Mobile Number -->
+                   
                     <div class="md:col-span-2">
                         <div class="flex items-center mb-2">
                             <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor"
@@ -79,6 +80,14 @@
                             </div>
                         @endif
                         <x-input-error class="mt-2" :messages="$errors->get('mobileNumber')" />
+                    </div>
+                     <!-- الرقم التسلسلي (Serial Number) -->
+                    <div class="md:col-span-2">
+                        <x-input-label for="serialNumber" :value="'الرقم التسلسلي (Serial Number)'" class="text-sm font-medium text-gray-700" />
+                        <x-text-input wire:model="serialNumber" id="serialNumber" name="serialNumber" type="text"
+                            class="block w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-base py-3"
+                            maxlength="255" placeholder="أدخل الرقم التسلسلي (اختياري)" />
+                        <x-input-error class="mt-2" :messages="$errors->get('serialNumber')" />
                     </div>
 
                     <!-- Current Balance -->
@@ -195,6 +204,15 @@
                             @endforeach
                         </select>
                         <x-input-error class="mt-2" :messages="$errors->get('branchId')" />
+                    </div>
+
+                    <!-- ملاحظة (Note) -->
+                    <div class="col-span-2 mt-6">
+                        <x-input-label for="note" :value="'ملاحظة (Note)'" />
+                        <textarea wire:model="note" id="note" name="note" rows="3"
+                            class="mt-1 block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="أدخل أي ملاحظات إضافية (اختياري)"></textarea>
+                        <x-input-error class="mt-2" :messages="$errors->get('note')" />
                     </div>
                 </div>
 

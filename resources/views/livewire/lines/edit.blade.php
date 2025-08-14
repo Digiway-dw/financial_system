@@ -31,6 +31,14 @@
                         </div>
                         <x-input-error class="mt-2" :messages="$errors->get('currentBalance')" />
                         <p class="text-xs text-gray-500 mt-1">أرقام صحيحة فقط (بدون كسور عشرية)</p>
+                    <!-- الرقم التسلسلي (Serial Number) -->
+                    <div>
+                        <x-input-label for="serialNumber" :value="'الرقم التسلسلي (Serial Number)'" />
+                        <x-text-input wire:model="serialNumber" id="serialNumber" name="serialNumber" type="text"
+                            class="mt-1 block w-full" maxlength="255" placeholder="أدخل الرقم التسلسلي (اختياري)" />
+                        <x-input-error class="mt-2" :messages="$errors->get('serialNumber')" />
+                    </div>
+
                     </div>
                 @endif
 
@@ -137,6 +145,14 @@
                     <x-input-error class="mt-2" :messages="$errors->get('branchId')" />
                 </div>
 
+                <!-- ملاحظة (Note) -->
+                <div class="col-span-2 mt-6">
+                    <x-input-label for="note" :value="'ملاحظة (Note)'" />
+                    <textarea wire:model="note" id="note" name="note" rows="3"
+                        class="mt-1 block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="أدخل أي ملاحظات إضافية (اختياري)"></textarea>
+                    <x-input-error class="mt-2" :messages="$errors->get('note')" />
+                </div>
 
                 <div class="flex items-center gap-4 mt-8">
                     <x-primary-button class="px-8 py-3 text-base">تعديل الخط</x-primary-button>

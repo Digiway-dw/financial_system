@@ -13,6 +13,9 @@ class Create extends Component
     #[Validate('required|digits:11|unique:lines,mobile_number')]
     public $mobileNumber = '';
 
+    #[Validate('nullable|string|max:255')]
+    public $serialNumber = '';
+
     #[Validate('required|numeric|min:0')]
     public $currentBalance = '';
 
@@ -25,7 +28,8 @@ class Create extends Component
     #[Validate('required|string|in:vodafone,orange,etisalat,we,fawry')]
     public $network = 'vodafone';
 
-
+    #[Validate('nullable|string')]
+    public $note = '';
 
     #[Validate('required|exists:branches,id')]
     public $branchId = '';
@@ -52,11 +56,12 @@ class Create extends Component
         try {
             $this->createLineUseCase->execute([
                 'mobile_number' => $this->mobileNumber,
+                'serial_number' => $this->serialNumber,
                 'current_balance' => (float) $this->currentBalance,
                 'daily_limit' => (float) $this->dailyLimit,
                 'monthly_limit' => (float) $this->monthlyLimit,
                 'network' => strtolower($this->network),
-
+                'note' => $this->note,
                 'branch_id' => $this->branchId,
             ]);
 

@@ -16,12 +16,15 @@ class Edit extends Component
     public $lineId;
 
     public $mobileNumber = '';
+    public $serialNumber = '';
     public $currentBalance = 0.00;
     public $dailyLimit = 0.00;
     public $monthlyLimit = 0.00;
     public $dailyRemaining = 0.00;
     public $monthlyRemaining = 0.00;
     public $network = 'vodafone';
+
+    public $note = '';
 
     public $status = 'active';
     public $branchId = '';
@@ -80,6 +83,7 @@ class Edit extends Component
 
         if ($this->line) {
             $this->mobileNumber = $this->line->mobile_number;
+            $this->serialNumber = $this->line->serial_number;
             $this->currentBalance = (int) $this->line->current_balance;
             $this->dailyLimit = (int) $this->line->daily_limit;
             $this->monthlyLimit = (int) $this->line->monthly_limit;
@@ -87,6 +91,7 @@ class Edit extends Component
             $this->monthlyRemaining = (int) $this->line->monthly_remaining;
             $this->network = strtolower($this->line->network);
 
+            $this->note = $this->line->note;
             $this->status = $this->line->status;
             $this->branchId = $this->line->branch_id;
             $this->branches = $this->branchRepository->all();
@@ -100,25 +105,22 @@ class Edit extends Component
         $this->validate();
 
         try {
-            // Preserve original balance for non-admin users
-            $originalBalance = (float) $this->line->current_balance;
-            $balanceToUpdate = $this->canEditBalance() ? (float) $this->currentBalance : $originalBalance;
+            $data = [
+                'mobile_number' => $this->mobileNumber,
+                'serial_number' => $this->serialNumber,
+                'daily_limit' => $this->dailyLimit,
+                'monthly_limit' => $this->monthlyLimit,
+                'network' => strtolower($this->network),
+                'note' => $this->note,
+                'status' => $this->status,
+                'branch_id' => $this->branchId,
+            ];
 
-            $this->updateLineUseCase->execute(
-                $this->lineId,
-                [
-                    'mobile_number' => $this->mobileNumber,
-                    'current_balance' => $balanceToUpdate,
-                    'daily_limit' => (float) $this->dailyLimit,
-                    'monthly_limit' => (float) $this->monthlyLimit,
-                    'daily_remaining' => (float) $this->dailyRemaining,
-                    'monthly_remaining' => (float) $this->monthlyRemaining,
-                    'network' => strtolower($this->network),
+            if ($this->canEditBalance()) {
+                $data['current_balance'] = $this->currentBalance;
+            }
 
-                    'status' => $this->status,
-                    'branch_id' => $this->branchId,
-                ]
-            );
+            $this->updateLineUseCase->execute($this->lineId, $data);
 
             session()->flash('message', 'Line updated successfully.');
             return redirect()->route('lines.index');

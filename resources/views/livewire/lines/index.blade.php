@@ -60,6 +60,12 @@
                             class="mt-1 block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                             placeholder="ابحث برقم الخط..." />
                     </div>
+                    <div>
+                        <x-input-label for="serialNumber" :value="'الرقم التسلسلي'" class="text-sm font-medium text-gray-700" />
+                        <x-text-input id="serialNumber" type="text" wire:model.defer="serialNumber"
+                            class="mt-1 block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="ابحث بالرقم التسلسلي..." />
+                    </div>
                     <div class="pt-4 md:pt-5">
                         <x-primary-button wire:click="filter"
                             class="w-full bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 rounded-lg py-2.5 font-medium shadow-sm hover:shadow-md transition-all duration-200">
