@@ -42,12 +42,9 @@ class View extends Component
     {
         $currentUser = auth()->user();
         
-        // Admin can view anyone except other admins, unless they are admin@financial.system
+        // Admin can view any user, including other admins
         if ($currentUser->hasRole('admin')) {
-            if ($currentUser->email === 'admin@financial.system') {
-                return true;
-            }
-            return !$targetUser->hasRole('admin') || $currentUser->id === $targetUser->id;
+            return true;
         }
 
         // Supervisor can view their own profile, and non-admin/non-supervisor users

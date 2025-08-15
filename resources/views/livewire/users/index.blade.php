@@ -478,8 +478,8 @@
 
                                                     @php $currentUser = auth()->user(); $roleName = $user->getRoleNames()->first(); @endphp
                                                     @if (
-                                                        // Hide edit button for admin@financial.system
-                                                        ($currentUser && $currentUser->hasRole('admin') && $user->email !== 'admin@financial.system')
+                                                        // Show edit button for admin@financial.system to edit their own account
+                                                        ($currentUser && $currentUser->hasRole('admin') && ($user->email !== 'admin@financial.system' || $currentUser->id === $user->id))
                                                         // Supervisor can edit their own profile
                                                         || ($currentUser && $currentUser->hasRole('general_supervisor') && $currentUser->id === $user->id)
                                                     )

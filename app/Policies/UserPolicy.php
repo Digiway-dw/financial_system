@@ -31,9 +31,12 @@ class UserPolicy
             return $user->id === $model->id;
         }
 
-        // Admin, branch manager, and general supervisor can view any user
-        return $user->hasRole(Roles::ADMIN) ||
-            $user->hasRole(Roles::BRANCH_MANAGER) ||
+        // Admins can view any user
+        if ($user->hasRole(Roles::ADMIN)) {
+            return true;
+        }
+        // Branch manager and general supervisor can view any user
+        return $user->hasRole(Roles::BRANCH_MANAGER) ||
             $user->hasRole(Roles::GENERAL_SUPERVISOR);
     }
 
@@ -56,14 +59,22 @@ class UserPolicy
             return $user->id === $model->id;
         }
 
-        // Admin can update any user
+        // Only admin@financial.system can update other admins
+        if ($user->hasRole(Roles::ADMIN)) {
+            if ($model->hasRole(Roles::ADMIN)) {
+                return $user->email === 'admin@financial.system' && $user->id !== $model->id;
+            }
+            return $user->id === $model->id;
+        }
         // Branch manager can update users in their branch
         if ($user->hasRole(Roles::BRANCH_MANAGER)) {
             return $model->branch_id === $user->branch_id;
         }
-
-        return $user->hasRole(Roles::ADMIN) ||
-            $user->hasRole(Roles::GENERAL_SUPERVISOR);
+        // General supervisor can update their own profile
+        if ($user->hasRole(Roles::GENERAL_SUPERVISOR)) {
+            return $user->id === $model->id;
+        }
+        return false;
     }
 
     /**
