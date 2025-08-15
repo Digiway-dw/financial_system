@@ -478,12 +478,10 @@
 
                                                     @php $currentUser = auth()->user(); $roleName = $user->getRoleNames()->first(); @endphp
                                                     @if (
-                                                        // Admin can edit other users (except other admins unless admin@financial.system)
-                                                        ($roleName === 'admin' && $currentUser && $currentUser->email === 'admin@financial.system')
+                                                        // Hide edit button for admin@financial.system
+                                                        ($currentUser && $currentUser->hasRole('admin') && $user->email !== 'admin@financial.system')
                                                         // Supervisor can edit their own profile
-                                                        || ($roleName === 'general_supervisor' && $currentUser && $currentUser->id === $user->id && $currentUser->hasRole('general_supervisor'))
-                                                        // Other roles: allow edit for own profile
-                                                        || ($currentUser && $currentUser->id === $user->id)
+                                                        || ($currentUser && $currentUser->hasRole('general_supervisor') && $currentUser->id === $user->id)
                                                     )
                                                         <a href="{{ route('users.edit', $user->id) }}"
                                                             class="inline-flex items-center justify-center px-2.5 py-1.5 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 border border-yellow-300 rounded-lg font-semibold text-xs text-gray-900 tracking-wide shadow-md hover:scale-105 hover:from-yellow-500 hover:to-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 transition-all duration-200">

@@ -88,20 +88,17 @@ class Edit extends Component
     {
         $currentUser = auth()->user();
         
-        // Admin can edit anyone except other admins, unless they are admin@financial.system
+        // Only admin@financial.system can edit any user; other admins can only edit their own account
         if ($currentUser->hasRole('admin')) {
             if ($currentUser->email === 'admin@financial.system') {
                 return true;
             }
-            return !$targetUser->hasRole('admin') || $currentUser->id === $targetUser->id;
+            return $currentUser->id === $targetUser->id;
         }
 
-        // Supervisor can edit their own profile, and non-admin/non-supervisor users
+        // Supervisor can only edit their own profile
         if ($currentUser->hasRole('general_supervisor')) {
-            if ($currentUser->id === $targetUser->id) {
-                return true;
-            }
-            return !$targetUser->hasRole(['admin', 'general_supervisor']);
+            return $currentUser->id === $targetUser->id;
         }
 
         // Other users cannot edit anyone

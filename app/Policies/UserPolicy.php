@@ -79,9 +79,19 @@ class UserPolicy
         if ($user->hasRole(Roles::AGENT)) {
             return false;
         }
-
-        // Only admin can delete users
-        return $user->hasRole(Roles::ADMIN);
+        // Only admin@financial.system can delete other admins
+        if ($user->hasRole(Roles::ADMIN)) {
+            if ($model->hasRole(Roles::ADMIN)) {
+                return $user->email === 'admin@financial.system' && $user->id !== $model->id;
+            }
+            return true;
+        }
+        // Supervisor can delete any user except admins and supervisors
+        if ($user->hasRole(Roles::GENERAL_SUPERVISOR)) {
+            return !$model->hasRole(Roles::ADMIN) && !$model->hasRole(Roles::GENERAL_SUPERVISOR);
+        }
+        // Others cannot delete
+        return false;
     }
 
     /**
