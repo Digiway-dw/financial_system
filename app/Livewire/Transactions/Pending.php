@@ -36,8 +36,8 @@ class Pending extends Component
     {
         // Authorization check
         $user = Auth::user();
-        if ($user->can('view-pending-transactions')) {
-            // User has permission to view pending transactions generally
+        if ($user->can('approve-pending-transactions')) {
+            // User has permission to approve pending transactions
             $this->loadPendingTransactions();
         } elseif ($user->can('view-own-branch-data')) {
             // Branch Manager can view pending transactions for their branch

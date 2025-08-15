@@ -80,11 +80,9 @@ class Create extends Component
         $currentUser = auth()->user();
         $allRoles = Role::pluck('name')->toArray();
         
-        // Admin can assign all roles except admin to others
+        // Admin can assign all roles including admin
         if ($currentUser->hasRole('admin')) {
-            return array_filter($allRoles, function($role) {
-                return $role !== 'admin';
-            });
+            return $allRoles;
         }
         
         // Supervisor can only assign these roles
@@ -117,13 +115,26 @@ class Create extends Component
                     if (!in_array($this->selectedRole, ['admin', 'general_supervisor', 'auditor']) && empty($value)) {
                         $fail('Branch is required for this role.');
                     }
+                    // Admin should not have branch
+                    if ($this->selectedRole === 'admin' && !empty($value)) {
+                        $fail('Admin should not have an assigned branch.');
+                    }
                 },
                 'nullable',
                 'exists:branches,id',
             ],
             'phone_number' => 'nullable|digits:11',
             'national_number' => 'nullable|digits:14',
-            'salary' => 'nullable|numeric|min:0',
+            'salary' => [
+                function ($attribute, $value, $fail) {
+                    if ($this->selectedRole === 'admin' && !empty($value)) {
+                        $fail('Admin should not have a salary.');
+                    }
+                },
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
             'address' => 'nullable|string|max:255',
             'land_number' => 'nullable|string|max:20',
             'relative_phone_number' => 'nullable|digits:11',
@@ -158,7 +169,6 @@ class Create extends Component
             'password' => Hash::make($this->password),
             'phone_number' => $this->phone_number,
             'national_number' => $this->national_number,
-            'salary' => $this->salary,
             'address' => $this->address,
             'land_number' => $this->land_number,
             'relative_phone_number' => $this->relative_phone_number,
@@ -167,20 +177,23 @@ class Create extends Component
         ];
         if (!in_array($this->selectedRole, ['admin'])) {
             $userData['branch_id'] = $this->branchId;
+            $userData['salary'] = $this->salary;
         }
 
         $user = $this->userRepository->create($userData);
         $user->assignRole($this->selectedRole);
 
-        // Create working hours for the user
-        foreach ($this->tempWorkingHours as $workingHour) {
-            $newWorkingHour = new WorkingHour();
-            $newWorkingHour->user_id = $user->id;
-            $newWorkingHour->day_of_week = $workingHour['day_of_week'];
-            $newWorkingHour->start_time = $workingHour['start_time'];
-            $newWorkingHour->end_time = $workingHour['end_time'];
-            $newWorkingHour->is_enabled = $workingHour['is_enabled'];
-            $newWorkingHour->save();
+        // Create working hours for non-admin users only
+        if ($this->selectedRole !== 'admin') {
+            foreach ($this->tempWorkingHours as $workingHour) {
+                $newWorkingHour = new WorkingHour();
+                $newWorkingHour->user_id = $user->id;
+                $newWorkingHour->day_of_week = $workingHour['day_of_week'];
+                $newWorkingHour->start_time = $workingHour['start_time'];
+                $newWorkingHour->end_time = $workingHour['end_time'];
+                $newWorkingHour->is_enabled = $workingHour['is_enabled'];
+                $newWorkingHour->save();
+            }
         }
 
         session()->flash('message', 'User created successfully.');

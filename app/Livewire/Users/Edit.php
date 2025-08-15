@@ -88,8 +88,11 @@ class Edit extends Component
     {
         $currentUser = auth()->user();
         
-        // Admin can edit anyone except other admins
+        // Admin can edit anyone except other admins, unless they are admin@financial.system
         if ($currentUser->hasRole('admin')) {
+            if ($currentUser->email === 'admin@financial.system') {
+                return true;
+            }
             return !$targetUser->hasRole('admin') || $currentUser->id === $targetUser->id;
         }
         

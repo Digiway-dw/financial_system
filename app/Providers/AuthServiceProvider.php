@@ -37,5 +37,20 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('manage-working-hours', function ($user) {
             return $user->hasRole('admin');
         });
+
+        // Allow supervisors to view all reports
+        Gate::define('view-all-reports', function ($user) {
+            return $user->hasRole('admin') || $user->hasRole('general_supervisor');
+        });
+
+        // Allow supervisors to view transactions
+        Gate::define('view-transactions', function ($user) {
+            return $user->hasRole('admin') || $user->hasRole('general_supervisor');
+        });
+
+        // Allow supervisors to approve pending transactions
+        Gate::define('approve-pending-transactions', function ($user) {
+            return $user->hasRole('admin') || $user->hasRole('general_supervisor');
+        });
     }
 }
