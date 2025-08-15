@@ -116,8 +116,12 @@ class Edit extends Component
         $currentUser = auth()->user();
         $allRoles = Role::pluck('name')->toArray();
         
-        // Admin can assign all roles except admin to others
+        // admin@financial.system can assign all roles including admin
         if ($currentUser->hasRole('admin')) {
+            if ($currentUser->email === 'admin@financial.system') {
+                return $allRoles;
+            }
+            // Other admins can assign all roles except admin
             return array_filter($allRoles, function($role) {
                 return $role !== 'admin';
             });

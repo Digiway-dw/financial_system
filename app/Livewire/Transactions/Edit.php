@@ -111,10 +111,10 @@ class Edit extends Component
         // Authorization check for editing transactions
         $user = Auth::user();
 
-        // Check using Gate facade
-        if (Gate::allows('edit-all-daily-transactions')) {
-            // Admin/Auditor can edit any transaction
-        } elseif (Gate::allows('edit-own-branch-transactions') && $user->branch_id === $this->transaction->branch_id) {
+        // Admin, Auditor, Supervisor can edit any transaction
+        if ($user->hasRole('admin') || $user->hasRole('auditor') || $user->hasRole('general_supervisor')) {
+            // Authorized
+        } elseif ($user->hasRole('branch_manager') && $user->branch_id === $this->transaction->branch_id) {
             // Branch Manager can edit transactions in their own branch
         } else {
             abort(403, 'Unauthorized action.');

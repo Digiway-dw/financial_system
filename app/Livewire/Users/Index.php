@@ -71,11 +71,12 @@ class Index extends Component
     {
         $currentUser = auth()->user();
         
-        // Admin can edit anyone except other admins, unless they are admin@financial.system
+        // admin@financial.system can edit the role of any user
         if ($currentUser->hasRole('admin')) {
             if ($currentUser->email === 'admin@financial.system') {
                 return true;
             }
+            // Other admins can edit role for non-admins or their own account
             return !$targetUser->hasRole('admin') || $currentUser->id === $targetUser->id;
         }
         
