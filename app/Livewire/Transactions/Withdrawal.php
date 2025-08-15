@@ -410,8 +410,10 @@ class Withdrawal extends Create
                 // Send notification to all admins
                 if ($status === 'completed') {
                     $admins = \App\Domain\Entities\User::role('admin')->get();
+                    $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+                    $recipients = $admins->merge($supervisors)->unique('id');
                     $message = "User withdrawal request: User: $customerName, Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $agent->name . ".";
-                    \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                    \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
                 }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
                 
@@ -492,8 +494,10 @@ class Withdrawal extends Create
                 // Send notification to all admins
                 if ($status === 'completed') {
                     $admins = \App\Domain\Entities\User::role('admin')->get();
+                    $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+                    $recipients = $admins->merge($supervisors)->unique('id');
                     $message = "Client wallet withdrawal request: Client: $customerName, Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $user->name . ".";
-                    \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                    \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
                 }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
                 
@@ -532,8 +536,10 @@ class Withdrawal extends Create
                 // Send notification to all admins
                 if ($status === 'completed') {
                     $admins = \App\Domain\Entities\User::role('admin')->get();
+                    $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+                    $recipients = $admins->merge($supervisors)->unique('id');
                     $message = "Direct withdrawal request: Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $user->name . ".";
-                    \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                    \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
                 }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
                 if ($isAdminOrSupervisor) {
@@ -572,8 +578,10 @@ class Withdrawal extends Create
                 // Send notification to all admins
                 if ($status === 'completed') {
                     $admins = \App\Domain\Entities\User::role('admin')->get();
+                    $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+                    $recipients = $admins->merge($supervisors)->unique('id');
                     $message = "Admin withdrawal request: Amount: " . number_format($this->amount, 2) . " EGP, Safe: " . ($safe->name ?? 'Unknown') . ", By: " . $user->name . ".";
-                    \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
+                    \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
                 }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
                 if ($isAdminOrSupervisor) {
@@ -626,9 +634,11 @@ class Withdrawal extends Create
 
                 // Define $admins before sending notifications
                 $admins = \App\Domain\Entities\User::role('admin')->get();
+                $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+                $recipients = $admins->merge($supervisors)->unique('id');
                 $sourceBranchName = $sourceSafe && $sourceSafe->branch ? $sourceSafe->branch->name : 'Unknown';
                 $message = "Branch withdrawal request: From Branch: " . $sourceBranchName . " To Branch: " . $destinationBranchName . ", Amount: " . number_format($this->amount, 2) . " EGP, By: " . $user->name . ".";
-                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($message, url()->current()));
+                \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($message, url()->current()));
                 
                 if ($isAdminOrSupervisor) {
                     // For admin/supervisor, redirect to receipt

@@ -31,14 +31,16 @@
                         </div>
                         <x-input-error class="mt-2" :messages="$errors->get('currentBalance')" />
                         <p class="text-xs text-gray-500 mt-1">أرقام صحيحة فقط (بدون كسور عشرية)</p>
-                    <!-- الرقم التسلسلي (Serial Number) -->
+                    </div>
+                @endif
+
+                <!-- الرقم التسلسلي (Serial Number) - Editable for Admin and Supervisor -->
+                @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('general_supervisor'))
                     <div>
                         <x-input-label for="serialNumber" :value="'الرقم التسلسلي (Serial Number)'" />
                         <x-text-input wire:model="serialNumber" id="serialNumber" name="serialNumber" type="text"
                             class="mt-1 block w-full" maxlength="255" placeholder="أدخل الرقم التسلسلي (اختياري)" />
                         <x-input-error class="mt-2" :messages="$errors->get('serialNumber')" />
-                    </div>
-
                     </div>
                 @endif
 

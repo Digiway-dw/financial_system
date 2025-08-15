@@ -375,22 +375,24 @@ class LoginForm extends Form
                 $message .= "🏢 Branch: {$user->branch->name}\n";
             }
             $message .= "\n📊 Timestamp: {$now->format('Y-m-d H:i:s')}";
-            // Get all admin users
+            // Get all admin and supervisor users
             $admins = \App\Domain\Entities\User::role('admin')->get();
-            if ($admins->count() > 0) {
-                // Send notification to all admins
-                Notification::send($admins, new AdminNotification(
+            $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+            $recipients = $admins->merge($supervisors);
+            if ($recipients->count() > 0) {
+                // Send notification to all admins and supervisors
+                Notification::send($recipients, new AdminNotification(
                     $message,
                     url('/notifications') // URL to view notifications
                 ));
-                Log::info('Admin notification sent for working hours violation', [
+                Log::info('Admin/Supervisor notification sent for working hours violation', [
                     'user_id' => $user->id,
-                    'admin_count' => $admins->count(),
+                    'recipient_count' => $recipients->count(),
                     'violation_time' => $currentTime,
                     'day' => $currentDayOfWeek,
                 ]);
             } else {
-                Log::warning('No admin users found to notify about working hours violation', [
+                Log::warning('No admin or supervisor users found to notify about working hours violation', [
                     'user_id' => $user->id,
                 ]);
             }
@@ -433,21 +435,23 @@ class LoginForm extends Form
             $message .= "📊 Timestamp: {$now->format('Y-m-d H:i:s')}\n\n";
             $message .= "⚠️ Action Required: Please activate the branch or reassign the user to an active branch.";
             
-            // Get all admin users
+            // Get all admin and supervisor users
             $admins = \App\Domain\Entities\User::role('admin')->get();
-            if ($admins->count() > 0) {
-                // Send notification to all admins
-                Notification::send($admins, new AdminNotification(
+            $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+            $recipients = $admins->merge($supervisors);
+            if ($recipients->count() > 0) {
+                // Send notification to all admins and supervisors
+                Notification::send($recipients, new AdminNotification(
                     $message,
                     url('/admin/branches') // URL to manage branches
                 ));
-                Log::info('Admin notification sent for inactive branch login attempt', [
+                Log::info('Admin/Supervisor notification sent for inactive branch login attempt', [
                     'user_id' => $user->id,
                     'branch_id' => $branch->id,
-                    'admin_count' => $admins->count(),
+                    'recipient_count' => $recipients->count(),
                 ]);
             } else {
-                Log::warning('No admin users found to notify about inactive branch login attempt', [
+                Log::warning('No admin or supervisor users found to notify about inactive branch login attempt', [
                     'user_id' => $user->id,
                     'branch_id' => $branch->id,
                 ]);

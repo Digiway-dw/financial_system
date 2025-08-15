@@ -295,16 +295,15 @@ class Receive extends Component
                 . "Note: {$this->discountNotes}\n"
                 . "Transaction ID: {$transaction->id}";
             $admins = \App\Domain\Entities\User::role('admin')->get();
-            
+            $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
+            $recipients = $admins->merge($supervisors)->unique('id');
             // Log for debugging
             \Illuminate\Support\Facades\Log::info('Sending receive transaction notification', [
                 'transaction_id' => $transaction->id,
-                'admin_count' => $admins->count(),
+                'recipient_count' => $recipients->count(),
                 'message' => $adminNotificationMessage
             ]);
-            
-                            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->reference_number)));
-            
+            \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->reference_number)));
             // Log success
             \Illuminate\Support\Facades\Log::info('Receive transaction notification sent successfully', [
                 'transaction_id' => $transaction->id
