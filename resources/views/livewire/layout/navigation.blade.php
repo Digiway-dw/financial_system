@@ -35,9 +35,11 @@
                             </x-nav-link>
                         @endif
                     @else
-                        <x-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
-                            {{ __('بحث المعاملة') }}
-                        </x-nav-link>
+                        @if (!auth()->user()->hasAnyRole(['agent', 'trainee']))
+                            <x-nav-link :href="route('dashboard', ['search_transaction' => 1])" :active="request()->fullUrlIs(route('dashboard', ['search_transaction' => 1]))" wire:navigate>
+                                {{ __('بحث المعاملة') }}
+                            </x-nav-link>
+                        @endif
                     @endcan
 
                     @canany(['send-transfer', 'send-transfer-pending'])

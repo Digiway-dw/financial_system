@@ -45,7 +45,7 @@ class AuthServiceProvider extends ServiceProvider
 
         // Allow supervisors to view transactions
         Gate::define('view-transactions', function ($user) {
-            return $user->hasRole('admin') || $user->hasRole('general_supervisor');
+            return $user->hasRole('admin') || $user->hasRole('general_supervisor') || $user->hasRole('auditor') || $user->hasRole('branch_manager');
         });
 
         // Allow supervisors to approve pending transactions
