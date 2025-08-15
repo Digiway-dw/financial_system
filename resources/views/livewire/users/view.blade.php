@@ -66,9 +66,12 @@
                         @can('update', $user)
                             @php $currentUser = auth()->user(); @endphp
                             @if (
-                                $role == 'admin' && $currentUser && $currentUser->id !== $user->id && $currentUser->hasRole('admin') && (
+                                // Admin can edit other users (except other admins unless admin@financial.system)
+                                ($role == 'admin' && $currentUser && $currentUser->id !== $user->id && $currentUser->hasRole('admin') && (
                                     $currentUser->email === 'admin@financial.system' || $currentUser->id !== $user->id
-                                )
+                                ))
+                                // Supervisor can edit their own profile
+                                || ($role == 'general_supervisor' && $currentUser && $currentUser->id === $user->id && $currentUser->hasRole('general_supervisor'))
                             )
                                 <a href="{{ route('users.edit', $user->id) }}"
                                     class="mt-4 inline-flex items-center px-3 py-1.5 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 transition">

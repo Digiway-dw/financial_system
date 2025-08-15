@@ -95,12 +95,15 @@ class Edit extends Component
             }
             return !$targetUser->hasRole('admin') || $currentUser->id === $targetUser->id;
         }
-        
-        // Supervisor can edit non-admin, non-supervisor users
+
+        // Supervisor can edit their own profile, and non-admin/non-supervisor users
         if ($currentUser->hasRole('general_supervisor')) {
+            if ($currentUser->id === $targetUser->id) {
+                return true;
+            }
             return !$targetUser->hasRole(['admin', 'general_supervisor']);
         }
-        
+
         // Other users cannot edit anyone
         return false;
     }
