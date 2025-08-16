@@ -110,6 +110,8 @@ class Edit extends Component
                 'serial_number' => $this->serialNumber,
                 'daily_limit' => $this->dailyLimit,
                 'monthly_limit' => $this->monthlyLimit,
+                'daily_remaining' => $this->dailyRemaining,
+                'monthly_remaining' => $this->monthlyRemaining,
                 'network' => strtolower($this->network),
                 'note' => $this->note,
                 'status' => $this->status,
