@@ -12,7 +12,7 @@ class Index extends Component
 {
     public array $transactions;
 
-    public $sortField = 'created_at';
+    public $sortField = 'transaction_date_time';
     public $sortDirection = 'desc';
 
     public $customer_code;
