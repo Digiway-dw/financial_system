@@ -39,6 +39,13 @@ class Transaction extends Model
         'reference_number',
     ];
 
+    protected $casts = [
+        'transaction_date_time' => 'datetime',
+        'amount' => 'decimal:2',
+        'commission' => 'decimal:2',
+        'deduction' => 'decimal:2',
+    ];
+
     protected static function booted()
     {
         static::creating(function ($model) {

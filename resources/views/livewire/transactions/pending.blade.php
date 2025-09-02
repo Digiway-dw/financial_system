@@ -196,7 +196,7 @@
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $transaction['agent_name'] ?? '' }}
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-600">
-                                        {{ \Carbon\Carbon::parse($transaction['created_at'])->format('d/m/y h:i A') }}
+                                        {{ \Carbon\Carbon::parse($transaction['transaction_date_time'] ?? $transaction['created_at'])->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <div class="flex items-center justify-center gap-2">

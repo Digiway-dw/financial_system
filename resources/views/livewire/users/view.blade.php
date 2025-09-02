@@ -402,7 +402,7 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
-                                        {{ $transaction->created_at ? $transaction->created_at->format('d/m/y h:i A') : '-' }}
+                                        {{ $transaction->transaction_date_time ? $transaction->transaction_date_time->setTimezone('Africa/Cairo')->format('d/m/y h:i A') : ($transaction->created_at ? $transaction->created_at->setTimezone('Africa/Cairo')->format('d/m/y h:i A') : '-') }}
                                     </td>
                                 </tr>
                             @endforeach

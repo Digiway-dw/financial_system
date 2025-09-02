@@ -79,11 +79,11 @@
                         <div><span class="font-semibold">الحالة:</span> {{ $searchedTransaction->status }}</div>
                         @if (isset($searchedTransaction->transaction_date_time) && $searchedTransaction->transaction_date_time)
                             <div><span class="font-semibold">تاريخ و وقت المعاملة:</span>
-                                {{ \Carbon\Carbon::parse($searchedTransaction->transaction_date_time)->format('d/m/y h:i A') }}
+                                {{ \Carbon\Carbon::parse($searchedTransaction->transaction_date_time)->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}
                             </div>
                         @endif
                         <div><span class="font-semibold">تاريخ الانشاء:</span>
-                            {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
+                            {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}</div>
                     </div>
                     <div class="mt-4 text-right">
                         <a href="{{ route('transactions.print', $searchedTransaction->reference_number) }}"

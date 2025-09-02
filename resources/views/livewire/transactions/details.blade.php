@@ -180,18 +180,18 @@
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">تاريخ الإنشاء:</span>
                                     <span
-                                        class="text-sm text-gray-900">{{ $transaction->created_at->format('d/m/y h:i A') }}</span>
+                                        class="text-sm text-gray-900">{{ $transaction->created_at->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">تاريخ التحديث:</span>
                                     <span
-                                        class="text-sm text-gray-900">{{ $transaction->updated_at->format('d/m/y h:i A') }}</span>
+                                        class="text-sm text-gray-900">{{ $transaction->updated_at->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}</span>
                                 </div>
                                 @if ($transaction->transaction_date_time)
                                     <div class="flex justify-between">
                                         <span class="text-sm font-medium text-gray-600">تاريخ المعاملة:</span>
                                         <span
-                                            class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($transaction->transaction_date_time)->format('d/m/y h:i A') }}</span>
+                                            class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($transaction->transaction_date_time)->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}</span>
                                     </div>
                                 @endif
                             </div>
@@ -369,12 +369,12 @@
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Created At:</span>
                                     <span
-                                        class="text-sm text-gray-900">{{ $cashTransaction->created_at->format('d/m/y h:i A') }}</span>
+                                        class="text-sm text-gray-900">{{ $cashTransaction->created_at->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-600">Updated At:</span>
                                     <span
-                                        class="text-sm text-gray-900">{{ $cashTransaction->updated_at->format('d/m/y h:i A') }}</span>
+                                        class="text-sm text-gray-900">{{ $cashTransaction->updated_at->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}</span>
                                 </div>
                             </div>
                         </div>

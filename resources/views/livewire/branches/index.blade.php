@@ -404,7 +404,7 @@
                                 </td>
                                 <td class="px-3 py-2 whitespace-nowrap text-right">{{ $tx['transaction_type'] }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-right">
-                                    {{ \Carbon\Carbon::parse($tx['created_at'])->format('d/m/y h:i A') }}</td>
+                                    {{ \Carbon\Carbon::parse($tx['transaction_date_time'] ?? $tx['created_at'])->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}</td>
                                 <td class="px-3 py-2 whitespace-nowrap text-right">{{ $tx['status'] }}</td>
                             </tr>
                         @empty

@@ -46,7 +46,7 @@
                                 {{ format_int($searchedTransaction->amount) }}</div>
                             <div><span class="font-semibold">الحالة:</span> {{ $searchedTransaction->status }}</div>
                             <div><span class="font-semibold">التاريخ:</span>
-                                {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}
+                                {{ $searchedTransaction->transaction_date_time ? \Carbon\Carbon::parse($searchedTransaction->transaction_date_time)->setTimezone('Africa/Cairo')->format('d/m/y h:i A') : \Carbon\Carbon::parse($searchedTransaction->created_at)->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}
                             </div>
                         </div>
                         <div class="mt-4 text-right">
@@ -130,7 +130,7 @@
                         </div>
                         <div><span class="font-semibold">الحالة:</span> {{ $searchedTransaction->status }}</div>
                         <div><span class="font-semibold">التاريخ:</span>
-                            {{ \Carbon\Carbon::parse($searchedTransaction->created_at)->format('d/m/y h:i A') }}</div>
+                            {{ $searchedTransaction->transaction_date_time ? \Carbon\Carbon::parse($searchedTransaction->transaction_date_time)->setTimezone('Africa/Cairo')->format('d/m/y h:i A') : \Carbon\Carbon::parse($searchedTransaction->created_at)->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}</div>
                     </div>
                     <div class="mt-4 text-right">
                         <a href="{{ route('transactions.print', $searchedTransaction->reference_number) }}"

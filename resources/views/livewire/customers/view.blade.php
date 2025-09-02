@@ -163,7 +163,7 @@
                         @forelse($customer->transactions as $transaction)
                             <tr class="hover:bg-slate-50/50 transition-colors duration-150">
                                 <td class="px-6 py-4 text-sm text-slate-700">
-                                    {{ $transaction->transaction_date_time ? \Carbon\Carbon::parse($transaction->transaction_date_time)->format('d/m/y h:i A') : \Carbon\Carbon::parse($transaction->created_at)->format('d/m/y h:i A') }}
+                                    {{ $transaction->transaction_date_time ? \Carbon\Carbon::parse($transaction->transaction_date_time)->setTimezone('Africa/Cairo')->format('d/m/y h:i A') : \Carbon\Carbon::parse($transaction->created_at)->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}
                                 </td>
                                 <td class="px-6 py-4">
                                     <span

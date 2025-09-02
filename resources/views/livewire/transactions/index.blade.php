@@ -409,10 +409,10 @@
                             </th>
                             <!-- Date (Chronological Order) -->
                             <th class="px-2 py-2 bg-blue-50 text-center text-xs font-bold text-blue-900 tracking-wider min-w-[90px] sortable-header border-b border-blue-200 border-l border-blue-200"
-                                wire:click="sortBy('created_at')">
+                                wire:click="sortBy('transaction_date_time')">
                                 <div class="flex items-center gap-1 justify-center">
                                     <span>التاريخ</span>
-                                    @if ($sortField === 'created_at')
+                                    @if ($sortField === 'transaction_date_time')
                                         <span class="text-blue-600">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </div>
@@ -500,7 +500,7 @@
                                 <!-- Date -->
                                 <td
                                     class="px-2 py-2 whitespace-nowrap text-center text-gray-700 border-l border-blue-200">
-                                    {{ \Carbon\Carbon::parse($transaction['created_at'])->format('d/m/y h:i A') }}</td>
+                                    {{ \Carbon\Carbon::parse($transaction['transaction_date_time'] ?? $transaction['created_at'])->setTimezone('Africa/Cairo')->format('d/m/y h:i A') }}</td>
                                 <!-- Transaction Type -->
                                 <td
                                     class="px-2 py-2 whitespace-nowrap text-center text-blue-700 font-bold border-l border-blue-200">
