@@ -280,11 +280,14 @@ class CreateTransaction
                     throw new \Exception('لا يمكن خصم المبلغ من محفظة العميل. العميل ليس لديه محفظة نشطة.');
                 }
                 
-                // Decrease client balance by (amount + final commission - deduction)
+                // Check if customer can send this amount considering debt limits
                 $clientDeduction = $amount + $finalCommission - $deduction;
-                if (($customer->balance - $clientDeduction) < 0) {
-                    throw new \Exception('Insufficient balance in client wallet for this transaction. Available: ' . number_format($customer->balance, 2) . ' EGP, Required: ' . number_format($clientDeduction, 2) . ' EGP');
+                if (!$customer->canSendAmount($clientDeduction)) {
+                    $availableLimit = $customer->getAvailableSendingLimit();
+                    throw new \Exception('المبلغ يتجاوز الحد المسموح. الحد المتاح: ' . number_format($availableLimit, 2) . ' جنيه.');
                 }
+                
+                // Decrease client balance by (amount + final commission - deduction)
                 $customer->balance -= $clientDeduction;
                 $this->customerRepository->save($customer);
                 // Refresh customer object to ensure we have the latest data
@@ -354,13 +357,27 @@ class CreateTransaction
             }
             
             if ($transactionType === 'Withdrawal') {
-                if (($customer->balance - $amount) < 0) {
-                    throw new \Exception('Insufficient balance in client wallet for this transaction. Available: ' . number_format($customer->balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                // Check if customer can send this amount considering debt limits
+                if (!$customer->canSendAmount($amount)) {
+                    $availableLimit = $customer->getAvailableSendingLimit();
+                    throw new \Exception('المبلغ يتجاوز الحد المسموح. الحد المتاح: ' . number_format($availableLimit, 2) . ' جنيه.');
                 }
                 $customer->balance -= $amount;
                 $this->customerRepository->save($customer);
             } elseif ($transactionType === 'Deposit' || $transactionType === 'Receive') {
-                $customer->balance += $amount;
+                // For deposit/receive transactions, reduce debt first, then add to balance
+                if ($customer->allow_debt && $customer->balance < 0) {
+                    // Customer has debt - reduce debt first
+                    $debtAmount = abs($customer->balance);
+                    $debtReduction = min($amount, $debtAmount);
+                    $remainingAmount = $amount - $debtReduction;
+                    
+                    // Apply debt reduction and any remaining amount as positive balance
+                    $customer->balance = -($debtAmount - $debtReduction) + $remainingAmount;
+                } else {
+                    // No debt or debt mode disabled - add full amount to balance
+                    $customer->balance += $amount;
+                }
                 $this->customerRepository->save($customer);
             }
             // Note: Transfer transactions are handled in the Transfer-specific logic above
@@ -491,5 +508,107 @@ class CreateTransaction
         if ($recipients->isNotEmpty()) {
             Notification::send($recipients, new AdminNotification($message, $url));
         }
+    }
+
+    /**
+     * Execute a line transfer transaction
+     */
+    public function executeLineTransfer(
+        int $fromLineId,
+        int $toLineId,
+        float $amount,
+        float $extraFee,
+        int $agentId,
+        string $status = 'pending',
+        ?string $notes = null,
+        ?string $referenceNumber = null
+    ): Transaction {
+        // Validate inputs
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException('Amount must be a positive number.');
+        }
+        
+        if ($fromLineId === $toLineId) {
+            throw new \InvalidArgumentException('Cannot transfer from a line to itself.');
+        }
+
+        // Get the lines
+        $fromLine = $this->lineRepository->findById($fromLineId);
+        $toLine = $this->lineRepository->findById($toLineId);
+        
+        if (!$fromLine || !$toLine) {
+            throw new \Exception('One or both lines not found.');
+        }
+
+        // Calculate fees
+        $baseFee = $amount * 0.01; // 1% base fee
+        $totalDeducted = $amount + $baseFee + $extraFee;
+
+        // Check from line balance
+        if ($fromLine->current_balance < $totalDeducted) {
+            throw new \Exception(
+                'Insufficient balance in source line. Available: ' . 
+                number_format($fromLine->current_balance, 2) . 
+                ' EGP, Required: ' . number_format($totalDeducted, 2) . ' EGP'
+            );
+        }
+
+        // Get agent info
+        $agent = \App\Domain\Entities\User::find($agentId);
+        if (!$agent) {
+            throw new \Exception('Agent not found.');
+        }
+
+        // Generate reference number if not provided
+        if (!$referenceNumber) {
+            $branchName = $agent->branch ? $agent->branch->name : 'Unknown';
+            $referenceNumber = $this->generateReferenceNumber($branchName);
+        }
+
+        // Create the transaction
+        $transaction = new Transaction([
+            'transaction_type' => 'line_transfer',
+            'from_line_id' => $fromLineId,
+            'to_line_id' => $toLineId,
+            'amount' => $amount,
+            'commission' => $baseFee,
+            'extra_fee' => $extraFee,
+            'total_deducted' => $totalDeducted,
+            'status' => $status,
+            'agent_id' => $agentId,
+            'transaction_date_time' => now(),
+            'reference_number' => $referenceNumber,
+            'notes' => $notes,
+            'customer_name' => 'Line Transfer: ' . $fromLine->mobile_number . ' → ' . $toLine->mobile_number,
+            'payment_method' => 'line_balance',
+            'branch_id' => $fromLine->branch_id,
+        ]);
+
+        $savedTransaction = $this->transactionRepository->save($transaction);
+
+        // If status is completed, apply balance changes immediately
+        if ($status === 'completed') {
+            $this->applyLineTransferBalances($fromLine, $toLine, $totalDeducted, $amount);
+        }
+
+        return $savedTransaction;
+    }
+
+    /**
+     * Apply balance changes for a line transfer
+     */
+    private function applyLineTransferBalances($fromLine, $toLine, float $totalDeducted, float $amount): void
+    {
+        // Deduct from source line
+        $this->lineRepository->update($fromLine->id, [
+            'current_balance' => $fromLine->current_balance - $totalDeducted
+        ]);
+
+        // Add to destination line
+        $this->lineRepository->update($toLine->id, [
+            'current_balance' => $toLine->current_balance + $amount
+        ]);
+
+        // NO notifications for line transfers - only low balance warnings are disabled for line transfers
     }
 }

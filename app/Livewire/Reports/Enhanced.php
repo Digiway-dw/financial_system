@@ -309,6 +309,8 @@ class Enhanced extends Component
                 'balance' => $customer->balance,
                 'is_client' => $customer->is_client,
                 'safe_balance' => $this->getCustomerSafeBalance($customer),
+                'allow_debt' => $customer->allow_debt,
+                'max_debt_limit' => $customer->max_debt_limit,
             ];
 
             // Filter by customer

@@ -118,12 +118,6 @@
                                 placeholder="Search by code...">
                         </div>
                         <div>
-                            <label for="region" class="block text-sm font-medium text-slate-700 mb-2">المنطقة</label>
-                            <input type="text" id="region" wire:model.defer="region"
-                                class="w-full px-4 py-2.5 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
-                                placeholder="Search by region...">
-                        </div>
-                        <div>
                             <label for="date_added_start" class="block text-sm font-medium text-slate-700 mb-2">تاريخ
                                 الإضافة
                                 (بداية)</label>
@@ -232,7 +226,7 @@
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @forelse ($customers as $customer)
-                                <tr class="hover:bg-slate-50/50 transition-colors duration-150">
+                                <tr class="hover:bg-slate-50/50 transition-colors duration-150 {{ !empty($customer['allow_debt']) && $customer['allow_debt'] && ($customer['balance'] ?? 0) < 0 ? 'bg-red-100' : '' }}">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center space-x-3 ">
                                             <div
@@ -258,14 +252,26 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         @if (!empty($customer['is_client']) && $customer['is_client'])
+                                            @php
+                                                $balance = $customer['balance'] ?? 0;
+                                                $isNegative = $balance < 0;
+                                            @endphp
                                             <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $isNegative ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' }}">
                                                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2" d="M5 13l4 4L19 7" />
+                                                    @if ($isNegative)
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 13l4 4L19 7" />
+                                                    @endif
                                                 </svg>
-                                                {{ format_int($customer['balance'] ?? 0) }} EGP
+                                                {{ format_int($balance) }} EGP
+                                                @if ($isNegative)
+                                                    <span class="mr-1 text-xs opacity-75">(دين)</span>
+                                                @endif
                                             </span>
                                         @else
                                             <span

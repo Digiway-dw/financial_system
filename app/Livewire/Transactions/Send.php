@@ -322,9 +322,14 @@ class Send extends Component
             return;
         }
 
-        if ($this->collectFromCustomerWallet && $clientBalance < ($amount + $commission - $discount)) {
-            $this->errorMessage = 'رصيد العميل غير كافي لهذه المعاملة.';
-            return;
+        // Check if client can send this amount (considering debt limits)
+        if ($this->collectFromCustomerWallet && $this->clientId) {
+            $client = Customer::find($this->clientId);
+            if ($client && !$client->canSendAmount($amount + $commission - $discount)) {
+                $availableLimit = $client->getAvailableSendingLimit();
+                $this->errorMessage = 'المبلغ يتجاوز الحد المسموح. الحد المتاح: ' . number_format($availableLimit, 2) . ' جنيه.';
+                return;
+            }
         }
 
         if ($this->lowBalanceWarning) {

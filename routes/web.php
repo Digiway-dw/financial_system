@@ -45,6 +45,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('transactions/send', \App\Livewire\Transactions\Send::class)
         ->name('transactions.send');
     Route::get('transactions/receive', Receive::class)->name('transactions.receive');
+    Route::get('transactions/line-transfer', \App\Livewire\Transactions\LineTransfer::class)
+        ->name('transactions.line-transfer');
     Route::get('transactions/cash', \App\Livewire\Transactions\Cash::class)
         ->name('transactions.cash');
     Route::get('transactions/cash/withdrawal', \App\Livewire\Transactions\Withdrawal::class)

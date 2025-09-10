@@ -23,7 +23,9 @@ class UpdateCustomer
         float $balance,
         bool $is_client,
         ?int $agentId = null,
-        int $branchId
+        int $branchId,
+        bool $allowDebt = false,
+        ?float $maxDebtLimit = null
     ): ?Customer
     {
         $customer = $this->customerRepository->findById($id);
@@ -40,6 +42,8 @@ class UpdateCustomer
         $customer->is_client = $is_client;
         $customer->agent_id = $agentId;
         $customer->branch_id = $branchId;
+        $customer->allow_debt = $allowDebt;
+        $customer->max_debt_limit = $maxDebtLimit;
 
         return $this->customerRepository->save($customer);
     }

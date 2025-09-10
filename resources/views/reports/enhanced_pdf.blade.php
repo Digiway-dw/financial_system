@@ -171,6 +171,12 @@
                             {{ number_format($customerDetails['safe_balance'], 2) }} EGP</div>
                     </div>
                 @endif
+                @if (!empty($customerDetails['balance']) && !empty($customerDetails['is_client']) && !empty($customerDetails['allow_debt']) && $customerDetails['allow_debt'])
+                    <div class="info-row">
+                        <div class="info-cell"><strong>الدين الحالي:</strong> {{ $customerDetails['balance'] < 0 ? abs($customerDetails['balance']) . ' EGP' : '0 EGP' }}</div>
+                        <div class="info-cell"><strong>الحد الأقصى للدين:</strong> {{ isset($customerDetails['max_debt_limit']) ? abs($customerDetails['max_debt_limit']) . ' EGP' : 'غير محدد' }}</div>
+                    </div>
+                @endif
             </div>
         </div>
     @endif

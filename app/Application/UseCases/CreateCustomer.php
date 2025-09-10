@@ -27,7 +27,9 @@ class CreateCustomer
         float $balance,
         bool $is_client,
         ?int $agentId = null,
-        int $branchId
+        int $branchId,
+        bool $allowDebt = false,
+        ?float $maxDebtLimit = null
     ): Customer
     {
         // Auto-generate customer code if not provided
@@ -58,6 +60,8 @@ class CreateCustomer
         $customer->is_client = $is_client;
         $customer->agent_id = $agentId;
         $customer->branch_id = $branchId;
+        $customer->allow_debt = $allowDebt;
+        $customer->max_debt_limit = $maxDebtLimit;
         return $this->customerRepository->save($customer);
     }
 } 

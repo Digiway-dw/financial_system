@@ -9,7 +9,7 @@ class TransactionController extends Controller
 {
     public function receipt($referenceNumber)
     {
-        $transaction = Transaction::with(['agent', 'branch'])->where('reference_number', $referenceNumber)->firstOrFail();
+        $transaction = Transaction::with(['agent', 'branch', 'line', 'fromLine', 'toLine'])->where('reference_number', $referenceNumber)->firstOrFail();
         return view('receipt', compact('transaction'));
     }
 

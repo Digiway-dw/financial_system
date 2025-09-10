@@ -61,10 +61,14 @@ class AdminNotificationsBox extends Component
             $query = $user->unreadNotifications()->orderBy('created_at', 'desc');
         }
 
-        // Exclude withdrawal notifications from admin notification center
-        $query = $query->where(function($q) {
-            $q->whereNull('data->type')->orWhere('data->type', '!=', 'withdrawal');
-        });
+                // Exclude withdrawal and line transfer notifications from admin notification center
+                $query = $query->where(function($q) {
+                        $q->whereNull('data->type')
+                            ->orWhere(function($subq) {
+                                    $subq->where('data->type', '!=', 'withdrawal')
+                                                ->where('data->type', '!=', 'line_transfer');
+                            });
+                });
 
         // Type filter
         if ($this->typeFilter !== 'all') {

@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lines', function (Blueprint $table) {
-            $table->string('serial_number')->nullable()->after('mobile_number');
-            $table->text('note')->nullable()->after('network');
+            if (!Schema::hasColumn('lines', 'serial_number')) {
+                $table->string('serial_number')->nullable()->after('mobile_number');
+            }
+            if (!Schema::hasColumn('lines', 'note')) {
+                $table->text('note')->nullable()->after('network');
+            }
         });
     }
 

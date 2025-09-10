@@ -215,6 +215,24 @@ class UpdateTransaction
                 $this->customerRepository->save($customer);
             }
         }
+
+        // Reverse Line Transfer transaction effects
+        elseif ($transactionType === 'line_transfer') {
+            $fromLine = $this->lineRepository->findById($transaction->from_line_id);
+            $toLine = $this->lineRepository->findById($transaction->to_line_id);
+            
+            if ($fromLine && $toLine) {
+                // Reverse the transfer: add back to from line, subtract from to line
+                $totalDeducted = $transaction->total_deducted ?? ($amount + $commission + ($transaction->extra_fee ?? 0));
+                $this->lineRepository->update($fromLine->id, [
+                    'current_balance' => $fromLine->current_balance + $totalDeducted
+                ]);
+                
+                $this->lineRepository->update($toLine->id, [
+                    'current_balance' => $toLine->current_balance - $amount
+                ]);
+            }
+        }
     }
 
     /**
@@ -350,6 +368,36 @@ class UpdateTransaction
                 $customer->balance += $amount;
                 $this->customerRepository->save($customer);
             }
+        }
+
+        // Apply Line Transfer transaction effects
+        elseif ($transactionType === 'line_transfer') {
+            $fromLine = $this->lineRepository->findById($transaction->from_line_id);
+            $toLine = $this->lineRepository->findById($transaction->to_line_id);
+            
+            if (!$fromLine || !$toLine) {
+                throw new \Exception('Source or destination line not found for line transfer.');
+            }
+            
+            $totalDeducted = $transaction->total_deducted ?? ($amount + $commission + ($transaction->extra_fee ?? 0));
+            
+            // Check source line balance sufficiency
+            if ($fromLine->current_balance < $totalDeducted) {
+                throw new \Exception(
+                    'Insufficient balance in source line. Available: ' . 
+                    number_format($fromLine->current_balance, 2) . 
+                    ' EGP, Required: ' . number_format($totalDeducted, 2) . ' EGP'
+                );
+            }
+            
+            // Apply the transfer
+            $this->lineRepository->update($fromLine->id, [
+                'current_balance' => $fromLine->current_balance - $totalDeducted
+            ]);
+            
+            $this->lineRepository->update($toLine->id, [
+                'current_balance' => $toLine->current_balance + $amount
+            ]);
         }
 
         // Send notifications for low balances

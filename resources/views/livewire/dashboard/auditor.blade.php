@@ -57,6 +57,14 @@
             <span class="text-md font-semibold text-gray-800">المعاملات</span>
             <span class="text-xs text-gray-500 mt-1">بيانات المعاملات</span>
         </a>
+        <!-- Line Transfer Quick Action -->
+        <a href="{{ route('transactions.line-transfer') }}" class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center hover:shadow-lg transition border-b-4 border-purple-400">
+            <svg class="h-8 w-8 text-purple-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            <span class="text-md font-semibold text-purple-900">تحويل خط</span>
+            <span class="text-xs text-purple-700 mt-1">تحويل رصيد بين الخطوط</span>
+        </a>
         <!-- Customers -->
         <a href="{{ route('customers.index') }}" class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center hover:shadow-lg transition border-b-4 border-blue-400">
             <x-heroicon-o-user class="h-8 w-8 text-blue-500 mb-2" />

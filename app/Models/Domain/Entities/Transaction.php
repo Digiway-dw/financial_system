@@ -21,10 +21,14 @@ class Transaction extends Model
         'customer_mobile_number',
         'receiver_mobile_number',
         'line_id',
+        'from_line_id',
+        'to_line_id',
         'customer_code',
         'amount',
         'commission',
         'deduction',
+        'extra_fee',
+        'total_deducted',
         'discount_notes',
         'notes',
         'transaction_type',
@@ -44,6 +48,8 @@ class Transaction extends Model
         'amount' => 'decimal:2',
         'commission' => 'decimal:2',
         'deduction' => 'decimal:2',
+        'extra_fee' => 'decimal:2',
+        'total_deducted' => 'decimal:2',
     ];
 
     protected static function booted()
@@ -72,6 +78,22 @@ class Transaction extends Model
     public function line(): BelongsTo
     {
         return $this->belongsTo(Line::class);
+    }
+
+    /**
+     * Get the from line for line transfers.
+     */
+    public function fromLine(): BelongsTo
+    {
+        return $this->belongsTo(Line::class, 'from_line_id');
+    }
+
+    /**
+     * Get the to line for line transfers.
+     */
+    public function toLine(): BelongsTo
+    {
+        return $this->belongsTo(Line::class, 'to_line_id');
     }
 
     /**
@@ -196,6 +218,8 @@ class Transaction extends Model
                 return 'استلام أموال';
             case 'transfer':
                 return 'تحويل أموال';
+            case 'line_transfer':
+                return 'تحويل خط';
             case 'Deposit':
                 return 'إيداع أموال';
             case 'Withdrawal':

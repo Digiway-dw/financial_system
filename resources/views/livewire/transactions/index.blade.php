@@ -60,42 +60,57 @@
                     </h2>
                     <p class="text-sm text-gray-500 mt-1">إنشاء معاملة جديدة أو الوصول إلى أدوات المعاملات</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <a href="{{ route('transactions.send') }}"
-                        class="group flex items-center px-8 py-7 md:px-10 md:py-8 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-2xl transition-all duration-200 shadow-sm mb-2 md:mb-0">
+                        class="group flex items-center px-6 py-6 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-2xl transition-all duration-200 shadow-sm">
                         <div
-                            class="w-16 h-16 bg-blue-100 group-hover:bg-blue-200 rounded-xl flex items-center justify-center mr-8">
+                            class="w-14 h-14 bg-blue-100 group-hover:bg-blue-200 rounded-xl flex items-center justify-center mr-6">
                             <svg class="w-6 h-6 text-blue-600 " fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                             </svg>
                         </div>
-                        <div class="space-y-1 p-2">
+                        <div class="space-y-1">
                             <h3 class="font-semibold text-blue-900">إرسال أموال</h3>
                             <p class="text-sm text-blue-700">إنشاء تحويل صادر</p>
                         </div>
                     </a>
                     <a href="{{ route('transactions.receive') }}"
-                        class="group flex items-center px-8 py-7 md:px-10 md:py-8 bg-green-50 hover:bg-green-100 border border-green-100 rounded-2xl transition-all duration-200 shadow-sm mb-2 md:mb-0">
+                        class="group flex items-center px-6 py-6 bg-green-50 hover:bg-green-100 border border-green-100 rounded-2xl transition-all duration-200 shadow-sm">
                         <div
-                            class="w-16 h-16 bg-green-100 group-hover:bg-green-200 rounded-xl flex items-center justify-center mr-8">
+                            class="w-14 h-14 bg-green-100 group-hover:bg-green-200 rounded-xl flex items-center justify-center mr-6">
                             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
                             </svg>
                         </div>
-                        <div class="space-y-1 p-2">
+                        <div class="space-y-1">
                             <h3 class="font-semibold text-green-900">استلام أموال</h3>
                             <p class="text-sm text-green-700">معالجة تحويل وارد</p>
                         </div>
                     </a>
+                    <a href="{{ route('transactions.line-transfer') }}"
+                        class="group flex items-center px-6 py-6 bg-purple-50 hover:bg-purple-100 border border-purple-100 rounded-2xl transition-all duration-200 shadow-sm">
+                        <div
+                            class="w-14 h-14 bg-purple-100 group-hover:bg-purple-200 rounded-xl flex items-center justify-center mr-6">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                        </div>
+                        <div class="space-y-1">
+                            <h3 class="font-semibold text-purple-900">تحويل خط</h3>
+                            <p class="text-sm text-purple-700">تحويل رصيد بين الخطوط</p>
+                        </div>
+                    </a>
                     @can('create-cash-transactions')
                         <a href="{{ route('transactions.cash') }}"
-                            class="group flex items-center px-8 py-7 md:px-10 md:py-8 bg-yellow-50 hover:bg-yellow-100 border border-yellow-100 rounded-2xl transition-all duration-200 shadow-sm mb-2 md:mb-0">
+                            class="group flex items-center px-6 py-6 bg-yellow-50 hover:bg-yellow-100 border border-yellow-100 rounded-2xl transition-all duration-200 shadow-sm">
                             <div
-                                class="w-16 h-16 bg-yellow-100 group-hover:bg-yellow-200 rounded-xl flex items-center justify-center mr-8">
+                                class="w-14 h-14 bg-yellow-100 group-hover:bg-yellow-200 rounded-xl flex items-center justify-center mr-6">
                                 <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -103,7 +118,7 @@
                                     </path>
                                 </svg>
                             </div>
-                            <div class="space-y-1 p-2">
+                            <div class="space-y-1">
                                 <h3 class="font-semibold text-yellow-900">معاملة نقدية</h3>
                                 <p class="text-sm text-yellow-700">إدارة العمليات النقدية</p>
                             </div>
@@ -274,6 +289,7 @@
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                         <option value="">كل الأنواع</option>
                         <option value="transfer">تحويل</option>
+                        <option value="line_transfer">تحويل خط</option>
                         <option value="receive">استلام</option>
                         <option value="Deposit">إيداع</option>
                         <option value="Withdrawal">سحب</option>

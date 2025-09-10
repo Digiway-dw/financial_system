@@ -25,6 +25,8 @@ class Edit extends Component
     public $gender = '';
     public $balance = 0;
     public $is_client = false;
+    public $allow_debt = false;
+    public $max_debt_limit = null;
     public $agent_id = null;
     public $branch_id = '';
 
@@ -60,12 +62,25 @@ class Edit extends Component
             'customerCode' => 'nullable|string|max:255',
             'gender' => 'required|in:male,female',
             'is_client' => 'boolean',
+            'allow_debt' => 'boolean',
             'branch_id' => 'required|exists:branches,id',
         ];
 
         // Only admins can edit balance
         if ($this->canEditBalance()) {
-            $rules['balance'] = 'required|integer|min:0';
+            // If debt is allowed, allow negative balance
+            if ($this->allow_debt) {
+                $rules['balance'] = 'required|integer';
+            } else {
+                $rules['balance'] = 'required|integer|min:0';
+            }
+        }
+
+        // If debt is allowed, debt limit is required and must be positive (user enters positive, system stores negative)
+        if ($this->allow_debt) {
+            $rules['max_debt_limit'] = 'required|numeric|min:1';
+        } else {
+            $rules['max_debt_limit'] = 'nullable';
         }
 
         return $rules;
@@ -87,6 +102,14 @@ class Edit extends Component
     {
         // No one can edit the agent field
         return false;
+    }
+
+    public function updatedAllowDebt()
+    {
+        // When allow_debt changes, reset max_debt_limit if debt is disabled
+        if (!$this->allow_debt) {
+            $this->max_debt_limit = null;
+        }
     }
 
     private function findBranchSafe(int $branchId): ?Safe
@@ -151,6 +174,9 @@ class Edit extends Component
             $this->gender = $this->customer->gender;
             $this->balance = (int) $this->customer->balance;
             $this->is_client = $this->customer->is_client;
+            $this->allow_debt = $this->customer->allow_debt ?? false;
+            // Always show positive value in the field
+            $this->max_debt_limit = $this->customer->max_debt_limit ? abs($this->customer->max_debt_limit) : null;
             $this->agent_id = $this->customer->agent_id;
             $this->branch_id = $this->customer->branch_id;
 
@@ -196,6 +222,8 @@ class Edit extends Component
             // Only admin and supervisor can toggle is_client
             $isClientToUpdate = $this->canToggleWallet() ? $this->is_client : $originalCustomer->is_client;
 
+            // Accept positive input, convert to negative for storage
+            $maxDebtLimit = $this->allow_debt ? -abs((float) $this->max_debt_limit) : null;
             $this->updateCustomerUseCase->execute(
                 $this->customerId,
                 $this->name,
@@ -205,7 +233,9 @@ class Edit extends Component
                 $balanceToUpdate,
                 $isClientToUpdate,
                 $agentIdToUpdate,
-                $this->branch_id
+                $this->branch_id,
+                $this->allow_debt,
+                $maxDebtLimit
             );
             
             // Sync mobile numbers

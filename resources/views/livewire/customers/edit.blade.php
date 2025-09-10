@@ -156,6 +156,59 @@
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <!-- Debt Mode - Only visible to Admin and Supervisor -->
+                    @if ($this->canToggleWallet())
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4" 
+                             wire:key="debt-mode-section"
+                             x-data="{ allowDebt: @entangle('allow_debt') }">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-3">إعدادات الدين</label>
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" 
+                                               wire:model.live="allow_debt" 
+                                               x-model="allowDebt"
+                                               id="allow_debt" name="allow_debt"
+                                               class="w-5 h-5 text-indigo-600 border border-slate-300 rounded focus:ring-indigo-500 focus:ring-2"
+                                               wire:key="allow-debt-checkbox">
+                                        <label for="allow_debt" class="text-sm font-medium text-slate-700">السماح بالدين</label>
+                                    </div>
+                                    @error('allow_debt')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Max Debt Limit - Always visible but disabled when debt not allowed -->
+                                <div x-bind:class="allowDebt ? '' : 'opacity-50'" wire:key="debt-limit-field">
+                                    <label for="max_debt_limit" class="block text-sm font-semibold text-slate-700 mb-2">
+                                        الحد الأقصى للدين (أدخل رقم موجب)
+                                        <span x-show="!allowDebt" class="text-xs text-gray-400 mr-2">- يجب تفعيل السماح بالدين أولاً</span>
+                                    </label>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">EGP</span>
+                                        <input type="number" 
+                                               wire:model.live="max_debt_limit" 
+                                               id="max_debt_limit" name="max_debt_limit"
+                                               min="1" step="0.01" placeholder="1000"
+                                               x-bind:readonly="!allowDebt"
+                                               x-bind:class="allowDebt ? 'bg-white/80' : 'bg-gray-100 text-gray-500'"
+                                               class="w-full pl-14 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
+                                               wire:key="max-debt-limit-input">
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        حد الدين يجب أن يكون قيمة موجبة (مثال: 1000)
+                                        <span x-show="!allowDebt">
+                                            <br><strong>ملاحظة: قم بتفعيل "السماح بالدين" لتمكين هذا الحقل</strong>
+                                        </span>
+                                    </p>
+                                    @error('max_debt_limit')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 

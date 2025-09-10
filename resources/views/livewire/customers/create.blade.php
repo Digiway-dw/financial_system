@@ -317,6 +317,56 @@
                             </div>
                         @endif
 
+                        <!-- Debt Mode Section - Only visible to Admin and Supervisor -->
+                        @if ($this->canSelectBranch())
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4" 
+                                 wire:key="debt-mode-section" 
+                                 x-data="{ allowDebt: @entangle('allow_debt') }">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-3">إعدادات الدين</label>
+                                        <div class="flex items-center space-x-3">
+                                            <input type="checkbox" 
+                                                   wire:model.live="allow_debt" 
+                                                   x-model="allowDebt"
+                                                   id="allow_debt"
+                                                   class="w-4 h-4 text-orange-600 bg-white border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
+                                                   wire:key="allow-debt-checkbox">
+                                            <span class="text-sm font-medium text-slate-700">السماح بالدين</span>
+                                            <span class="ml-2 text-xs text-gray-500">(يسمح للعميل بإرسال أموال حتى لو كان الرصيد غير كافي)</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Max Debt Limit Field - Always visible, conditional styling -->
+                                    <div x-bind:class="allowDebt ? '' : 'opacity-50'" wire:key="debt-limit-field">
+                                        <label for="max_debt_limit" class="block text-sm font-semibold text-slate-700 mb-2">
+                                            الحد الأقصى للدين (أدخل رقم موجب)
+                                            <span x-show="!allowDebt" class="text-xs text-gray-400 mr-2">- يجب تفعيل السماح بالدين أولاً</span>
+                                        </label>
+                                        <input type="number" 
+                                               wire:model.live="max_debt_limit" 
+                                               id="max_debt_limit" 
+                                               step="0.01" 
+                                               min="1" 
+                                               placeholder="5000"
+                                               x-bind:readonly="!allowDebt"
+                                               x-bind:class="allowDebt ? 'bg-white/80' : 'bg-gray-100 text-gray-500'"
+                                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
+                                               wire:key="max-debt-limit-input">
+                                        @error('max_debt_limit')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                        <p class="mt-1 text-xs text-gray-500">
+                                            مثال: 5000 يعني أن العميل يمكنه أن يصل دينه إلى 5000 جنيه (سيتم تخزينه كقيمة سالبة تلقائياً)
+                                            <span x-show="!allowDebt">
+                                                <br><strong>ملاحظة: قم بتفعيل "السماح بالدين" لتمكين هذا الحقل</strong>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Branch ID - Only visible to Admin and Supervisor -->
                         @if ($this->canSelectBranch())
                             <div>
@@ -354,10 +404,10 @@
                         </button>
                     </div>
                         <dev class="px-6 py-8 ">
-                        <a href="{{ route('customers.index') }}"
+                        <button type="button" wire:click="backToForm"
                             class="px-6 py-3 bg-slate-200 text-slate-700 font-medium rounded-xl hover:bg-slate-300 transition-colors duration-150">
                             إلغاء
-                        </a>
+                        </button>
                         </dev>
                     </div>
 

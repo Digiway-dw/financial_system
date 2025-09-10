@@ -30,6 +30,12 @@ class Create extends Component
     #[Validate('boolean')]
     public $is_client = false; // Default: customer does not have a wallet
 
+    #[Validate('boolean')]
+    public $allow_debt = false;
+
+    #[Validate('nullable|numeric|min:1')]
+    public $max_debt_limit = null;
+
     #[Validate('required|exists:branches,id')]
     public $branch_id = '';
 
@@ -90,9 +96,17 @@ class Create extends Component
         $this->mobileNumbers = array_values($this->mobileNumbers);
     }
 
+    public function updatedAllowDebt()
+    {
+        // When allow_debt changes, reset max_debt_limit if debt is disabled
+        if (!$this->allow_debt) {
+            $this->max_debt_limit = null;
+        }
+    }
+
     protected function rules()
     {
-        return [
+        $rules = [
             'name' => 'required|string|max:255',
             'mobileNumbers' => 'required|array|min:1',
             'mobileNumbers.*' => 'required|digits:11|distinct',
@@ -100,7 +114,17 @@ class Create extends Component
             'balance' => $this->useInitialBalance ? 'required|numeric|min:0' : 'nullable|numeric|min:0',
             'is_client' => 'required|boolean',
             'branch_id' => 'required|exists:branches,id',
+            'allow_debt' => 'boolean',
         ];
+
+        // If debt is allowed, debt limit is required and must be positive (user enters positive, system stores negative)
+        if ($this->allow_debt) {
+            $rules['max_debt_limit'] = 'required|numeric|min:1';
+        } else {
+            $rules['max_debt_limit'] = 'nullable';
+        }
+
+        return $rules;
     }
 
     public function createCustomer()
@@ -119,6 +143,7 @@ class Create extends Component
             // Use the first mobile number as the primary
             $primaryMobile = $this->mobileNumbers[0];
             $balance = $this->useInitialBalance ? $this->balance : 0.00;
+            $maxDebtLimit = $this->allow_debt ? -abs($this->max_debt_limit) : null;
             $customer = $this->createCustomerUseCase->execute(
                 $this->name,
                 $primaryMobile,
@@ -127,7 +152,9 @@ class Create extends Component
                 $balance,
                 $this->is_client,
                 Auth::id(), // Set current user as agent
-                $this->branch_id
+                $this->branch_id,
+                $this->allow_debt,
+                $maxDebtLimit
             );
 
             // Save all mobile numbers
@@ -197,17 +224,7 @@ class Create extends Component
 
     public function backToForm()
     {
-        $this->showStatusPage = false;
-        $this->createdCustomer = null;
-        $this->creationStatus = null;
-        $this->statusMessage = '';
-        $this->reset(['name', 'mobileNumbers', 'gender', 'balance', 'is_client', 'branch_id', 'useInitialBalance']);
-        $this->mobileNumbers = [''];
-        
-        // Reset branch_id based on user role
-        if (!$this->canSelectBranch()) {
-            $this->branch_id = Auth::user()->branch_id;
-        }
+    return $this->redirect(route('dashboard'), navigate: true);
     }
 
     public function goToCustomersList()

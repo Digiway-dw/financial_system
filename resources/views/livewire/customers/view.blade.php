@@ -117,6 +117,18 @@
                         <div class="text-2xl font-bold text-green-800">{{ format_int($customer->balance) }} EGP
                         </div>
                     </div>
+                    @if($customer->allow_debt)
+                    <div class="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-xl border border-red-200">
+                        <div class="text-sm font-medium text-red-700 mb-1">وضع الدين</div>
+                        <div class="text-lg font-bold text-red-800">
+                            مسموح بالدين حتى {{ abs($customer->max_debt_limit) }} جنيه
+                        </div>
+                        <div class="text-sm text-red-700 mt-1">
+                            الرصيد الحالي: {{ format_int($customer->balance) }} جنيه<br>
+                            الحد الأقصى للدين: {{ abs($customer->max_debt_limit) }} جنيه
+                        </div>
+                    </div>
+                    @endif
                     <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-200">
                         <div class="text-sm font-medium text-blue-700 mb-1">إجمالي المعاملات</div>
                         <div class="text-xl font-bold text-blue-800">{{ format_int($totalTransactions) }}</div>

@@ -84,41 +84,56 @@
                 class="value">{{ \Carbon\Carbon::parse($transaction->transaction_date_time)->format('d/m/y - h:i A') }}</span><span
                 class="label-en"></span>ref: {{ $transaction->reference_number ?? 'N/A' }}</div>
         <div class="line" style="margin: 4px 0;"></div>
-        <div class="row"><span class="value">{{ $transaction->line->mobile_number ?? 'N/A' }}</span><span
-                class="label-en">Line</span></div>
+        @if (strtolower($transaction->transaction_type) === 'line_transfer')
+            <div class="row"><span class="value">{{ $transaction->fromLine->mobile_number ?? 'N/A' }}</span><span
+                    class="label-en">From Line</span></div>
+            <div class="row"><span class="value">{{ $transaction->toLine->mobile_number ?? 'N/A' }}</span><span
+                    class="label-en">To Line</span></div>
+        @else
+            <div class="row"><span class="value">{{ $transaction->line->mobile_number ?? 'N/A' }}</span><span
+                    class="label-en">Line</span></div>
+        @endif
         <div class="row"><span class="value">{{ ucfirst(strtolower($transaction->transaction_type)) }}</span><span
                 class="label-en">Type</span></div>
         <div class="row"><span
                 class="value">{{ $transaction->agent->name ?? ($transaction->agent_id ?? 'N/A') }}</span><span
                 class="label-en">User</span></div>
-        <div class="row">
-            <span class="value">{{ $transaction->customer_name ?? 'N/A' }}</span>
-            <span class="label-en">Customer</span>
-        </div>
-        <div class="row">
-            <span class="value">{{ $transaction->customer_code ?? 'N/A' }}</span>
-            <span class="label-en">Customer Code</span>
-        </div>
+        @if (strtolower($transaction->transaction_type) !== 'line_transfer')
+            <div class="row">
+                <span class="value">{{ $transaction->customer_name ?? 'N/A' }}</span>
+                <span class="label-en">Customer</span>
+            </div>
+            <div class="row">
+                <span class="value">{{ $transaction->customer_code ?? 'N/A' }}</span>
+                <span class="label-en">Customer Code</span>
+            </div>
+        @endif
         @if (strtolower($transaction->transaction_type) === 'receive' && !empty($transaction->sender_mobile_number))
             <div class="row">
                 <span class="value">{{ $transaction->sender_mobile_number }}</span>
                 <span class="label-en">Sender Mobile</span>
             </div>
         @endif
-        <div class="row">
-            <span class="value">
-                @if (strtolower($transaction->transaction_type) === 'transfer' && !empty($transaction->receiver_mobile_number))
-                    {{ $transaction->receiver_mobile_number }}
-                @else
-                    {{ $transaction->customer_mobile_number ?? 'N/A' }}
-                @endif
-            </span>
-            <span class="label-en">Mobile</span>
-        </div>
+        @if (strtolower($transaction->transaction_type) !== 'line_transfer')
+            <div class="row">
+                <span class="value">
+                    @if (strtolower($transaction->transaction_type) === 'transfer' && !empty($transaction->receiver_mobile_number))
+                        {{ $transaction->receiver_mobile_number }}
+                    @else
+                        {{ $transaction->customer_mobile_number ?? 'N/A' }}
+                    @endif
+                </span>
+                <span class="label-en">Mobile</span>
+            </div>
+        @endif
         <div class="row"><span class="value">{{ number_format((int) $transaction->amount) }}</span><span
                 class="label-en">Amount</span></div>
         <div class="row"><span class="value">{{ number_format((int) $transaction->commission) }}</span><span
                 class="label-en">Commission</span></div>
+        @if (strtolower($transaction->transaction_type) === 'line_transfer' && $transaction->extra_fee > 0)
+            <div class="row"><span class="value">{{ number_format((int) $transaction->extra_fee) }}</span><span
+                    class="label-en">Extra Fee</span></div>
+        @endif
         @if ($transaction->deduction > 0)
             <div class="row"><span class="value">{{ number_format((int) abs($transaction->deduction)) }}</span><span
                     class="label-en">Discount</span></div>
@@ -126,14 +141,21 @@
         @php
             $isReceive = strtolower($transaction->transaction_type) === 'receive';
             $isWithdrawal = strtolower($transaction->transaction_type) === 'withdrawal';
+            $isLineTransfer = strtolower($transaction->transaction_type) === 'line_transfer';
             $amount = (int) $transaction->amount;
             $commission = (int) $transaction->commission;
             $deduction = (int) abs($transaction->deduction ?? 0);
-            $finalTotal = $isReceive
-                ? $amount - ($commission - $deduction)
-                : ($isWithdrawal
-                    ? $amount - $commission
-                    : $amount + $commission - $deduction);
+            $extraFee = (int) ($transaction->extra_fee ?? 0);
+            
+            if ($isLineTransfer) {
+                $finalTotal = (int) ($transaction->total_deducted ?? ($amount + $commission + $extraFee));
+            } else {
+                $finalTotal = $isReceive
+                    ? $amount - ($commission - $deduction)
+                    : ($isWithdrawal
+                        ? $amount - $commission
+                        : $amount + $commission - $deduction);
+            }
         @endphp
         <div class="row"><span class="value branch-bold">{{ number_format($finalTotal) }}</span><span
                 class="label-ar branch-bold">Total</span></div>

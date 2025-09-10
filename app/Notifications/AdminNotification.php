@@ -62,10 +62,13 @@ class AdminNotification extends Notification
         // Add type and transaction_id for withdrawal notifications
         if (stripos($this->message, 'withdrawal') !== false) {
             $data['type'] = 'withdrawal';
-            // Try to extract transaction id from the url if present
             if ($this->url && preg_match('/\/cash\/waiting-approval\/([0-9]+)/', $this->url, $matches)) {
                 $data['transaction_id'] = $matches[1];
             }
+        }
+        // Add type for line transfer notifications
+        if (stripos($this->message, 'line transfer') !== false || stripos($this->message, 'خط إلى خط') !== false) {
+            $data['type'] = 'line_transfer';
         }
         return $data;
     }

@@ -79,6 +79,17 @@
                     <p class="text-sm text-green-700">معاملة استلام</p>
                 </div>
             </a>
+            <a href="{{ route('transactions.line-transfer') }}" class="group flex items-center p-4 bg-purple-50 hover:bg-purple-100 border border-purple-100 rounded-xl transition-all duration-200">
+                <div class="w-12 h-12 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-purple-900">تحويل خط</h3>
+                    <p class="text-sm text-purple-700">تحويل رصيد بين الخطوط</p>
+                </div>
+            </a>
             @can('create-cash-transactions')
                 <a href="{{ route('transactions.cash') }}" class="group flex items-center p-4 bg-yellow-50 hover:bg-yellow-100 border border-yellow-100 rounded-xl transition-all duration-200">
                     <div class="w-12 h-12 bg-yellow-100 group-hover:bg-yellow-200 rounded-lg flex items-center justify-center mr-4">

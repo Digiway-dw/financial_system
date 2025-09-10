@@ -13,6 +13,13 @@ use App\Domain\Interfaces\LineRepository;
 
 class Pending extends Component
 {
+    /**
+     * Get the count of all pending transactions (including line transfers)
+     */
+    public function getPendingCount(): int
+    {
+        return is_array($this->pendingTransactions) ? count($this->pendingTransactions) : 0;
+    }
     public array $pendingTransactions;
 
     private ListPendingTransactions $listPendingTransactionsUseCase;
@@ -49,9 +56,12 @@ class Pending extends Component
 
     public function loadPendingTransactions()
     {
-        // Transactions that require approval: status 'Pending' and deduction > 0
+        // Transactions that require approval: status 'Pending' and (deduction > 0 OR is line transfer)
         $pendingTransactions = \App\Models\Domain\Entities\Transaction::where('status', 'Pending')
-            ->where('deduction', '>', 0)
+            ->where(function ($q) {
+                $q->where('deduction', '>', 0)
+                  ->orWhere('transaction_type', 'line_transfer');
+            })
             ->get()
             ->map(function ($tx) {
                 $arr = $tx->toArray();
