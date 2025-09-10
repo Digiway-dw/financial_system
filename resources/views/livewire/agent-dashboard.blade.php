@@ -7,34 +7,7 @@
 
         .sortable-header:hover {
             background-color: #f3f4f6 !important;
-            tra            <a href="{{ route('transactions.receive') }}"
-                class="group flex items-center p-4 bg-green-50 hover:bg-green-100 border border-green-100 rounded-xl transition-all duration-200">
-                <div
-                    class="w-12 h-12 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center mr-4">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-green-900">استلام المال</h3>
-                    <p class="text-sm text-green-700">معاملة استلام</p>
-                </div>
-            </a>
-            <a href="{{ route('transactions.line-transfer') }}"
-                class="group flex items-center p-4 bg-purple-50 hover:bg-purple-100 border border-purple-100 rounded-xl transition-all duration-200">
-                <div
-                    class="w-12 h-12 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center mr-4">
-                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-purple-900">تحويل خط</h3>
-                    <p class="text-sm text-purple-700">تحويل رصيد بين الخطوط</p>
-                </div>
-            </a>ateY(-1px);
+            transform: translateY(-1px);
         }
 
         .sortable-header:active {
@@ -266,6 +239,20 @@
                 <div>
                     <h3 class="font-semibold text-green-900">استقبال المال</h3>
                     <p class="text-sm text-green-700">معالجة المعاملة الواردة</p>
+                </div>
+            </a>
+            <a href="{{ route('transactions.line-transfer') }}"
+                class="group flex items-center p-4 bg-purple-50 hover:bg-purple-100 border border-purple-100 rounded-xl transition-all duration-200">
+                <div
+                    class="w-12 h-12 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-purple-900">تحويل خط</h3>
+                    <p class="text-sm text-purple-700">تحويل رصيد بين الخطوط</p>
                 </div>
             </a>
 
