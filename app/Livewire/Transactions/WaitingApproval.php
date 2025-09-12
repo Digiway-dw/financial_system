@@ -52,7 +52,7 @@ class WaitingApproval extends Component
                 $this->rejectionReason = $this->transaction->rejection_reason;
                 $this->isApproved = false;
                 $this->showContactMessage = false;
-            } elseif ($this->transaction->status === 'Completed') {
+            } elseif (strtolower($this->transaction->status) === 'completed') {
                 $this->isApproved = true;
                 $this->showContactMessage = false;
                 $this->isRejected = false;

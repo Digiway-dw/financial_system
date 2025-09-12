@@ -23,7 +23,7 @@ class LineTransfer extends Component
     public $amount = null;
     
     #[Validate('nullable|numeric|min:0')]
-    public $extraFee = 0.0;
+    public $discount = 0.0;
     
     #[Validate('nullable|string|max:500')]
     public $notes = '';
@@ -50,7 +50,7 @@ class LineTransfer extends Component
             'fromLineId' => 'required|exists:lines,id',
             'toLineId' => 'required|exists:lines,id|different:fromLineId',
             'amount' => 'required|numeric|min:0.01',
-            'extraFee' => 'nullable|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string|max:500',
         ];
     }
@@ -140,7 +140,7 @@ class LineTransfer extends Component
         $this->calculateFees();
     }
 
-    public function updatedExtraFee()
+    public function updatedDiscount()
     {
         $this->calculateFees();
     }
@@ -148,14 +148,13 @@ class LineTransfer extends Component
     public function calculateFees()
     {
         if ($this->amount > 0) {
-            // Base fee = 1% of amount
-            $this->baseFee = $this->amount * 0.01;
-            
-            // Total deducted = amount + base fee + extra fee
-                $this->totalDeducted = $this->amount + $this->baseFee + (float)($this->extraFee ?: 0);
-            
-            // Final amount received by to line = original amount
-            $this->finalAmount = $this->amount;
+            // Commission: 1 EGP for each 100 EGP (or part thereof)
+            $amountInt = (int) ceil($this->amount); // Always treat as integer
+            $this->baseFee = (int) ceil($amountInt / 100);
+            $discount = (int) ($this->discount ?: 0);
+            $finalCommission = max(0, $this->baseFee - $discount); // Commission can't be negative
+            $this->totalDeducted = $amountInt + $finalCommission;
+            $this->finalAmount = $amountInt;
         } else {
             $this->baseFee = 0;
             $this->totalDeducted = 0;
@@ -196,8 +195,8 @@ class LineTransfer extends Component
             $user = Auth::user();
             $isAdminOrSupervisor = $user->hasRole('admin') || $user->hasRole('general_supervisor');
             $needsApproval = !$isAdminOrSupervisor;
-            // Always use 'Pending' for transactions needing approval, 'Completed' otherwise
-            $status = $needsApproval ? 'Pending' : 'Completed';
+            // Always use 'pending' for transactions needing approval, 'completed' otherwise
+            $status = $needsApproval ? 'pending' : 'completed';
 
             // Generate reference number using the branch assigned to the fromLine
             $branchName = $fromLine->branch ? $fromLine->branch->name : 'Unknown';
@@ -209,7 +208,7 @@ class LineTransfer extends Component
                 $this->fromLineId,
                 $this->toLineId,
                 $this->amount,
-                (float)($this->extraFee ?? 0),
+                (float)($this->discount ?? 0),
                 $user->id,
                 $status,
                 $this->notes,
@@ -239,7 +238,7 @@ class LineTransfer extends Component
     public function resetForm()
     {
         $this->reset([
-            'fromLineId', 'toLineId', 'amount', 'extraFee', 'notes',
+            'fromLineId', 'toLineId', 'amount', 'discount', 'notes',
             'fromLineSearch', 'toLineSearch', 'fromLineSuggestions', 'toLineSuggestions',
             'baseFee', 'totalDeducted', 'finalAmount'
         ]);

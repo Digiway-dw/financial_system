@@ -13,8 +13,8 @@ class ListPendingTransactions
 
     public function execute(?int $branchId = null): array
     {
-        // Assuming 'Pending' is the status for pending transactions
-        return $this->transactionRepository->findByStatus('Pending', $branchId);
+    // Use 'pending' (lowercase) as the status for pending transactions
+    return $this->transactionRepository->findByStatus('pending', $branchId);
     }
 
     public function findById(string $transactionId): ?array

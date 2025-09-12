@@ -139,22 +139,22 @@
                             @enderror
                         </div>
 
-                        <!-- Extra Fee -->
+                        <!-- Discount -->
                         <div>
-                            <label for="extraFee" class="block text-sm font-semibold text-slate-700 mb-2">
-                                رسوم إضافية (اختياري)
+                            <label for="discount" class="block text-sm font-semibold text-slate-700 mb-2">
+                                خصم على العمولة (اختياري)
                             </label>
                             <div class="relative">
                                 <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">ج.م</span>
                                 <input type="number" 
-                                       wire:model.live="extraFee" 
-                                       id="extraFee"
+                                       wire:model.live="discount" 
+                                       id="discount"
                                        step="0.01" 
                                        min="0"
                                        class="w-full pl-14 pr-4 py-3 bg-white/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
                                        placeholder="">
                             </div>
-                            @error('extraFee')
+                            @error('discount')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
@@ -180,8 +180,13 @@
                                 </div>
                                 
                                 <div class="flex justify-between">
-                                    <span class="text-slate-600">الرسوم الإضافية:</span>
-                                    <span class="font-medium">{{ number_format($extraFee ?: 0, 2) }} ج.م</span>
+                                    <span class="text-slate-600">خصم على العمولة:</span>
+                                    <span class="font-medium text-green-600">{{ number_format($discount ?: 0, 2) }} ج.م</span>
+                                </div>
+                                
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600">الرسوم بعد الخصم:</span>
+                                    <span class="font-medium">{{ number_format(max(0, $baseFee - ($discount ?: 0)), 2) }} ج.م</span>
                                 </div>
                                 
                                 <div class="border-t border-slate-300 pt-3">

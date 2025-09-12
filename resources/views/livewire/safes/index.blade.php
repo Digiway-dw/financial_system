@@ -391,7 +391,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($clients as $client)
-                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                            <tr class="hover:bg-gray-50 transition-colors duration-150 {{ ($client['balance'] ?? 0) < 0 ? 'bg-red-50 border-l-4 border-red-400' : '' }}">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div
@@ -416,8 +416,13 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <span
-                                            class="text-2xl font-bold text-purple-600">{{ format_int($client['balance']) }}</span>
+                                            class="text-2xl font-bold {{ ($client['balance'] ?? 0) < 0 ? 'text-red-600' : 'text-purple-600' }}">{{ format_int($client['balance']) }}</span>
                                         <span class="text-sm text-gray-500 ml-1">ج.م</span>
+                                        @if(($client['balance'] ?? 0) < 0)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                                دين
+                                            </span>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

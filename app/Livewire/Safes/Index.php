@@ -57,9 +57,9 @@ class Index extends Component
         ];
         $result = $this->customerRepository->getAll($filters);
         $clients = $result['customers'] ?? $result;
-        // Include all customers with a wallet (balance is set, including 0 and negative values for debt mode)
+        // Only include customers with active wallets (is_client = true)
         $this->clients = array_filter($clients, function($client) {
-            return isset($client['balance']) && $client['balance'] !== null;
+            return isset($client['is_client']) && $client['is_client'] === true;
         });
     }
 

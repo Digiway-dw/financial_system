@@ -132,7 +132,7 @@
                 class="label-en">Commission</span></div>
         @if (strtolower($transaction->transaction_type) === 'line_transfer' && $transaction->extra_fee > 0)
             <div class="row"><span class="value">{{ number_format((int) $transaction->extra_fee) }}</span><span
-                    class="label-en">Extra Fee</span></div>
+                    class="label-en">Commission Discount</span></div>
         @endif
         @if ($transaction->deduction > 0)
             <div class="row"><span class="value">{{ number_format((int) abs($transaction->deduction)) }}</span><span
@@ -145,10 +145,11 @@
             $amount = (int) $transaction->amount;
             $commission = (int) $transaction->commission;
             $deduction = (int) abs($transaction->deduction ?? 0);
-            $extraFee = (int) ($transaction->extra_fee ?? 0);
+            $discount = (int) ($transaction->discount ?? 0);
             
             if ($isLineTransfer) {
-                $finalTotal = (int) ($transaction->total_deducted ?? ($amount + $commission + $extraFee));
+                // For line transfers, commission is already calculated with discount applied
+                $finalTotal = (int) ($transaction->total_deducted ?? ($amount + $commission));
             } else {
                 $finalTotal = $isReceive
                     ? $amount - ($commission - $deduction)

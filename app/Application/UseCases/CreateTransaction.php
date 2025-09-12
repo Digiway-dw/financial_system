@@ -517,7 +517,7 @@ class CreateTransaction
         int $fromLineId,
         int $toLineId,
         float $amount,
-        float $extraFee,
+        float $discount,
         int $agentId,
         string $status = 'pending',
         ?string $notes = null,
@@ -540,9 +540,12 @@ class CreateTransaction
             throw new \Exception('One or both lines not found.');
         }
 
-        // Calculate fees
-        $baseFee = $amount * 0.01; // 1% base fee
-        $totalDeducted = $amount + $baseFee + $extraFee;
+            // Calculate commission: 1 EGP for each 100 EGP (or part thereof)
+            $amountInt = (int) ceil($amount); // Always treat as integer
+            $baseFee = (int) ceil($amountInt / 100);
+            $discountInt = (int) $discount;
+            $finalCommission = max(0, $baseFee - $discountInt); // Commission can't be negative
+            $totalDeducted = $amountInt + $finalCommission;
 
         // Check from line balance
         if ($fromLine->current_balance < $totalDeducted) {
@@ -570,10 +573,10 @@ class CreateTransaction
             'transaction_type' => 'line_transfer',
             'from_line_id' => $fromLineId,
             'to_line_id' => $toLineId,
-            'amount' => $amount,
-            'commission' => $baseFee,
-            'extra_fee' => $extraFee,
-            'total_deducted' => $totalDeducted,
+                'amount' => $amountInt,
+                'commission' => $finalCommission,
+                'extra_fee' => $discountInt, // Store discount as extra_fee for record keeping
+                'total_deducted' => $totalDeducted,
             'status' => $status,
             'agent_id' => $agentId,
             'transaction_date_time' => now(),

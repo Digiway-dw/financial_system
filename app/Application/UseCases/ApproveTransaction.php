@@ -26,11 +26,11 @@ class ApproveTransaction
         if (!$transaction) {
             throw new \Exception('Transaction not found.');
         }
-        if ($transaction->status !== 'Pending') {
+        if (strtolower($transaction->status) !== 'pending') {
             throw new \Exception('Transaction is not pending and cannot be approved.');
         }
 
-        $transaction->status = 'Completed';
+        $transaction->status = 'completed';
         $transaction->approved_at = now();
         $transaction->approved_by = $reviewerId;
 
