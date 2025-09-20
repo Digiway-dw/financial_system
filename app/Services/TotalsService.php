@@ -145,4 +145,26 @@ class TotalsService
             ->values()
             ->all();
     }
+
+    /**
+     * Calculate total line transfer fees for the given filters
+     *
+     * @param array $filters
+     * @return float
+     */
+    public function calculateLineTransferFees(array $filters = []): float
+    {
+        $repository = new \App\Infrastructure\Repositories\EloquentTransactionRepository();
+        $result = $repository->allUnified($filters);
+        
+        $lineTransferFees = 0;
+        
+        foreach ($result['transactions'] ?? [] as $transaction) {
+            if (strtolower($transaction['transaction_type']) === 'line_transfer') {
+                $lineTransferFees += $transaction['commission'] ?? 0;
+            }
+        }
+        
+        return $lineTransferFees;
+    }
 }

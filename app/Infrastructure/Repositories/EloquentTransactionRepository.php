@@ -316,7 +316,22 @@ class EloquentTransactionRepository implements TransactionRepository
         }, SORT_REGULAR, $sortDirection === 'desc');
 
         $totalTransferred = $all->sum('amount');
-        $totalCommission = $all->sum('commission'); // Regular commissions only
+        // Exclude line transfer commissions from total commissions (they are expenses, not revenue)
+        if (isset($filters['exclude_line_transfer_commission']) && $filters['exclude_line_transfer_commission']) {
+            $totalCommission = $all->filter(function($tx) {
+                $transactionType = strtolower(trim($tx['transaction_type'] ?? ''));
+                return $transactionType !== 'line_transfer';
+            })->sum('commission');
+        } else if (isset($filters['transaction_type']) && $filters['transaction_type'] === 'line_transfer') {
+            // If filtering only line_transfer, show their actual commission (for detail view)
+            $totalCommission = $all->sum('commission');
+        } else {
+            // Default: legacy behavior (exclude line_transfer commissions)
+            $totalCommission = $all->filter(function($tx) {
+                $transactionType = strtolower(trim($tx['transaction_type'] ?? ''));
+                return $transactionType !== 'line_transfer';
+            })->sum('commission');
+        }
         $totalDeductions = $all->sum('deduction');
 
         // Calculate profit per branch and then sum them up
@@ -335,8 +350,14 @@ class EloquentTransactionRepository implements TransactionRepository
             $totalProfitContribution += $branchExpenses; // Only add the negative expenses
         }
 
-        // Overall net profit is the sum of all branch profits
-        $netProfit = $totalCommission + $totalProfitContribution; // This should equal sum of all branch profits
+        // Overall net profit calculation
+        $netProfit = $totalCommission + $totalProfitContribution;
+        
+        // Special handling for line_transfer filter: show fees as negative profit (expenses)
+        if (isset($filters['transaction_type']) && $filters['transaction_type'] === 'line_transfer') {
+            $lineTransferFees = $all->sum('commission'); // Get the actual line transfer fees
+            $netProfit = -$lineTransferFees; // Show as negative (expense)
+        }
 
         return [
             'transactions' => $all->values()->all(),
@@ -491,6 +512,9 @@ class EloquentTransactionRepository implements TransactionRepository
             if ($transaction->transaction_type === 'Transfer') {
                 $arr['commission'] -= 1; // Deduct 1 EGP fee from net profit
             }
+
+            // Treat all commissions as positive profit for now
+            $arr['profit_contribution'] = $arr['commission'];
 
             $arr['deduction'] = $transaction->deduction ?? 0;
             $arr['source_table'] = 'transactions';
@@ -691,7 +715,10 @@ class EloquentTransactionRepository implements TransactionRepository
         $all = $all->values();
 
         $totalTransferred = $all->sum('amount');
-        $totalCommission = $all->sum('commission'); // Regular commissions only
+        // Exclude line transfer commissions from total commissions (they are expenses, not revenue)
+        $totalCommission = $all->filter(function($tx) {
+            return strtolower($tx['transaction_type']) !== 'line_transfer';
+        })->sum('commission');
         $totalDeductions = $all->sum('deduction');
 
         // Calculate profit per branch and then sum them up
@@ -710,8 +737,14 @@ class EloquentTransactionRepository implements TransactionRepository
             $totalProfitContribution += $branchExpenses; // Only add the negative expenses
         }
 
-        // Overall net profit is the sum of all branch profits
-        $netProfit = $totalCommission + $totalProfitContribution; // This should equal sum of all branch profits
+        // Overall net profit calculation (second method)
+        $netProfit = $totalCommission + $totalProfitContribution;
+        
+        // Special handling for line_transfer filter: show fees as negative profit (expenses)
+        if (isset($filters['transaction_type']) && $filters['transaction_type'] === 'line_transfer') {
+            $lineTransferFees = $all->sum('commission'); // Get the actual line transfer fees
+            $netProfit = -$lineTransferFees; // Show as negative (expense)
+        }
 
         return [
             'transactions' => $all->toArray(),

@@ -3,6 +3,7 @@
 namespace App\Livewire\Reports;
 
 use Livewire\Component;
+use Livewire\Attributes\Locked;
 use App\Models\Domain\Entities\Transaction;
 use App\Models\Domain\Entities\CashTransaction;
 use App\Domain\Entities\User;
@@ -62,14 +63,26 @@ class Enhanced extends Component
     public $selectedLine = ''; // New property for line filter
     public $lines = []; // Store lines for dropdown
 
-    // Services
-    private TotalsService $totalsService;
-    private EloquentTransactionRepository $transactionRepository;
+    // Services - these should not be serialized
+    #[Locked]
+    private ?TotalsService $totalsService = null;
+    #[Locked]
+    private ?EloquentTransactionRepository $transactionRepository = null;
 
-    public function boot(TotalsService $totalsService, EloquentTransactionRepository $transactionRepository)
+    private function getTotalsService(): TotalsService
     {
-        $this->totalsService = $totalsService;
-        $this->transactionRepository = $transactionRepository;
+        if (!$this->totalsService) {
+            $this->totalsService = app(TotalsService::class);
+        }
+        return $this->totalsService;
+    }
+
+    private function getTransactionRepository(): EloquentTransactionRepository
+    {
+        if (!$this->transactionRepository) {
+            $this->transactionRepository = app(EloquentTransactionRepository::class);
+        }
+        return $this->transactionRepository;
     }
 
     public function mount()
@@ -203,12 +216,13 @@ class Enhanced extends Component
             $filters['customer_name'] = $this->filterCustomerName;
         }
         if ($this->filterTransactionType) {
-            // Normalize to match DB values: Receive, Transfer, Deposit, Withdrawal
+            // Map filter values to exact DB values 
             $typeMap = [
                 'receive' => 'Receive',
-                'transfer' => 'Transfer',
-                'Deposit' => 'Deposit',
-                'Withdrawal' => 'Withdrawal',
+                'transfer' => 'Transfer', 
+                'line_transfer' => 'line_transfer',
+                'deposit' => 'Deposit',
+                'withdrawal' => 'Withdrawal',
             ];
             $filters['transaction_type'] = $typeMap[$this->filterTransactionType] ?? $this->filterTransactionType;
         }
@@ -229,18 +243,28 @@ class Enhanced extends Component
     private function generateTransactionReport($filters)
     {
         // Fetch all filtered transactions (ordinary + cash) from repository
-        $result = $this->transactionRepository->allUnified($filters);
+        $result = $this->getTransactionRepository()->allUnified($filters);
         $allTransactions = collect($result['transactions']);
 
-        // Apply pagination
-        $paginatedTransactions = $allTransactions->take($this->perPage)->all();
+        // Apply pagination and modify line transfer commissions for display
+        $paginatedTransactions = $allTransactions->take($this->perPage)->map(function ($transaction) {
+            if (strtolower($transaction['transaction_type']) === 'line_transfer') {
+                $transaction['commission'] = 0; // Show 0 commission for line transfers in table
+            }
+            return $transaction;
+        })->all();
+
         $this->transactions = $paginatedTransactions;
         $this->totalCount = $allTransactions->count();
         $this->hasMore = $this->totalCount > $this->perPage;
 
-        // Calculate totals using only the displayed transactions
-        // Use TotalsService for net profit to match system backend exactly
-        $totalsServiceTotals = $this->totalsService->calculateTotals($filters);
+        // Always exclude line transfer commissions from totals unless explicitly filtering for line_transfer
+        $totalsFilters = $filters;
+        if (empty($this->filterTransactionType)) {
+            // Exclude line_transfer from totals by default
+            $totalsFilters['exclude_line_transfer_commission'] = true;
+        }
+        $totalsServiceTotals = $this->getTotalsService()->calculateTotals($totalsFilters);
         $this->totals = [
             'total_turnover' => $totalsServiceTotals['total_turnover'],
             'total_commissions' => $totalsServiceTotals['total_commissions'],
@@ -326,7 +350,7 @@ class Enhanced extends Component
         }
 
         // If no transactions match, return empty results
-        $result = $this->transactionRepository->allUnified($filters);
+        $result = $this->getTransactionRepository()->allUnified($filters);
         if (empty($result['transactions'])) {
             $this->transactions = [];
             $this->totals = [];
@@ -349,17 +373,17 @@ class Enhanced extends Component
         $clientsWalletSum = $clientsQuery->sum('balance');
 
         $this->branchDetails = [
-            'safe_balances' => $this->totalsService->getSafeBalances($branchIds),
-            'line_balances' => $this->totalsService->getLineBalances($branchIds),
+            'safe_balances' => $this->getTotalsService()->getSafeBalances($branchIds),
+            'line_balances' => $this->getTotalsService()->getLineBalances($branchIds),
             'clients_wallet_sum' => $clientsWalletSum,
         ];
 
         // Generate transaction report with branch expenses
         $this->generateTransactionReport($filters);
-        $this->totals['total_expenses'] = $this->totalsService->calculateBranchExpenses($filters);
+        $this->totals['total_expenses'] = $this->getTotalsService()->calculateBranchExpenses($filters);
 
         // Always use backend logic for net profit with expenses for branch report
-        $this->totals['net_profit'] = $this->totalsService->calculateNetProfitWithExpenses($filters);
+        $this->totals['net_profit'] = $this->getTotalsService()->calculateNetProfitWithExpenses($filters);
     }
 
     private function getCustomerSafeBalance($customer)

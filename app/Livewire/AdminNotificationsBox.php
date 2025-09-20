@@ -216,8 +216,10 @@ class AdminNotificationsBox extends Component
                     }
                 }
             }
-            // Update status to completed
+            // Update status to completed and set approved fields
             $cashTransaction->status = 'completed';
+            $cashTransaction->approved_at = now();
+            $cashTransaction->approved_by = Auth::user()->id;
             $cashTransaction->save();
             session()->flash('message', 'Cash withdrawal approved and balances updated!');
             $notification->markAsRead();

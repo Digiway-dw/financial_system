@@ -23,6 +23,18 @@ class CashTransaction extends Model
         'destination_branch_id',
         'destination_safe_id',
         'reference_number',
+        'approved_at',
+        'approved_by',
+        'rejected_by',
+        'rejected_at',
+        'rejection_reason',
+    ];
+
+    protected $casts = [
+        'transaction_date_time' => 'datetime',
+        'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
+        'amount' => 'decimal:2',
     ];
 
     public function getCommissionAttribute()

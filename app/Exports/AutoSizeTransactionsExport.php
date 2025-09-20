@@ -24,6 +24,13 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
         $transactionRows = $this->transactions->map(function ($transaction) {
             $commission = $transaction['commission'] ?? $transaction->commission ?? 0;
             $deduction = $transaction['deduction'] ?? $transaction->deduction ?? 0;
+            
+            // For line transfers, don't show commission (it's an expense, not commission)
+            $transactionType = $transaction['transaction_type'] ?? $transaction->transaction_type ?? '';
+            if (strtolower($transactionType) === 'line_transfer') {
+                $commission = 0; // Line transfer fees are expenses, not commissions
+            }
+            
             // Robust branch name extraction
             $branchName = null;
             if (is_array($transaction)) {
@@ -62,10 +69,15 @@ class AutoSizeTransactionsExport implements FromCollection, WithHeadings, Should
                 'Source' => $transaction['source'] ?? $transaction->source ?? '',
             ];
         });
-        // Calculate totals
+        // Calculate totals - exclude line transfer commissions from total commissions
         $totalAmount = $transactionRows->sum('Amount (EGP)');
-        $totalCommission = $transactionRows->sum('Commission (EGP)');
         $totalDeduction = $transactionRows->sum('Deduction (EGP)');
+        
+        // Calculate commissions excluding line transfers (they are expenses, not commissions)
+        $totalCommission = $transactionRows->filter(function ($row) {
+            return strtolower($row['Transaction Type']) !== 'line_transfer';
+        })->sum('Commission (EGP)');
+        
         // Add totals row
         $totalsRow = [
             'Reference Number' => 'الإجمالي (Total)',

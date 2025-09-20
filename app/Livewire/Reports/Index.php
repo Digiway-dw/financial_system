@@ -33,7 +33,7 @@ class Index extends Component
     public $users = [];
     public $branches = [];
     public $customers = [];
-    public $transactionTypes = ['Transfer', 'Receive', 'Withdrawal', 'Deposit', 'Adjustment'];
+    public $transactionTypes = ['Transfer', 'Receive', 'Withdrawal', 'Deposit', 'Adjustment', 'line_transfer'];
     public $selectedCustomerCode;
     public $customerMobileNumber;
     public $selectedLine;
@@ -123,7 +123,16 @@ class Index extends Component
         // Apply pagination
         $this->totalCount = $all->count();
         $this->hasMore = $all->count() > $this->perPage;
-        $this->transactions = $all->take($this->perPage)->all();
+        
+        // Set line transfer commissions to 0 for display purposes only
+        $displayTransactions = $all->take($this->perPage)->map(function ($transaction) {
+            if (strtolower($transaction['transaction_type']) === 'line_transfer') {
+                $transaction['commission'] = 0; // Show 0 commission for line transfers in index
+            }
+            return $transaction;
+        });
+        
+        $this->transactions = $displayTransactions->all();
 
         // Use the accurate financial summary from the repository
         $this->financialSummary = [

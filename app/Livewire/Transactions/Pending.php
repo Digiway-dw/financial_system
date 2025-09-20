@@ -201,8 +201,10 @@ class Pending extends Component
                     }
                 }
             }
-            // Update status to completed
+            // Update status to completed and set approved fields
             $cashTransaction->status = 'completed';
+            $cashTransaction->approved_at = now();
+        $cashTransaction->approved_by = auth()->id();
             $cashTransaction->save();
             session()->flash('message', 'Cash withdrawal approved and balances updated!');
             $this->loadPendingTransactions();

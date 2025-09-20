@@ -17,8 +17,9 @@
                 <option value="">كل الأنواع</option>
                 <option value="receive">استلام</option>
                 <option value="transfer">تحويل</option>
-                <option value="Deposit">إيداع</option>
-                <option value="Withdrawal">سحب</option>
+                <option value="line_transfer">تحويل بين خطوط</option>
+                <option value="deposit">إيداع</option>
+                <option value="withdrawal">سحب</option>
                 <!-- adjustment removed -->
             </select>
         </div>

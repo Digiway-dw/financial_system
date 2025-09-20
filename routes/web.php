@@ -56,6 +56,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('transactions/pending', \App\Livewire\Transactions\Pending::class)
     ->name('transactions.pending')
     ->middleware('can:approve-pending-transactions');
+    Route::get('transactions/history', \App\Livewire\Transactions\History::class)
+    ->name('transactions.history')
+    ->middleware('can:approve-pending-transactions');
     Route::get('transactions/waiting-approval/{transactionId}', \App\Livewire\Transactions\WaitingApproval::class)
         ->name('transactions.waiting-approval');
     Route::get('transactions/cash/waiting-approval/{cashTransaction}', \App\Livewire\Transactions\WaitingApproval::class)

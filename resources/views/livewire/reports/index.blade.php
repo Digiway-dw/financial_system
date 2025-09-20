@@ -132,7 +132,13 @@
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl">
                         <option value="">جميع</option>
                         @foreach ($transactionTypes as $type)
-                            <option value="{{ $type }}">{{ $type }}</option>
+                            <option value="{{ $type }}">
+                                @if($type === 'line_transfer')
+                                    تحويل بين خطوط
+                                @else
+                                    {{ $type }}
+                                @endif
+                            </option>
                         @endforeach
                     </select>
                 </div>

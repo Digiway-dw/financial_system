@@ -33,15 +33,13 @@ class PendingTransactionsCounter extends Component
             return;
         }
 
-        $pendingTxCount = Transaction::where('status', 'Pending')
-            ->where('deduction', '>', 0)
-            ->count();
-            
-        $pendingCashCount = CashTransaction::where('status', 'pending')
-            ->where('transaction_type', 'Withdrawal')
-            ->count();
-            
-        $this->pendingCount = $pendingTxCount + $pendingCashCount;
+    // Count all pending regular transactions (withdrawals and line transfers)
+    $pendingTxCount = Transaction::where('status', 'Pending')->count();
+
+    // Count all pending cash transactions
+    $pendingCashCount = CashTransaction::where('status', 'pending')->count();
+
+    $this->pendingCount = $pendingTxCount + $pendingCashCount;
     }
 
     public function render()

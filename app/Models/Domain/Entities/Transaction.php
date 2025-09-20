@@ -41,10 +41,17 @@ class Transaction extends Model
         'notes', // add notes to fillable
         'branch_id',
         'reference_number',
+        'approved_by',
+        'approved_at',
+        'rejected_by',
+        'rejected_at',
+        'rejection_reason',
     ];
 
     protected $casts = [
         'transaction_date_time' => 'datetime',
+        'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
         'amount' => 'decimal:2',
         'commission' => 'decimal:2',
         'deduction' => 'decimal:2',
