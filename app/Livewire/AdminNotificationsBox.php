@@ -142,14 +142,7 @@ class AdminNotificationsBox extends Component
         
         $transactionId = $notification->data['transaction_id'] ?? null;
         
-        // Debug logging
-        \Illuminate\Support\Facades\Log::info('AdminNotificationsBox approveNotification', [
-            'notification_id' => $notificationId,
-            'type' => $type,
-            'transaction_id' => $transactionId,
-            'user_id' => $user->id,
-            'user_roles' => $user->getRoleNames(),
-        ]);
+      
         
         if ($type === 'withdrawal' && $transactionId) {
             $cashTransaction = \App\Models\Domain\Entities\CashTransaction::find($transactionId);
@@ -247,15 +240,7 @@ class AdminNotificationsBox extends Component
         }
         
         $transactionId = $notification->data['transaction_id'] ?? null;
-        
-        // Debug logging
-        \Illuminate\Support\Facades\Log::info('AdminNotificationsBox rejectNotification', [
-            'notification_id' => $notificationId,
-            'type' => $type,
-            'transaction_id' => $transactionId,
-            'user_id' => $user->id,
-            'user_roles' => $user->getRoleNames(),
-        ]);
+       
         
         if ($type === 'withdrawal' && $transactionId) {
             $cashTransaction = \App\Models\Domain\Entities\CashTransaction::find($transactionId);

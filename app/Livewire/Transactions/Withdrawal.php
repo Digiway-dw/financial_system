@@ -770,9 +770,6 @@ class Withdrawal extends Create
 
     public function render()
     {
-        Log::info('WITHDRAWAL COMPONENT RENDERED');
-        return view('livewire.transactions.withdrawal', [
-            'users' => $this->branchUsers,
-        ]);
+       
     }
 }

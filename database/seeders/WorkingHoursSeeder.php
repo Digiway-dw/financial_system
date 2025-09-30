@@ -54,7 +54,6 @@ class WorkingHoursSeeder extends Seeder
 
                         $count++;
                     } catch (\Exception $e) {
-                        Log::error("Failed to create working hours for user {$user->id} on {$day}: " . $e->getMessage());
                         $this->command->error("Error for user {$user->name} on {$day}: {$e->getMessage()}");
                     }
                 }

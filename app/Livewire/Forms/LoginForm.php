@@ -138,16 +138,9 @@ class LoginForm extends Form
                     throw new \Exception('Failed to parse one or more time values');
                 }
             } catch (\Exception $e) {
-                Log::error('Time parsing error in working hours validation', [
-                    'error' => $e->getMessage(),
-                    'current_time' => $currentTime,
-                    'start_time' => $workingHour->start_time,
-                    'end_time' => $workingHour->end_time,
-                    'user_id' => $user->id,
-                ]);
+               
                 
                 // If time parsing fails, allow login to avoid blocking users
-                Log::warning('Working hours validation skipped due to time parsing error - allowing login');
                 return;
             }
             
@@ -162,23 +155,7 @@ class LoginForm extends Form
         }
         
         if ($isOutsideWorkingHours) {
-            // Log the violation attempt
-            Log::warning("User {$user->id} ({$user->email}) attempted to login outside working hours", [
-                'user_id' => $user->id,
-                'day' => $currentDayOfWeek,
-                'time' => $currentTime,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'working_hour_id' => $workingHour?->id,
-                'start_time' => $workingHour?->start_time,
-                'end_time' => $workingHour?->end_time,
-                'debug_info' => [
-                    'current_time_parsed' => isset($currentTimeCarbon) ? $currentTimeCarbon->format('H:i:s') : null,
-                    'start_time_parsed' => isset($startTimeCarbon) ? $startTimeCarbon->format('H:i:s') : null,
-                    'end_time_parsed' => isset($endTimeCarbon) ? $endTimeCarbon->format('H:i:s') : null,
-                    'is_outside_hours' => $isOutsideWorkingHours,
-                ],
-            ]);
+          
 
             // Send notification to admin users
             $this->notifyAdminOfViolation($user, $workingHour, $currentDayOfWeek, $currentTime);
@@ -209,20 +186,6 @@ class LoginForm extends Form
             ]);
         }
 
-        // Log successful working hours validation
-        Log::info("User {$user->id} ({$user->email}) login validated within working hours", [
-            'user_id' => $user->id,
-            'day' => $currentDayOfWeek,
-            'time' => $currentTime,
-            'working_hour_id' => $workingHour->id,
-            'start_time' => $workingHour->start_time,
-            'end_time' => $workingHour->end_time,
-            'debug_info' => [
-                'current_time_parsed' => $this->parseTimeString($currentTime)?->format('H:i:s') ?? $currentTime,
-                'start_time_parsed' => $this->parseTimeString($workingHour->start_time)?->format('H:i:s') ?? $workingHour->start_time,
-                'end_time_parsed' => $this->parseTimeString($workingHour->end_time)?->format('H:i:s') ?? $workingHour->end_time,
-            ],
-        ]);
     }
 
     /**
@@ -243,27 +206,14 @@ class LoginForm extends Form
         
         if (!$branch) {
             // Branch not found, log error but allow login
-            Log::error('User assigned to non-existent branch', [
-                'user_id' => $user->id,
-                'user_email' => $user->email,
-                'branch_id' => $user->branch_id,
-            ]);
+           
             return;
         }
 
         // Check if branch is inactive
         if (!$branch->is_active) {
             // Log the branch status violation
-            Log::warning('User attempted login with inactive branch', [
-                'user_id' => $user->id,
-                'user_email' => $user->email,
-                'user_name' => $user->name,
-                'branch_id' => $branch->id,
-                'branch_name' => $branch->name,
-                'branch_status' => $branch->is_active,
-                'ip_address' => request()->ip(),
-                'timestamp' => now()->toDateTimeString(),
-            ]);
+        
 
             // Send notification to admin users about inactive branch login attempt
             $this->notifyAdminOfInactiveBranchAttempt($user, $branch);
@@ -283,12 +233,7 @@ class LoginForm extends Form
         }
 
         // Log successful branch validation
-        Log::info("User {$user->id} ({$user->email}) login validated with active branch", [
-            'user_id' => $user->id,
-            'branch_id' => $branch->id,
-            'branch_name' => $branch->name,
-            'branch_status' => $branch->is_active,
-        ]);
+       
     }
 
     /**
@@ -328,10 +273,7 @@ class LoginForm extends Form
         try {
             return Carbon::parse($timeString);
         } catch (\Exception $e) {
-            Log::error('Failed to parse time string with all methods', [
-                'time_string' => $timeString,
-                'error' => $e->getMessage(),
-            ]);
+         
             return null;
         }
     }
@@ -383,23 +325,12 @@ class LoginForm extends Form
                     $message,
                     url('/notifications') // URL to view notifications
                 ));
-                Log::info('Admin notification sent for working hours violation', [
-                    'user_id' => $user->id,
-                    'admin_count' => $admins->count(),
-                    'violation_time' => $currentTime,
-                    'day' => $currentDayOfWeek,
-                ]);
+               
             } else {
-                Log::warning('No admin users found to notify about working hours violation', [
-                    'user_id' => $user->id,
-                ]);
+              
             }
         } catch (\Exception $e) {
-            Log::error('Failed to send admin notification for working hours violation', [
-                'error' => $e->getMessage(),
-                'user_id' => $user->id,
-                'trace' => $e->getTraceAsString(),
-            ]);
+         
         }
     }
 
@@ -441,24 +372,12 @@ class LoginForm extends Form
                     $message,
                     url('/admin/branches') // URL to manage branches
                 ));
-                Log::info('Admin notification sent for inactive branch login attempt', [
-                    'user_id' => $user->id,
-                    'branch_id' => $branch->id,
-                    'admin_count' => $admins->count(),
-                ]);
+              
             } else {
-                Log::warning('No admin users found to notify about inactive branch login attempt', [
-                    'user_id' => $user->id,
-                    'branch_id' => $branch->id,
-                ]);
+                
             }
         } catch (\Exception $e) {
-            Log::error('Failed to send admin notification for inactive branch login attempt', [
-                'error' => $e->getMessage(),
-                'user_id' => $user->id,
-                'branch_id' => $branch->id,
-                'trace' => $e->getTraceAsString(),
-            ]);
+           
         }
     }
 }

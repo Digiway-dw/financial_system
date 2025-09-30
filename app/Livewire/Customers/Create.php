@@ -183,16 +183,7 @@ class Create extends Component
         $newBalance = $branchSafe->current_balance + $amount;
         $this->safeRepository->update($branchSafe->id, ['current_balance' => $newBalance]);
         
-        // Log the safe update for audit purposes
-        \Log::info('Safe balance updated for customer creation', [
-            'safe_id' => $branchSafe->id,
-            'safe_name' => $branchSafe->name,
-            'branch_id' => $branchId,
-            'amount_added' => $amount,
-            'previous_balance' => $branchSafe->current_balance,
-            'new_balance' => $newBalance,
-            'created_by' => Auth::id()
-        ]);
+       
     }
 
     public function backToForm()

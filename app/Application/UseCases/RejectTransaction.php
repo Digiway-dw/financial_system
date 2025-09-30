@@ -24,14 +24,7 @@ class RejectTransaction
             throw new \Exception('Transaction not found.');
         }
 
-        // Debug logging
-        \Log::debug('RejectTransaction attempt', [
-            'transaction_id' => $transactionId,
-            'transaction_type' => $transaction->transaction_type,
-            'transaction_status' => $transaction->status,
-            'reviewer_id' => $reviewerId,
-            'reviewer_roles' => \App\Domain\Entities\User::find($reviewerId)?->getRoleNames(),
-        ]);
+      
 
         if ($transaction->status !== 'Pending') {
             // Allow admins and supervisors to reject cash transactions regardless of status

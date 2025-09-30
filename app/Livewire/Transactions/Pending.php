@@ -197,14 +197,7 @@ class Pending extends Component
         $source = $transaction['source'] ?? null;
 
         // Debug logging
-        Log::debug('PendingComponent reject attempt', [
-            'transaction_id' => $transactionId,
-            'transaction_type' => $transaction['transaction_type'] ?? null,
-            'transaction_status' => $transaction['status'] ?? null,
-            'user_id' => $user->id,
-            'user_roles' => $user->getRoleNames(),
-            'source' => $source,
-        ]);
+       
 
         if (!$transaction) {
             session()->flash('error', 'Transaction not found.');

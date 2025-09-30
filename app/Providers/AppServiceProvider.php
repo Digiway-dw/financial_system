@@ -188,11 +188,7 @@ class AppServiceProvider extends ServiceProvider
         // Enable query logging in development
         if (config('app.debug')) {
             DB::listen(function ($query) {
-                Log::channel('daily')->info('Query executed', [
-                    'sql' => $query->sql,
-                    'bindings' => $query->bindings,
-                    'time' => $query->time . 'ms'
-                ]);
+               
             });
         }
 
@@ -262,7 +258,6 @@ class AppServiceProvider extends ServiceProvider
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             ]]);
         } catch (\Exception $e) {
-            Log::warning('Database configuration failed: ' . $e->getMessage());
         }
     }
 
@@ -280,7 +275,6 @@ class AppServiceProvider extends ServiceProvider
                 default => null,
             };
         } catch (\Exception $e) {
-            Log::warning('URL configuration failed: ' . $e->getMessage());
         }
     }
 
@@ -437,7 +431,6 @@ class AppServiceProvider extends ServiceProvider
                 }
             });
         } catch (\Exception $e) {
-            Log::warning('View composer registration failed: ' . $e->getMessage());
         }
     }
 
@@ -491,7 +484,6 @@ class AppServiceProvider extends ServiceProvider
                 Blade::component($iconName, $alias . '-icon');
             }
         } catch (\Exception $e) {
-            Log::warning('Icon configuration failed: ' . $e->getMessage());
         }
     }
 

@@ -143,16 +143,7 @@ class BalanceEditor extends Component
             ]);
 
             // Log the activity
-            Log::info('Safe balance adjusted', [
-                'safe_id' => $safe->id,
-                'safe_name' => $safe->name,
-                'old_balance' => $oldBalance,
-                'new_balance' => $newBalance,
-                'difference' => $difference,
-                'admin_user' => Auth::user()->name,
-                'reason' => $this->adjustmentReason,
-                'transaction_id' => $transaction->id,
-            ]);
+         
 
             DB::commit();
 
@@ -162,11 +153,7 @@ class BalanceEditor extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to update safe balance', [
-                'safe_id' => $this->selectedSafeId,
-                'error' => $e->getMessage(),
-                'admin_user' => Auth::user()->name,
-            ]);
+         
             $this->errorMessage = 'فشل تحديث رصيد الخزينة. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.';
         }
     }

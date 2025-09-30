@@ -295,27 +295,14 @@ class Receive extends Component
                 . "Note: {$this->discountNotes}\n"
                 . "Transaction ID: {$transaction->id}";
             $admins = \App\Domain\Entities\User::role('admin')->get();
-            
-            // Log for debugging
-            \Illuminate\Support\Facades\Log::info('Sending receive transaction notification', [
-                'transaction_id' => $transaction->id,
-                'admin_count' => $admins->count(),
-                'message' => $adminNotificationMessage
-            ]);
+           
             
                             \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->reference_number)));
             
-            // Log success
-            \Illuminate\Support\Facades\Log::info('Receive transaction notification sent successfully', [
-                'transaction_id' => $transaction->id
-            ]);
+           
         } catch (\Exception $e) {
             // Log the error
-            \Illuminate\Support\Facades\Log::error('Failed to send receive transaction notification', [
-                'transaction_id' => $transaction->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+          
             
             // Don't throw the exception to avoid breaking the transaction
             // Just log it for debugging
@@ -431,18 +418,11 @@ class Receive extends Component
             // Only if transaction was created, proceed with notification and redirect
             if ($createdTransaction) {
                 // Log for debugging
-                \Illuminate\Support\Facades\Log::info('Receive transaction created successfully', [
-                    'transaction_id' => $createdTransaction->id,
-                    'discount' => $this->discount ?? 0,
-                    'has_discount' => ($this->discount ?? 0) > 0
-                ]);
+              
                 
                 if (($this->discount ?? 0) > 0) {
                     // Notify admin for approval - using direct notification like Send component
-                    \Illuminate\Support\Facades\Log::info('Sending notification for receive transaction with discount', [
-                        'transaction_id' => $createdTransaction->id,
-                        'discount' => $this->discount
-                    ]);
+                   
                     
                     $discountDisplay = $this->discount ?? 0;
                     $adminNotificationMessage = "تم إنشاء معاملة إستلام بخصم {$discountDisplay} EGP.\n"
