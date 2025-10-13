@@ -23,18 +23,45 @@
                 <!-- adjustment removed -->
             </select>
         </div>
-        {{-- Line Filter --}}
-        <div>
+        {{-- Line Filter with Search --}}
+        <div class="relative">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-                اختيار الخط
+                البحث عن الخط
             </label>
-            <select wire:model.live="selectedLine"
-                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">اختر خط</option>
-                @foreach ($lines as $lineId => $lineName)
-                    <option value="{{ $lineId }}">{{ $lineName }}</option>
-                @endforeach
-            </select>
+            <div class="relative">
+                <input wire:model.live.debounce.300ms="lineSearch" type="text"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="اكتب رقم الخط" autocomplete="off">
+
+                @if (!empty($filteredLines))
+                    <div
+                        class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-40 overflow-y-auto">
+                        @foreach ($filteredLines as $lineId => $mobileNumber)
+                            <div wire:click="selectLine('{{ $lineId }}', '{{ $mobileNumber }}')"
+                                class="px-4 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0">
+                                {{ $mobileNumber }}
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                @if ($selectedLine && $lineSearch)
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                        <button wire:click="selectLine('', '')"
+                            class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                @endif
+            </div>
+            @if ($selectedLine && $lineSearch)
+                <div class="mt-1 text-xs text-green-600">
+                    ✓ تم اختيار الخط: {{ $lineSearch }}
+                </div>
+            @endif
         </div>
 
         {{-- Reference Number Filter --}}
@@ -113,7 +140,8 @@
 
         {{-- Mobile Number Filter --}}
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">رقم الجوال (إرسال أو استقبال أو رقم العميل)</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">رقم الجوال (إرسال أو استقبال أو رقم
+                العميل)</label>
             <input wire:model.live.debounce.500ms="filterMobileNumber" type="text" maxlength="11" pattern="[0-9]{11}"
                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="أدخل رقم الجوال للبحث في الإرسال أو الاستقبال أو رقم العميل"

@@ -31,7 +31,8 @@
         </div>
 
         {{-- Universal Filters --}}
-        <x-reports.filters :branches="$branches" :employees="$employees" :showEmployeeFilter="$showEmployeeFilter" :showCustomerFilter="$showCustomerFilter" :lines="$lines" :reportType="$reportType" />
+        <x-reports.filters :branches="$branches" :employees="$employees" :showEmployeeFilter="$showEmployeeFilter" :showCustomerFilter="$showCustomerFilter" :lines="$lines"
+            :selectedLine="$selectedLine" :lineSearch="$lineSearch" :filteredLines="$filteredLines" :reportType="$reportType" />
 
         {{-- Employee Summary Card --}}
         @if ($reportType === 'employee' && $employeeDetails)
@@ -89,7 +90,8 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">رصيد المحفظة</p>
-                        <p class="text-lg font-semibold {{ $customerDetails['is_client'] ? 'text-green-600' : 'text-gray-400' }}">
+                        <p
+                            class="text-lg font-semibold {{ $customerDetails['is_client'] ? 'text-green-600' : 'text-gray-400' }}">
                             {{ $customerDetails['is_client'] ? number_format($customerDetails['balance'], 2) . ' EGP' : 'غير متاح' }}
                         </p>
                     </div>
@@ -100,13 +102,20 @@
                                 {{ number_format($customerDetails['safe_balance'], 2) }} EGP</p>
                         </div>
                     @endif
-                    @if (!empty($customerDetails['balance']) && !empty($customerDetails['is_client']) && !empty($customerDetails['allow_debt']) && $customerDetails['allow_debt'])
+                    @if (
+                        !empty($customerDetails['balance']) &&
+                            !empty($customerDetails['is_client']) &&
+                            !empty($customerDetails['allow_debt']) &&
+                            $customerDetails['allow_debt']
+                    )
                         <div>
                             <p class="text-sm font-medium text-red-500">الدين الحالي</p>
                             <p class="text-lg font-semibold text-red-600">
                                 {{ $customerDetails['balance'] < 0 ? abs($customerDetails['balance']) . ' EGP' : '0 EGP' }}
                             </p>
-                            <p class="text-xs text-red-400">الحد الأقصى للدين: {{ isset($customerDetails['max_debt_limit']) ? abs($customerDetails['max_debt_limit']) . ' EGP' : 'غير محدد' }}</p>
+                            <p class="text-xs text-red-400">الحد الأقصى للدين:
+                                {{ isset($customerDetails['max_debt_limit']) ? abs($customerDetails['max_debt_limit']) . ' EGP' : 'غير محدد' }}
+                            </p>
                         </div>
                     @endif
                 </div>
@@ -138,7 +147,9 @@
                     </div>
                     <div class="mt-4 p-3 bg-emerald-50 rounded-lg flex justify-between items-center">
                         <span class="font-medium text-emerald-800">إجمالي أرصدة محافظ العملاء</span>
-                        <span class="text-lg font-bold text-emerald-700">{{ number_format($branchDetails['clients_wallet_sum'], 2) }} EGP</span>
+                        <span
+                            class="text-lg font-bold text-emerald-700">{{ number_format($branchDetails['clients_wallet_sum'], 2) }}
+                            EGP</span>
                     </div>
                 </div>
 

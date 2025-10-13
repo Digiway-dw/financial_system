@@ -131,7 +131,7 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['receiver_mobile_number']) && $filters['receiver_mobile_number']) {
             // Clean the mobile number to ensure it only contains digits
             $mobileNumber = preg_replace('/[^0-9]/', '', $filters['receiver_mobile_number']);
-            $ordinary->where(function ($q) use ($mobileNumber) {
+            $query->where(function ($q) use ($mobileNumber) {
                 $q->whereRaw("REPLACE(REPLACE(REPLACE(receiver_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%'])
                     ->orWhereRaw("REPLACE(REPLACE(REPLACE(customer_mobile_number, '-', ''), ' ', ''), '+', '') LIKE ?", ['%' . $mobileNumber . '%']);
             });
@@ -141,9 +141,36 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['transfer_line']) && $filters['transfer_line'] && !empty($filters['transfer_line'])) {
             // Set flag to skip cash transactions
             $skipCashTransactions = true;
-            // For regular transactions, filter by line_id
+            // For regular transactions, filter by line_id OR handle line_transfer which uses from_line_id/to_line_id
             $transferLineId = $filters['transfer_line'];
-            $ordinary->where('line_id', $transferLineId);
+            $query->where(function ($q) use ($transferLineId) {
+                $q->where('line_id', $transferLineId)
+                    ->orWhere('from_line_id', $transferLineId)
+                    ->orWhere('to_line_id', $transferLineId);
+            });
+        }
+
+        // Handle line search (when typing but no specific line selected)
+        if (isset($filters['line_search']) && $filters['line_search'] && !empty($filters['line_search'])) {
+            // Set flag to skip cash transactions
+            $skipCashTransactions = true;
+            $lineSearch = $filters['line_search'];
+
+            // Find all lines that match the search pattern
+            $matchingLineIds = \App\Models\Domain\Entities\Line::where('mobile_number', 'like', $lineSearch . '%')
+                ->pluck('id')
+                ->toArray();
+
+            if (!empty($matchingLineIds)) {
+                $query->where(function ($q) use ($matchingLineIds) {
+                    $q->whereIn('line_id', $matchingLineIds)
+                        ->orWhereIn('from_line_id', $matchingLineIds)
+                        ->orWhereIn('to_line_id', $matchingLineIds);
+                });
+            } else {
+                // No matching lines found, return empty result set
+                $query->whereRaw('1 = 0');
+            }
         }
 
         // Handle amount range filtering
@@ -318,7 +345,7 @@ class EloquentTransactionRepository implements TransactionRepository
         $totalTransferred = $all->sum('amount');
         // Exclude line transfer commissions from total commissions (they are expenses, not revenue)
         if (isset($filters['exclude_line_transfer_commission']) && $filters['exclude_line_transfer_commission']) {
-            $totalCommission = $all->filter(function($tx) {
+            $totalCommission = $all->filter(function ($tx) {
                 $transactionType = strtolower(trim($tx['transaction_type'] ?? ''));
                 return $transactionType !== 'line_transfer';
             })->sum('commission');
@@ -327,7 +354,7 @@ class EloquentTransactionRepository implements TransactionRepository
             $totalCommission = $all->sum('commission');
         } else {
             // Default: legacy behavior (exclude line_transfer commissions)
-            $totalCommission = $all->filter(function($tx) {
+            $totalCommission = $all->filter(function ($tx) {
                 $transactionType = strtolower(trim($tx['transaction_type'] ?? ''));
                 return $transactionType !== 'line_transfer';
             })->sum('commission');
@@ -352,7 +379,7 @@ class EloquentTransactionRepository implements TransactionRepository
 
         // Overall net profit calculation
         $netProfit = $totalCommission + $totalProfitContribution;
-        
+
         // Special handling for line_transfer filter: show fees as negative profit (expenses)
         if (isset($filters['transaction_type']) && $filters['transaction_type'] === 'line_transfer') {
             $lineTransferFees = $all->sum('commission'); // Get the actual line transfer fees
@@ -457,9 +484,36 @@ class EloquentTransactionRepository implements TransactionRepository
         if (isset($filters['transfer_line']) && $filters['transfer_line'] && !empty($filters['transfer_line'])) {
             // Set flag to skip cash transactions
             $skipCashTransactions = true;
-            // For regular transactions, filter by line_id
+            // For regular transactions, filter by line_id OR include line transfers where from_line_id or to_line_id matches
             $transferLineId = $filters['transfer_line'];
-            $ordinary->where('line_id', $transferLineId);
+            $ordinary->where(function ($q) use ($transferLineId) {
+                $q->where('line_id', $transferLineId)
+                    ->orWhere('from_line_id', $transferLineId)
+                    ->orWhere('to_line_id', $transferLineId);
+            });
+        }
+
+        // Handle line search (when typing but no specific line selected)
+        if (isset($filters['line_search']) && $filters['line_search'] && !empty($filters['line_search'])) {
+            // Set flag to skip cash transactions
+            $skipCashTransactions = true;
+            $lineSearch = $filters['line_search'];
+
+            // Find all lines that match the search pattern
+            $matchingLineIds = \App\Models\Domain\Entities\Line::where('mobile_number', 'like', $lineSearch . '%')
+                ->pluck('id')
+                ->toArray();
+
+            if (!empty($matchingLineIds)) {
+                $ordinary->where(function ($q) use ($matchingLineIds) {
+                    $q->whereIn('line_id', $matchingLineIds)
+                        ->orWhereIn('from_line_id', $matchingLineIds)
+                        ->orWhereIn('to_line_id', $matchingLineIds);
+                });
+            } else {
+                // No matching lines found, return empty result set
+                $ordinary->whereRaw('1 = 0');
+            }
         }
 
         // Handle amount range filtering
@@ -716,7 +770,7 @@ class EloquentTransactionRepository implements TransactionRepository
 
         $totalTransferred = $all->sum('amount');
         // Exclude line transfer commissions from total commissions (they are expenses, not revenue)
-        $totalCommission = $all->filter(function($tx) {
+        $totalCommission = $all->filter(function ($tx) {
             return strtolower($tx['transaction_type']) !== 'line_transfer';
         })->sum('commission');
         $totalDeductions = $all->sum('deduction');
@@ -739,7 +793,7 @@ class EloquentTransactionRepository implements TransactionRepository
 
         // Overall net profit calculation (second method)
         $netProfit = $totalCommission + $totalProfitContribution;
-        
+
         // Special handling for line_transfer filter: show fees as negative profit (expenses)
         if (isset($filters['transaction_type']) && $filters['transaction_type'] === 'line_transfer') {
             $lineTransferFees = $all->sum('commission'); // Get the actual line transfer fees

@@ -62,6 +62,8 @@ class Enhanced extends Component
     // New properties for line filtering
     public $selectedLine = ''; // New property for line filter
     public $lines = []; // Store lines for dropdown
+    public $lineSearch = ''; // New property for line search
+    public $filteredLines = []; // Store filtered lines for suggestions
 
     // Services - these should not be serialized
     #[Locked]
@@ -115,6 +117,9 @@ class Enhanced extends Component
         // Load all lines for the dropdown
         $this->lines = Line::all()->pluck('mobile_number', 'id')->toArray();
 
+        // Initialize filtered lines (empty at start)
+        $this->filteredLines = [];
+
         // Load employees based on user permissions
         if (Gate::forUser($user)->allows('view-all-branches-data')) {
             $this->employees = User::all();
@@ -146,8 +151,38 @@ class Enhanced extends Component
             'filterStatus',
             'filterEmployee',
             'filterBranch',
-            'selectedLine' // Reset selected line
+            'selectedLine', // Reset selected line
+            'lineSearch', // Reset line search
         ]);
+
+        // Clear filtered lines
+        $this->filteredLines = [];
+    }
+
+    public function updatedLineSearch()
+    {
+        if (empty($this->lineSearch)) {
+            $this->filteredLines = [];
+            $this->selectedLine = '';
+            return;
+        }
+
+        // Search for lines that start with the input
+        $this->filteredLines = Line::where('mobile_number', 'like', $this->lineSearch . '%')
+            ->orderBy('mobile_number')
+            ->limit(10) // Limit to 10 suggestions
+            ->pluck('mobile_number', 'id')
+            ->toArray();
+    }
+
+    public function selectLine($lineId, $mobileNumber)
+    {
+        $this->selectedLine = $lineId;
+        $this->lineSearch = $mobileNumber;
+        $this->filteredLines = [];
+
+        // Trigger report regeneration
+        $this->generateReport();
     }
 
     public function generateReport()
@@ -196,7 +231,7 @@ class Enhanced extends Component
                 // This will show data from all branches
             } else {
                 // Filter out empty values and apply specific branch filter
-                $validBranches = array_filter($this->selectedBranches, function($branchId) {
+                $validBranches = array_filter($this->selectedBranches, function ($branchId) {
                     return !empty($branchId);
                 });
                 if (!empty($validBranches)) {
@@ -209,6 +244,9 @@ class Enhanced extends Component
         }
         if ($this->selectedLine) {
             $filters['transfer_line'] = $this->selectedLine;
+        } elseif ($this->lineSearch) {
+            // If no specific line selected but search text exists, use search term
+            $filters['line_search'] = $this->lineSearch;
         }
 
         // Column filters
@@ -219,7 +257,7 @@ class Enhanced extends Component
             // Map filter values to exact DB values 
             $typeMap = [
                 'receive' => 'Receive',
-                'transfer' => 'Transfer', 
+                'transfer' => 'Transfer',
                 'line_transfer' => 'line_transfer',
                 'deposit' => 'Deposit',
                 'withdrawal' => 'Withdrawal',
@@ -447,6 +485,9 @@ class Enhanced extends Component
     {
         return view('livewire.reports.enhanced', [
             'lines' => $this->lines,
+            'selectedLine' => $this->selectedLine,
+            'lineSearch' => $this->lineSearch,
+            'filteredLines' => $this->filteredLines,
             'showEmployeeFilter' => in_array($this->reportType, ['transactions', 'employee']),
             'showCustomerFilter' => in_array($this->reportType, ['transactions', 'customer']),
             'showExpenses' => $this->reportType === 'branch',
