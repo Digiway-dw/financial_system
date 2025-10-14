@@ -91,24 +91,13 @@ class UpdateTransaction
 
             DB::commit();
 
-            Log::info('Transaction updated successfully', [
-                'transaction_id' => $id,
-                'original_amount' => $originalAmount,
-                'new_amount' => $newAmount,
-                'original_commission' => $originalCommission,
-                'new_commission' => $newCommission,
-                'transaction_type' => $newTransactionType,
-            ]);
+            
 
             return $updatedTransaction;
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to update transaction', [
-                'transaction_id' => $id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+          
             throw $e;
         }
     }

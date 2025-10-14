@@ -45,7 +45,6 @@ class SessionTimeout
 
         // Check if session has timed out
         if ($currentTime - $lastActivity > $sessionLifetime) {
-            Log::info('Session timeout middleware triggered for user: ' . Auth::id() . ', inactive for ' . ($currentTime - $lastActivity) . ' seconds');
 
             // End work session for the user
             app(\App\Application\Services\WorkSessionService::class)->endSession(Auth::user());

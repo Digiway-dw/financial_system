@@ -18,13 +18,11 @@ use Illuminate\Support\Facades\Log;
 
 // Public route for checking API availability
 Route::get('/status', function () {
-    Log::info('API status route accessed');
     return response()->json(['status' => 'API is working']);
 });
 
 // Add a simple test route that doesn't require auth
 Route::get('/test', function () {
-    Log::info('API test route accessed');
     return response()->json([
         'status' => 'API test route is working',
         'prefix' => request()->route()->getPrefix(),

@@ -84,28 +84,14 @@ class ApproveTransaction
             // Handle line transfer approval (NO NOTIFICATIONS)
             $fromLine = $this->lineRepository->findById($transaction->from_line_id);
             $toLine = $this->lineRepository->findById($transaction->to_line_id);
-            \Log::info('[LineTransferApproval] Transaction:', [
-                'id' => $transaction->id,
-                'from_line_id' => $transaction->from_line_id,
-                'to_line_id' => $transaction->to_line_id,
-                'total_deducted' => $transaction->total_deducted,
-                'amount' => $transaction->amount,
-                'fromLine_balance_before' => $fromLine ? $fromLine->current_balance : null,
-                'toLine_balance_before' => $toLine ? $toLine->current_balance : null,
-            ]);
+          
             if (!$fromLine || !$toLine) {
-                \Log::error('[LineTransferApproval] Source or destination line not found.', [
-                    'from_line_id' => $transaction->from_line_id,
-                    'to_line_id' => $transaction->to_line_id
-                ]);
+              
                 throw new \Exception('Source or destination line not found for line transfer.');
             }
             // Check if source line still has sufficient balance
             if ($fromLine->current_balance < $transaction->total_deducted) {
-                \Log::error('[LineTransferApproval] Insufficient balance in source line.', [
-                    'fromLine_balance' => $fromLine->current_balance,
-                    'total_deducted' => $transaction->total_deducted
-                ]);
+               
                 throw new \Exception(
                     'Insufficient balance in source line. Available: ' . 
                     number_format($fromLine->current_balance, 2) . 
@@ -119,10 +105,7 @@ class ApproveTransaction
             $this->lineRepository->update($toLine->id, [
                 'current_balance' => $toLine->current_balance + $transaction->amount
             ]);
-            \Log::info('[LineTransferApproval] Balances updated:', [
-                'fromLine_balance_after' => $fromLine->current_balance - $transaction->total_deducted,
-                'toLine_balance_after' => $toLine->current_balance + $transaction->amount
-            ]);
+          
             // Do NOT send notifications for line transfer approval
         }
 

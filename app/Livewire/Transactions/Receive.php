@@ -297,24 +297,12 @@ class Receive extends Component
             $admins = \App\Domain\Entities\User::role('admin')->get();
             $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
             $recipients = $admins->merge($supervisors)->unique('id');
-            // Log for debugging
-            \Illuminate\Support\Facades\Log::info('Sending receive transaction notification', [
-                'transaction_id' => $transaction->id,
-                'recipient_count' => $recipients->count(),
-                'message' => $adminNotificationMessage
-            ]);
+           
             \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($adminNotificationMessage, route('transactions.edit', $transaction->reference_number)));
-            // Log success
-            \Illuminate\Support\Facades\Log::info('Receive transaction notification sent successfully', [
-                'transaction_id' => $transaction->id
-            ]);
+          
         } catch (\Exception $e) {
             // Log the error
-            \Illuminate\Support\Facades\Log::error('Failed to send receive transaction notification', [
-                'transaction_id' => $transaction->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+          
             
             // Don't throw the exception to avoid breaking the transaction
             // Just log it for debugging

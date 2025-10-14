@@ -49,13 +49,7 @@ class WorkingHoursCheck
             ) {
 
                 // Log the violation attempt
-                Log::warning("User {$user->id} ({$user->email}) attempted to access outside working hours", [
-                    'user_id' => $user->id,
-                    'day' => $currentDayOfWeek,
-                    'time' => $currentTime,
-                    'ip_address' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]);
+            
 
                 // Send notification to admin
                 $this->notifyAdmin($user, $request);

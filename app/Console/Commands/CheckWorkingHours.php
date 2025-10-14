@@ -68,13 +68,7 @@ class CheckWorkingHours extends Command
                 $currentTime > $workingHour->end_time
             ) {
 
-                // Log the violation
-                Log::warning("User {$user->id} ({$user->email}) was logged out due to working hours violation", [
-                    'user_id' => $user->id,
-                    'day' => $currentDayOfWeek,
-                    'time' => $currentTime,
-                    'session_id' => $session->id,
-                ]);
+                
 
                 // End work session
                 $workSessionService = app(WorkSessionService::class);

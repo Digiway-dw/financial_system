@@ -26,12 +26,7 @@ class PerformanceOptimization
 
         // Log slow requests (over 1 second)
         if ($duration > 1000) {
-            Log::warning('Slow request detected', [
-                'url' => $request->fullUrl(),
-                'method' => $request->method(),
-                'duration' => $duration . 'ms',
-                'memory' => memory_get_peak_usage(true),
-            ]);
+          
         }
 
         // Add performance headers for development

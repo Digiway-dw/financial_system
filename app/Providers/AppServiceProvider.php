@@ -262,7 +262,6 @@ class AppServiceProvider extends ServiceProvider
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             ]]);
         } catch (\Exception $e) {
-            Log::warning('Database configuration failed: ' . $e->getMessage());
         }
     }
 

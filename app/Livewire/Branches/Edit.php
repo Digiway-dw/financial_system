@@ -62,13 +62,7 @@ class Edit extends Component
         // Set the is_active value as string for the select dropdown
         $this->is_active = $this->branch->is_active ? '1' : '0';
         
-        // Debug what's being loaded
-        \Log::info('Branch edit form loaded', [
-            'branch_id' => $this->branchId,
-            'branch_name' => $this->branch->name,
-            'branch_is_active' => $this->branch->is_active,
-            'form_is_active' => $this->is_active,
-        ]);
+      
 
         // Load the first associated safe (main safe)
         $safe = $this->branch->safes->first();
@@ -83,13 +77,7 @@ class Edit extends Component
 
     public function updateBranch()
     {
-        \Log::info('updateBranch method called', [
-            'name' => $this->name,
-            'description' => $this->description,
-            'is_active_value' => $this->is_active,
-            'is_active_type' => gettype($this->is_active),
-            'is_active_boolean' => $this->is_active === '1',
-        ]);
+       
         
         $this->validate([
             'name' => 'required|string|max:255',
@@ -97,14 +85,7 @@ class Edit extends Component
             'is_active' => 'in:0,1',
         ]);
         
-        \Log::info('Validation passed', [
-            'validated_data' => [
-                'name' => $this->name,
-                'description' => $this->description,
-                'is_active' => $this->is_active,
-                'is_active_boolean' => $this->is_active === '1',
-            ]
-        ]);
+       
 
         try {
 
@@ -142,10 +123,7 @@ class Edit extends Component
             session()->flash('message', 'Branch and safe updated successfully.');
             return $this->redirect(route('branches.index'));
         } catch (\Exception $e) {
-            \Log::error('Error updating branch', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+          
             session()->flash('error', 'Failed to update branch or safe: ' . $e->getMessage());
         }
     }

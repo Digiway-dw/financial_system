@@ -27,7 +27,6 @@ class LoginGuard
 
             // If last activity was more than 5 minutes ago, force logout
             if ($elapsedTime > 300) { // 5 minutes = 300 seconds
-                Log::info("Login guard forcing logout for user {$user->id} after {$elapsedTime} seconds of inactivity");
 
                 // End work session for the user
                 app(\App\Application\Services\WorkSessionService::class)->endSession($user);

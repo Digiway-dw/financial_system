@@ -65,18 +65,11 @@ class UnfreezeLinesAndResetDailyBalance extends Command
             }
             
             $this->info('Daily and monthly starting balances have been reset.');
-            Log::info('Daily and monthly usage reset completed successfully', [
-                'is_start_of_month' => $isStartOfMonth,
-                'time' => $today->toDateTimeString()
-            ]);
-            
+          
             return 0;
         } catch (\Exception $e) {
             $this->error('فشل إعادة تعيين قيم الاستخدام: ' . $e->getMessage());
-            Log::error('فشل إعادة تعيين قيم الاستخدام', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+           
             
             return 1;
         }
