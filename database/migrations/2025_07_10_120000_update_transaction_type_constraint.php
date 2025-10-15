@@ -33,7 +33,6 @@ return new class extends Migration
                 DB::statement("ALTER TABLE transactions ADD CONSTRAINT chk_transaction_type CHECK (transaction_type IN ('Transfer', 'Withdrawal', 'Deposit', 'Adjustment', 'Receive'))");
             } catch (\Exception $e) {
                 // Log the error but don't fail the migration
-                Log::warning('Failed to add transaction_type constraint: ' . $e->getMessage());
             }
         }
     }

@@ -32,7 +32,6 @@ class SessionController extends Controller
     /*
     public function heartbeat(Request $request)
     {
-        Log::info('Session heartbeat received for user: ' . ($request->user() ? $request->user()->id : 'unknown'));
 
         // Update session last activity time
         session(['last_activity' => now()->timestamp]);
@@ -56,7 +55,6 @@ class SessionController extends Controller
         $user = $request->user();
         $userId = $user ? $user->id : 'unknown';
 
-        Log::info('Auto-logout received for user: ' . $userId);
 
         // End the user's work session if they're logged in
         if ($user) {
@@ -101,7 +99,6 @@ class SessionController extends Controller
             // Auto-logout the user server-side
             $this->autoLogout($request);
 
-            Log::info('Session expired via status check: User ' . Auth::id() . ' inactive for ' . $elapsedTime . ' seconds');
 
             return response()->json([
                 'status' => 'expired',

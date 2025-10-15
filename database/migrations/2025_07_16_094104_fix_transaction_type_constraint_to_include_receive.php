@@ -16,15 +16,12 @@ return new class extends Migration
             DB::statement('ALTER TABLE transactions DROP CONSTRAINT chk_transaction_type');
         } catch (\Exception $e) {
             // Ignore if constraint does not exist
-            Log::info('Constraint chk_transaction_type does not exist, proceeding with creation');
         }
 
         // Add the updated constraint with 'Receive' included
         try {
             DB::statement("ALTER TABLE transactions ADD CONSTRAINT chk_transaction_type CHECK (transaction_type IN ('Transfer', 'Withdrawal', 'Deposit', 'Adjustment', 'Receive'))");
-            Log::info('Successfully added chk_transaction_type constraint with Receive included');
         } catch (\Exception $e) {
-            Log::error('Failed to add transaction_type constraint: ' . $e->getMessage());
             throw $e;
         }
     }
@@ -45,7 +42,6 @@ return new class extends Migration
         try {
             DB::statement("ALTER TABLE transactions ADD CONSTRAINT chk_transaction_type CHECK (transaction_type IN ('Transfer', 'Withdrawal', 'Deposit', 'Adjustment'))");
         } catch (\Exception $e) {
-            Log::warning('Failed to restore original transaction_type constraint: ' . $e->getMessage());
         }
     }
 };

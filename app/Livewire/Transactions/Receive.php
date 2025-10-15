@@ -418,19 +418,11 @@ class Receive extends Component
             // Only if transaction was created, proceed with notification and redirect
             if ($createdTransaction) {
                 // Log for debugging
-                \Illuminate\Support\Facades\Log::info('Receive transaction created successfully', [
-                    'transaction_id' => $createdTransaction->id,
-                    'discount' => $this->discount ?? 0,
-                    'has_discount' => ($this->discount ?? 0) > 0
-                ]);
+               
                 
                 if (($this->discount ?? 0) > 0) {
                     // Notify admin for approval - using direct notification like Send component
-                    \Illuminate\Support\Facades\Log::info('Sending notification for receive transaction with discount', [
-                        'transaction_id' => $createdTransaction->id,
-                        'discount' => $this->discount
-                    ]);
-                    
+                 
                     $discountDisplay = $this->discount ?? 0;
                     $adminNotificationMessage = "تم إنشاء معاملة إستلام بخصم {$discountDisplay} EGP.\n"
                         . "Transaction Details:" . "\n"

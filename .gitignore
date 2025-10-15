@@ -75,3 +75,4 @@ user()
 .env
 public/build/manifest.json
 financial_system.zip
+.env

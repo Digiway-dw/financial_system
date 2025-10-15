@@ -41,7 +41,6 @@ return Application::configure(basePath: dirname(__DIR__))
 ```php
 // Add a simple test route that doesn't require auth
 Route::get('/test', function () {
-    Log::info('API test route accessed');
     return response()->json([
         'status' => 'API test route is working',
         'prefix' => request()->route()->getPrefix(),
