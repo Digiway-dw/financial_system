@@ -223,7 +223,7 @@ class CreateTransaction
         // This would ideally involve checking aggregated daily transactions for this line.
         // For simplicity, let's assume the daily limit is checked against the current transaction amount directly.
         if ($amount > $line->daily_limit) {
-            throw new \Exception('Transaction amount exceeds daily limit for this line.');
+            throw new \Exception('مبلغ المعاملة يتجاوز الحد اليومي للخط.');
         }
 
         // Check monthly limit
@@ -233,7 +233,7 @@ class CreateTransaction
             $admins = \App\Domain\Entities\User::role('admin')->get();
             $message = "Monthly limit of line " . $line->mobile_number . " has been crossed.";
             Notification::send($admins, new AdminNotification($message, route('lines.edit', $line->id)));
-            throw new \Exception('Transaction amount exceeds monthly limit for this line.');
+            throw new \Exception('مبلغ المعاملة يتجاوز الحد الشهري لهذا الخط.');
         }
 
         // --- New Daily/Monthly Receive Limit Logic ---
@@ -314,18 +314,18 @@ class CreateTransaction
                     $lineDeduction += 1; // Add 1 EGP fee for send transactions
                 }
                 if (($line->current_balance - $lineDeduction) < 0) {
-                    throw new \Exception('Insufficient balance in line for this transaction. Available: ' . number_format($line->current_balance, 2) . ' EGP, Required: ' . number_format($lineDeduction, 2) . ' EGP');
+                    throw new \Exception('لا يوجد رصيد كافٍ في الخط لهذه المعاملة. المتاح: ' . number_format($line->current_balance, 2) . ' EGP, المطلوب: ' . number_format($lineDeduction, 2) . ' EGP');
                 }
                 $this->lineRepository->update($lineId, ['current_balance' => $line->current_balance - $lineDeduction]);
                 $line->refresh();
                 if ($line->current_balance < 500) {
-                    $notificationMessage = "Warning: Line " . $line->mobile_number . " balance is low ( " . $line->current_balance . " EGP). Please top up.";
+                    $notificationMessage = "تحذير: " . $line->mobile_number . " رصيده منخفض ( " . $line->current_balance . " EGP). يرجى الإيداع.";
                     $this->notifyRelevantUsers($notificationMessage, route('lines.edit', $line->id), $line->branch_id);
                 }
                 // For Transfer (Send) transactions, safe balance increases by (Amount + Commission)
                 $safe = $this->safeRepository->findById($safeId);
                 if (!$safe) {
-                    throw new \Exception('Safe not found.');
+                    throw new \Exception('لم يتم العثور على الخزنة.');
                 }
                 // Update: safeIncrease should be amount + (finalCommission - deduction)
                 $safeIncrease = $amount + ($finalCommission - $deduction);
@@ -337,15 +337,15 @@ class CreateTransaction
         if ($shouldApplyBalances && $transactionType === 'Withdrawal' && !$isAbsoluteWithdrawal && $paymentMethod === 'branch safe') {
             $safe = $this->safeRepository->findById($safeId);
             if (!$safe) {
-                throw new \Exception('Safe not found.');
+                throw new \Exception('لم يتم العثور على الخزنة.');
             }
             if (($safe->current_balance - $amount) < 0) {
-                throw new \Exception('Insufficient balance in safe for this transaction. Available: ' . number_format($safe->current_balance, 2) . ' EGP, Required: ' . number_format($amount, 2) . ' EGP');
+                throw new \Exception('لا يوجد رصيد كافٍ في الخزنة لهذه المعاملة. المتاح: ' . number_format($safe->current_balance, 2) . ' EGP, المطلوب: ' . number_format($amount, 2) . ' EGP');
             }
             $this->safeRepository->update($safeId, ['current_balance' => $safe->current_balance - $amount]);
             $safe->refresh();
             if ($safe->current_balance < 500) {
-                $notificationMessage = "Warning: Safe " . $safe->name . " balance is low ( " . $safe->current_balance . " EGP) in branch " . $safe->branch->name . ". Please deposit.";
+                $notificationMessage = "تحذير: " . $safe->name . " رصيدها منخفض ( " . $safe->current_balance . " EGP) في الفرع " . $safe->branch->name . ". يرجى الإيداع.";
                 $this->notifyRelevantUsers($notificationMessage, route('safes.edit', $safe->id), $safe->branch_id);
             }
         }

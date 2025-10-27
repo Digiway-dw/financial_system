@@ -313,14 +313,14 @@ class Deposit extends Create
         $branch = $safe ? $safe->branch : null;
         $url = route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]);
         $customerCode = $cashTx->customer_code ?: 'N/A';
-        $message = "New Deposit Transaction\n" .
-            "Reference: {$cashTx->reference_number}\n" .
-            "Customer: {$cashTx->customer_name} (" . $customerCode . ")\n" .
-            "Amount: {$cashTx->amount} EGP\n" .
-            "Safe: " . ($safe ? $safe->name : 'N/A') . "\n" .
-            "Branch: " . ($branch ? $branch->name : 'N/A') . "\n" .
-            "Agent: {$agent->name}\n" .
-            "Notes: {$cashTx->notes}";
+        $message = "معاملة إيداع جديدة\n" .
+            "رقم المرجع: {$cashTx->reference_number}\n" .
+            "العميل: {$cashTx->customer_name} (" . $customerCode . ")\n" .
+            "المبلغ: {$cashTx->amount} EGP\n" .
+            "الخزنة: " . ($safe ? $safe->name : 'N/A') . "\n" .
+            "الفرع: " . ($branch ? $branch->name : 'N/A') . "\n" .
+            "الوكيل: {$agent->name}\n" .
+            "الملاحظات: {$cashTx->notes}";
         Notification::send($recipients, new AdminNotification($message, $url));
     }
 

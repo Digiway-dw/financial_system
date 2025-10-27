@@ -283,17 +283,17 @@ class Receive extends Component
         try {
             $discountDisplay = $this->discount ?? 0;
             $adminNotificationMessage = "تم إنشاء معاملة إستلام بخصم {$discountDisplay} EGP.\n"
-                . "Transaction Details:" . "\n"
-                . "Reference Number: {$transaction->reference_number}\n"
-                . "Client: {$this->clientName} ({$this->clientMobile})\n"
-                . "Amount: {$this->amount} EGP\n"
-                . "Commission: {$this->commission} EGP\n"
-                . "Discount: {$discountDisplay} EGP\n"
-                . "Sender: {$this->senderMobile}\n"
-                . "Line: {$this->selectedLineId}\n"
-                . "Branch: {$transaction->branch->name}\n"
-                . "Note: {$this->discountNotes}\n"
-                . "Transaction ID: {$transaction->id}";
+                . "تفاصيل المعاملة:" . "\n"
+                . "رقم المرجع: {$transaction->reference_number}\n"
+                . "العميل: {$this->clientName} ({$this->clientMobile})\n"
+                . "المبلغ: {$this->amount} EGP\n"
+                . "العمولة: {$this->commission} EGP\n"
+                . "الخصم: {$discountDisplay} EGP\n"
+                . "المرسل: {$this->senderMobile}\n"
+                . "الخط: {$this->selectedLineId}\n"
+                . "الفرع: {$transaction->branch->name}\n"
+                . "الملاحظة: {$this->discountNotes}\n"
+                . "معرف المعاملة: {$transaction->id}";
             $admins = \App\Domain\Entities\User::role('admin')->get();
             $supervisors = \App\Domain\Entities\User::role('general_supervisor')->get();
             $recipients = $admins->merge($supervisors)->unique('id');

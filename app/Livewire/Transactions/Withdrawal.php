@@ -416,7 +416,7 @@ class Withdrawal extends Create
                     \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
                 }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                
+
                 if ($isAdminOrSupervisor) {
                     // For admin/supervisor, redirect to receipt
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
@@ -500,7 +500,7 @@ class Withdrawal extends Create
                     \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($message, route('transactions.cash.waiting-approval', ['cashTransaction' => $cashTx->id])));
                 }
                 $this->reset(['customerName', 'amount', 'notes', 'userId', 'clientCode', 'clientNumber', 'clientNationalNumber', 'clientSearch', 'clientSuggestions', 'clientName', 'clientMobile', 'clientBalance', 'clientId', 'withdrawalNationalId', 'withdrawalToName', 'selectedBranchId']);
-                
+
                 if ($isAdminOrSupervisor) {
                     // For admin/supervisor, redirect to receipt
                     $this->js('window.location.href = "' . route('cash-transactions.receipt', ['referenceNumber' => $cashTx->reference_number]) . '"');
@@ -639,7 +639,7 @@ class Withdrawal extends Create
                 $sourceBranchName = $sourceSafe && $sourceSafe->branch ? $sourceSafe->branch->name : 'Unknown';
                 $message = "Branch withdrawal request: From Branch: " . $sourceBranchName . " To Branch: " . $destinationBranchName . ", Amount: " . number_format($this->amount, 2) . " EGP, By: " . $user->name . ".";
                 \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\AdminNotification($message, url()->current()));
-                
+
                 if ($isAdminOrSupervisor) {
                     // For admin/supervisor, redirect to receipt
                     session()->flash('message', 'Branch withdrawal created successfully!');
@@ -780,6 +780,43 @@ class Withdrawal extends Create
 
     public function render()
     {
-       
+        // Ensure lists are up to date when rendering
+        $this->branches = \App\Models\Domain\Entities\Branch::all()->map(function ($branch) {
+            return [
+                'id' => $branch->id,
+                'name' => $branch->name,
+                'branch_code' => $branch->branch_code ?? null,
+            ];
+        })->toArray();
+
+        // Keep safes current (respect selectedBranchId if branch/expense type)
+        if (in_array($this->withdrawalType, ['branch', 'expense']) && $this->selectedBranchId) {
+            $this->safes = \App\Models\Domain\Entities\Safe::where('branch_id', $this->selectedBranchId)->get()->map(function ($safe) {
+                return [
+                    'id' => $safe->id,
+                    'name' => $safe->name,
+                    'current_balance' => $safe->current_balance,
+                ];
+            })->toArray();
+        } else {
+            // Fallback to previously loaded safes
+            // (mount() already populated $this->safes appropriately)
+        }
+
+        // Provide users array for the blade view
+        $users = $this->branchUsers;
+        if (empty($users)) {
+            // fallback to all users if not populated
+            $users = \App\Domain\Entities\User::all();
+        }
+
+        return view('livewire.transactions.withdrawal', [
+            'branches' => $this->branches,
+            'safes' => $this->safes,
+            'expenseItems' => $this->expenseItems,
+            'destinationBranches' => $this->destinationBranches,
+            'branchUsers' => $this->branchUsers,
+            'users' => $users,
+        ]);
     }
 }
