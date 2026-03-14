@@ -259,7 +259,7 @@ class Dashboard extends Component
 
         // Always set branchSafeBalance for the user's branch
         $userBranch = $user->branch;
-        $branchSafes = collect($this->safeRepository->all())->where('branch_id', $userBranch->id ?? null);
+        $branchSafes = collect($this->safeRepository->all())->where('branch_id', optional($userBranch)->id);
         $data['branchSafeBalance'] = $branchSafes->sum('current_balance');
 
         if ($user->hasRole('admin')) {
@@ -273,7 +273,7 @@ class Dashboard extends Component
             $data['totalTransactions'] = Transaction::count() + CashTransaction::count();
             $data['totalSafeBalance'] = collect($this->safeRepository->all())->sum('current_balance');
 
-            $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);
+            $allTransactions = $this->listFilteredTransactionsUseCase->execute(['start_date' => \Carbon\Carbon::today()->toDateString(), 'end_date' => \Carbon\Carbon::today()->toDateString()]);
             $data['totalTransferred'] = $allTransactions['totals']['total_transferred'];
             $data['netProfits'] = $allTransactions['totals']['net_profit'];
             // Count all transactions and cash transactions that require approval
@@ -333,7 +333,7 @@ class Dashboard extends Component
             // Count both Transaction and CashTransaction for totalTransactions
             $data['totalTransactions'] = Transaction::count() + CashTransaction::count();
             $data['totalSafeBalance'] = collect($this->safeRepository->all())->sum('current_balance');
-            $allTransactions = $this->listFilteredTransactionsUseCase->execute([]);
+            $allTransactions = $this->listFilteredTransactionsUseCase->execute(['start_date' => \Carbon\Carbon::today()->toDateString(), 'end_date' => \Carbon\Carbon::today()->toDateString()]);
             $data['totalTransferred'] = $allTransactions['totals']['total_transferred'] ?? 0;
             $data['netProfits'] = $allTransactions['totals']['net_profit'] ?? 0;
             $pendingTransactionsCount = Transaction::where('status', 'Pending')->where('deduction', '>', 0)->count();
@@ -466,9 +466,9 @@ class Dashboard extends Component
 
             $data['agentTotalBalance'] = $lines->sum('current_balance');
 
-            $agentTransactions = collect($this->transactionRepository->all())->where('agent_id', $user->id);
-            $data['agentTotalTransferred'] = $agentTransactions->sum('amount');
-            $data['agentPendingTransactionsCount'] = $agentTransactions->where('status', 'Pending')->count();
+            $agentTransactionsQuery = \App\Models\Domain\Entities\Transaction::where('agent_id', $user->id);
+            $data['agentTotalTransferred'] = (clone $agentTransactionsQuery)->sum('amount');
+            $data['agentPendingTransactionsCount'] = (clone $agentTransactionsQuery)->where('status', 'Pending')->count();
 
             // Add metrics table data for agent/trainee dashboard
             $userBranch = $user->branch;

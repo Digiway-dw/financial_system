@@ -1,6 +1,8 @@
 <?php
 
 return [
+    App\Providers\EarlyFilesystemProvider::class,
+    Illuminate\Filesystem\FilesystemServiceProvider::class,
     App\Providers\AgentAuthorizationProvider::class,
     App\Providers\AppServiceProvider::class,
     App\Providers\AuthServiceProvider::class,
