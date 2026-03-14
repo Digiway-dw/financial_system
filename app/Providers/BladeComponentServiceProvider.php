@@ -78,13 +78,13 @@ class BladeComponentServiceProvider extends ServiceProvider
     private function registerCustomComponents(): void
     {
         // Register common UI components
-        Blade::component('app.components.alert', 'alert');
-        Blade::component('app.components.button', 'button');
-        Blade::component('app.components.card', 'card');
-        Blade::component('app.components.modal', 'modal');
-        Blade::component('app.components.form.input', 'input');
-        Blade::component('app.components.form.select', 'select');
-        Blade::component('app.components.form.textarea', 'textarea');
+        Blade::component('components.alert', 'alert');
+        Blade::component('components.button', 'button');
+        Blade::component('components.card', 'card');
+        Blade::component('components.modal', 'modal');
+        Blade::component('components.form.input', 'input');
+        Blade::component('components.form.select', 'select');
+        Blade::component('components.form.textarea', 'textarea');
 
         // Register confirmation modal component
         Blade::component('confirmation-modal', 'confirmation-modal');
